@@ -58,7 +58,7 @@ class PowerUpsManager:
 
         current_time = pygame.time.get_ticks()
         # change the range to determine how often power ups are created
-        if current_time - self.last_power_up_time >= random.randint(1000, 1500): # miliseconds
+        if current_time - self.last_power_up_time >= random.randint(20000, 45000): # miliseconds
             self.last_power_up_time = current_time
             # change the range to determine the chance for a power up to be health power up
             if random.randint(0, 4) == 0:
@@ -75,5 +75,5 @@ class PowerUpsManager:
         """Update power-ups and remove power ups that went off screen."""
         self.game.power_ups.update()
         for power in self.game.power_ups.copy():
-            if power.rect.bottom <= 0:
+            if power.rect.y  > self.settings.screen_height:
                 self.game.power_ups.remove(power)

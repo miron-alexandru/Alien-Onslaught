@@ -125,5 +125,5 @@ class AlienBulletsManager:
         """Update alien bullets and remove bullets that went off screen"""
         self.alien_bullet.update()
         for bullet in self.alien_bullet.copy():
-            if bullet.rect.bottom <= 0:
+            if bullet.rect.y > self.settings.screen_height:
                 self.alien_bullet.remove(bullet)

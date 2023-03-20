@@ -69,8 +69,10 @@ class GameButtons:
                             (self.game_modes.rect.right - 10, self.game_modes.rect.y))
         self.endless = Button(self, self.button_imgs["endless"],
                             (self.normal.rect.right - 5, self.normal.rect.y))
-        self.last_stand = Button(self, self.button_imgs["last_stand"],
+        self.slow_burn = Button(self, self.button_imgs["slow_burn"],
                             (self.endless.rect.right - 5, self.endless.rect.y))
+        self.meteor_madness = Button(self, self.button_imgs['meteor_madness'],
+                            (self.slow_burn.rect.right - 5, self.slow_burn.rect.y))
         self.high_scores = Button(self, self.button_imgs['high_scores'],
                             (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom))
         self.menu = Button(self, self.button_imgs["menu_button"],
@@ -127,22 +129,31 @@ class GameButtons:
 
 
     def handle_endless_button(self):
-        """Toggle the endless game mode setting and hide game mode buttons"""
-        self.game.settings.endless = not self.game.settings.endless
-        self.game.settings.last_stand = False
+        """Toggle the Endless game mode setting and hide game mode buttons"""
+        self.game.settings.endless_onslaught = not self.game.settings.endless_onslaught
+        self.game.settings.slow_burn = False
+        self.game.settings.meteor_madness = False
         self.game.show_game_modes = False
 
     def handle_normal_button(self):
         """Turn all game modes off, play the normal game"""
-        self.game.settings.endless = False
-        self.game.settings.last_stand = False
+        self.game.settings.endless_onslaught = False
+        self.game.settings.slow_burn = False
+        self.game.settings.meteor_madness = False
         self.game.show_game_modes = False
 
+    def handle_slow_burn_button(self):
+        """Toggle the Slow Burn game mode and hide game mode buttons"""
+        self.game.settings.slow_burn = not self.game.settings.slow_burn
+        self.game.settings.endless_onslaught = False
+        self.game.settings.meteor_madness = False
+        self.game.show_game_modes = False
 
-    def handle_last_stand_button(self):
-        """Toggle the last stand game mode and hide game mode buttons"""
-        self.game.settings.last_stand = not self.game.settings.last_stand
-        self.game.settings.endless = False
+    def handle_meteor_madness_button(self):
+        """Toggle the Meteor Madness game mode and hide all game mode buttons."""
+        self.game.settings.meteor_madness = not self.game.settings.meteor_madness
+        self.game.settings.endless_onslaught = False
+        self.game.settings.slow_burn = False
         self.game.show_game_modes = False
 
     def handle_difficulty_button(self, speedup_scale):
@@ -151,7 +162,6 @@ class GameButtons:
             self.game.settings.speedup_scale = speedup_scale
             self.game.show_difficulty = False
         return handle
-
 
     def handle_difficulty_toggle(self):
         """Toggle visibility of the difficulty buttons"""

@@ -193,11 +193,6 @@ class AliensManager:
 
 
 
-
-
-
-
-
 class AlienMovement:
     """A class to manage the movement of an alien."""
     def __init__(self, alien, game):

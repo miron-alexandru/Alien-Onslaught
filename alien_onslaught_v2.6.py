@@ -40,7 +40,7 @@ class AlienOnslaught:
         self.clock = pygame.time.Clock()
         self.settings = Settings()
         self.screen = pygame.display.set_mode((self.settings.screen_width,
-                                                self.settings.screen_height),pygame.RESIZABLE)
+                                                self.settings.screen_height), pygame.RESIZABLE)
         self.bg_img = pygame.transform.smoothscale(self.settings.bg_img,
                                                             self.screen.get_size())
         self.bg_img_rect = self.bg_img.get_rect()
@@ -57,7 +57,8 @@ class AlienOnslaught:
         self.paused, self.show_difficulty, self.resizable, self.high_score_saved, \
         self.show_high_scores, self.show_game_modes = \
         False, False, True, False, False, False
-        self.last_increase_time = 0
+        self.last_increase_time, self.last_level_time, self.pause_time = 0, 0, 0
+
         self._set_game_over()  # sets the location of the game over image
 
         pygame.display.set_caption("Alien Onslaught")
@@ -65,8 +66,8 @@ class AlienOnslaught:
 
     def _initialize_game_objects(self):
         """Initializes all game objects and managers/handlers required for the game."""
-        self.thunderbird_ship = Thunderbird(self, 352, 612)
-        self.phoenix_ship = Phoenix(self, 852, 612)
+        self.thunderbird_ship = Thunderbird(self)
+        self.phoenix_ship = Phoenix(self)
         self.buttons = GameButtons(self, self.screen)
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
@@ -90,8 +91,7 @@ class AlienOnslaught:
 
     def run_menu(self):
         """Runs the menu screen"""
-        self.screen = pygame.display.set_mode((self.settings.screen_width,
-                                    self.settings.screen_height))
+        self.screen = pygame.display.set_mode(self.screen.get_size())
         while True:
             # Check for mouse click events
             for event in pygame.event.get():
@@ -150,6 +150,7 @@ class AlienOnslaught:
                 if self.stats.game_active:
                     self._handle_game_logic()
 
+
                 self._update_screen()
                 self.clock.tick(60)
 
@@ -159,7 +160,9 @@ class AlienOnslaught:
     def _handle_game_logic(self):
         """Handle the game logic for each game iteration."""
         self.start_game_mode()
+        self._handle_levels()
         self._handle_level_tasks()
+
 
         self.power_ups_manager.create_power_ups()
         self.power_ups_manager.update_power_ups()
@@ -171,7 +174,7 @@ class AlienOnslaught:
                                 self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
         self._update_bullets()
-        self.collision_handler.check_bullet_alien_collisions(self._prepare_next_level)
+        self.collision_handler.check_bullet_alien_collisions()
         self.aliens_manager.update_aliens(self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
         self.thunderbird_ship.update_state()
@@ -179,6 +182,13 @@ class AlienOnslaught:
 
         self.collision_handler.shield_collisions(self.ships, self.aliens,
                                  self.alien_bullet, self.asteroids)
+
+
+
+    def _handle_levels(self):
+        if not self.settings.meteor_madness and not self.aliens:
+            self._prepare_next_level()
+
 
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
@@ -208,7 +218,8 @@ class AlienOnslaught:
             self.buttons.high_scores: self.buttons.handle_high_scores_button,
             self.buttons.game_modes: self.buttons.handle_game_modes_button,
             self.buttons.endless: self.buttons.handle_endless_button,
-            self.buttons.last_stand: self.buttons.handle_last_stand_button,
+            self.buttons.meteor_madness: self.buttons.handle_meteor_madness_button,
+            self.buttons.slow_burn: self.buttons.handle_slow_burn_button,
             self.buttons.normal: self.buttons.handle_normal_button,
             self.buttons.easy: self.buttons.handle_difficulty_button(DIFFICULTIES['EASY']),
             self.buttons.medium: self.buttons.handle_difficulty_button(DIFFICULTIES['MEDIUM']),
@@ -265,6 +276,7 @@ class AlienOnslaught:
     def _check_for_pause(self):
         """Check if the game is paused and display the pause screen if it is."""
         if self.paused:
+            self.pause_start_time = pygame.time.get_ticks()
             pause_rect = self.settings.pause.get_rect()
             pause_rect.centerx = self.screen.get_rect().centerx
             pause_rect.centery = self.screen.get_rect().centery
@@ -273,8 +285,11 @@ class AlienOnslaught:
             while self.paused:
                 self.check_events()
                 if not self.paused:
+                    self.pause_end_time = pygame.time.get_ticks()
+                    self.pause_time += self.pause_end_time - self.pause_start_time
                     self._update_screen()
                     break
+
 
 
     def _handle_asteroids(self, create_when_7=True, always=False):
@@ -311,16 +326,34 @@ class AlienOnslaught:
 
     def start_game_mode(self):
         """Starts the selected game mode."""
-        if self.settings.endless:
-            self._endless_game()
-        elif self.settings.last_stand:
-            self._last_stand_game()
+        if self.settings.endless_onslaught:
+            self._endless_onslaught()
+        elif self.settings.slow_burn:
+            self._slow_burn()
+        elif self.settings.meteor_madness:
+            self._meteor_madness()
+
+    def _meteor_madness(self):
+        """Starts the Meteor Madness game mode where players must navigate a barrage of asteroids.
+        As each level progresses, the number of asteroids coming towards the player will increase,
+        and their speed will become more relentless. Additionally, the player's speed will decrease,
+        adding an extra layer of challenge to the game."""
+        self.asteroids_manager.create_asteroids(frequency=self.settings.asteroid_freq)
+        self.asteroids_manager.update_asteroids()
+        self.collision_handler.check_asteroids_collisions(self._thunderbird_ship_hit,
+                                                                self._phoenix_ship_hit)
+        if not self.paused:
+            level_time = 210000
+            current_time = pygame.time.get_ticks() - self.pause_time
+            if current_time > self.last_level_time + level_time:
+                self.last_level_time = current_time
+                self._prepare_asteroids_level()
 
 
-    def _endless_game(self):
-        """Starts the endless game mode in which fleets of aliens and
-        asteroids keep coming and the speed of aliens and their bullets increases
-        over time."""
+    def _endless_onslaught(self):
+        """Starts the Endless Onslaught game mode,
+        where fleets of aliens and asteroids swarm towards the player.
+        As time goes on, the speed of the aliens and their bullets will increase."""
         if len(self.aliens) < GAME_CONSTANTS['ENDLESS_MAX_ALIENS']:
             self.aliens_manager.create_fleet()
 
@@ -334,9 +367,9 @@ class AlienOnslaught:
             self.last_increase_time = current_time
 
 
-    def _last_stand_game(self):
-        """Starts the Last Stand game mode in which the ship and bullets speed
-        of the players decreases over time"""
+    def _slow_burn(self):
+        """Starts the Slow Burn game mode, where players must navigate through increasingly
+        challenging aliens as the speed of their ship and bullets gradually decreases over time."""
         self._handle_asteroids(always=True)
 
         current_time = time.time()
@@ -362,6 +395,8 @@ class AlienOnslaught:
 
     def _handle_alien_creation(self):
         """Choose what aliens to create"""
+        if self.settings.meteor_madness:
+            return
         # boss fights
         if self.stats.level in [level - 1 for level in BOSS_LEVELS]:
             self.aliens_manager.create_boss_alien()
@@ -534,10 +569,22 @@ class AlienOnslaught:
         self.stats.level += 1
         self.score_board.prep_level()
 
+    def _prepare_asteroids_level(self):
+        self.asteroids.empty()
 
-    def kill_aliens(self):
-        for alien in self.aliens:
-            alien.kill()
+        if self.settings.asteroid_speed < GAME_CONSTANTS['MAX_AS_SPEED']:
+            self.settings.asteroid_speed += 0.3
+        if self.settings.asteroid_freq > GAME_CONSTANTS['MAX_AS_FREQ']:
+            self.settings.asteroid_freq -= 100
+        self.settings.thunderbird_ship_speed = max(2.0,
+                                                    self.settings.thunderbird_ship_speed - 0.2)
+        self.settings.phoenix_ship_speed = max(2.0, self.settings.phoenix_ship_speed - 0.2)
+        self.stats.high_score += 2000
+
+        self.stats.level += 1
+        self.score_board.prep_level()
+        self.score_board.render_high_score()
+
 
     def _reset_game(self):
         # Reset the game statistics.
@@ -562,7 +609,12 @@ class AlienOnslaught:
         self.phoenix_ship.start_warp()
         self.thunderbird_ship.center_ship()
         self.phoenix_ship.center_ship()
-        self.aliens_manager.create_fleet()
+
+        # Don't create aliens in Meteor Madness game_mode.
+        if not self.settings.meteor_madness:
+            self.aliens_manager.create_fleet()
+        # for resetting self.last_level_time when a new game starts.
+        self.last_level_time = pygame.time.get_ticks()
 
 
     def _update_screen(self):
@@ -611,7 +663,8 @@ class AlienOnslaught:
             if self.show_game_modes:
                 self.buttons.endless.draw_button()
                 self.buttons.normal.draw_button()
-                self.buttons.last_stand.draw_button()
+                self.buttons.slow_burn.draw_button()
+                self.buttons.meteor_madness.draw_button()
 
         pygame.display.flip()
 
@@ -623,38 +676,13 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         super().__init__()
         self.score_board = SecondScoreBoard(self)
         self.clock = pygame.time.Clock()
-        self.thunderbird_ship = Thunderbird(self, 602, 612)
+        self.thunderbird_ship = Thunderbird(self, singleplayer=True)
         self.thunderbird_ship.state['single_player'] = True
         self.ships = [self.thunderbird_ship]
         self.player_input = PlayerInput(self)
         self.collision_handler = CollisionManager(self)
-
-
-    def run_game(self):
-        """Main loop of the game"""
-        running = True
-        i = 0
-        while running:
-            if not self.paused:
-                self._handle_background_change()
-                self.screen.blit(self.bg_img, [0, i])
-                self.screen.blit(self.bg_img, [0, i  - self.settings.screen_height])
-                if i >= self.settings.screen_height:
-                    i = 0
-                i += 1
-
-                self.check_events()
-                self._check_game_over()
-                self._check_for_resize()
-
-                if self.stats.game_active:
-                    self._handle_game_logic()
-
-                self.clock.tick(60)
-                self._update_screen()
-
-            self._check_for_pause()
-
+        self.manage_screen = ScreenManager(self.settings, self.score_board,
+                                        self.buttons, self.screen)
 
     def _handle_game_logic(self):
         self.start_game_mode()
@@ -667,8 +695,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.collision_handler.check_power_ups_collisions(
                                 self._power_up_player, self._health_power_up)
         self._update_bullets()
-        self.collision_handler.check_bullet_alien_collisions(
-                                        self._prepare_next_level, singleplayer=True)
+        self.collision_handler.check_bullet_alien_collisions(singleplayer=True)
         self.aliens_manager.update_aliens(self._thunderbird_ship_hit, self._phoenix_ship_hit)
         self.thunderbird_ship.update_state()
         self.collision_handler.shield_collisions(self.ships, self.aliens,
@@ -696,6 +723,12 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.aliens_manager.create_fleet()
         self.thunderbird_ship.start_warp()
         self.thunderbird_ship.center_ship()
+
+        # Don't create aliens in the Meteor Madness game mode.
+        if not self.settings.meteor_madness:
+            self.aliens_manager.create_fleet()
+        # for resetting self.last_level_time when a new game starts.
+        self.last_level_time = pygame.time.get_ticks()
 
 
     def check_events(self):
@@ -740,6 +773,8 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         # Increase level.
         self.stats.level += 1
         self.score_board.prep_level()
+
+
 
 
     def _thunderbird_ship_hit(self):
@@ -809,7 +844,8 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
             if self.show_game_modes:
                 self.buttons.endless.draw_button()
                 self.buttons.normal.draw_button()
-                self.buttons.last_stand.draw_button()
+                self.buttons.slow_burn.draw_button()
+                self.buttons.meteor_madness.draw_button()
 
         pygame.display.flip()
 

@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 .vscode
 test_alien.py
+.gitignore
+asd.py

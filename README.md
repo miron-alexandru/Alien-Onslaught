@@ -68,3 +68,6 @@
 * "ui": This package includes modules for managing the user interface (UI) of the game. It contains classes and functions for creating game buttons, scoreboards, and other UI elements.
 
 * "utils": This package contains modules for various utilities and helper functions used throughout the game and constants.
+
+* Implemented a new game mode, Meteor Madness:  Players must navigate a barrage of asteroids as each level progresses, the number of asteroids coming towards the player will increase, and their speed will become more relentless. Additionally,
+the player's speed will decrease, adding an extra layer of challenge to the game.

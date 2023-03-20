@@ -81,12 +81,15 @@ class ScoreBoard:
 
     def prep_level(self):
         """Render the current level as an image and position it at the center of the screen."""
-        if self.settings.endless:
+        if self.settings.endless_onslaught:
             level_str =  "Endless Onslaught"
-        elif self.settings.last_stand:
-            level_str = f"Last Stand level {str(self.stats.level)}"
+        elif self.settings.slow_burn:
+            level_str = f"Slow Burn Level {str(self.stats.level)}"
+        elif self.settings.meteor_madness:
+            level_str = f"Meteor Madness Level {str(self.stats.level)}"
         else:
             level_str = f"Level {str(self.stats.level)}"
+
         self.level_image = self.font.render(level_str, True, self.level_color, None)
 
         # Position the level image in the center of the screen.
@@ -141,8 +144,9 @@ class ScoreBoard:
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
-        self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
+        if not self.settings.meteor_madness:
+            self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
+            self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         self.thunderbird_health.draw(self.screen)
@@ -180,7 +184,8 @@ class SecondScoreBoard(ScoreBoard):
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
+        if not self.settings.meteor_madness:
+            self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         self.thunderbird_health.draw(self.screen)

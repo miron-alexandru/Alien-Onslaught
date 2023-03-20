@@ -55,14 +55,15 @@ class AsteroidsManager:
         self.settings = game.settings
         self.last_asteroid_time = 0
 
-    def create_asteroids(self):
+
+    def create_asteroids(self, frequency=random.randint(4000, 10000)):
         """Create multiple asteroids"""
         if self.last_asteroid_time == 0:
             self.last_asteroid_time = pygame.time.get_ticks()
 
         current_time = pygame.time.get_ticks()
         # change the range to determine how often asteroids are created.
-        if current_time - self.last_asteroid_time >= random.randint(4000, 10000): # miliseconds
+        if current_time - self.last_asteroid_time >= frequency: # miliseconds
             self.last_asteroid_time = current_time
             # create asteroid at a random location, at the top of the screen.
             asteroid = Asteroid(self)
@@ -75,5 +76,5 @@ class AsteroidsManager:
         """Update asteroids and remove asteroids that went off screen."""
         self.game.asteroids.update()
         for asteroid in self.game.asteroids.copy():
-            if asteroid.rect.bottom <= 0:
+            if asteroid.rect.y > self.settings.screen_height:
                 self.game.asteroids.remove(asteroid)

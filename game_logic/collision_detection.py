@@ -84,7 +84,7 @@ class CollisionManager:
                 collision.kill()
 
 
-    def check_bullet_alien_collisions(self, next_level_method, singleplayer=False):
+    def check_bullet_alien_collisions(self, singleplayer=False):
         """Respond to bullet-alien collisions."""
         thunderbird_ship_collisions = pygame.sprite.groupcollide(
             self.game.thunderbird_bullets, self.game.aliens, True, False)
@@ -102,9 +102,6 @@ class CollisionManager:
         ):
             self.handle_player_collisions(phoenix_ship_collisions, 'phoenix')
 
-        # The player kills all aliens and finishes the level
-        if not self.game.aliens:
-            next_level_method()
 
 
     def check_alien_bullets_collisions(self, thunderbird_hit, phoenix_hit):

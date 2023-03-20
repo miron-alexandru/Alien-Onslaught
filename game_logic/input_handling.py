@@ -34,7 +34,8 @@ class PlayerInput:
             case _ if not self.game.paused:
                 # Thunderbird controls
                 if (self.thunderbird_ship.state['alive'] and
-                    not self.thunderbird_ship.state['warping']):
+                    not self.thunderbird_ship.state['warping'] and
+                    not self.thunderbird_ship.state['exploding']):
                     match event.key:
                         case pygame.K_RETURN:
                             fire_bullet_method(
@@ -60,12 +61,13 @@ class PlayerInput:
                             self.thunderbird_ship.image = self.thunderbird_ship.anims.ship_images[1]
                         case pygame.K_KP3:
                             self.thunderbird_ship.image = self.thunderbird_ship.anims.ship_images[2]
-                        case pygame.K_KP4:
-                            self.game.kill_aliens()
+
 
                 # Phoenix controls
                 if not singleplayer:
-                    if self.phoenix_ship.state['alive'] and not self.phoenix_ship.state['warping']:
+                    if (self.phoenix_ship.state['alive'] and
+                    not self.phoenix_ship.state['warping'] and
+                    not self.phoenix_ship.state['exploding']):
                         match event.key:
                             case pygame.K_SPACE:
                                 fire_bullet_method(

@@ -8,7 +8,7 @@ from utils.constants import SHIPS
 
 class Thunderbird(Sprite):
     """A class to manage the Thunderbird ship."""
-    def __init__(self, game, x, y):
+    def __init__(self, game, singleplayer=False):
         """Initialize the ship and set its starting position."""
         super().__init__()
         self.screen = game.screen
@@ -16,9 +16,8 @@ class Thunderbird(Sprite):
         self.screen_rect = game.screen.get_rect()
         self.image = pygame.image.load(SHIPS['thunderbird'])
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
+        self.rect.x = self.screen_rect.centerx if singleplayer else self.screen_rect.centerx - 300
+        self.rect.y = self.screen_rect.bottom - self.rect.height
         self.anims = Animations(self)
 
         self.state = {
@@ -38,9 +37,8 @@ class Thunderbird(Sprite):
         }
 
 
-        # Movement variables
         self.x_pos = float(self.rect.x)
-        self.y_pos = float(self.rect.y)
+        self.y_pos = float(self.rect.y - 10)
 
 
     def update_state(self):
@@ -58,8 +56,8 @@ class Thunderbird(Sprite):
             self.anims.update_shield_animation()
 
         # Update rect object from self.x_pos and self.y_pos
-        self.rect.x = int(self.x_pos - (0 if self.state['single_player'] else 250))
-        self.rect.y = int(self.y_pos - 10)
+        self.rect.x = int(self.x_pos)
+        self.rect.y = int(self.y_pos)
 
     def _update_position(self):
         """Updates the position of the ship based on the current state of movement flags."""
@@ -94,9 +92,9 @@ class Thunderbird(Sprite):
 
     def center_ship(self):
         """Center the ship on the screen."""
-        self.rect.midbottom = self.screen_rect.midbottom
+        self.rect.bottom = self.screen_rect.bottom
         self.x_pos = float(self.rect.x)
-        self.y_pos = float(self.rect.y)
+        self.y_pos = float(self.rect.y - 10)
 
     def draw_shield(self):
         """Turns the shield on"""
@@ -115,13 +113,13 @@ class Thunderbird(Sprite):
 
 class Phoenix(Thunderbird):
     """A class to manage the Phoenix ship."""
-    def __init__(self, game, x, y):
-        super().__init__(game, x, y)
+    def __init__(self, game):
+        super().__init__(game)
         self.settings = game.settings
         self.image = pygame.image.load(SHIPS['phoenix'])
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = self.screen_rect.centerx + 200
+        self.rect.y = self.screen_rect.bottom - self.rect.height
 
     def update_state(self):
         """Updates the ship state and position."""
@@ -136,8 +134,8 @@ class Phoenix(Thunderbird):
         if self.state['shielded']:
             self.anims.update_shield_animation()
 
-        self.rect.x = int(self.x_pos + 250)
-        self.rect.y = int(self.y_pos - 10)
+        self.rect.x = int(self.x_pos)
+        self.rect.y = int(self.y_pos)
 
     def _update_position(self):
         """Updates the position of the ship based on the current state of movement flags."""

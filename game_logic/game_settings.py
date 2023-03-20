@@ -32,7 +32,7 @@ class Settings:
         self.fire_sound = pygame.mixer.Sound(SOUNDS['bullet'])
 
         # Game modes settings
-        self.endless, self.last_stand = False, False
+        self.endless_onslaught, self.slow_burn, self.meteor_madness = False, False, False
 
         # How quickly the game speeds up
         self.speedup_scale = 0.3
@@ -51,8 +51,8 @@ class Settings:
         # Phoenix settings
         self.phoenix_ship_speed = 3.5
         self.phoenix_bullet_speed = 5.0
-        self.phoenix_bullets_allowed = 100
-        self.phoenix_bullet_count = 50
+        self.phoenix_bullets_allowed = 1
+        self.phoenix_bullet_count = 1
 
         # Alien Settings
         self.alien_speed = 1.0
@@ -68,6 +68,7 @@ class Settings:
 
         # Asteroid settings
         self.asteroid_speed = 1.5
+        self.asteroid_freq = 1000
 
     def increase_speed(self):
         """Increase speed settings and alien point values."""

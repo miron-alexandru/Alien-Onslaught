@@ -3,7 +3,7 @@
 BUTTON_NAMES = [
                 "play_button", "quit_button", "menu_button",
                 'difficulty', 'easy', 'medium', 'hard', 'high_scores',
-                'game_modes', 'endless', 'normal', 'last_stand',
+                'game_modes', 'endless', 'normal', 'slow_burn', 'meteor_madness',
                 "single_player", "multiplayer","player_controls",
                 "menu_quit_button"
 ]
@@ -87,6 +87,8 @@ GAME_CONSTANTS = {
     'MAX_ALIEN_NUM': 35,
     'POWER_UP_SPEED': 1.5,
     'SCORE_SCALE': 4,
+    'MAX_AS_SPEED': 3.0,
+    'MAX_AS_FREQ': 200,
 }
 
 
