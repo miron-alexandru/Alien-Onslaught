@@ -71,3 +71,5 @@
 
 * Implemented a new game mode, Meteor Madness:  Players must navigate a barrage of asteroids as each level progresses, the number of asteroids coming towards the player will increase, and their speed will become more relentless. Additionally,
 the player's speed will decrease, adding an extra layer of challenge to the game.
+
+* New feature to enhance gameplay: player immunity after being hit! Now, when a player is hit, they will be granted a brief period of immunity to prevent them from taking another hit right away. This will give players a chance to recover and avoid getting hit again immediately after respawning. An animation will play during the immunity period, letting the players know they are invulnerable.

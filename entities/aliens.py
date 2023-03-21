@@ -147,10 +147,15 @@ class AliensManager:
         self.aliens.update()
 
         # Look for alien-ship collisions.
-        if pygame.sprite.spritecollideany(self.game.thunderbird_ship, self.aliens):
+        if (
+            pygame.sprite.spritecollideany(self.game.thunderbird_ship, self.aliens)
+            and not self.game.thunderbird_ship.state['immune']
+        ):
             thunderbird_hit_method()
-        if not singleplayer and pygame.sprite.spritecollideany(
-            self.game.phoenix_ship, self.aliens
+        if (
+            not singleplayer
+            and pygame.sprite.spritecollideany(self.game.phoenix_ship, self.aliens)
+            and not self.game.phoenix_ship.state['immune']
         ):
             phoenix_hit_method()
         self._check_aliens_bottom(thunderbird_hit_method, phoenix_hit_method)

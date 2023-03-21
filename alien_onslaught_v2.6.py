@@ -49,7 +49,6 @@ class AlienOnslaught:
                                                             self.screen.get_size())
         self.third_bg = pygame.transform.smoothscale(self.settings.third_bg,
                                                             self.screen.get_size())
-
         self._initialize_game_objects()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
 
@@ -58,8 +57,6 @@ class AlienOnslaught:
         self.show_high_scores, self.show_game_modes = \
         False, False, True, False, False, False
         self.last_increase_time, self.last_level_time, self.pause_time = 0, 0, 0
-
-        self._set_game_over()  # sets the location of the game over image
 
         pygame.display.set_caption("Alien Onslaught")
 
@@ -237,7 +234,8 @@ class AlienOnslaught:
 
 
     def _resize_screen(self, size):
-        """Resize the game screen and update relevant game objects."""
+        """Resize the game screen and update relevant game objects.
+        Screen has max width and max height."""
         min_width, min_height = 1260, 700
         max_width, max_height = 1920, 1080
         width = max(min(size[0], max_width), min_width)
@@ -291,7 +289,6 @@ class AlienOnslaught:
                     break
 
 
-
     def _handle_asteroids(self, create_when_7=True, always=False):
         """Create, update, and check collisions for asteroids."""
         if always or (create_when_7 and self.stats.level >= 7):
@@ -332,6 +329,7 @@ class AlienOnslaught:
             self._slow_burn()
         elif self.settings.meteor_madness:
             self._meteor_madness()
+
 
     def _meteor_madness(self):
         """Starts the Meteor Madness game mode where players must navigate a barrage of asteroids.
@@ -397,10 +395,10 @@ class AlienOnslaught:
         """Choose what aliens to create"""
         if self.settings.meteor_madness:
             return
-        # boss fights
+        # Boss fights
         if self.stats.level in [level - 1 for level in BOSS_LEVELS]:
             self.aliens_manager.create_boss_alien()
-        # normal game
+        # Normal game
         else:
             self.aliens_manager.create_fleet()
 
@@ -478,6 +476,7 @@ class AlienOnslaught:
 
         if self.stats.thunderbird_hp:
             self._destroy_thunderbird()
+            self.thunderbird_ship.set_immune()
         else:
             # player becomes inactive when loses all hp
             self.thunderbird_ship.state['alive'] = False
@@ -510,6 +509,7 @@ class AlienOnslaught:
 
         if self.stats.phoenix_hp:
             self._destroy_phoenix()
+            self.phoenix_ship.set_immune()
         else:
             # player becomes inactive when loses all hp
             self.phoenix_ship.state['alive'] = False
@@ -537,13 +537,13 @@ class AlienOnslaught:
 
     def _check_game_over(self):
         """Check if the game is over and if so, display the game over image"""
+        self._set_game_over()
         if not any([self.stats.game_active, self.thunderbird_ship.state['alive'],
                      self.phoenix_ship.state['alive']]):
             self.screen.blit(self.settings.game_over, self.game_over_rect)
-            self.aliens.empty()
-            self.power_ups.empty()
-            self.alien_bullet.empty()
+            self._reset_game_objects()
             self.score_board.update_high_score()
+
             if not self.high_score_saved:
                 self.score_board.save_high_score()
                 self.high_score_saved = True
@@ -560,14 +560,19 @@ class AlienOnslaught:
 
     def _prepare_next_level(self):
         self._handle_alien_creation()
+
         self.thunderbird_bullets.empty()
         self.phoenix_bullets.empty()
-        self.power_ups.empty()
         self.alien_bullet.empty()
+        self.power_ups.empty()
         self.asteroids.empty()
+
+
         self.settings.increase_speed()
+
         self.stats.level += 1
         self.score_board.prep_level()
+
 
     def _prepare_asteroids_level(self):
         self.asteroids.empty()
@@ -586,17 +591,8 @@ class AlienOnslaught:
         self.score_board.render_high_score()
 
 
-    def _reset_game(self):
-        # Reset the game statistics.
-        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
-        self.settings.dynamic_settings()
-        self.stats.game_active = True
-        self.high_score_saved = False
-        self.score_board.render_scores()
-        self.score_board.prep_level()
-        self.score_board.create_health()
-
-        # Get rid of remaining aliens, bullets, asteroids and power-ups.
+    def _reset_game_objects(self):
+        """Clear the screen of game objects."""
         self.thunderbird_bullets.empty()
         self.phoenix_bullets.empty()
         self.alien_bullet.empty()
@@ -604,67 +600,105 @@ class AlienOnslaught:
         self.aliens.empty()
         self.asteroids.empty()
 
-        # Create a new fleet, play the warp animation and center the ships.
+
+    def _reset_ships(self):
+        """Reset the ships by playing the warp animation and centering them."""
         self.thunderbird_ship.start_warp()
         self.phoenix_ship.start_warp()
         self.thunderbird_ship.center_ship()
         self.phoenix_ship.center_ship()
 
-        # Don't create aliens in Meteor Madness game_mode.
-        if not self.settings.meteor_madness:
-            self.aliens_manager.create_fleet()
+
+    def _reset_game(self):
+        # Reset the game statistics.
+        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+        self.settings.dynamic_settings()
+        self.stats.game_active = True
+        self.high_score_saved = False
+
+        # Prepare the scoreboard and health.
+        self.score_board.render_scores()
+        self.score_board.prep_level()
+        self.score_board.create_health()
+
+        # Clear the screen of remaining aliens, bullets, asteroids and power-ups.
+        self._reset_game_objects()
+
+        # Play the warp animation and center the ships.
+        self._reset_ships()
+
+        # Create aliens
+        self._handle_alien_creation()
+
         # for resetting self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
+
+
+    def _draw_game_objects(self):
+        """Draw game objects and the score on screen."""
+        self.thunderbird_ship.blitme()
+        self.phoenix_ship.blitme()
+
+        for bullet in self.thunderbird_bullets.sprites():
+            bullet.draw_bullet()
+
+        for bullet in self.phoenix_bullets.sprites():
+            bullet.draw_bullet()
+
+        for bullet in self.alien_bullet.sprites():
+            bullet.draw_bullet()
+
+        for power_up in self.power_ups.sprites():
+            power_up.draw_powerup()
+
+        for asteroid in self.asteroids.sprites():
+            asteroid.draw_asteroid()
+
+        self.aliens.draw(self.screen)
+        self.score_board.show_score()
+
+
+    def _draw_buttons(self):
+        """Draw buttons on screen"""
+        self.buttons.play.draw_button()
+        self.buttons.quit.draw_button()
+        self.buttons.menu.draw_button()
+        self.buttons.difficulty.draw_button()
+        self.buttons.high_scores.draw_button()
+        self.buttons.game_modes.draw_button()
+
+
+    def _draw_difficulty_buttons(self):
+        """Draw difficulty buttons on screen."""
+        self.buttons.easy.draw_button()
+        self.buttons.medium.draw_button()
+        self.buttons.hard.draw_button()
+
+
+    def _draw_game_mode_buttons(self):
+        """Draw game mode buttons on screen."""
+        self.buttons.endless.draw_button()
+        self.buttons.normal.draw_button()
+        self.buttons.slow_burn.draw_button()
+        self.buttons.meteor_madness.draw_button()
 
 
     def _update_screen(self):
         """Update images on the screen"""
         # Draw game objects if game is active
         if self.stats.game_active:
-            self.thunderbird_ship.blitme()
-            self.phoenix_ship.blitme()
+            self._draw_game_objects()
 
-            for bullet in self.thunderbird_bullets.sprites():
-                bullet.draw_bullet()
-
-            for bullet in self.phoenix_bullets.sprites():
-                bullet.draw_bullet()
-
-            for bullet in self.alien_bullet.sprites():
-                bullet.draw_bullet()
-
-            for power_up in self.power_ups.sprites():
-                power_up.draw_powerup()
-
-            for asteroid in self.asteroids.sprites():
-                asteroid.draw_asteroid()
-
-            self.aliens.draw(self.screen)
-            self.score_board.show_score()
-
-        # Draw buttons if game is not active
         else:
-            self.buttons.play.draw_button()
-            self.buttons.quit.draw_button()
-            self.buttons.menu.draw_button()
-            self.buttons.difficulty.draw_button()
-            self.buttons.high_scores.draw_button()
-            self.buttons.game_modes.draw_button()
+            # Draw buttons if game is not active
+            self._draw_buttons()
 
-            # Draw difficulty buttons if difficulty menu is shown
             if self.show_difficulty:
-                self.buttons.easy.draw_button()
-                self.buttons.medium.draw_button()
-                self.buttons.hard.draw_button()
-
+                self._draw_difficulty_buttons()
             if self.show_high_scores:
                 display_high_scores(self.screen)
-
             if self.show_game_modes:
-                self.buttons.endless.draw_button()
-                self.buttons.normal.draw_button()
-                self.buttons.slow_burn.draw_button()
-                self.buttons.meteor_madness.draw_button()
+                self._draw_game_mode_buttons()
 
         pygame.display.flip()
 
@@ -684,51 +718,29 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.manage_screen = ScreenManager(self.settings, self.score_board,
                                         self.buttons, self.screen)
 
+
     def _handle_game_logic(self):
         self.start_game_mode()
         self._handle_level_tasks()
+        self._handle_levels()
+
         self.power_ups_manager.create_power_ups()
         self.power_ups_manager.update_power_ups()
+        self.collision_handler.check_power_ups_collisions(
+                                self._power_up_player, self._health_power_up)
+
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(
                                 self._thunderbird_ship_hit, self._phoenix_ship_hit)
-        self.collision_handler.check_power_ups_collisions(
-                                self._power_up_player, self._health_power_up)
+
         self._update_bullets()
+
         self.collision_handler.check_bullet_alien_collisions(singleplayer=True)
         self.aliens_manager.update_aliens(self._thunderbird_ship_hit, self._phoenix_ship_hit)
+
         self.thunderbird_ship.update_state()
         self.collision_handler.shield_collisions(self.ships, self.aliens,
                                  self.alien_bullet, self.asteroids)
-
-    def _reset_game(self):
-        # Reset the game statistics.
-        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
-        self.phoenix_ship.state['alive'] = False
-        self.settings.dynamic_settings()
-        self.stats.game_active = True
-        self.high_score_saved = False
-        self.score_board.render_scores()
-        self.score_board.prep_level()
-        self.score_board.create_health()
-
-        # Get rid of the remaining aliens, bullets, asteroids and power ups
-        self.thunderbird_bullets.empty()
-        self.alien_bullet.empty()
-        self.power_ups.empty()
-        self.aliens.empty()
-        self.asteroids.empty()
-
-        # Create a new fleet and center the ship.
-        self.aliens_manager.create_fleet()
-        self.thunderbird_ship.start_warp()
-        self.thunderbird_ship.center_ship()
-
-        # Don't create aliens in the Meteor Madness game mode.
-        if not self.settings.meteor_madness:
-            self.aliens_manager.create_fleet()
-        # for resetting self.last_level_time when a new game starts.
-        self.last_level_time = pygame.time.get_ticks()
 
 
     def check_events(self):
@@ -764,17 +776,17 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
     def _prepare_next_level(self):
         self._handle_alien_creation()
+
         self.power_ups.empty()
         self.alien_bullet.empty()
         self.asteroids.empty()
         self.thunderbird_bullets.empty()
+
         self.settings.increase_speed()
 
         # Increase level.
         self.stats.level += 1
         self.score_board.prep_level()
-
-
 
 
     def _thunderbird_ship_hit(self):
@@ -784,6 +796,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
         if self.stats.thunderbird_hp:
             self._destroy_thunderbird()
+            self.thunderbird_ship.set_immune()
         else:
             self.thunderbird_ship.state['alive'] = False
             self.stats.game_active = False
@@ -791,6 +804,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
     def _check_game_over(self):
         """Check if the game is over, if so, display the game over image"""
+        self._set_game_over()
         if not self.stats.game_active and not self.thunderbird_ship.state['alive']:
             self.screen.blit(self.settings.game_over, self.game_over_rect)
             self.aliens.empty()
@@ -802,50 +816,74 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
                 self.high_score_saved = True
 
 
+    def _reset_game(self):
+        # Reset the game statistics.
+        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+        self.phoenix_ship.state['alive'] = False
+        self.settings.dynamic_settings()
+        self.stats.game_active = True
+        self.high_score_saved = False
+
+        self.score_board.render_scores()
+        self.score_board.prep_level()
+        self.score_board.create_health()
+
+        # Clear the screen of remaining aliens, bullets, asteroids and power ups
+        self.thunderbird_bullets.empty()
+        self.alien_bullet.empty()
+        self.power_ups.empty()
+        self.aliens.empty()
+        self.asteroids.empty()
+
+        # Create a new fleet and center the ship.
+        self.thunderbird_ship.start_warp()
+        self.thunderbird_ship.center_ship()
+
+        self._handle_alien_creation()
+
+        # This resets self.last_level_time when a new game starts.
+        self.last_level_time = pygame.time.get_ticks()
+
+
+    def _draw_game_objects(self):
+        self.thunderbird_ship.blitme()
+
+        for bullet in self.thunderbird_bullets.sprites():
+            bullet.draw_bullet()
+
+        for power_up in self.power_ups.sprites():
+            power_up.draw_powerup()
+
+        for bullet in self.alien_bullet.sprites():
+            bullet.draw_bullet()
+
+        for asteroid in self.asteroids.sprites():
+            asteroid.draw_asteroid()
+
+        self.aliens.draw(self.screen)
+
+        # Draw the score information.
+        self.score_board.show_score()
+
+
     def _update_screen(self):
         """Update images on the screen."""
         # Draw game objects if the game is active.
         if self.stats.game_active:
-            self.thunderbird_ship.blitme()
+            self._draw_game_objects()
 
-            for bullet in self.thunderbird_bullets.sprites():
-                bullet.draw_bullet()
-
-            for power_up in self.power_ups.sprites():
-                power_up.draw_powerup()
-
-            for bullet in self.alien_bullet.sprites():
-                bullet.draw_bullet()
-
-            for asteroid in self.asteroids.sprites():
-                asteroid.draw_asteroid()
-
-            self.aliens.draw(self.screen)
-            # Draw the score information.
-            self.score_board.show_score()
-
-        # Draw the buttons if the game is inactive.
-        if not self.stats.game_active:
-            self.buttons.play.draw_button()
-            self.buttons.quit.draw_button()
-            self.buttons.menu.draw_button()
-            self.buttons.high_scores.draw_button()
-            self.buttons.difficulty.draw_button()
-            self.buttons.game_modes.draw_button()
+        else:
+            # Draw the buttons if the game is inactive.
+            self._draw_buttons()
 
             if self.show_difficulty:
-                self.buttons.easy.draw_button()
-                self.buttons.medium.draw_button()
-                self.buttons.hard.draw_button()
+                self._draw_difficulty_buttons()
 
             if self.show_high_scores:
                 display_high_scores(self.screen)
 
             if self.show_game_modes:
-                self.buttons.endless.draw_button()
-                self.buttons.normal.draw_button()
-                self.buttons.slow_burn.draw_button()
-                self.buttons.meteor_madness.draw_button()
+                self._draw_game_mode_buttons()
 
         pygame.display.flip()
 

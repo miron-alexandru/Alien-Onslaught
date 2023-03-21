@@ -44,11 +44,14 @@ class CollisionManager:
                 if collision := pygame.sprite.spritecollideany(
                     ship, self.game.asteroids
                 ):
-                    if ship is self.game.thunderbird_ship:
+                    if (ship is self.game.thunderbird_ship
+                        and not self.game.thunderbird_ship.state['immune']):
                         thunderbird_hit()
-                    else:
+                        collision.kill()
+                    if (ship is self.game.phoenix_ship
+                        and not self.game.phoenix_ship.state['immune']):
                         phoenix_hit()
-                    collision.kill()
+                        collision.kill()
 
 
     def check_power_ups_collisions(self, power_up_method, health_power_up_method):
@@ -113,11 +116,15 @@ class CollisionManager:
         phoenix_collision = pygame.sprite.spritecollideany(self.game.phoenix_ship,
                                                                   self.game.alien_bullet)
 
-        if self.game.thunderbird_ship.state['alive'] and thunderbird_collision:
+        if (self.game.thunderbird_ship.state['alive']
+            and not self.game.thunderbird_ship.state['immune']
+            and thunderbird_collision):
             thunderbird_hit()
             thunderbird_collision.kill()
 
-        if self.game.phoenix_ship.state['alive'] and phoenix_collision:
+        if (self.game.phoenix_ship.state['alive']
+         and not self.game.phoenix_ship.state['immune']
+         and phoenix_collision):
             phoenix_hit()
             phoenix_collision.kill()
 

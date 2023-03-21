@@ -9,7 +9,6 @@ from entities.player_health import Heart
 
 
 
-
 class ScoreBoard:
     """A class to report scoring information."""
     def __init__(self, game):
@@ -151,6 +150,7 @@ class ScoreBoard:
         self.screen.blit(self.level_image, self.level_rect)
         self.thunderbird_health.draw(self.screen)
         self.phoenix_health.draw(self.screen)
+
 
 
 class SecondScoreBoard(ScoreBoard):

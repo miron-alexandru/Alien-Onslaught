@@ -29,6 +29,14 @@ class Animations:
         self.shield_image = self.shield_frames[self.current_shield_frame]
         self.shield_rect = self.shield_image.get_rect()
 
+        # Initialize immune frames
+        self.immune_frames = []
+        load_frames('immune/immune-0{}.png', 11, self.immune_frames, start=1)
+
+        self.current_immune_frame = 0
+        self.immune_image = self.immune_frames[self.current_immune_frame]
+        self.immune_rect = self.immune_image.get_rect()
+
         # Initialize explosion frames
         self.explosion_frames = []
         load_frames('explosionn/explosion1_{:04d}.png', 89, self.explosion_frames, start=2)
@@ -53,13 +61,17 @@ class Animations:
                 self.image = self.warp_frames[self.warp_index]
             self.warp_counter = 0
 
-    def update_shield_animation(self):
-        """Update the animation for the ship's shield effect."""
-        self.current_shield_frame = (
-            (self.current_shield_frame + 1) % len(self.shield_frames)
-        )
-        self.shield_image = self.shield_frames[self.current_shield_frame]
-        self.shield_rect.center = self.ship.rect.center
+    def update_animation(self, animation_type):
+        """Update the animation for the specified type."""
+        if animation_type == "shield":
+            self.current_shield_frame = (self.current_shield_frame + 1) % len(self.shield_frames)
+            self.shield_image = self.shield_frames[self.current_shield_frame]
+            self.shield_rect.center = self.ship.rect.center
+        elif animation_type == "immune":
+            self.current_immune_frame = (self.current_immune_frame + 1) % len(self.immune_frames)
+            self.immune_image = self.immune_frames[self.current_immune_frame]
+            self.immune_rect.center = self.ship.rect.center
+
 
     def update_explosion_animation(self):
         """Update the animation for the ship's explosion effect."""
