@@ -9,7 +9,7 @@ import pygame
 from pygame.sprite import Sprite
 from utils.constants import ALIENS, LEVEL_PREFIX
 from utils.game_utils import load_alien_images
-
+from animations.other_animations import DestroyAnim
 
 class Alien(Sprite):
     """A class to represent an alien."""
@@ -26,6 +26,7 @@ class Alien(Sprite):
 
         self.motion = AlienMovement(self, game)
         self.animation = AlienAnimation(self, game)
+        self.destroy = DestroyAnim(self)
         self.image = self.animation.get_current_image()
         self._init_position()
 
@@ -59,6 +60,12 @@ class Alien(Sprite):
         self.motion.update_vertical_position()
         self.motion.update_horizontal_position()
 
+    def destroy_alien(self):
+        """Displays animation for alien being destroyed."""
+        self.destroy.update_destroy_animation()
+        self.screen.blit(self.destroy.destroy_image, self.destroy.destroy_rect)
+
+
 
 
 class BossAlien(Sprite):
@@ -82,6 +89,7 @@ class BossAlien(Sprite):
         self.x_pos = float(self.rect.x)
 
         self.motion = AlienMovement(self, game)
+        self.destroy = DestroyAnim(self)
 
 
     def _update_image(self, game):
@@ -102,6 +110,11 @@ class BossAlien(Sprite):
         """Return True if alien is at edge of screen."""
         screen_rect = self.screen.get_rect()
         return self.rect.right >= screen_rect.right or self.rect.left <= 0
+
+    def destroy_alien(self):
+        self.destroy.update_destroy_animation()
+        self.screen.blit(self.destroy.destroy_image, self.destroy.destroy_rect)
+
 
 
 class AliensManager:

@@ -163,3 +163,4 @@ def display_controls(buttons, settings):
             p2_controls, p2_controls_rect,
             t1_surfaces, t1_rects,
             t2_surfaces, t2_rects)
+

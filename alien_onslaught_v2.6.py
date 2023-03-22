@@ -873,7 +873,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
             self._draw_game_objects()
 
         else:
-            # Draw the buttons if the game is inactive.
+            # Draw buttons if the game is inactive.
             self._draw_buttons()
 
             if self.show_difficulty:

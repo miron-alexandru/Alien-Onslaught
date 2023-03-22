@@ -138,6 +138,7 @@ class CollisionManager:
                 alien.hit_count += 1
                 if isinstance(alien, BossAlien):
                     if alien.hit_count >= self.settings.boss_hp:
+                        alien.destroy_alien()
                         self.game.aliens.remove(alien)
                         if player == 'thunderbird':
                             self.stats.thunderbird_score += self.settings.boss_points
@@ -168,6 +169,7 @@ class CollisionManager:
                 self.stats.thunderbird_score += self.settings.alien_points
             case 'phoenix':
                 self.stats.phoenix_score += self.settings.alien_points
+        alien.destroy_alien()
         self.game.aliens.remove(alien)
         self.score_board.render_scores()
         self.score_board.update_high_score()

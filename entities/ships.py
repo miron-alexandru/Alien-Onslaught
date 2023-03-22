@@ -16,7 +16,7 @@ class Thunderbird(Sprite):
         self.screen_rect = game.screen.get_rect()
         self.image = pygame.image.load(SHIPS['thunderbird'])
         self.rect = self.image.get_rect()
-        self.rect.x = self.screen_rect.centerx if singleplayer else self.screen_rect.centerx + 200
+        self.rect.x = self.screen_rect.centerx if singleplayer else self.screen_rect.centerx - 300
         self.rect.y = self.screen_rect.bottom - self.rect.height
         self.anims = Animations(self)
 
@@ -137,7 +137,7 @@ class Phoenix(Thunderbird):
         self.settings = game.settings
         self.image = pygame.image.load(SHIPS['phoenix'])
         self.rect = self.image.get_rect()
-        self.rect.x = self.screen_rect.centerx - 300
+        self.rect.x = self.screen_rect.centerx + 200
         self.rect.y = self.screen_rect.bottom - self.rect.height
 
     def update_state(self):
