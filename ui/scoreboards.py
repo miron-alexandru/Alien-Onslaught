@@ -6,7 +6,7 @@ import pygame.font
 
 from pygame.sprite import Group
 from entities.player_health import Heart
-
+from utils.constants import boss_rush_image_map
 
 
 class ScoreBoard:
@@ -86,6 +86,9 @@ class ScoreBoard:
             level_str = f"Slow Burn Level {str(self.stats.level)}"
         elif self.settings.meteor_madness:
             level_str = f"Meteor Madness Level {str(self.stats.level)}"
+        elif self.settings.boss_rush:
+            if boss_name := boss_rush_image_map.get(self.stats.level, None):
+                level_str = f"Boss Rush: {boss_name.capitalize()}"
         else:
             level_str = f"Level {str(self.stats.level)}"
 

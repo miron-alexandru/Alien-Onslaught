@@ -58,7 +58,7 @@ class PowerUpsManager:
 
         current_time = pygame.time.get_ticks()
         # change the range to determine how often power ups are created
-        if current_time - self.last_power_up_time >= random.randint(1000, 2500): # miliseconds
+        if current_time - self.last_power_up_time >= random.randint(25000, 45000): # miliseconds
             self.last_power_up_time = current_time
             # change the range to determine the chance for a power up to be health power up
             if random.randint(0, 4) == 0:

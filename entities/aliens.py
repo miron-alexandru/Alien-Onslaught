@@ -7,15 +7,14 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import ALIENS, LEVEL_PREFIX
+from utils.constants import LEVEL_PREFIX, boss_rush_image_map, normal_image_map
 from utils.game_utils import load_alien_images
+from utils.image_loader import load_boss_images
 from animations.other_animations import DestroyAnim
 
 class Alien(Sprite):
     """A class to represent an alien."""
-
     def __init__(self, game):
-        """Initialize the alien and set its starting position."""
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
@@ -60,12 +59,11 @@ class Alien(Sprite):
         self.motion.update_vertical_position()
         self.motion.update_horizontal_position()
 
+
     def destroy_alien(self):
-        """Displays animation for alien being destroyed."""
+        """Start alien destroyed animation and start it"""
         self.destroy.update_destroy_animation()
         self.screen.blit(self.destroy.destroy_image, self.destroy.destroy_rect)
-
-
 
 
 class BossAlien(Sprite):
@@ -74,9 +72,8 @@ class BossAlien(Sprite):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.image = pygame.image.load(ALIENS['xanathar'])
-        self.scorpion = pygame.image.load(ALIENS['scorpion'])
-        self.mothership = pygame.image.load(ALIENS['mothership'])
+        self.boss_images = load_boss_images()
+        self.image = self.boss_images['xanathar']
         self._update_image(game)
 
         self.last_bullet_time = 0
@@ -94,10 +91,15 @@ class BossAlien(Sprite):
 
     def _update_image(self, game):
         """Change image for specific boss fight"""
-        if game.stats.level == 14:
-            self.image = self.scorpion
-        elif game.stats.level == 19:
-            self.image = self.mothership
+        if self.settings.boss_rush:
+            level_image_map = boss_rush_image_map
+        else:
+            level_image_map = normal_image_map
+        level = game.stats.level
+        image_name = level_image_map.get(level)
+        if image_name is not None:
+            self.image = self.boss_images[image_name]
+
 
     def update(self):
         """Update position and movement."""
@@ -112,6 +114,7 @@ class BossAlien(Sprite):
         return self.rect.right >= screen_rect.right or self.rect.left <= 0
 
     def destroy_alien(self):
+        """Update and display destroy animation."""
         self.destroy.update_destroy_animation()
         self.screen.blit(self.destroy.destroy_image, self.destroy.destroy_rect)
 
@@ -126,7 +129,6 @@ class AliensManager:
         self.settings = settings
         self.screen = screen
         self.stats = game.stats
-
 
     def create_fleet(self):
         """Create the fleet of aliens."""
@@ -207,6 +209,7 @@ class AliensManager:
             if alien.rect.bottom >= screen_rect.bottom:
                 thunderbird_hit_method()
                 phoenix_hit_method()
+                alien.kill()
                 break
 
 

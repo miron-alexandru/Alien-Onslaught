@@ -79,12 +79,13 @@ class CollisionManager:
         for player, info in player_info.items():
             collision = pygame.sprite.spritecollideany(info["ship"], self.game.power_ups)
             if info["active"] and collision:
-                # check the type of the power up and activate the func
+                # play the empower effect, check the type of the power up and activate the func
                 if collision.health:
                     info["health_power_up"](player)
                 else:
                     info["power_up"](player)
                 collision.kill()
+                info["ship"].empower()
 
 
     def check_bullet_alien_collisions(self, singleplayer=False):

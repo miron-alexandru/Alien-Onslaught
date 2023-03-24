@@ -1,6 +1,13 @@
 """The Animations class in this module manages the animations for the ships"""
 
-from utils.game_utils import load_frames
+from utils.frames import (
+    ship_images,
+    warp_frames,
+    shield_frames,
+    immune_frames,
+    explosion_frames,
+    empower_frames,
+)
 
 
 class Animations:
@@ -9,44 +16,50 @@ class Animations:
         self.ship = ship
         self.image = None
 
+
         # Initialize ship images
-        self.ship_images = []
-        load_frames('ships/ship{}.png', 6, self.ship_images, start=1)
+        self.ship_images = ship_images
 
         # Initialize warp frames
-        self.warp_frames = []
-        load_frames('warp/warp_{}.png', 9, self.warp_frames)
+        self.warp_frames = warp_frames
 
         self.warp_index = 0
         self.warp_delay = 5
         self.warp_counter = 0
 
         # Initialize shield frames
-        self.shield_frames = []
-        load_frames('shield/shield-0{}.png', 11, self.shield_frames)
+        self.shield_frames = shield_frames
 
         self.current_shield_frame = 0
         self.shield_image = self.shield_frames[self.current_shield_frame]
         self.shield_rect = self.shield_image.get_rect()
 
         # Initialize immune frames
-        self.immune_frames = []
-        load_frames('immune/immune-0{}.png', 11, self.immune_frames, start=1)
+        self.immune_frames = immune_frames
 
         self.current_immune_frame = 0
         self.immune_image = self.immune_frames[self.current_immune_frame]
         self.immune_rect = self.immune_image.get_rect()
 
         # Initialize explosion frames
-        self.explosion_frames = []
-        load_frames('explosionn/explosion1_{:04d}.png', 89, self.explosion_frames, start=2)
+        self.explosion_frames = explosion_frames
 
         self.current_explosion_frame = 0
         self.explosion_image = self.explosion_frames[self.current_explosion_frame]
         self.explosion_rect = self.explosion_image.get_rect()
 
+        # Empower
+        self.empower_frames = empower_frames
 
-    def update_warp_animation(self, ship_img):
+        self.empower_timer = 0
+        self.empower_delay = 2
+
+        self.current_empower_frame = 0
+        self.empower_image = self.empower_frames[self.current_empower_frame]
+        self.empower_rect = self.empower_image.get_rect()
+
+
+    def update_warp_animation(self):
         """Update the animation for the ship's warp effect.
         ship_img (int): The index of the ship image to display
         when the warp effect is finished."""
@@ -56,10 +69,9 @@ class Animations:
             if self.warp_index >= len(self.warp_frames):
                 self.ship.state['warping'] = False
                 self.warp_index = 0
-                self.image = self.ship_images[ship_img]
             else:
                 self.image = self.warp_frames[self.warp_index]
-            self.warp_counter = 0
+                self.warp_counter = 0
 
     def update_animation(self, animation_type):
         """Update the animation for the specified type."""
@@ -71,7 +83,15 @@ class Animations:
             self.current_immune_frame = (self.current_immune_frame + 1) % len(self.immune_frames)
             self.immune_image = self.immune_frames[self.current_immune_frame]
             self.immune_rect.center = self.ship.rect.center
-
+        elif animation_type == "empower":
+            self.empower_timer += 1
+            if self.empower_timer >= self.empower_delay:
+                self.empower_timer = 0
+                self.current_empower_frame = (self.current_empower_frame + 1) % len(self.empower_frames)
+                self.empower_image = self.empower_frames[self.current_empower_frame]
+                self.empower_rect.center = self.ship.rect.center
+                if self.current_empower_frame == 0:  # animation played once
+                    self.ship.state['empowered'] = False
 
     def update_explosion_animation(self):
         """Update the animation for the ship's explosion effect."""

@@ -6,7 +6,8 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import ALIENS
+from utils.constants import  boss_rush_bullet_map, normal_bullet_map
+from utils.image_loader import load_alien_bullets
 from entities.aliens import BossAlien
 
 
@@ -16,10 +17,10 @@ class AlienBullet(Sprite):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.image = pygame.image.load(ALIENS['alien_bullet'])
+        self.bullet_images = load_alien_bullets()
+        self.image = self.bullet_images['alien_bullet']
         self.rect = self.image.get_rect()
         self._choose_random_alien(game)
-
 
     def _choose_random_alien(self, game):
         """Choose a random alien as the source of the bullet"""
@@ -45,10 +46,11 @@ class BossBullet(Sprite):
         self.screen = game.screen
         self.settings = game.settings
         self.alien = alien
-        self.image = self._get_bullet_image(game)
+        self.bullet_images = load_alien_bullets()
+        self.image = self.bullet_images['xanathar_bullet']
         self.rect = self.image.get_rect()
         self._init_variables(alien)
-
+        self._update_image(game)
 
     def _init_variables(self, alien):
         """Initializes position and speed variables"""
@@ -57,15 +59,17 @@ class BossBullet(Sprite):
         self.y_pos = float(self.rect.y)
         self.x_vel = random.uniform(-4, 4)
 
-    def _get_bullet_image(self, game):
-        """Return the bullet image based on the current level"""
-        images = ALIENS
+    def _update_image(self, game):
+        """Change image for specific boss fight"""
+        if self.settings.boss_rush:
+            level_image_map = boss_rush_bullet_map
+        else:
+            level_image_map = normal_bullet_map
         level = game.stats.level
-        if level == 15:
-            return pygame.image.load(images['scorpion_bullet'])
-        if level == 20:
-            return pygame.image.load(images['mothership_bullet'])
-        return pygame.image.load(images['xanathar_bullet'])
+        image_name = level_image_map.get(level)
+        if image_name is not None:
+            self.image = self.bullet_images[image_name]
+
 
     def update(self):
         """Update the bullet location"""

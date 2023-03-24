@@ -8,7 +8,6 @@ from utils.constants import (
     BACKGROUNDS,
     SOUNDS,
     GAME_CONSTANTS,
-    DIFFICULTIES,
     OTHER,
 )
 
@@ -33,7 +32,7 @@ class Settings:
 
         # Game modes settings
         self.endless_onslaught, self.slow_burn, self.meteor_madness = False, False, False
-
+        self.boss_rush = False
         # How quickly the game speeds up
         self.speedup_scale = 0.3
 
@@ -63,8 +62,8 @@ class Settings:
         self.alien_direction = 1
 
         # Bosses Settings
-        self.boss_hp = 50
-        self.boss_points = 2500
+        self.boss_hp = 25 if self.boss_rush else 50
+        self.boss_points = 1000 if self.boss_rush else 2500
 
         # Asteroid settings
         self.asteroid_speed = 1.5
@@ -79,9 +78,3 @@ class Settings:
 
         if self.aliens_num < GAME_CONSTANTS['MAX_ALIEN_NUM']:
             self.aliens_num += 2
-
-        # bosses have more hp on medium or hard difficulty
-        if self.speedup_scale == DIFFICULTIES['MEDIUM']:
-            self.boss_hp = 75
-        elif self.speedup_scale == DIFFICULTIES['HARD']:
-            self.boss_hp = 100

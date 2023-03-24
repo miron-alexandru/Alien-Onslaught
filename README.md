@@ -1,3 +1,9 @@
+## Alien-Onslaught description:
+- Alien-Onslaught is an action-packed game that will test your shooting skills and reflexes. The game is set in outer space, where you must shoot fleets of aliens to reach higher levels and increase your high score. With each level, the game becomes more challenging as the aliens become stronger and faster, and more asteroids rain down from above.
+
+- The game offers a range of game modes, including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased speed, bullet speed, and bullets allowed, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, Boss Fights, and more other features.
+
+
 ## Alien-Onslaught Changelog
 
 ### Version 1.7:
@@ -73,3 +79,11 @@
 the player's speed will decrease, adding an extra layer of challenge to the game.
 
 * New feature to enhance gameplay: player immunity after being hit! Now, when a player is hit, they will be granted a brief period of immunity to prevent them from taking another hit right away. This will give players a chance to recover and avoid getting hit again immediately after respawning. An animation will play during the immunity period, letting the players know they are invulnerable.
+
+* Implemented new animation for entities getting destroyed, and a new module 'frames' which contains constants for animations or images used in the game.
+
+* Implemented a new Boss fight and a new animation for power-ups being picked up.
+
+### Version 2.7:
+* Created a new module, 'image_loader' which has functions to load images for aliens.
+* Implemented a new game mode, Boss Rush: Players must fight different bosses at every level, each with their own unique designs and bullet patterns. With each level, the bosses become stronger and faster, making them more challenging.

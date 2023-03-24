@@ -1,12 +1,5 @@
 """The Alien Onslaught game module contains the multiplayer and singleplayer versions of the game.
-This module imports all other classes and modules required to run the game.
-In this game the players have to shoot fleets of aliens in order to
-reach higher levels and increase their high score.
-
-
-Author: [Miron Alexandru]
-Date: 
-"""
+This module imports all other classes and modules required to run the game."""
 import sys
 import random
 import time
@@ -18,7 +11,12 @@ from game_logic.collision_detection import CollisionManager
 from game_logic.input_handling import PlayerInput
 
 from utils.game_utils import display_high_scores
-from utils.constants import DIFFICULTIES, GAME_CONSTANTS, BOSS_LEVELS
+from utils.constants import (
+    DIFFICULTIES, GAME_CONSTANTS,
+    BOSS_LEVELS, boss_rush_points_map,
+    normal_boss_points, boss_rush_hp_map,
+    normal_boss_hp_map,
+)
 
 from ui.screen_manager import ScreenManager
 from ui.scoreboards import ScoreBoard, SecondScoreBoard
@@ -157,8 +155,8 @@ class AlienOnslaught:
     def _handle_game_logic(self):
         """Handle the game logic for each game iteration."""
         self.start_game_mode()
-        self._handle_levels()
-        self._handle_level_tasks()
+        self._handle_level_progression()
+        self._handle_normal_game()
 
 
         self.power_ups_manager.create_power_ups()
@@ -182,7 +180,11 @@ class AlienOnslaught:
 
 
 
-    def _handle_levels(self):
+    def _handle_level_progression(self):
+        """Handles the progression of levels in the game."""
+        if self.settings.boss_rush and self.stats.level == 16:
+            return
+
         if not self.settings.meteor_madness and not self.aliens:
             self._prepare_next_level()
 
@@ -216,6 +218,7 @@ class AlienOnslaught:
             self.buttons.game_modes: self.buttons.handle_game_modes_button,
             self.buttons.endless: self.buttons.handle_endless_button,
             self.buttons.meteor_madness: self.buttons.handle_meteor_madness_button,
+            self.buttons.boss_rush: self.buttons.handle_boss_rush_button,
             self.buttons.slow_burn: self.buttons.handle_slow_burn_button,
             self.buttons.normal: self.buttons.handle_normal_button,
             self.buttons.easy: self.buttons.handle_difficulty_button(DIFFICULTIES['EASY']),
@@ -271,6 +274,16 @@ class AlienOnslaught:
             self.resizable = False
 
 
+    def _handle_background_change(self):
+        """Change the background for different levels."""
+        bg_images = {
+            1: self.reset_bg,
+            8: self.second_bg,
+            16: self.third_bg,
+        }
+        self.bg_img = bg_images.get(self.stats.level, self.bg_img)
+
+
     def _check_for_pause(self):
         """Check if the game is paused and display the pause screen if it is."""
         if self.paused:
@@ -290,7 +303,13 @@ class AlienOnslaught:
 
 
     def _handle_asteroids(self, create_when_7=True, always=False):
-        """Create, update, and check collisions for asteroids."""
+        """Create, update, and check collisions for asteroids.
+        Args:
+            create_when_7 (bool, optional): Whether to create asteroids when 
+            the current level is 7 or above.
+            Defaults to True.
+            always (bool, optional): Whether to always create and update asteroids.
+              Defaults to False."""
         if always or (create_when_7 and self.stats.level >= 7):
             self.asteroids_manager.create_asteroids()
             self.asteroids_manager.update_asteroids()
@@ -298,27 +317,61 @@ class AlienOnslaught:
                                                                 self._phoenix_ship_hit)
 
 
-    def _handle_bosses(self):
-        """Update points and create bullets for boss fights."""
-        if self.stats.level == 15:
-            self.settings.boss_points = 5000
-        elif self.stats.level == 20:
-            self.settings.boss_points = 7000
+    def _handle_boss_stats(self):
+        """Updates stats for bosses based on the game mode."""
+        if self.settings.boss_rush:
+            self._update_boss_rush_info()
+            return
+        else:
+            self._update_normal_boss_info()
+
+
+    def _update_boss_rush_info(self):
+        """Updates the points and hp of bosses in Boss Rush"""
+        self.settings.boss_points = (
+            boss_rush_points_map.get(self.stats.level, self.settings.boss_points))
+        self.settings.boss_hp = boss_rush_hp_map.get(self.stats.level, self.settings.boss_hp)
+
+        if self.settings.speedup_scale == DIFFICULTIES['MEDIUM']:
+            self.settings.boss_hp += 25
+        elif self.settings.speedup_scale == DIFFICULTIES['HARD']:
+            self.settings.boss_hp += 50
+
+
+    def _create_boss_rush_bullets(self):
+        """Creates bullets for bosses in Boss Rush."""
+        if self.stats.level < 10:
+            self.alien_bullets_manager.create_alien_bullets(1, 500, 500)
+        else:
+            self.alien_bullets_manager.create_alien_bullets(1, 200, 200)
+
+
+    def _create_normal_level_bullets(self):
+        """Create bullets for the normal game."""
         if self.stats.level in BOSS_LEVELS:
             self.alien_bullets_manager.create_alien_bullets(1, 500, 500)
 
-
-    def _handle_normal_levels(self):
-        """Create bullets for the normal game."""
-        if self.stats.level not in BOSS_LEVELS:
+        else:
             self.alien_bullets_manager.create_alien_bullets(4, 4500, 7000)
 
 
-    def _handle_level_tasks(self):
+    def _update_normal_boss_info(self):
+        """Updates the points and hp of bosses in the other game modes."""
+        self.settings.boss_points =(
+             normal_boss_points.get(self.stats.level, self.settings.boss_points))
+        self.settings.boss_hp = normal_boss_hp_map.get(self.stats.level, self.settings.boss_hp)
+
+        if self.stats.level in BOSS_LEVELS and self.settings.speedup_scale == DIFFICULTIES['MEDIUM']:
+            self.settings.boss_hp += 25
+
+        if self.stats.level in BOSS_LEVELS and self.settings.speedup_scale == DIFFICULTIES['HARD']:
+            self.settings.boss_hp += 50
+
+
+    def _handle_normal_game(self):
         """Handle behaviors for different levels."""
         self._handle_asteroids(create_when_7=True)
-        self._handle_bosses()
-        self._handle_normal_levels()
+        self._create_normal_level_bullets()
 
 
     def start_game_mode(self):
@@ -329,6 +382,8 @@ class AlienOnslaught:
             self._slow_burn()
         elif self.settings.meteor_madness:
             self._meteor_madness()
+        elif self.settings.boss_rush:
+            self._boss_rush()
 
 
     def _meteor_madness(self):
@@ -347,6 +402,14 @@ class AlienOnslaught:
                 self.last_level_time = current_time
                 self._prepare_asteroids_level()
 
+
+    def _boss_rush(self):
+        """ Starts the Boss Rush game mode in which the players must battle
+        a series of increasingly difficult bosses, with each level presenting a new challenge."""
+        self._handle_asteroids(always=True)
+        self._create_boss_rush_bullets()
+        if self.stats.level == 16:
+            self.stats.game_active = False
 
     def _endless_onslaught(self):
         """Starts the Endless Onslaught game mode,
@@ -381,24 +444,22 @@ class AlienOnslaught:
             self.last_increase_time = current_time
 
 
-    def _handle_background_change(self):
-        """Change the background for different levels."""
-        bg_images = {
-            1: self.reset_bg,
-            8: self.second_bg,
-            16: self.third_bg,
-        }
-        self.bg_img = bg_images.get(self.stats.level, self.bg_img)
-
-
     def _handle_alien_creation(self):
         """Choose what aliens to create"""
+        # Don't create any aliens in Meteor Madness
         if self.settings.meteor_madness:
             return
-        # Boss fights
-        if self.stats.level in [level - 1 for level in BOSS_LEVELS]:
+
+        # If Boss Rush game mode, create boss_aliens and return.
+        if self.settings.boss_rush:
             self.aliens_manager.create_boss_alien()
-        # Normal game
+            return
+
+        # Create Bosses at the specified levels.
+        if self.stats.level in BOSS_LEVELS:
+            self.aliens_manager.create_boss_alien()
+
+        # Create normal fleets of aliens.
         else:
             self.aliens_manager.create_fleet()
 
@@ -537,16 +598,21 @@ class AlienOnslaught:
 
     def _check_game_over(self):
         """Check if the game is over and if so, display the game over image"""
-        self._set_game_over()
-        if not any([self.stats.game_active, self.thunderbird_ship.state['alive'],
+        if self.settings.boss_rush and self.stats.level == 16:
+            self._display_game_over()
+        elif not any([self.stats.game_active, self.thunderbird_ship.state['alive'],
                      self.phoenix_ship.state['alive']]):
-            self.screen.blit(self.settings.game_over, self.game_over_rect)
-            self._reset_game_objects()
-            self.score_board.update_high_score()
+            self._display_game_over()
 
-            if not self.high_score_saved:
-                self.score_board.save_high_score()
-                self.high_score_saved = True
+    def _display_game_over(self):
+        self._set_game_over()
+        self.screen.blit(self.settings.game_over, self.game_over_rect)
+        self._reset_game_objects()
+        self.score_board.update_high_score()
+
+        if not self.high_score_saved:
+            self.score_board.save_high_score()
+            self.high_score_saved = True
 
 
     def _set_game_over(self):
@@ -559,8 +625,6 @@ class AlienOnslaught:
 
 
     def _prepare_next_level(self):
-        self._handle_alien_creation()
-
         self.thunderbird_bullets.empty()
         self.phoenix_bullets.empty()
         self.alien_bullet.empty()
@@ -569,9 +633,10 @@ class AlienOnslaught:
 
 
         self.settings.increase_speed()
-
-        self.stats.level += 1
+        self.stats.increase_level()
         self.score_board.prep_level()
+        self._handle_alien_creation()
+        self._handle_boss_stats()
 
 
     def _prepare_asteroids_level(self):
@@ -586,7 +651,7 @@ class AlienOnslaught:
         self.settings.phoenix_ship_speed = max(2.0, self.settings.phoenix_ship_speed - 0.2)
         self.stats.high_score += 2000
 
-        self.stats.level += 1
+        self.stats.increase_level()
         self.score_board.prep_level()
         self.score_board.render_high_score()
 
@@ -621,6 +686,7 @@ class AlienOnslaught:
         self.score_board.prep_level()
         self.score_board.create_health()
 
+
         # Clear the screen of remaining aliens, bullets, asteroids and power-ups.
         self._reset_game_objects()
 
@@ -629,6 +695,7 @@ class AlienOnslaught:
 
         # Create aliens
         self._handle_alien_creation()
+        self._handle_boss_stats()
 
         # for resetting self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
@@ -681,6 +748,7 @@ class AlienOnslaught:
         self.buttons.normal.draw_button()
         self.buttons.slow_burn.draw_button()
         self.buttons.meteor_madness.draw_button()
+        self.buttons.boss_rush.draw_button()
 
 
     def _update_screen(self):
@@ -721,8 +789,8 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
     def _handle_game_logic(self):
         self.start_game_mode()
-        self._handle_level_tasks()
-        self._handle_levels()
+        self._handle_normal_game()
+        self._handle_level_progression()
 
         self.power_ups_manager.create_power_ups()
         self.power_ups_manager.update_power_ups()
@@ -775,18 +843,17 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
 
     def _prepare_next_level(self):
-        self._handle_alien_creation()
-
         self.power_ups.empty()
         self.alien_bullet.empty()
         self.asteroids.empty()
         self.thunderbird_bullets.empty()
 
         self.settings.increase_speed()
-
         # Increase level.
-        self.stats.level += 1
+        self.stats.increase_level()
         self.score_board.prep_level()
+        self._handle_alien_creation()
+        self._handle_boss_stats()
 
 
     def _thunderbird_ship_hit(self):
@@ -800,20 +867,6 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         else:
             self.thunderbird_ship.state['alive'] = False
             self.stats.game_active = False
-
-
-    def _check_game_over(self):
-        """Check if the game is over, if so, display the game over image"""
-        self._set_game_over()
-        if not self.stats.game_active and not self.thunderbird_ship.state['alive']:
-            self.screen.blit(self.settings.game_over, self.game_over_rect)
-            self.aliens.empty()
-            self.power_ups.empty()
-            self.alien_bullet.empty()
-            self.score_board.update_high_score()
-            if not self.high_score_saved:
-                self.score_board.save_high_score()
-                self.high_score_saved = True
 
 
     def _reset_game(self):
@@ -840,6 +893,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.thunderbird_ship.center_ship()
 
         self._handle_alien_creation()
+        self._handle_boss_stats()
 
         # This resets self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
@@ -867,21 +921,19 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
 
     def _update_screen(self):
-        """Update images on the screen."""
-        # Draw game objects if the game is active.
+        """Update images on the screen"""
+        # Draw game objects if game is active
         if self.stats.game_active:
             self._draw_game_objects()
 
         else:
-            # Draw buttons if the game is inactive.
+            # Draw buttons if game is not active
             self._draw_buttons()
 
             if self.show_difficulty:
                 self._draw_difficulty_buttons()
-
             if self.show_high_scores:
                 display_high_scores(self.screen)
-
             if self.show_game_modes:
                 self._draw_game_mode_buttons()
 

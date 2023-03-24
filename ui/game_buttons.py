@@ -73,6 +73,8 @@ class GameButtons:
                             (self.endless.rect.right - 5, self.endless.rect.y))
         self.meteor_madness = Button(self, self.button_imgs['meteor_madness'],
                             (self.slow_burn.rect.right - 5, self.slow_burn.rect.y))
+        self.boss_rush = Button(self, self.button_imgs['boss_rush'],
+                            (self.meteor_madness.rect.right - 5, self.meteor_madness.rect.y))
         self.high_scores = Button(self, self.button_imgs['high_scores'],
                             (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom))
         self.menu = Button(self, self.button_imgs["menu_button"],
@@ -133,6 +135,7 @@ class GameButtons:
         self.game.settings.endless_onslaught = not self.game.settings.endless_onslaught
         self.game.settings.slow_burn = False
         self.game.settings.meteor_madness = False
+        self.game.settings.boss_rush = False
         self.game.show_game_modes = False
 
     def handle_normal_button(self):
@@ -140,6 +143,7 @@ class GameButtons:
         self.game.settings.endless_onslaught = False
         self.game.settings.slow_burn = False
         self.game.settings.meteor_madness = False
+        self.game.settings.boss_rush = False
         self.game.show_game_modes = False
 
     def handle_slow_burn_button(self):
@@ -147,6 +151,7 @@ class GameButtons:
         self.game.settings.slow_burn = not self.game.settings.slow_burn
         self.game.settings.endless_onslaught = False
         self.game.settings.meteor_madness = False
+        self.game.settings.boss_rush = False
         self.game.show_game_modes = False
 
     def handle_meteor_madness_button(self):
@@ -154,6 +159,15 @@ class GameButtons:
         self.game.settings.meteor_madness = not self.game.settings.meteor_madness
         self.game.settings.endless_onslaught = False
         self.game.settings.slow_burn = False
+        self.game.settings.boss_rush = False
+        self.game.show_game_modes = False
+
+    def handle_boss_rush_button(self):
+        """Toggle the Boss Rush game mode and hide all game mode buttons."""
+        self.game.settings.boss_rush = not self.game.settings.boss_rush
+        self.game.settings.endless_onslaught = False
+        self.game.settings.slow_burn = False
+        self.game.settings.meteor_madness = False
         self.game.show_game_modes = False
 
     def handle_difficulty_button(self, speedup_scale):

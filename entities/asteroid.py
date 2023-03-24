@@ -6,7 +6,7 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.game_utils import load_frames
+from utils.frames import frames
 
 
 class Asteroid(Sprite):
@@ -18,8 +18,7 @@ class Asteroid(Sprite):
         self.settings = game.settings
         self.speed = self.settings.asteroid_speed
 
-        self.frames = []
-        load_frames('asteroid/Asteroid-A-09-{:03d}.png', 120, self.frames)
+        self.frames = frames
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
 
