@@ -78,6 +78,7 @@ class BossAlien(Sprite):
 
         self.last_bullet_time = 0
         self.hit_count = 0
+        self.is_alive = True
 
         self.rect = self.image.get_rect()
         self.rect = self.rect.inflate(-30, 0)
@@ -115,6 +116,7 @@ class BossAlien(Sprite):
 
     def destroy_alien(self):
         """Update and display destroy animation."""
+        self.is_alive = False
         self.destroy.update_destroy_animation()
         self.screen.blit(self.destroy.destroy_image, self.destroy.destroy_rect)
 

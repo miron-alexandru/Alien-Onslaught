@@ -130,45 +130,44 @@ class GameButtons:
         self.game.show_game_modes = not self.game.show_game_modes
 
 
-    def handle_endless_button(self):
-        """Toggle the Endless game mode setting and hide game mode buttons"""
-        self.game.settings.endless_onslaught = not self.game.settings.endless_onslaught
-        self.game.settings.slow_burn = False
-        self.game.settings.meteor_madness = False
-        self.game.settings.boss_rush = False
-        self.game.show_game_modes = False
-
-    def handle_normal_button(self):
-        """Turn all game modes off, play the normal game"""
+    def _set_game_mode_settings(self, game_mode_setting):
+        """Helper function to set the game mode settings based on the current mode."""
         self.game.settings.endless_onslaught = False
         self.game.settings.slow_burn = False
         self.game.settings.meteor_madness = False
         self.game.settings.boss_rush = False
+        if game_mode_setting is not None:
+            setattr(self.game.settings, game_mode_setting, True)
+
+    def handle_endless_button(self):
+        """Toggle the Endless game mode setting and hide game mode buttons"""
+        self.game.settings.endless_onslaught = not self.game.settings.endless_onslaught
+        self._set_game_mode_settings('endless_onslaught')
+        self.game.show_game_modes = False
+
+    def handle_normal_button(self):
+        """Turn all game modes off, play the normal game"""
+        self._set_game_mode_settings(None)
         self.game.show_game_modes = False
 
     def handle_slow_burn_button(self):
         """Toggle the Slow Burn game mode and hide game mode buttons"""
         self.game.settings.slow_burn = not self.game.settings.slow_burn
-        self.game.settings.endless_onslaught = False
-        self.game.settings.meteor_madness = False
-        self.game.settings.boss_rush = False
+        self._set_game_mode_settings('slow_burn')
         self.game.show_game_modes = False
 
     def handle_meteor_madness_button(self):
         """Toggle the Meteor Madness game mode and hide all game mode buttons."""
         self.game.settings.meteor_madness = not self.game.settings.meteor_madness
-        self.game.settings.endless_onslaught = False
-        self.game.settings.slow_burn = False
-        self.game.settings.boss_rush = False
+        self._set_game_mode_settings('meteor_madness')
         self.game.show_game_modes = False
 
     def handle_boss_rush_button(self):
         """Toggle the Boss Rush game mode and hide all game mode buttons."""
         self.game.settings.boss_rush = not self.game.settings.boss_rush
-        self.game.settings.endless_onslaught = False
-        self.game.settings.slow_burn = False
-        self.game.settings.meteor_madness = False
+        self._set_game_mode_settings('boss_rush')
         self.game.show_game_modes = False
+
 
     def handle_difficulty_button(self, speedup_scale):
         """Set the game difficulty (speed-up scale)"""

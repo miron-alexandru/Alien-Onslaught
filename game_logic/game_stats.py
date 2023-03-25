@@ -24,6 +24,7 @@ class GameStats:
         self.thunderbird_score = 0
         self.phoenix_score = 0
         self.level = 1
+        self.high_score = 0
 
     def increase_level(self):
         """Increases the level by one"""

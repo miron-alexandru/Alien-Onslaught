@@ -183,6 +183,7 @@ class AlienOnslaught:
     def _handle_level_progression(self):
         """Handles the progression of levels in the game."""
         if self.settings.boss_rush and self.stats.level == 16:
+            self.stats.game_active = False
             return
 
         if not self.settings.meteor_madness and not self.aliens:
@@ -278,8 +279,8 @@ class AlienOnslaught:
         """Change the background for different levels."""
         bg_images = {
             1: self.reset_bg,
-            8: self.second_bg,
-            16: self.third_bg,
+            9: self.second_bg,
+            17: self.third_bg,
         }
         self.bg_img = bg_images.get(self.stats.level, self.bg_img)
 
@@ -357,7 +358,7 @@ class AlienOnslaught:
 
     def _update_normal_boss_info(self):
         """Updates the points and hp of bosses in the other game modes."""
-        self.settings.boss_points =(
+        self.settings.boss_points = (
              normal_boss_points.get(self.stats.level, self.settings.boss_points))
         self.settings.boss_hp = normal_boss_hp_map.get(self.stats.level, self.settings.boss_hp)
 
@@ -408,8 +409,6 @@ class AlienOnslaught:
         a series of increasingly difficult bosses, with each level presenting a new challenge."""
         self._handle_asteroids(always=True)
         self._create_boss_rush_bullets()
-        if self.stats.level == 16:
-            self.stats.game_active = False
 
     def _endless_onslaught(self):
         """Starts the Endless Onslaught game mode,
@@ -600,9 +599,11 @@ class AlienOnslaught:
         """Check if the game is over and if so, display the game over image"""
         if self.settings.boss_rush and self.stats.level == 16:
             self._display_game_over()
+            self.score_board.render_high_score()
         elif not any([self.stats.game_active, self.thunderbird_ship.state['alive'],
                      self.phoenix_ship.state['alive']]):
             self._display_game_over()
+
 
     def _display_game_over(self):
         self._set_game_over()
@@ -683,9 +684,9 @@ class AlienOnslaught:
 
         # Prepare the scoreboard and health.
         self.score_board.render_scores()
+        self.score_board.render_high_score()
         self.score_board.prep_level()
         self.score_board.create_health()
-
 
         # Clear the screen of remaining aliens, bullets, asteroids and power-ups.
         self._reset_game_objects()
@@ -878,6 +879,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.high_score_saved = False
 
         self.score_board.render_scores()
+        self.score_board.render_high_score()
         self.score_board.prep_level()
         self.score_board.create_health()
 

@@ -89,6 +89,9 @@ class ScoreBoard:
         elif self.settings.boss_rush:
             if boss_name := boss_rush_image_map.get(self.stats.level, None):
                 level_str = f"Boss Rush: {boss_name.capitalize()}"
+
+            else:
+                level_str = f"Boss Rush Level:  {str(self.stats.level)}"
         else:
             level_str = f"Level {str(self.stats.level)}"
 
@@ -122,6 +125,7 @@ class ScoreBoard:
             phoenix_heart.rect.y = 10
             self.phoenix_health.add(phoenix_heart)
 
+
     def save_high_score(self):
         """Save the high score to a JSON file."""
         filename = 'high_score.json'
@@ -143,10 +147,9 @@ class ScoreBoard:
             with open(filename, 'w', encoding='utf-8') as score_file:
                 json.dump(high_scores, score_file)
 
-
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        if not self.settings.meteor_madness:
+        if not self.settings.meteor_madness and not self.settings.boss_rush:
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
             self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)

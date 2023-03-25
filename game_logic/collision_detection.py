@@ -138,7 +138,7 @@ class CollisionManager:
             for alien in aliens:
                 alien.hit_count += 1
                 if isinstance(alien, BossAlien):
-                    if alien.hit_count >= self.settings.boss_hp:
+                    if alien.hit_count >= self.settings.boss_hp and alien.is_alive:
                         alien.destroy_alien()
                         self.game.aliens.remove(alien)
                         if player == 'thunderbird':
