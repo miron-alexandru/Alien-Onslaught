@@ -26,6 +26,9 @@ class Settings:
         # other images
         self.game_over = pygame.image.load(OTHER['gameover'])
         self.pause = pygame.image.load(OTHER['pause'])
+        self.game_title = pygame.image.load(OTHER['game_title'])
+        self.game_title_rect = self.game_title.get_rect()
+        self.game_title_rect.y = - 270
 
         # Sounds
         self.fire_sound = pygame.mixer.Sound(SOUNDS['bullet'])
@@ -33,6 +36,7 @@ class Settings:
         # Game modes settings
         self.endless_onslaught, self.slow_burn, self.meteor_madness = False, False, False
         self.boss_rush = False
+        self.game_mode = 'normal'
         # How quickly the game speeds up
         self.speedup_scale = 0.3
 

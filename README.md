@@ -64,26 +64,19 @@
 * Refactored code into new classes and modules
 * Improvements to the code organization by grouping related modules and classes into new packages.
 * New packages created:
-
 * "animations": This package contains modules for handling animations in the game.
-
 * "entities": This package includes modules for defining and managing game entities such as ships, asteroids, aliens, and power-ups.
-
 * "game logic": This package contains modules that handle the core game logic, such as collision detection, game settings, and scoring.
-
 * "ui": This package includes modules for managing the user interface (UI) of the game. It contains classes and functions for creating game buttons, scoreboards, and other UI elements.
-
 * "utils": This package contains modules for various utilities and helper functions used throughout the game and constants.
-
 * Implemented a new game mode, Meteor Madness:  Players must navigate a barrage of asteroids as each level progresses, the number of asteroids coming towards the player will increase, and their speed will become more relentless. Additionally,
 the player's speed will decrease, adding an extra layer of challenge to the game.
-
 * New feature to enhance gameplay: player immunity after being hit! Now, when a player is hit, they will be granted a brief period of immunity to prevent them from taking another hit right away. This will give players a chance to recover and avoid getting hit again immediately after respawning. An animation will play during the immunity period, letting the players know they are invulnerable.
-
 * Implemented new animation for entities getting destroyed, and a new module 'frames' which contains constants for animations or images used in the game.
-
 * Implemented a new Boss fight and a new animation for power-ups being picked up.
 
 ### Version 2.7:
 * Created a new module, 'image_loader' which has functions to load images for aliens.
 * Implemented a new game mode, Boss Rush: Players must fight different bosses at every level, each with their own unique designs and bullet patterns. With each level, the bosses become stronger and faster, making them more challenging.
+* Improved the high score system, now there are separate high scores for every game mode.
+* Improved UI, moved some buttons and added the game title in the Menu screen.

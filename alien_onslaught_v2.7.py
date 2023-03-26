@@ -1,5 +1,10 @@
 """The Alien Onslaught game module contains the multiplayer and singleplayer versions of the game.
-This module imports all other classes and modules required to run the game."""
+This module imports all other classes and modules required to run the game.
+
+
+Author: [Miron Alexandru]
+Contact: quality_xqs@yahoo.com
+"""
 import sys
 import random
 import time
@@ -112,6 +117,7 @@ class AlienOnslaught:
             self.screen.blit(self.bg_img, self.bg_img_rect)
             self.screen.blit(self.buttons.p1_controls, self.buttons.p1_controls_rect)
             self.screen.blit(self.buttons.p2_controls, self.buttons.p2_controls_rect)
+            self.screen.blit(self.settings.game_title, self.settings.game_title_rect)
             self.buttons.single.draw_button()
             self.buttons.multi.draw_button()
             self.buttons.menu_quit.draw_button()
@@ -132,7 +138,7 @@ class AlienOnslaught:
         while running:
             if not self.paused:  # check if the game is paused
                 self._handle_background_change()
-                self.screen.blit(self.bg_img, [0,i])
+                self.screen.blit(self.bg_img, [0, i])
                 self.screen.blit(self.bg_img, [0, i  - self.settings.screen_height])
                 if i >= self.settings.screen_height:
                     i = 0
@@ -397,7 +403,7 @@ class AlienOnslaught:
         self.collision_handler.check_asteroids_collisions(self._thunderbird_ship_hit,
                                                                 self._phoenix_ship_hit)
         if not self.paused:
-            level_time = 210000
+            level_time = 6000
             current_time = pygame.time.get_ticks() - self.pause_time
             if current_time > self.last_level_time + level_time:
                 self.last_level_time = current_time
@@ -409,6 +415,7 @@ class AlienOnslaught:
         a series of increasingly difficult bosses, with each level presenting a new challenge."""
         self._handle_asteroids(always=True)
         self._create_boss_rush_bullets()
+
 
     def _endless_onslaught(self):
         """Starts the Endless Onslaught game mode,
@@ -612,15 +619,26 @@ class AlienOnslaught:
         self.score_board.update_high_score()
 
         if not self.high_score_saved:
-            self.score_board.save_high_score()
+            game_mode_high_score_keys = {
+                'boss_rush': 'boss_rush_scores',
+                'endless_onslaught': 'endless_scores',
+                'meteor_madness': 'meteor_madness_scores',
+                'slow_burn': 'slow_burn_scores',
+                'normal': 'high_scores'
+            }
+            game_mode = self.settings.game_mode or 'normal'
+            high_score_key = game_mode_high_score_keys.get(game_mode, 'normal')
+            self.score_board.save_high_score(high_score_key)
             self.high_score_saved = True
+
+
 
 
     def _set_game_over(self):
         """Set the location of the game over image on the screen"""
         game_over_rect = self.settings.game_over.get_rect()
         game_over_x = (self.settings.screen_width - game_over_rect.width) / 2
-        game_over_y = (self.settings.screen_height - game_over_rect.height) / 2 - 100
+        game_over_y = (self.settings.screen_height - game_over_rect.height) / 2 - 200
         self.game_over_rect = pygame.Rect(game_over_x, game_over_y,
                                         game_over_rect.width, game_over_rect.height)
 
@@ -650,7 +668,8 @@ class AlienOnslaught:
         self.settings.thunderbird_ship_speed = max(2.0,
                                                     self.settings.thunderbird_ship_speed - 0.2)
         self.settings.phoenix_ship_speed = max(2.0, self.settings.phoenix_ship_speed - 0.2)
-        self.stats.high_score += 2000
+        self.stats.thunderbird_score += 2000
+        self.score_board.update_high_score()
 
         self.stats.increase_level()
         self.score_board.prep_level()
@@ -764,12 +783,24 @@ class AlienOnslaught:
 
             if self.show_difficulty:
                 self._draw_difficulty_buttons()
+
             if self.show_high_scores:
-                display_high_scores(self.screen)
+                game_mode_high_score_keys = {
+                    'boss_rush': 'boss_rush_scores',
+                    'endless_onslaught': 'endless_scores',
+                    'meteor_madness': 'meteor_madness_scores',
+                    'slow_burn': 'slow_burn_scores',
+                    'normal': 'high_scores'
+                }
+                game_mode = self.settings.game_mode or 'normal'
+                high_score_key = game_mode_high_score_keys[game_mode]
+                display_high_scores(self.screen, high_score_key)
+
             if self.show_game_modes:
                 self._draw_game_mode_buttons()
 
         pygame.display.flip()
+
 
 
 
@@ -935,7 +966,16 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
             if self.show_difficulty:
                 self._draw_difficulty_buttons()
             if self.show_high_scores:
-                display_high_scores(self.screen)
+                game_mode_high_score_keys = {
+                    'boss_rush': 'boss_rush_scores',
+                    'endless_onslaught': 'endless_scores',
+                    'meteor_madness': 'meteor_madness_scores',
+                    'slow_burn': 'slow_burn_scores',
+                    'normal': 'high_scores'
+                }
+                game_mode = self.settings.game_mode or 'normal'
+                high_score_key = game_mode_high_score_keys[game_mode]
+                display_high_scores(self.screen, high_score_key)
             if self.show_game_modes:
                 self._draw_game_mode_buttons()
 

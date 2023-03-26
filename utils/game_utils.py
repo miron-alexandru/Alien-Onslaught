@@ -67,7 +67,7 @@ def render_text(text, font, color, start_pos, line_spacing, second_color=None):
     return text_surfaces, text_rects
 
 
-def display_high_scores(screen):
+def display_high_scores(screen, score_key):
     """Display the high scores on the screen."""
     # Load the high score data from the JSON file,
     # or create a new high score list if there is an error
@@ -80,7 +80,7 @@ def display_high_scores(screen):
 
     # Get the scores from the high score list and create a new list of tuples
     # containing the score and its rank
-    scores = high_scores['high_scores']
+    scores = high_scores[score_key]
     ranked_scores = [(i, score) for i, score in enumerate(scores, 1) if score]
 
     # Create formatted strings for each rank and score
@@ -95,11 +95,13 @@ def display_high_scores(screen):
 
     # Calculate the relative position of the text based on the screen size
     screen_width, screen_height = screen.get_size()
-    title_x = int(screen_width * 0.065)
-    title_y = int(screen_height * 0.35)
-    rank_x = int(screen_width * 0.03)
-    rank_y = int(screen_height * 0.45)
-    score_x = int(screen_width * 0.25)
+    centerx = int(screen_width / 2)
+    centery = int(screen_height / 2)
+    title_x = int(centerx - 500)
+    title_y = int(centery - 150)
+    rank_x = int(centerx - 550)
+    rank_y = int(centery - 50)
+    score_x = int(centerx - 270)
     score_y = rank_y
 
     # Render the score text and rank text as surfaces with new lines using different fonts
@@ -139,12 +141,12 @@ def display_controls(buttons, settings):
     p1_controls, p1_controls_rect = load_controls_image(
                                             buttons,
                                             'player_controls',
-                                            {'topleft': (50, 50)})
+                                            {'topleft': (50, 220)})
     p2_controls, p2_controls_rect = load_controls_image(
                                             buttons,
                                             'player_controls',
                                             {'topright':
-                                            (settings.get_width() - 50, 50)})
+                                            (settings.get_width() - 50, 220)})
 
     font = pygame.font.SysFont('arialbold', 35)
     color = 'white'
@@ -163,4 +165,3 @@ def display_controls(buttons, settings):
             p2_controls, p2_controls_rect,
             t1_surfaces, t1_rects,
             t2_surfaces, t2_rects)
-

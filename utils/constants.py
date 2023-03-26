@@ -11,7 +11,7 @@ BUTTON_NAMES = [
 
 
 # Player1 controls
-P2_CONTROLS = ("Phoenix:\n"
+P2_CONTROLS = ("Phoenix controls:\n"
                 "Movement: Arrow Keys\n"
                 "Shoot: Enter\n"
                 "Ship skin: Numpad 1, 2, 3\n"
@@ -19,7 +19,7 @@ P2_CONTROLS = ("Phoenix:\n"
 
 
 # Player2 controls
-P1_CONTROLS = ("Thunderbird:\n"
+P1_CONTROLS = ("Thunderbird controls:\n"
                 "Movement: W, A, S, D\n"
                 "Shoot: Space\n"
                 "Ship skin: 1, 2, 3\n"
@@ -38,6 +38,7 @@ OTHER = {
     'gameover': 'images/other/gameover.png',
     'pause': 'images/other/pause.png',
     'heart': 'images/other/heart.png',
+    'game_title': 'images/other/alien_onslaught.png'
 }
 
 

@@ -27,6 +27,7 @@ class Button:
 
         if center:
             self.rect.center = self.screen_rect.center
+            self.rect.y -= 50
         else:
             self.rect.x, self.rect.y = pos
 
@@ -143,29 +144,34 @@ class GameButtons:
         """Toggle the Endless game mode setting and hide game mode buttons"""
         self.game.settings.endless_onslaught = not self.game.settings.endless_onslaught
         self._set_game_mode_settings('endless_onslaught')
+        self.game.settings.game_mode = 'endless_onslaught'
         self.game.show_game_modes = False
 
     def handle_normal_button(self):
         """Turn all game modes off, play the normal game"""
         self._set_game_mode_settings(None)
+        self.game.settings.game_mode = 'normal'
         self.game.show_game_modes = False
 
     def handle_slow_burn_button(self):
         """Toggle the Slow Burn game mode and hide game mode buttons"""
         self.game.settings.slow_burn = not self.game.settings.slow_burn
         self._set_game_mode_settings('slow_burn')
+        self.game.settings.game_mode = 'slow_burn'
         self.game.show_game_modes = False
 
     def handle_meteor_madness_button(self):
         """Toggle the Meteor Madness game mode and hide all game mode buttons."""
         self.game.settings.meteor_madness = not self.game.settings.meteor_madness
         self._set_game_mode_settings('meteor_madness')
+        self.game.settings.game_mode = 'meteor_madness'
         self.game.show_game_modes = False
 
     def handle_boss_rush_button(self):
         """Toggle the Boss Rush game mode and hide all game mode buttons."""
         self.game.settings.boss_rush = not self.game.settings.boss_rush
         self._set_game_mode_settings('boss_rush')
+        self.game.settings.game_mode = 'boss_rush'
         self.game.show_game_modes = False
 
 

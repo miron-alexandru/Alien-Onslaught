@@ -97,6 +97,7 @@ class ScoreBoard:
 
         self.level_image = self.font.render(level_str, True, self.level_color, None)
 
+
         # Position the level image in the center of the screen.
         screen_width, _ = self.screen.get_size()
         _, level_height = self.level_image.get_size()
@@ -126,7 +127,7 @@ class ScoreBoard:
             self.phoenix_health.add(phoenix_heart)
 
 
-    def save_high_score(self):
+    def save_high_score(self, score_key):
         """Save the high score to a JSON file."""
         filename = 'high_score.json'
         try:
@@ -135,14 +136,14 @@ class ScoreBoard:
         except json.JSONDecodeError:
             high_scores = {'high_scores': [0] * 10}
 
-        scores = high_scores['high_scores']
+        scores = high_scores[score_key]
         new_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
 
         if new_score not in scores:
             scores.append(new_score)
             scores.sort(reverse=True)
             scores = scores[:10]
-            high_scores['high_scores'] = scores
+            high_scores[score_key] = scores
 
             with open(filename, 'w', encoding='utf-8') as score_file:
                 json.dump(high_scores, score_file)
