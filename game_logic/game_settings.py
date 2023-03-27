@@ -2,14 +2,14 @@
 The game_settings module contains the settings for the game such as:
 background , sounds, bullet, ships, aliens, game speed.
 """
-
-import pygame
+from dataclasses import dataclass
 from utils.constants import (
     BACKGROUNDS,
     SOUNDS,
     GAME_CONSTANTS,
     OTHER,
 )
+from utils.game_utils import load_images, load_sounds
 
 
 class Settings:
@@ -19,24 +19,29 @@ class Settings:
         # Screen Settings
         self.screen_width = 1260
         self.screen_height = 700
-        # game background images
-        self.bg_img = pygame.image.load(BACKGROUNDS['space'])
-        self.second_bg = pygame.image.load(BACKGROUNDS['space2'])
-        self.third_bg = pygame.image.load(BACKGROUNDS['space4'])
-        # other images
-        self.game_over = pygame.image.load(OTHER['gameover'])
-        self.pause = pygame.image.load(OTHER['pause'])
-        self.game_title = pygame.image.load(OTHER['game_title'])
+        # load images and sounds
+        self.bg_images = load_images(BACKGROUNDS)
+        self.other_images = load_images(OTHER)
+        self.sounds = load_sounds(SOUNDS)
+        # define background images
+        self.bg_img = self.bg_images['space']
+        self.second_bg = self.bg_images['space2']
+        self.third_bg = self.bg_images['space4']
+        # define other images
+        self.game_over = self.other_images['gameover']
+        self.pause = self.other_images['pause']
+        self.game_title = self.other_images['game_title']
+
         self.game_title_rect = self.game_title.get_rect()
         self.game_title_rect.y = - 270
 
-        # Sounds
-        self.fire_sound = pygame.mixer.Sound(SOUNDS['bullet'])
+        # define sounds
+        self.fire_sound = self.sounds['bullet']
 
         # Game modes settings
-        self.endless_onslaught, self.slow_burn, self.meteor_madness = False, False, False
-        self.boss_rush = False
-        self.game_mode = 'normal'
+        self.gm = GameModes()
+        # UiOptions
+        self.ui_options = UIOptions()
         # How quickly the game speeds up
         self.speedup_scale = 0.3
 
@@ -66,8 +71,8 @@ class Settings:
         self.alien_direction = 1
 
         # Bosses Settings
-        self.boss_hp = 25 if self.boss_rush else 50
-        self.boss_points = 1000 if self.boss_rush else 2500
+        self.boss_hp = 25 if self.gm.boss_rush else 50
+        self.boss_points = 1000 if self.gm.boss_rush else 2500
 
         # Asteroid settings
         self.asteroid_speed = 1.5
@@ -82,3 +87,25 @@ class Settings:
 
         if self.aliens_num < GAME_CONSTANTS['MAX_ALIEN_NUM']:
             self.aliens_num += 2
+
+
+
+@dataclass
+class UIOptions:
+    """Represents options for the user interface of the game."""
+    paused: bool = False
+    show_difficulty: bool = False
+    resizable: bool = False
+    high_score_saved: bool = False
+    show_high_scores: bool = False
+    show_game_modes: bool = False
+
+
+@dataclass
+class GameModes:
+    """Represents the available game modes for the game"""
+    endless_onslaught: bool = False
+    slow_burn: bool = False
+    meteor_madness: bool = False
+    boss_rush: bool = False
+    game_mode: str = 'normal'

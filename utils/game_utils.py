@@ -3,7 +3,21 @@ import os
 import json
 import pygame
 
-from .constants import P1_CONTROLS, P2_CONTROLS
+from .constants import P1_CONTROLS, P2_CONTROLS, BOSS_RUSH, ALIEN_BULLETS_IMG
+
+
+def load_images(image_dict):
+    """A function that loads multiple images from a dict of the form:
+    key: image name 
+    value: path to image location"""
+    return {key: pygame.image.load(value) for key, value in image_dict.items()}
+
+
+def load_sounds(sounds_dict):
+    """A function that loads multiple sounds from a dict of the form:
+    key: sound name:
+    value: path to sound location."""
+    return {key: pygame.mixer.Sound(value) for key, value in sounds_dict.items()}
 
 
 def load_frames(filename_pattern, num_frames, frame_list, start=0):
@@ -13,6 +27,7 @@ def load_frames(filename_pattern, num_frames, frame_list, start=0):
         path = os.path.join("images", filename)
         image = pygame.image.load(path)
         frame_list.append(image)
+
 
 def load_alien_images(alien_prefix):
     """Load the images for the given alien prefix."""
@@ -39,6 +54,22 @@ def load_controls_image(image_loc, image_name, position):
     image = pygame.image.load(image_loc[image_name])
     rect = image.get_rect(**position)
     return image, rect
+
+
+def load_boss_images():
+    """Loads and returns a dict of boss images"""
+    return {
+        alien_name: pygame.image.load(alien_image_path)
+        for alien_name, alien_image_path in BOSS_RUSH.items()
+    }
+
+
+def load_alien_bullets():
+    """Loads and returns a dict of alien bullet images."""
+    return {
+        bullet_name: pygame.image.load(bullet_image_path)
+        for bullet_name, bullet_image_path in ALIEN_BULLETS_IMG.items()
+    }
 
 
 def render_text(text, font, color, start_pos, line_spacing, second_color=None):

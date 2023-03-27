@@ -1,7 +1,6 @@
 """This is the animation module where other animations for different
 parts of the game are located."""
 
-from utils.game_utils import load_frames
 from utils.frames import destroy_frames
 
 

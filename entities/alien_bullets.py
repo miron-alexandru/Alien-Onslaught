@@ -7,17 +7,19 @@ import pygame
 
 from pygame.sprite import Sprite
 from utils.constants import  boss_rush_bullet_map, normal_bullet_map
-from utils.image_loader import load_alien_bullets
+from utils.game_utils import load_alien_bullets
 from entities.aliens import BossAlien
 
 
 class AlienBullet(Sprite):
     """A class to manage bullets for the aliens."""
+
+    bullet_images = load_alien_bullets()
+
     def __init__(self, game):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.bullet_images = load_alien_bullets()
         self.image = self.bullet_images['alien_bullet']
         self.rect = self.image.get_rect()
         self._choose_random_alien(game)
@@ -41,12 +43,14 @@ class AlienBullet(Sprite):
 
 class BossBullet(Sprite):
     """A class to manage bullets for the boss alien."""
+
+    bullet_images = load_alien_bullets()
+
     def __init__(self, game, alien):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
         self.alien = alien
-        self.bullet_images = load_alien_bullets()
         self.image = self.bullet_images['xanathar_bullet']
         self.rect = self.image.get_rect()
         self._init_variables(alien)
@@ -61,7 +65,7 @@ class BossBullet(Sprite):
 
     def _update_image(self, game):
         """Change image for specific boss fight"""
-        if self.settings.boss_rush:
+        if self.settings.gm.boss_rush:
             level_image_map = boss_rush_bullet_map
         else:
             level_image_map = normal_bullet_map

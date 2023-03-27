@@ -8,8 +8,7 @@ import pygame
 
 from pygame.sprite import Sprite
 from utils.constants import LEVEL_PREFIX, boss_rush_image_map, normal_image_map
-from utils.game_utils import load_alien_images
-from utils.image_loader import load_boss_images
+from utils.game_utils import load_alien_images, load_boss_images
 from animations.other_animations import DestroyAnim
 
 class Alien(Sprite):
@@ -68,11 +67,13 @@ class Alien(Sprite):
 
 class BossAlien(Sprite):
     """A class to represent Boss Aliens"""
+
+    boss_images = load_boss_images()
+
     def __init__(self, game):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.boss_images = load_boss_images()
         self.image = self.boss_images['xanathar']
         self._update_image(game)
 
@@ -92,7 +93,7 @@ class BossAlien(Sprite):
 
     def _update_image(self, game):
         """Change image for specific boss fight"""
-        if self.settings.boss_rush:
+        if self.settings.gm.boss_rush:
             level_image_map = boss_rush_image_map
         else:
             level_image_map = normal_image_map
@@ -259,6 +260,8 @@ class AlienMovement:
 
 class AlienAnimation:
     """This class manages alien animations"""
+    frames = {}
+
     def __init__(self, game, alien):
         self.alien = alien
         self.game = game
@@ -266,7 +269,12 @@ class AlienAnimation:
         self.last_update_time = pygame.time.get_ticks()
         self.animation_delay = 70
         self.current_frame = 0
-        self.frames = load_alien_images(LEVEL_PREFIX.get(game.stats.level // 2, "Alien4"))
+
+        level_prefix = LEVEL_PREFIX.get(game.stats.level // 4 + 1, "Alien4")
+        if level_prefix not in AlienAnimation.frames:
+            AlienAnimation.frames[level_prefix] = load_alien_images(level_prefix)
+
+        self.frames = AlienAnimation.frames[level_prefix]
         self.image = self.frames[self.current_frame]
 
     def update_animation(self):

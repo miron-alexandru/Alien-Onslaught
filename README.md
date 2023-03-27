@@ -80,3 +80,6 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Implemented a new game mode, Boss Rush: Players must fight different bosses at every level, each with their own unique designs and bullet patterns. With each level, the bosses become stronger and faster, making them more challenging.
 * Improved the high score system, now there are separate high scores for every game mode.
 * Improved UI, moved some buttons and added the game title in the Menu screen.
+* Refactored code in multiple modules and created two new @dataclasses to hold values for different parts of the game.
+* Created a new module 'game_modes' that manages the different game modes available in the game.
+* Implemented new power_ups, alien speed and alien bullet speed decreased.

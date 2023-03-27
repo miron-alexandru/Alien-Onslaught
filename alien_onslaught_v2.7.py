@@ -7,20 +7,18 @@ Contact: quality_xqs@yahoo.com
 """
 import sys
 import random
-import time
 import pygame
 
 from game_logic.game_settings import Settings
 from game_logic.game_stats import GameStats
 from game_logic.collision_detection import CollisionManager
 from game_logic.input_handling import PlayerInput
+from game_logic.game_modes import GameModesManager
 
 from utils.game_utils import display_high_scores
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
-    BOSS_LEVELS, boss_rush_points_map,
-    normal_boss_points, boss_rush_hp_map,
-    normal_boss_hp_map,
+    BOSS_LEVELS,
 )
 
 from ui.screen_manager import ScreenManager
@@ -32,7 +30,6 @@ from entities.alien_bullets import AlienBulletsManager
 from entities.aliens import AliensManager
 from entities.power_ups import PowerUpsManager
 from entities.asteroid import AsteroidsManager
-
 
 
 class AlienOnslaught:
@@ -52,13 +49,11 @@ class AlienOnslaught:
                                                             self.screen.get_size())
         self.third_bg = pygame.transform.smoothscale(self.settings.third_bg,
                                                             self.screen.get_size())
+        self.ui_options = self.settings.ui_options
         self._initialize_game_objects()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
 
         # Initialize game state variables
-        self.paused, self.show_difficulty, self.resizable, self.high_score_saved, \
-        self.show_high_scores, self.show_game_modes = \
-        False, False, True, False, False, False
         self.last_increase_time, self.last_level_time, self.pause_time = 0, 0, 0
 
         pygame.display.set_caption("Alien Onslaught")
@@ -68,7 +63,7 @@ class AlienOnslaught:
         """Initializes all game objects and managers/handlers required for the game."""
         self.thunderbird_ship = Thunderbird(self)
         self.phoenix_ship = Phoenix(self)
-        self.buttons = GameButtons(self, self.screen)
+        self.buttons = GameButtons(self, self.screen, self.ui_options, self.settings.gm)
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
         # Sprite Groups
@@ -81,13 +76,13 @@ class AlienOnslaught:
         # Managers and handlers
         self.manage_screen = ScreenManager(self.settings, self.score_board,
                                         self.buttons, self.screen)
-        self.player_input = PlayerInput(self)
+        self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
         self.power_ups_manager = PowerUpsManager(self)
         self.asteroids_manager = AsteroidsManager(self)
         self.alien_bullets_manager = AlienBulletsManager(self)
         self.aliens_manager = AliensManager(self, self.aliens, self.settings, self.screen)
-
+        self.gm_manager = GameModesManager(self, self.settings, self.stats)
 
     def run_menu(self):
         """Runs the menu screen"""
@@ -136,7 +131,7 @@ class AlienOnslaught:
         running = True
         i = 0
         while running:
-            if not self.paused:  # check if the game is paused
+            if not self.ui_options.paused:  # check if the game is paused
                 self._handle_background_change()
                 self.screen.blit(self.bg_img, [0, i])
                 self.screen.blit(self.bg_img, [0, i  - self.settings.screen_height])
@@ -153,9 +148,8 @@ class AlienOnslaught:
 
 
                 self._update_screen()
+                self._check_for_pause()
                 self.clock.tick(60)
-
-            self._check_for_pause()
 
 
     def _handle_game_logic(self):
@@ -163,7 +157,6 @@ class AlienOnslaught:
         self.start_game_mode()
         self._handle_level_progression()
         self._handle_normal_game()
-
 
         self.power_ups_manager.create_power_ups()
         self.power_ups_manager.update_power_ups()
@@ -188,11 +181,11 @@ class AlienOnslaught:
 
     def _handle_level_progression(self):
         """Handles the progression of levels in the game."""
-        if self.settings.boss_rush and self.stats.level == 16:
+        if self.settings.gm.boss_rush and self.stats.level == 16:
             self.stats.game_active = False
             return
 
-        if not self.settings.meteor_madness and not self.aliens:
+        if not self.settings.gm.meteor_madness and not self.aliens:
             self._prepare_next_level()
 
 
@@ -203,10 +196,13 @@ class AlienOnslaught:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                self.player_input.check_keydown_events(
-                                event, self._fire_bullet, self._reset_game, self.run_menu)
+                if self.stats.game_active:
+                    self.player_input.check_keydown_events(
+                                    event, self._fire_bullet,
+                                    self._reset_game, self.run_menu)
             elif event.type == pygame.KEYUP:
-                self.player_input.check_keyup_events(event)
+                if self.stats.game_active:
+                    self.player_input.check_keyup_events(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_buttons(mouse_pos)
@@ -273,12 +269,12 @@ class AlienOnslaught:
         # the game window is resizable before clicking the Play button
         # players can't resize the window while the game is active.
         info = pygame.display.Info()
-        if not self.stats.game_active and not self.resizable:
+        if not self.stats.game_active and not self.ui_options.resizable:
             pygame.display.set_mode((info.current_w, info.current_h), pygame.RESIZABLE)
-            self.resizable = True
-        elif self.stats.game_active and self.resizable:
+            self.ui_options.resizable = True
+        elif self.stats.game_active and self.ui_options.resizable:
             pygame.display.set_mode((info.current_w, info.current_h))
-            self.resizable = False
+            self.ui_options.resizable = False
 
 
     def _handle_background_change(self):
@@ -292,20 +288,14 @@ class AlienOnslaught:
 
 
     def _check_for_pause(self):
-        """Check if the game is paused and display the pause screen if it is."""
-        if self.paused:
+        """Check if the game is paused and update pause time."""
+        if self.ui_options.paused:
             self.pause_start_time = pygame.time.get_ticks()
-            pause_rect = self.settings.pause.get_rect()
-            pause_rect.centerx = self.screen.get_rect().centerx
-            pause_rect.centery = self.screen.get_rect().centery
-            self.screen.blit(self.settings.pause, pause_rect)
-            pygame.display.flip()
-            while self.paused:
+            while self.ui_options.paused:
                 self.check_events()
-                if not self.paused:
+                if not self.ui_options.paused:
                     self.pause_end_time = pygame.time.get_ticks()
                     self.pause_time += self.pause_end_time - self.pause_start_time
-                    self._update_screen()
                     break
 
 
@@ -323,141 +313,49 @@ class AlienOnslaught:
             self.collision_handler.check_asteroids_collisions(self._thunderbird_ship_hit,
                                                                 self._phoenix_ship_hit)
 
-
     def _handle_boss_stats(self):
         """Updates stats for bosses based on the game mode."""
-        if self.settings.boss_rush:
-            self._update_boss_rush_info()
+        if self.settings.gm.boss_rush:
+            self.gm_manager.update_boss_rush_info()
             return
-        else:
-            self._update_normal_boss_info()
-
-
-    def _update_boss_rush_info(self):
-        """Updates the points and hp of bosses in Boss Rush"""
-        self.settings.boss_points = (
-            boss_rush_points_map.get(self.stats.level, self.settings.boss_points))
-        self.settings.boss_hp = boss_rush_hp_map.get(self.stats.level, self.settings.boss_hp)
-
-        if self.settings.speedup_scale == DIFFICULTIES['MEDIUM']:
-            self.settings.boss_hp += 25
-        elif self.settings.speedup_scale == DIFFICULTIES['HARD']:
-            self.settings.boss_hp += 50
-
-
-    def _create_boss_rush_bullets(self):
-        """Creates bullets for bosses in Boss Rush."""
-        if self.stats.level < 10:
-            self.alien_bullets_manager.create_alien_bullets(1, 500, 500)
-        else:
-            self.alien_bullets_manager.create_alien_bullets(1, 200, 200)
-
-
-    def _create_normal_level_bullets(self):
-        """Create bullets for the normal game."""
-        if self.stats.level in BOSS_LEVELS:
-            self.alien_bullets_manager.create_alien_bullets(1, 500, 500)
-
-        else:
-            self.alien_bullets_manager.create_alien_bullets(4, 4500, 7000)
-
-
-    def _update_normal_boss_info(self):
-        """Updates the points and hp of bosses in the other game modes."""
-        self.settings.boss_points = (
-             normal_boss_points.get(self.stats.level, self.settings.boss_points))
-        self.settings.boss_hp = normal_boss_hp_map.get(self.stats.level, self.settings.boss_hp)
-
-        if self.stats.level in BOSS_LEVELS and self.settings.speedup_scale == DIFFICULTIES['MEDIUM']:
-            self.settings.boss_hp += 25
-
-        if self.stats.level in BOSS_LEVELS and self.settings.speedup_scale == DIFFICULTIES['HARD']:
-            self.settings.boss_hp += 50
+        self.gm_manager.update_normal_boss_info()
 
 
     def _handle_normal_game(self):
         """Handle behaviors for different levels."""
         self._handle_asteroids(create_when_7=True)
-        self._create_normal_level_bullets()
+        self.gm_manager.create_normal_level_bullets(self.alien_bullets_manager.create_alien_bullets)
 
 
     def start_game_mode(self):
         """Starts the selected game mode."""
-        if self.settings.endless_onslaught:
-            self._endless_onslaught()
-        elif self.settings.slow_burn:
-            self._slow_burn()
-        elif self.settings.meteor_madness:
-            self._meteor_madness()
-        elif self.settings.boss_rush:
-            self._boss_rush()
-
-
-    def _meteor_madness(self):
-        """Starts the Meteor Madness game mode where players must navigate a barrage of asteroids.
-        As each level progresses, the number of asteroids coming towards the player will increase,
-        and their speed will become more relentless. Additionally, the player's speed will decrease,
-        adding an extra layer of challenge to the game."""
-        self.asteroids_manager.create_asteroids(frequency=self.settings.asteroid_freq)
-        self.asteroids_manager.update_asteroids()
-        self.collision_handler.check_asteroids_collisions(self._thunderbird_ship_hit,
-                                                                self._phoenix_ship_hit)
-        if not self.paused:
-            level_time = 6000
-            current_time = pygame.time.get_ticks() - self.pause_time
-            if current_time > self.last_level_time + level_time:
-                self.last_level_time = current_time
-                self._prepare_asteroids_level()
-
-
-    def _boss_rush(self):
-        """ Starts the Boss Rush game mode in which the players must battle
-        a series of increasingly difficult bosses, with each level presenting a new challenge."""
-        self._handle_asteroids(always=True)
-        self._create_boss_rush_bullets()
-
-
-    def _endless_onslaught(self):
-        """Starts the Endless Onslaught game mode,
-        where fleets of aliens and asteroids swarm towards the player.
-        As time goes on, the speed of the aliens and their bullets will increase."""
-        if len(self.aliens) < GAME_CONSTANTS['ENDLESS_MAX_ALIENS']:
-            self.aliens_manager.create_fleet()
-
-        self._handle_asteroids(always=True)
-
-        # Increase alien and bullet speed every 120 seconds
-        current_time = time.time()
-        if current_time - self.last_increase_time >= 120: # seconds
-            self.settings.alien_speed += 0.1
-            self.settings.alien_bullet_speed += 0.1
-            self.last_increase_time = current_time
-
-
-    def _slow_burn(self):
-        """Starts the Slow Burn game mode, where players must navigate through increasingly
-        challenging aliens as the speed of their ship and bullets gradually decreases over time."""
-        self._handle_asteroids(always=True)
-
-        current_time = time.time()
-        if current_time - self.last_increase_time >= 120: # seconds
-            self.settings.thunderbird_ship_speed = max(2.0,
-                                                    self.settings.thunderbird_ship_speed - 0.2)
-            self.settings.phoenix_ship_speed = max(2.0, self.settings.phoenix_ship_speed - 0.2)
-            self.settings.thunderbird_bullet_speed = max(2.0,
-                                                     self.settings.thunderbird_bullet_speed - 0.2)
-            self.settings.phoenix_bullet_speed = max(2.0,self.settings.phoenix_bullet_speed - 0.2)
-            self.last_increase_time = current_time
+        if self.settings.gm.endless_onslaught:
+            self.gm_manager.endless_onslaught(
+                self.aliens_manager.create_fleet, self._handle_asteroids)
+        elif self.settings.gm.slow_burn:
+            self.gm_manager.slow_burn(self._handle_asteroids)
+        elif self.settings.gm.boss_rush:
+            self.gm_manager.boss_rush(
+                self._handle_asteroids, self.alien_bullets_manager.create_alien_bullets)
+        elif self.settings.gm.meteor_madness:
+            self.gm_manager.meteor_madness(
+                        self.asteroids_manager.create_asteroids,
+                        self.asteroids_manager.update_asteroids,
+                        self.collision_handler.check_asteroids_collisions,
+                        self._prepare_asteroids_level,
+                        self._thunderbird_ship_hit,
+                        self._phoenix_ship_hit
+                    )
 
 
     def _handle_alien_creation(self):
         """Choose what aliens to create"""
         # Don't create any aliens in Meteor Madness
-        if self.settings.meteor_madness:
+        if self.settings.gm.meteor_madness:
             return
 
         # If Boss Rush game mode, create boss_aliens and return.
-        if self.settings.boss_rush:
+        if self.settings.gm.boss_rush:
             self.aliens_manager.create_boss_alien()
             return
 
@@ -518,6 +416,13 @@ class AlienOnslaught:
             lambda: setattr(self.settings, f"{player}_bullet_count",
                              getattr(self.settings, f"{player}_bullet_count") + 1),
             lambda: getattr(self, f"{player}_ship").draw_shield(),
+            lambda: setattr(self.settings, "alien_speed",
+                getattr(self.settings, "alien_speed") - 0.1) \
+                if self.settings.alien_speed > 0 else None,
+            lambda: setattr(self.settings, "alien_bullet_speed",
+                getattr(self.settings, "alien_bullet_speed") - 0.1) \
+                if self.settings.alien_bullet_speed > 0 else None,
+
         ]
         # randomly select one of the power ups and activate it.
         power_up_choice = random.choice(power_up_choices)
@@ -604,7 +509,7 @@ class AlienOnslaught:
 
     def _check_game_over(self):
         """Check if the game is over and if so, display the game over image"""
-        if self.settings.boss_rush and self.stats.level == 16:
+        if self.settings.gm.boss_rush and self.stats.level == 16:
             self._display_game_over()
             self.score_board.render_high_score()
         elif not any([self.stats.game_active, self.thunderbird_ship.state['alive'],
@@ -618,7 +523,7 @@ class AlienOnslaught:
         self._reset_game_objects()
         self.score_board.update_high_score()
 
-        if not self.high_score_saved:
+        if not self.ui_options.high_score_saved:
             game_mode_high_score_keys = {
                 'boss_rush': 'boss_rush_scores',
                 'endless_onslaught': 'endless_scores',
@@ -626,12 +531,10 @@ class AlienOnslaught:
                 'slow_burn': 'slow_burn_scores',
                 'normal': 'high_scores'
             }
-            game_mode = self.settings.game_mode or 'normal'
+            game_mode = self.settings.gm.game_mode or 'normal'
             high_score_key = game_mode_high_score_keys.get(game_mode, 'normal')
             self.score_board.save_high_score(high_score_key)
-            self.high_score_saved = True
-
-
+            self.ui_options.high_score_saved = True
 
 
     def _set_game_over(self):
@@ -693,13 +596,32 @@ class AlienOnslaught:
         self.thunderbird_ship.center_ship()
         self.phoenix_ship.center_ship()
 
+    def _display_pause(self):
+        pause_rect = self.settings.pause.get_rect()
+        pause_rect.centerx = self.screen.get_rect().centerx
+        pause_rect.centery = self.screen.get_rect().centery
+        self.screen.blit(self.settings.pause, pause_rect)
+
+
+    def _display_high_scores_on_screen(self):
+        game_mode_high_score_keys = {
+                'boss_rush': 'boss_rush_scores',
+                'endless_onslaught': 'endless_scores',
+                'meteor_madness': 'meteor_madness_scores',
+                'slow_burn': 'slow_burn_scores',
+                'normal': 'high_scores'
+            }
+        game_mode = self.settings.gm.game_mode or 'normal'
+        high_score_key = game_mode_high_score_keys[game_mode]
+        display_high_scores(self.screen, high_score_key)
+
 
     def _reset_game(self):
         # Reset the game statistics.
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
         self.settings.dynamic_settings()
         self.stats.game_active = True
-        self.high_score_saved = False
+        self.ui_options.high_score_saved = False
 
         # Prepare the scoreboard and health.
         self.score_board.render_scores()
@@ -712,6 +634,7 @@ class AlienOnslaught:
 
         # Play the warp animation and center the ships.
         self._reset_ships()
+        self.player_input.reset_ship_movement_flags()
 
         # Create aliens
         self._handle_alien_creation()
@@ -777,26 +700,20 @@ class AlienOnslaught:
         if self.stats.game_active:
             self._draw_game_objects()
 
+            if self.ui_options.paused:
+                self._display_pause()
+
         else:
             # Draw buttons if game is not active
             self._draw_buttons()
 
-            if self.show_difficulty:
+            if self.ui_options.show_difficulty:
                 self._draw_difficulty_buttons()
 
-            if self.show_high_scores:
-                game_mode_high_score_keys = {
-                    'boss_rush': 'boss_rush_scores',
-                    'endless_onslaught': 'endless_scores',
-                    'meteor_madness': 'meteor_madness_scores',
-                    'slow_burn': 'slow_burn_scores',
-                    'normal': 'high_scores'
-                }
-                game_mode = self.settings.game_mode or 'normal'
-                high_score_key = game_mode_high_score_keys[game_mode]
-                display_high_scores(self.screen, high_score_key)
+            if self.ui_options.show_high_scores:
+                self._display_high_scores_on_screen()
 
-            if self.show_game_modes:
+            if self.ui_options.show_game_modes:
                 self._draw_game_mode_buttons()
 
         pygame.display.flip()
@@ -813,7 +730,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.thunderbird_ship = Thunderbird(self, singleplayer=True)
         self.thunderbird_ship.state['single_player'] = True
         self.ships = [self.thunderbird_ship]
-        self.player_input = PlayerInput(self)
+        self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
         self.manage_screen = ScreenManager(self.settings, self.score_board,
                                         self.buttons, self.screen)
@@ -850,11 +767,13 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                self.player_input.check_keydown_events(
+                if self.stats.game_active:
+                    self.player_input.check_keydown_events(
                             event, self._fire_bullet,
                             self._reset_game, self.run_menu, singleplayer=True)
             elif event.type == pygame.KEYUP:
-                self.player_input.check_keyup_events(event)
+                if self.stats.game_active:
+                    self.player_input.check_keyup_events(event)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_buttons(mouse_pos)
@@ -907,7 +826,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.phoenix_ship.state['alive'] = False
         self.settings.dynamic_settings()
         self.stats.game_active = True
-        self.high_score_saved = False
+        self.ui_options.high_score_saved = False
 
         self.score_board.render_scores()
         self.score_board.render_high_score()
@@ -924,6 +843,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         # Create a new fleet and center the ship.
         self.thunderbird_ship.start_warp()
         self.thunderbird_ship.center_ship()
+        self.player_input.reset_ship_movement_flags()
 
         self._handle_alien_creation()
         self._handle_boss_stats()
@@ -959,24 +879,20 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         if self.stats.game_active:
             self._draw_game_objects()
 
+            if self.ui_options.paused:
+                self._display_pause()
+
         else:
             # Draw buttons if game is not active
             self._draw_buttons()
 
-            if self.show_difficulty:
+            if self.ui_options.show_difficulty:
                 self._draw_difficulty_buttons()
-            if self.show_high_scores:
-                game_mode_high_score_keys = {
-                    'boss_rush': 'boss_rush_scores',
-                    'endless_onslaught': 'endless_scores',
-                    'meteor_madness': 'meteor_madness_scores',
-                    'slow_burn': 'slow_burn_scores',
-                    'normal': 'high_scores'
-                }
-                game_mode = self.settings.game_mode or 'normal'
-                high_score_key = game_mode_high_score_keys[game_mode]
-                display_high_scores(self.screen, high_score_key)
-            if self.show_game_modes:
+
+            if self.ui_options.show_high_scores:
+                self._display_high_scores_on_screen()
+
+            if self.ui_options.show_game_modes:
                 self._draw_game_mode_buttons()
 
         pygame.display.flip()

@@ -37,6 +37,8 @@ class ScreenManager:
                                     self.buttons.endless.rect.y)
         self.buttons.meteor_madness.update_pos(self.buttons.slow_burn.rect.right -5,
                                     self.buttons.slow_burn.rect.y)
+        self.buttons.boss_rush.update_pos(self.buttons.meteor_madness.rect.right - 5,
+                                    self.buttons.meteor_madness.rect.y)
         self.score_board.prep_level()
         self.score_board.render_scores()
         self.score_board.render_high_score()

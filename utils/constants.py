@@ -67,6 +67,7 @@ ALIEN_BULLETS_IMG = {
     'xixo_bullet': 'images/alien_bullets/xixo_bullet.png',
 }
 
+
 BOSS_RUSH = {
     'arcturus': 'images/boss_rush/arcturus.png',
     'astaroth': 'images/boss_rush/astaroth.png',
@@ -198,11 +199,14 @@ SOUNDS = {
 
 # Dict used to map levels to alien images
 LEVEL_PREFIX = {
-        0: "Alien1",
+        1: "Alien1",
+        2: "Alien1",
         3: "Alien2",
+        4: "Alien2",
+        5: "Alien3",
         6: "Alien3",
-        9: "Alien4",
-        12: "Alien4",
+        7: "Alien4",
+        8: "Alien4",
     }
 
 

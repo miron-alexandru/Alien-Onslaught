@@ -9,8 +9,9 @@ from entities.player_bullets import Firebird, Thunderbolt
 
 class PlayerInput:
     """Class for handling player input events in a game."""
-    def __init__(self, game):
+    def __init__(self, game, ui_options):
         self.game = game
+        self.ui_options = ui_options
         self.thunderbird_ship = self.game.thunderbird_ship
         self.phoenix_ship = self.game.phoenix_ship
 
@@ -19,19 +20,19 @@ class PlayerInput:
         """Respond to keys being pressed."""
         match event.key:
             # If the game is paused, check for Q, P, R, and M keys
-            case pygame.K_q if self.game.paused:
+            case pygame.K_q if self.ui_options.paused:
                 pygame.quit()
                 sys.exit()
             case pygame.K_p:
-                self.game.paused = not self.game.paused
-            case pygame.K_r if self.game.paused:
+                self.ui_options.paused = not self.ui_options.paused
+            case pygame.K_r if self.ui_options.paused:
                 reset_game()
-                self.game.paused = not self.game.paused
-            case pygame.K_m if self.game.paused:
+                self.ui_options.paused = not self.ui_options.paused
+            case pygame.K_m if self.ui_options.paused:
                 run_menu()
 
             # If the game is not paused, check for player keypresses
-            case _ if not self.game.paused:
+            case _ if not self.game.ui_options.paused:
                 # Thunderbird controls
                 if (self.thunderbird_ship.state['alive'] and
                     not self.thunderbird_ship.state['warping'] and
@@ -121,10 +122,8 @@ class PlayerInput:
                 case pygame.K_DOWN:
                     self.phoenix_ship.moving_flags['down'] = False
 
-        if not self.thunderbird_ship.state['alive'] and not self.phoenix_ship.state['alive']:
-            self._reset_ship_movement_flags()
 
-    def _reset_ship_movement_flags(self):
+    def reset_ship_movement_flags(self):
         """Stop movement of both Thunderbird and Phoenix ships."""
         self.thunderbird_ship.moving_flags['right'] = False
         self.thunderbird_ship.moving_flags['left'] = False

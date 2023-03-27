@@ -87,7 +87,8 @@ class Animations:
             self.empower_timer += 1
             if self.empower_timer >= self.empower_delay:
                 self.empower_timer = 0
-                self.current_empower_frame = (self.current_empower_frame + 1) % len(self.empower_frames)
+                self.current_empower_frame = (
+                    (self.current_empower_frame + 1) % len(self.empower_frames))
                 self.empower_image = self.empower_frames[self.current_empower_frame]
                 self.empower_rect.center = self.ship.rect.center
                 if self.current_empower_frame == 0:  # animation played once

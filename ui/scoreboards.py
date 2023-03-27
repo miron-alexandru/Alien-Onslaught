@@ -80,13 +80,13 @@ class ScoreBoard:
 
     def prep_level(self):
         """Render the current level as an image and position it at the center of the screen."""
-        if self.settings.endless_onslaught:
+        if self.settings.gm.endless_onslaught:
             level_str =  "Endless Onslaught"
-        elif self.settings.slow_burn:
+        elif self.settings.gm.slow_burn:
             level_str = f"Slow Burn Level {str(self.stats.level)}"
-        elif self.settings.meteor_madness:
+        elif self.settings.gm.meteor_madness:
             level_str = f"Meteor Madness Level {str(self.stats.level)}"
-        elif self.settings.boss_rush:
+        elif self.settings.gm.boss_rush:
             if boss_name := boss_rush_image_map.get(self.stats.level, None):
                 level_str = f"Boss Rush: {boss_name.capitalize()}"
 
@@ -150,7 +150,7 @@ class ScoreBoard:
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        if not self.settings.meteor_madness and not self.settings.boss_rush:
+        if not self.settings.gm.meteor_madness and not self.settings.gm.boss_rush:
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
             self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
@@ -191,7 +191,7 @@ class SecondScoreBoard(ScoreBoard):
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        if not self.settings.meteor_madness:
+        if not self.settings.gm.meteor_madness:
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
