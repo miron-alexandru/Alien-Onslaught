@@ -24,12 +24,14 @@ class ScoreBoard:
         self.text_color = 'red'
         self.level_color = 'blue'
         self.font = pygame.font.SysFont('', 27)
+        self.bullets_num_font = pygame.font.SysFont('', 25)
 
         # Prepare the initial score and player health images.
         self.prep_level()
         self.render_scores()
         self.render_high_score()
         self.create_health()
+        self.render_bullets_num()
 
     def render_scores(self):
         """Render the scores for Thunderbird and Phoenix ships and display them on the screen."""
@@ -86,6 +88,8 @@ class ScoreBoard:
             level_str = f"Slow Burn Level {str(self.stats.level)}"
         elif self.settings.gm.meteor_madness:
             level_str = f"Meteor Madness Level {str(self.stats.level)}"
+        elif self.settings.gm.last_bullet:
+            level_str = f"Last Bullet Level {str(self.stats.level)}"
         elif self.settings.gm.boss_rush:
             if boss_name := boss_rush_image_map.get(self.stats.level, None):
                 level_str = f"Boss Rush: {boss_name.capitalize()}"
@@ -105,6 +109,32 @@ class ScoreBoard:
         self.level_rect.centerx = screen_width // 2
         self.level_rect.top = 25 + level_height
 
+    def render_bullets_num(self):
+        """Renders the remaining bullets number for Thunderbird and Pheonix
+        and if they are out of bullets, displays an appropriate message."""
+        thunder_alive = self.game.thunderbird_ship.state.alive
+        phoenix_alive = self.game.phoenix_ship.state.alive
+
+        thunder_bullets = self.game.thunderbird_ship.remaining_bullets if thunder_alive else 0
+        phoenix_bullets = self.game.phoenix_ship.remaining_bullets if phoenix_alive else 0
+
+        thunder_bullets_str = (f"Remaining bullets: {thunder_bullets}"
+                                if thunder_bullets else "Out of bullets!")
+        phoenix_bullets_str = (f"Remaining bullets: {phoenix_bullets}"
+                                if phoenix_bullets  else "Out of bullets!")
+
+
+        self.thunder_bullets_num_img = self.bullets_num_font.render(thunder_bullets_str,
+                                                            True, self.text_color, None)
+        self.phoenix_bullets_num_img = self.bullets_num_font.render(phoenix_bullets_str,
+                                                             True, self.text_color, None)
+        screen_rect = self.screen.get_rect()
+        self.thunder_bullets_num_rect = self.thunder_bullets_num_img.get_rect()
+        self.phoenix_bullets_num_rect = self.phoenix_bullets_num_img.get_rect()
+
+        self.thunder_bullets_num_rect.top = self.phoenix_bullets_num_rect.top = 55
+        self.thunder_bullets_num_rect.left = self.screen_rect.left + 10
+        self.phoenix_bullets_num_rect.right = screen_rect.right - 10
 
     def create_health(self):
         """Creates heart sprites for both players based on their health points."""
@@ -153,6 +183,9 @@ class ScoreBoard:
         if not self.settings.gm.meteor_madness and not self.settings.gm.boss_rush:
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
             self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
+        if self.settings.gm.last_bullet:
+            self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
+            self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         self.thunderbird_health.draw(self.screen)
@@ -182,6 +215,7 @@ class SecondScoreBoard(ScoreBoard):
         self.thunderbird_score_rect.right = self.level_rect.centerx + 250
         self.thunderbird_score_rect.top = 20
 
+
     def update_high_score(self):
         """Updates the high score if the current score is higher and,
         renders the new high score on screen."""
@@ -189,10 +223,30 @@ class SecondScoreBoard(ScoreBoard):
             self.stats.high_score = self.stats.thunderbird_score
             self.render_high_score()
 
+    def render_bullets_num(self):
+        """Renders the remaining bullets number for Thunderbird and
+        if they are out of bullets, displays an appropriate message."""
+        thunder_alive = self.game.thunderbird_ship.state.alive
+
+        thunder_bullets = self.game.thunderbird_ship.remaining_bullets if thunder_alive else 0
+
+        thunder_bullets_str = (f"Remaining bullets: {thunder_bullets}"
+                                if thunder_bullets else "Out of bullets!")
+
+        self.thunder_bullets_num_img = self.bullets_num_font.render(thunder_bullets_str,
+                                                            True, self.text_color, None)
+        screen_rect = self.screen.get_rect()
+        self.thunder_bullets_num_rect = self.thunder_bullets_num_img.get_rect()
+
+        self.thunder_bullets_num_rect.top = 55
+        self.thunder_bullets_num_rect.left = self.screen_rect.left + 10
+
     def show_score(self):
         """Draw scores, level and health to the screen."""
         if not self.settings.gm.meteor_madness:
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
+        if self.settings.gm.last_bullet:
+            self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         self.thunderbird_health.draw(self.screen)

@@ -70,16 +70,27 @@ class GameModesManager:
         update_asteroids()
         collision_handler(thunderbird_hit, phoenix_hit)
 
-        if not self.game.paused:
+        if not self.game.ui_options.paused:
             level_time = 60000 # miliseconds
             current_time = pygame.time.get_ticks() - self.game.pause_time
             if current_time > self.game.last_level_time + level_time:
                 self.game.last_level_time = current_time
                 prepare_level()
 
+    def last_bullet(self, thunderbird, phoenix):
+        """Starts the Last Bullet game mode in which the players must fight aliens
+        but they have a limited number of bullets, when a player remains with no bullets
+        he dies, when both players are out of bullets, the game is over."""
+        for player in [thunderbird, phoenix]:
+            if player.remaining_bullets <= 0:
+                player.state.alive = False
+
+        if all(not player.state.alive for player in [thunderbird, phoenix]):
+            self.stats.game_active = False
+
 
     def boss_rush(self, asteroid_handler, bullets_manager):
-        """ Starts the Boss Rush game mode in which the players must battle
+        """Starts the Boss Rush game mode in which the players must battle
         a series of increasingly difficult bosses, with each level presenting a new challenge."""
         asteroid_handler(always=True)
         self._create_boss_rush_bullets(bullets_manager)
@@ -90,7 +101,7 @@ class GameModesManager:
         where fleets of aliens and asteroids swarm towards the player.
         As time goes on, the speed of the aliens and their bullets will increase."""
         if len(self.game.aliens) < GAME_CONSTANTS['ENDLESS_MAX_ALIENS']:
-            aliens_manager()
+            aliens_manager(self.settings.fleet_rows)
 
         asteroid_handler(always=True)
 

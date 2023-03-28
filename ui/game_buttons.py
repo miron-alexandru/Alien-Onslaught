@@ -78,6 +78,8 @@ class GameButtons:
                             (self.slow_burn.rect.right - 5, self.slow_burn.rect.y))
         self.boss_rush = Button(self, self.button_imgs['boss_rush'],
                             (self.meteor_madness.rect.right - 5, self.meteor_madness.rect.y))
+        self.last_bullet = Button(self, self.button_imgs['last_bullet'],
+                            (self.boss_rush.rect.right - 5, self.boss_rush.rect.y))
         self.high_scores = Button(self, self.button_imgs['high_scores'],
                             (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom))
         self.menu = Button(self, self.button_imgs["menu_button"],
@@ -139,6 +141,7 @@ class GameButtons:
         self.gm_options.slow_burn = False
         self.gm_options.meteor_madness = False
         self.gm_options.boss_rush = False
+        self.gm_options.last_bullet = False
         if game_mode_setting is not None:
             setattr(self.gm_options, game_mode_setting, True)
 
@@ -176,6 +179,12 @@ class GameButtons:
         self.gm_options.game_mode = 'boss_rush'
         self.ui_options.show_game_modes = False
 
+    def handle_last_bullet_button(self):
+        """Toggle the Last Bullet game mode and hide all game mode buttons."""
+        self.gm_options.last_bullet = not self.gm_options.last_bullet
+        self._set_game_mode_settings('last_bullet')
+        self.gm_options.game_mode = 'last_bullet'
+        self.ui_options.show_game_modes = False
 
     def handle_difficulty_button(self, speedup_scale):
         """Set the game difficulty (speed-up scale)"""

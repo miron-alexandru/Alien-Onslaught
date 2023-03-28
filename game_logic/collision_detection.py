@@ -20,18 +20,18 @@ class CollisionManager:
         # alien, alien bullet or asteroid that collided with it and turn the shield off.
         for ship in ships:
             for alien in aliens:
-                if ship.state['shielded'] and ship.anims.shield_rect.colliderect(alien.rect):
+                if ship.state.shielded and ship.anims.shield_rect.colliderect(alien.rect):
                     if not isinstance(alien, BossAlien):
                         alien.kill()
-                    ship.state['shielded'] = False
+                    ship.state.shielded = False
             for bullet in bullets:
-                if ship.state['shielded'] and ship.anims.shield_rect.colliderect(bullet.rect):
+                if ship.state.shielded and ship.anims.shield_rect.colliderect(bullet.rect):
                     bullet.kill()
-                    ship.state['shielded'] = False
+                    ship.state.shielded = False
             for asteroid in asteroids:
-                if ship.state['shielded'] and ship.anims.shield_rect.colliderect(asteroid):
+                if ship.state.shielded and ship.anims.shield_rect.colliderect(asteroid):
                     asteroid.kill()
-                    ship.state['shielded'] = False
+                    ship.state.shielded = False
 
 
     def check_asteroids_collisions(self, thunderbird_hit, phoenix_hit):
@@ -40,16 +40,16 @@ class CollisionManager:
         # then check for collisions with asteroids and which player collided
         # and activate the corresponding method
         for ship in self.game.ships:
-            if ship.state['alive']:
+            if ship.state.alive:
                 if collision := pygame.sprite.spritecollideany(
                     ship, self.game.asteroids
                 ):
                     if (ship is self.game.thunderbird_ship
-                        and not self.game.thunderbird_ship.state['immune']):
+                        and not self.game.thunderbird_ship.state.immune):
                         thunderbird_hit()
                         collision.kill()
                     if (ship is self.game.phoenix_ship
-                        and not self.game.phoenix_ship.state['immune']):
+                        and not self.game.phoenix_ship.state.immune):
                         phoenix_hit()
                         collision.kill()
 
@@ -64,13 +64,13 @@ class CollisionManager:
         player_info = {
             "thunderbird": {
                 "ship": self.game.thunderbird_ship,
-                "active": self.game.thunderbird_ship.state['alive'],
+                "active": self.game.thunderbird_ship.state.alive,
                 "power_up": power_up_method,
                 "health_power_up": health_power_up_method,
             },
             "phoenix": {
                 "ship": self.game.phoenix_ship,
-                "active": self.game.phoenix_ship.state['alive'],
+                "active": self.game.phoenix_ship.state.alive,
                 "power_up": power_up_method,
                 "health_power_up": health_power_up_method,
             },
@@ -96,12 +96,12 @@ class CollisionManager:
             self.game.phoenix_bullets, self.game.aliens, True, False)
 
         # Thunderbird collisions
-        if self.game.thunderbird_ship.state['alive'] and thunderbird_ship_collisions:
+        if self.game.thunderbird_ship.state.alive and thunderbird_ship_collisions:
             self.handle_player_collisions(thunderbird_ship_collisions, 'thunderbird')
 
         if (
             not singleplayer
-            and self.game.phoenix_ship.state['alive']
+            and self.game.phoenix_ship.state.alive
             and phoenix_ship_collisions
         ):
             self.handle_player_collisions(phoenix_ship_collisions, 'phoenix')
@@ -117,14 +117,14 @@ class CollisionManager:
         phoenix_collision = pygame.sprite.spritecollideany(self.game.phoenix_ship,
                                                                   self.game.alien_bullet)
 
-        if (self.game.thunderbird_ship.state['alive']
-            and not self.game.thunderbird_ship.state['immune']
+        if (self.game.thunderbird_ship.state.alive
+            and not self.game.thunderbird_ship.state.immune
             and thunderbird_collision):
             thunderbird_hit()
             thunderbird_collision.kill()
 
-        if (self.game.phoenix_ship.state['alive']
-         and not self.game.phoenix_ship.state['immune']
+        if (self.game.phoenix_ship.state.alive
+         and not self.game.phoenix_ship.state.immune
          and phoenix_collision):
             phoenix_hit()
             phoenix_collision.kill()

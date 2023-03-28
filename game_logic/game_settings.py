@@ -67,6 +67,7 @@ class Settings:
         self.alien_bullet_speed = 1.5
         self.alien_points = 1
         self.fleet_rows = 3
+        self.last_bullet_rows = 2
         self.aliens_num = 10
         self.alien_direction = 1
 
@@ -85,7 +86,7 @@ class Settings:
             self.alien_bullet_speed += self.speedup_scale
         self.alien_points = int(self.alien_points + GAME_CONSTANTS['SCORE_SCALE'])
 
-        if self.aliens_num < GAME_CONSTANTS['MAX_ALIEN_NUM']:
+        if not self.gm.last_bullet and self.aliens_num < GAME_CONSTANTS['MAX_ALIEN_NUM']:
             self.aliens_num += 2
 
 
@@ -108,4 +109,5 @@ class GameModes:
     slow_burn: bool = False
     meteor_madness: bool = False
     boss_rush: bool = False
+    last_bullet: bool = False
     game_mode: str = 'normal'

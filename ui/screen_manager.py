@@ -39,7 +39,11 @@ class ScreenManager:
                                     self.buttons.slow_burn.rect.y)
         self.buttons.boss_rush.update_pos(self.buttons.meteor_madness.rect.right - 5,
                                     self.buttons.meteor_madness.rect.y)
+        self.buttons.last_bullet.update_pos(self.buttons.boss_rush.rect.right - 5,
+                                    self.buttons.boss_rush.rect.y)
+
         self.score_board.prep_level()
         self.score_board.render_scores()
         self.score_board.render_high_score()
         self.score_board.create_health()
+        self.score_board.render_bullets_num()

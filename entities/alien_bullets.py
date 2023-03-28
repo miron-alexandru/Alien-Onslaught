@@ -86,6 +86,7 @@ class BossBullet(Sprite):
         self.screen.blit(self.image, self.rect)
 
 
+
 class AlienBulletsManager:
     """The AlienBulletsManager manages the creation and update for the normal
     and boss bullets in the game."""

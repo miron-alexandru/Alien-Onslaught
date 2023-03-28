@@ -15,8 +15,8 @@ class GameStats:
 
     def reset_stats(self, phoenix_ship, thunderbird_ship):
         """Initialize statistics that can change during the game."""
-        phoenix_ship.state['alive'] = True
-        thunderbird_ship.state['alive'] = True
+        phoenix_ship.state.alive = True
+        thunderbird_ship.state.alive = True
         self.phoenix_hp = self.thunderbird_hp = STARTING_HP
         self.max_hp = MAX_HP
         self.thunder_bullets = self.settings.thunderbird_bullet_count

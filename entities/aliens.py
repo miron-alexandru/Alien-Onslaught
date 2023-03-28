@@ -133,7 +133,7 @@ class AliensManager:
         self.screen = screen
         self.stats = game.stats
 
-    def create_fleet(self):
+    def create_fleet(self, rows):
         """Create the fleet of aliens."""
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
@@ -142,7 +142,7 @@ class AliensManager:
         start_y = 50
 
         # Create the full fleet of aliens.
-        for row_number in range(self.settings.fleet_rows):
+        for row_number in range(rows):
             for alien_number in range(self.settings.aliens_num):
                 # Create the alien and set its starting position above the top of the screen
                 alien = Alien(self)
@@ -167,13 +167,13 @@ class AliensManager:
         # Look for alien-ship collisions.
         if (
             pygame.sprite.spritecollideany(self.game.thunderbird_ship, self.aliens)
-            and not self.game.thunderbird_ship.state['immune']
+            and not self.game.thunderbird_ship.state.immune
         ):
             thunderbird_hit_method()
         if (
             not singleplayer
             and pygame.sprite.spritecollideany(self.game.phoenix_ship, self.aliens)
-            and not self.game.phoenix_ship.state['immune']
+            and not self.game.phoenix_ship.state.immune
         ):
             phoenix_hit_method()
         self._check_aliens_bottom(thunderbird_hit_method, phoenix_hit_method)

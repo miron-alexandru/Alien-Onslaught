@@ -34,9 +34,9 @@ class PlayerInput:
             # If the game is not paused, check for player keypresses
             case _ if not self.game.ui_options.paused:
                 # Thunderbird controls
-                if (self.thunderbird_ship.state['alive'] and
-                    not self.thunderbird_ship.state['warping'] and
-                    not self.thunderbird_ship.state['exploding']):
+                if (self.thunderbird_ship.state.alive and
+                    not self.thunderbird_ship.state.warping and
+                    not self.thunderbird_ship.state.exploding):
                     match event.key:
                         case pygame.K_SPACE:
                             fire_bullet_method(
@@ -66,9 +66,9 @@ class PlayerInput:
 
                 # Phoenix controls
                 if not singleplayer:
-                    if (self.phoenix_ship.state['alive'] and
-                    not self.phoenix_ship.state['warping'] and
-                    not self.phoenix_ship.state['exploding']):
+                    if (self.phoenix_ship.state.alive and
+                    not self.phoenix_ship.state.warping and
+                    not self.phoenix_ship.state.exploding):
                         match event.key:
                             case pygame.K_RETURN:
                                 fire_bullet_method(
@@ -98,7 +98,7 @@ class PlayerInput:
     def check_keyup_events(self, event):
         """Respond to keys being released."""
         # Thunderbird controls
-        if self.thunderbird_ship.state['alive']:
+        if self.thunderbird_ship.state.alive:
             match event.key:
                 # Thunderbird controls
                 case pygame.K_d:
@@ -111,7 +111,7 @@ class PlayerInput:
                     self.thunderbird_ship.moving_flags['down'] = False
 
             # Phoenix controls
-        if self.phoenix_ship.state['alive']:
+        if self.phoenix_ship.state.alive:
             match event.key:
                 case pygame.K_RIGHT:
                     self.phoenix_ship.moving_flags['right'] = False

@@ -67,7 +67,7 @@ class Animations:
         if self.warp_counter >= self.warp_delay:
             self.warp_index += 1
             if self.warp_index >= len(self.warp_frames):
-                self.ship.state['warping'] = False
+                self.ship.state.warping = False
                 self.warp_index = 0
             else:
                 self.image = self.warp_frames[self.warp_index]
@@ -92,7 +92,7 @@ class Animations:
                 self.empower_image = self.empower_frames[self.current_empower_frame]
                 self.empower_rect.center = self.ship.rect.center
                 if self.current_empower_frame == 0:  # animation played once
-                    self.ship.state['empowered'] = False
+                    self.ship.state.empowered = False
 
     def update_explosion_animation(self):
         """Update the animation for the ship's explosion effect."""
@@ -101,4 +101,4 @@ class Animations:
         )
         self.explosion_image = self.explosion_frames[self.current_explosion_frame]
         if self.current_explosion_frame == 0:
-            self.ship.state['exploding'] = False
+            self.ship.state.exploding = False

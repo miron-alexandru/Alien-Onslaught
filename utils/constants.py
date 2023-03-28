@@ -6,7 +6,7 @@ BUTTON_NAMES = [
                 'difficulty', 'easy', 'medium', 'hard', 'high_scores',
                 'game_modes', 'endless', 'normal', 'slow_burn', 'meteor_madness',
                 "single_player", "multiplayer","player_controls",
-                "menu_quit_button", 'boss_rush',
+                "menu_quit_button", 'boss_rush', 'last_bullet',
 ]
 
 
@@ -33,6 +33,7 @@ BACKGROUNDS = {
     'space4': 'images/background/space4.jpg',
 }
 
+BULLETS_AVAILABLE = 11
 
 OTHER = {
     'gameover': 'images/other/gameover.png',

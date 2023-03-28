@@ -18,7 +18,7 @@ from game_logic.game_modes import GameModesManager
 from utils.game_utils import display_high_scores
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
-    BOSS_LEVELS,
+    BOSS_LEVELS, BULLETS_AVAILABLE
 )
 
 from ui.screen_manager import ScreenManager
@@ -222,6 +222,7 @@ class AlienOnslaught:
             self.buttons.endless: self.buttons.handle_endless_button,
             self.buttons.meteor_madness: self.buttons.handle_meteor_madness_button,
             self.buttons.boss_rush: self.buttons.handle_boss_rush_button,
+            self.buttons.last_bullet: self.buttons.handle_last_bullet_button,
             self.buttons.slow_burn: self.buttons.handle_slow_burn_button,
             self.buttons.normal: self.buttons.handle_normal_button,
             self.buttons.easy: self.buttons.handle_difficulty_button(DIFFICULTIES['EASY']),
@@ -344,12 +345,13 @@ class AlienOnslaught:
                         self.collision_handler.check_asteroids_collisions,
                         self._prepare_asteroids_level,
                         self._thunderbird_ship_hit,
-                        self._phoenix_ship_hit
-                    )
+                        self._phoenix_ship_hit)
+        elif self.settings.gm.last_bullet:
+            self.gm_manager.last_bullet(self.thunderbird_ship, self.phoenix_ship)
 
 
     def _handle_alien_creation(self):
-        """Choose what aliens to create"""
+        """Choose what aliens to create for every game mode."""
         # Don't create any aliens in Meteor Madness
         if self.settings.gm.meteor_madness:
             return
@@ -359,33 +361,37 @@ class AlienOnslaught:
             self.aliens_manager.create_boss_alien()
             return
 
+        if self.settings.gm.last_bullet:
+            self.aliens_manager.create_fleet(self.settings.last_bullet_rows)
+            for ship in self.ships:
+                ship.remaining_bullets = BULLETS_AVAILABLE
+            self.score_board.render_bullets_num()
+            return
+
         # Create Bosses at the specified levels.
         if self.stats.level in BOSS_LEVELS:
             self.aliens_manager.create_boss_alien()
 
         # Create normal fleets of aliens.
         else:
-            self.aliens_manager.create_fleet()
+            self.aliens_manager.create_fleet(self.settings.fleet_rows)
 
 
     def _fire_bullet(self, bullets, bullets_allowed, bullet_class, num_bullets, ship):
         """Create new player bullets."""
         # Create the bullets at and position them correctly as the number of bullets increases
         if len(bullets) < bullets_allowed:
-            if ship.state['bullet_power']:
-                offset_amount = 25
-                for i in range(num_bullets):
-                    new_bullet = bullet_class(self)
-                    bullets.add(new_bullet)
-                    offset_x = offset_amount * (i - (num_bullets - 1) / 2)
-                    offset_y = offset_amount * (i - (num_bullets - 1) / 2)
-                    new_bullet.rect.centerx = ship.rect.centerx + offset_x
-                    new_bullet.rect.centery = ship.rect.centery + offset_y
-            else:
+            offset_amount = 25
+            for i in range(num_bullets):
                 new_bullet = bullet_class(self)
-                new_bullet.rect.centerx = ship.rect.centerx
-                new_bullet.rect.centery = ship.rect.centery - 30
                 bullets.add(new_bullet)
+                offset_x = offset_amount * (i - (num_bullets - 1) / 2)
+                offset_y = offset_amount * (i - (num_bullets - 1) / 2)
+                new_bullet.rect.centerx = ship.rect.centerx + offset_x
+                new_bullet.rect.centery = ship.rect.centery + offset_y
+                if self.settings.gm.last_bullet:
+                    ship.remaining_bullets -= 1
+                    self.score_board.render_bullets_num()
 
 
     def _update_bullets(self):
@@ -417,11 +423,11 @@ class AlienOnslaught:
                              getattr(self.settings, f"{player}_bullet_count") + 1),
             lambda: getattr(self, f"{player}_ship").draw_shield(),
             lambda: setattr(self.settings, "alien_speed",
-                getattr(self.settings, "alien_speed") - 0.1) \
-                if self.settings.alien_speed > 0 else None,
+                        getattr(self.settings, "alien_speed") - 0.1) \
+                        if self.settings.alien_speed > 0 else None,
             lambda: setattr(self.settings, "alien_bullet_speed",
-                getattr(self.settings, "alien_bullet_speed") - 0.1) \
-                if self.settings.alien_bullet_speed > 0 else None,
+                        getattr(self.settings, "alien_bullet_speed") - 0.1) \
+                        if self.settings.alien_bullet_speed > 0 else None,
 
         ]
         # randomly select one of the power ups and activate it.
@@ -443,7 +449,7 @@ class AlienOnslaught:
 
     def _thunderbird_ship_hit(self):
         """Respond to the Thunderbird ship being hit by an alien, bullet or asteroid."""
-        if self.thunderbird_ship.state['exploding']:
+        if self.thunderbird_ship.state.exploding:
             return
 
         if self.stats.thunderbird_hp:
@@ -451,11 +457,11 @@ class AlienOnslaught:
             self.thunderbird_ship.set_immune()
         else:
             # player becomes inactive when loses all hp
-            self.thunderbird_ship.state['alive'] = False
+            self.thunderbird_ship.state.alive = False
             # if the other player is active, remove bullets and continue
             # until both players are dead
-            if self.phoenix_ship.state['alive']:
-                self.thunderbird_bullets.empty()
+            if self.phoenix_ship.state.alive:
+                return
             else:
                 # game over if both player are inactive.
                 self.stats.game_active = False
@@ -464,7 +470,7 @@ class AlienOnslaught:
     def _destroy_thunderbird(self):
         # what happens when the player get's hit
         self.thunderbird_ship.explode()
-        self.thunderbird_ship.state['shielded'] = False
+        self.thunderbird_ship.state.shielded = False
         self.settings.thunderbird_bullet_count = 1
         if self.settings.thunderbird_bullets_allowed > 1:
             self.settings.thunderbird_bullets_allowed -= 2
@@ -476,7 +482,7 @@ class AlienOnslaught:
 
     def _phoenix_ship_hit(self):
         """Respond to the Phoenix ship being hit by an alien, bullet or asteroid."""
-        if self.phoenix_ship.state['exploding']:
+        if self.phoenix_ship.state.exploding:
             return
 
         if self.stats.phoenix_hp:
@@ -484,11 +490,11 @@ class AlienOnslaught:
             self.phoenix_ship.set_immune()
         else:
             # player becomes inactive when loses all hp
-            self.phoenix_ship.state['alive'] = False
+            self.phoenix_ship.state.alive = False
             # if the other player is active, remove bullets and continue
             # until both players are dead
-            if self.thunderbird_ship.state['alive']:
-                self.phoenix_bullets.empty()
+            if self.thunderbird_ship.state.alive:
+                return
             else:
                 # game over if both players are inactive.
                 self.stats.game_active = False
@@ -497,7 +503,7 @@ class AlienOnslaught:
     def _destroy_phoenix(self):
         # what happens when the player gets hit
         self.phoenix_ship.explode()
-        self.phoenix_ship.state['shielded'] = False
+        self.phoenix_ship.state.shielded = False
         self.settings.phoenix_bullet_count = 1
         if self.settings.phoenix_bullets_allowed > 1:
             self.settings.phoenix_bullets_allowed -= 2
@@ -512,8 +518,8 @@ class AlienOnslaught:
         if self.settings.gm.boss_rush and self.stats.level == 16:
             self._display_game_over()
             self.score_board.render_high_score()
-        elif not any([self.stats.game_active, self.thunderbird_ship.state['alive'],
-                     self.phoenix_ship.state['alive']]):
+        elif not any([self.stats.game_active, self.thunderbird_ship.state.alive,
+                     self.phoenix_ship.state.alive]):
             self._display_game_over()
 
 
@@ -529,10 +535,11 @@ class AlienOnslaught:
                 'endless_onslaught': 'endless_scores',
                 'meteor_madness': 'meteor_madness_scores',
                 'slow_burn': 'slow_burn_scores',
+                'last_bullet': 'last_bullet_scores',
                 'normal': 'high_scores'
             }
             game_mode = self.settings.gm.game_mode or 'normal'
-            high_score_key = game_mode_high_score_keys.get(game_mode, 'normal')
+            high_score_key = game_mode_high_score_keys.get(game_mode, 'high_scores')
             self.score_board.save_high_score(high_score_key)
             self.ui_options.high_score_saved = True
 
@@ -609,7 +616,8 @@ class AlienOnslaught:
                 'endless_onslaught': 'endless_scores',
                 'meteor_madness': 'meteor_madness_scores',
                 'slow_burn': 'slow_burn_scores',
-                'normal': 'high_scores'
+                'last_bullet': 'last_bullet_scores',
+                'normal': 'high_scores',
             }
         game_mode = self.settings.gm.game_mode or 'normal'
         high_score_key = game_mode_high_score_keys[game_mode]
@@ -692,6 +700,7 @@ class AlienOnslaught:
         self.buttons.slow_burn.draw_button()
         self.buttons.meteor_madness.draw_button()
         self.buttons.boss_rush.draw_button()
+        self.buttons.last_bullet.draw_button()
 
 
     def _update_screen(self):
@@ -728,7 +737,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.score_board = SecondScoreBoard(self)
         self.clock = pygame.time.Clock()
         self.thunderbird_ship = Thunderbird(self, singleplayer=True)
-        self.thunderbird_ship.state['single_player'] = True
+        self.thunderbird_ship.state.single_player = True
         self.ships = [self.thunderbird_ship]
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
@@ -809,21 +818,21 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
     def _thunderbird_ship_hit(self):
         """Respond to the Thunderbird ship being hit by an alien."""
-        if self.thunderbird_ship.state['exploding']:
+        if self.thunderbird_ship.state.exploding:
             return
 
         if self.stats.thunderbird_hp:
             self._destroy_thunderbird()
             self.thunderbird_ship.set_immune()
         else:
-            self.thunderbird_ship.state['alive'] = False
+            self.thunderbird_ship.state.alive = False
             self.stats.game_active = False
 
 
     def _reset_game(self):
         # Reset the game statistics.
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
-        self.phoenix_ship.state['alive'] = False
+        self.phoenix_ship.state.alive = False
         self.settings.dynamic_settings()
         self.stats.game_active = True
         self.ui_options.high_score_saved = False

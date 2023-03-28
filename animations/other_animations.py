@@ -3,7 +3,6 @@ parts of the game are located."""
 
 from utils.frames import destroy_frames
 
-
 class DestroyAnim:
     """Class that manages the animation for when an entity get's destroyed."""
     def __init__(self, entity):
