@@ -239,11 +239,7 @@ class SecondScoreBoard(ScoreBoard):
 
         self.thunder_bullets_num_img = self.bullets_num_font.render(thunder_bullets_str,
                                                             True, self.text_color, None)
-<<<<<<< HEAD
 
-=======
-        screen_rect = self.screen.get_rect()
->>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
         self.thunder_bullets_num_rect = self.thunder_bullets_num_img.get_rect()
 
         self.thunder_bullets_num_rect.top = 55

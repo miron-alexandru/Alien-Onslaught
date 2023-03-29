@@ -96,19 +96,11 @@ class CollisionManager:
             self.game.phoenix_bullets, self.game.aliens, True, False)
 
         # Thunderbird collisions
-<<<<<<< HEAD
         if thunderbird_ship_collisions:
-=======
-        if self.game.thunderbird_ship.state.alive and thunderbird_ship_collisions:
->>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
             self.handle_player_collisions(thunderbird_ship_collisions, 'thunderbird')
 
         if (
             not singleplayer
-<<<<<<< HEAD
-=======
-            and self.game.phoenix_ship.state.alive
->>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
             and phoenix_ship_collisions
         ):
             self.handle_player_collisions(phoenix_ship_collisions, 'phoenix')

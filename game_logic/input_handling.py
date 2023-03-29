@@ -62,9 +62,6 @@ class PlayerInput:
                             self.thunderbird_ship.image = self.thunderbird_ship.anims.ship_images[1]
                         case pygame.K_3:
                             self.thunderbird_ship.image = self.thunderbird_ship.anims.ship_images[2]
-                        case pygame.K_4:
-                            self.game.kill_aliens()
-
 
                 # Phoenix controls
                 if not singleplayer:

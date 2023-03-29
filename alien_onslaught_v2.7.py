@@ -18,12 +18,8 @@ from game_logic.game_modes import GameModesManager
 from utils.game_utils import display_high_scores
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
-<<<<<<< HEAD
     BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
     AVAILABLE_BULLETS_MAP_SINGLE,
-=======
-    BOSS_LEVELS, BULLETS_AVAILABLE
->>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
 )
 
 from ui.screen_manager import ScreenManager
@@ -218,11 +214,6 @@ class AlienOnslaught:
                 self._resize_screen(event.size)
                 self.manage_screen.update_buttons()
 
-    def kill_aliens(self):
-        for alien in self.aliens.sprites():
-            alien.kill()
-
-
     def _create_button_actions_dict(self):
         """Create a dictionary mapping buttons to their corresponding actions."""
         return {
@@ -375,12 +366,6 @@ class AlienOnslaught:
 
         if self.settings.gm.last_bullet:
             self.aliens_manager.create_fleet(self.settings.last_bullet_rows)
-<<<<<<< HEAD
-=======
-            for ship in self.ships:
-                ship.remaining_bullets = BULLETS_AVAILABLE
-            self.score_board.render_bullets_num()
->>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
             return
 
         # Create Bosses at the specified levels.
@@ -868,11 +853,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
 
     def _thunderbird_ship_hit(self):
-<<<<<<< HEAD
         """Respond to the Thunderbird ship being hit"""
-=======
-        """Respond to the Thunderbird ship being hit by an alien."""
->>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
         if self.thunderbird_ship.state.exploding:
             return
 

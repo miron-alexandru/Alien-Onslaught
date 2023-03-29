@@ -33,7 +33,6 @@ BACKGROUNDS = {
     'space4': 'images/background/space4.jpg',
 }
 
-BULLETS_AVAILABLE = 11
 
 AVAILABLE_BULLETS_MAP = {
         1: 9,
