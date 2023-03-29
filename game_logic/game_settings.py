@@ -68,7 +68,11 @@ class Settings:
         self.alien_points = 1
         self.fleet_rows = 3
         self.last_bullet_rows = 2
+<<<<<<< HEAD
+        self.aliens_num = 8
+=======
         self.aliens_num = 10
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
         self.alien_direction = 1
 
         # Bosses Settings
@@ -109,5 +113,9 @@ class GameModes:
     slow_burn: bool = False
     meteor_madness: bool = False
     boss_rush: bool = False
+<<<<<<< HEAD
+    last_bullet: bool = True
+=======
     last_bullet: bool = False
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
     game_mode: str = 'normal'

@@ -14,6 +14,7 @@ class Thunderbird(Sprite):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
+        self.game = game
         self.screen_rect = game.screen.get_rect()
         self.image = pygame.image.load(SHIPS['thunderbird'])
 
@@ -24,8 +25,12 @@ class Thunderbird(Sprite):
         self.state = ShipStates()
 
         self.immune_start_time = 0
+<<<<<<< HEAD
+        self.remaining_bullets = 17 if singleplayer else 9
+=======
         self.remaining_bullets = BULLETS_AVAILABLE
 
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
 
         self.moving_flags = {
             'right': False,
@@ -132,6 +137,10 @@ class Thunderbird(Sprite):
     def empower(self):
         """Start the empower effect."""
         self.state.empowered = True
+<<<<<<< HEAD
+
+=======
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
 
 
 class Phoenix(Thunderbird):

@@ -35,6 +35,33 @@ BACKGROUNDS = {
 
 BULLETS_AVAILABLE = 11
 
+AVAILABLE_BULLETS_MAP = {
+        1: 9,
+        2: 9,
+        3: 9,
+        4: 9,
+        5: 17,
+        6: 17,
+        7: 17,
+        8: 17,
+        9: 17,
+        10: 25,
+}
+
+
+AVAILABLE_BULLETS_MAP_SINGLE = {
+        1: 17,
+        2: 17,
+        3: 17,
+        4: 17,
+        5: 34,
+        6: 34,
+        7: 34,
+        8: 34,
+        9: 34,
+        10: 50,
+}
+
 OTHER = {
     'gameover': 'images/other/gameover.png',
     'pause': 'images/other/pause.png',
@@ -164,6 +191,7 @@ boss_rush_hp_map = {
             15: 300,
 
 }
+
 normal_boss_points = {
     15: 5000,
     20: 7000,

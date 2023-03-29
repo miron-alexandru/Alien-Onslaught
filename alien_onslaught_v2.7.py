@@ -18,7 +18,12 @@ from game_logic.game_modes import GameModesManager
 from utils.game_utils import display_high_scores
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
+<<<<<<< HEAD
+    BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
+    AVAILABLE_BULLETS_MAP_SINGLE,
+=======
     BOSS_LEVELS, BULLETS_AVAILABLE
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
 )
 
 from ui.screen_manager import ScreenManager
@@ -180,10 +185,13 @@ class AlienOnslaught:
 
 
     def _handle_level_progression(self):
-        """Handles the progression of levels in the game."""
+        """Handles the progression of levels in the game, for different game modes."""
         if self.settings.gm.boss_rush and self.stats.level == 16:
             self.stats.game_active = False
             return
+
+        if self.settings.gm.last_bullet and not self.aliens:
+            self._prepare_last_bullet_level()
 
         if not self.settings.gm.meteor_madness and not self.aliens:
             self._prepare_next_level()
@@ -209,6 +217,10 @@ class AlienOnslaught:
             elif event.type == pygame.VIDEORESIZE:
                 self._resize_screen(event.size)
                 self.manage_screen.update_buttons()
+
+    def kill_aliens(self):
+        for alien in self.aliens.sprites():
+            alien.kill()
 
 
     def _create_button_actions_dict(self):
@@ -363,9 +375,12 @@ class AlienOnslaught:
 
         if self.settings.gm.last_bullet:
             self.aliens_manager.create_fleet(self.settings.last_bullet_rows)
+<<<<<<< HEAD
+=======
             for ship in self.ships:
                 ship.remaining_bullets = BULLETS_AVAILABLE
             self.score_board.render_bullets_num()
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
             return
 
         # Create Bosses at the specified levels.
@@ -468,7 +483,7 @@ class AlienOnslaught:
 
 
     def _destroy_thunderbird(self):
-        # what happens when the player get's hit
+        """Destroy the thunderbird ship then center it."""
         self.thunderbird_ship.explode()
         self.thunderbird_ship.state.shielded = False
         self.settings.thunderbird_bullet_count = 1
@@ -501,7 +516,7 @@ class AlienOnslaught:
 
 
     def _destroy_phoenix(self):
-        # what happens when the player gets hit
+        """Destroy the Phoenix ship and center it."""
         self.phoenix_ship.explode()
         self.phoenix_ship.state.shielded = False
         self.settings.phoenix_bullet_count = 1
@@ -524,6 +539,8 @@ class AlienOnslaught:
 
 
     def _display_game_over(self):
+        """Display the game over on screen and save the high score
+        for the active game mode"""
         self._set_game_over()
         self.screen.blit(self.settings.game_over, self.game_over_rect)
         self._reset_game_objects()
@@ -554,6 +571,7 @@ class AlienOnslaught:
 
 
     def _prepare_next_level(self):
+        """Level progression handler"""
         self.thunderbird_bullets.empty()
         self.phoenix_bullets.empty()
         self.alien_bullet.empty()
@@ -568,7 +586,23 @@ class AlienOnslaught:
         self._handle_boss_stats()
 
 
+    def _prepare_last_bullet_level(self):
+        """Level progression handler for the Last Bullet game mode"""
+        self.thunderbird_bullets.empty()
+        self.phoenix_bullets.empty()
+        self.alien_bullet.empty()
+        self.power_ups.empty()
+        self.asteroids.empty()
+
+        self.settings.increase_speed()
+        self.stats.increase_level()
+        self.score_board.prep_level()
+        self._handle_alien_creation()
+        self._prepare_last_bullet_bullets()
+
+
     def _prepare_asteroids_level(self):
+        """Level progression handler for the Meteor Madness game mode."""
         self.asteroids.empty()
 
         if self.settings.asteroid_speed < GAME_CONSTANTS['MAX_AS_SPEED']:
@@ -603,7 +637,9 @@ class AlienOnslaught:
         self.thunderbird_ship.center_ship()
         self.phoenix_ship.center_ship()
 
+
     def _display_pause(self):
+        """Display the Pause image on screen."""
         pause_rect = self.settings.pause.get_rect()
         pause_rect.centerx = self.screen.get_rect().centerx
         pause_rect.centery = self.screen.get_rect().centery
@@ -611,6 +647,7 @@ class AlienOnslaught:
 
 
     def _display_high_scores_on_screen(self):
+        """Display the high scores for the current game mode active"""
         game_mode_high_score_keys = {
                 'boss_rush': 'boss_rush_scores',
                 'endless_onslaught': 'endless_scores',
@@ -646,10 +683,22 @@ class AlienOnslaught:
 
         # Create aliens
         self._handle_alien_creation()
+        self._prepare_last_bullet_bullets()
         self._handle_boss_stats()
 
         # for resetting self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
+
+
+    def _prepare_last_bullet_bullets(self):
+        """Prepare the number of bullets in the Last Bullet game mode
+        based on the level"""
+        available_bullets = AVAILABLE_BULLETS_MAP.get(self.stats.level, 50)
+
+        for ship in self.ships:
+            ship.remaining_bullets = available_bullets
+
+        self.score_board.render_bullets_num()
 
 
     def _draw_game_objects(self):
@@ -746,6 +795,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
 
     def _handle_game_logic(self):
+        """Handle game logic"""
         self.start_game_mode()
         self._handle_normal_game()
         self._handle_level_progression()
@@ -803,6 +853,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
 
     def _prepare_next_level(self):
+        """Handle level progression"""
         self.power_ups.empty()
         self.alien_bullet.empty()
         self.asteroids.empty()
@@ -817,7 +868,11 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
 
     def _thunderbird_ship_hit(self):
+<<<<<<< HEAD
+        """Respond to the Thunderbird ship being hit"""
+=======
         """Respond to the Thunderbird ship being hit by an alien."""
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
         if self.thunderbird_ship.state.exploding:
             return
 
@@ -827,6 +882,15 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         else:
             self.thunderbird_ship.state.alive = False
             self.stats.game_active = False
+
+
+    def _prepare_last_bullet_bullets(self):
+        available_bullets = AVAILABLE_BULLETS_MAP_SINGLE.get(self.stats.level, 50)
+
+        for ship in self.ships:
+            ship.remaining_bullets = available_bullets
+
+        self.score_board.render_bullets_num()
 
 
     def _reset_game(self):
@@ -840,6 +904,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.score_board.render_scores()
         self.score_board.render_high_score()
         self.score_board.prep_level()
+        self.score_board.render_bullets_num()
         self.score_board.create_health()
 
         # Clear the screen of remaining aliens, bullets, asteroids and power ups
@@ -855,6 +920,8 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.player_input.reset_ship_movement_flags()
 
         self._handle_alien_creation()
+        self._prepare_last_bullet_bullets()
+
         self._handle_boss_stats()
 
         # This resets self.last_level_time when a new game starts.
@@ -862,6 +929,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
 
     def _draw_game_objects(self):
+        """Draw game objects on screen"""
         self.thunderbird_ship.blitme()
 
         for bullet in self.thunderbird_bullets.sprites():

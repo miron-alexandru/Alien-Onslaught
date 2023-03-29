@@ -188,8 +188,11 @@ class ScoreBoard:
             self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
-        self.thunderbird_health.draw(self.screen)
-        self.phoenix_health.draw(self.screen)
+        if self.game.thunderbird_ship.state.alive:
+            self.thunderbird_health.draw(self.screen)
+        if self.game.phoenix_ship.state.alive:
+            self.phoenix_health.draw(self.screen)
+
 
 
 
@@ -202,6 +205,7 @@ class SecondScoreBoard(ScoreBoard):
         self.render_scores()
         self.render_high_score()
         self.create_health()
+        self.render_bullets_num()
 
     def render_scores(self):
         """Turn the score into a rendered image."""
@@ -235,7 +239,11 @@ class SecondScoreBoard(ScoreBoard):
 
         self.thunder_bullets_num_img = self.bullets_num_font.render(thunder_bullets_str,
                                                             True, self.text_color, None)
+<<<<<<< HEAD
+
+=======
         screen_rect = self.screen.get_rect()
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
         self.thunder_bullets_num_rect = self.thunder_bullets_num_img.get_rect()
 
         self.thunder_bullets_num_rect.top = 55
@@ -249,4 +257,5 @@ class SecondScoreBoard(ScoreBoard):
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
-        self.thunderbird_health.draw(self.screen)
+        if self.game.thunderbird_ship.state.alive:
+            self.thunderbird_health.draw(self.screen)

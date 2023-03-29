@@ -81,9 +81,36 @@ class GameModesManager:
         """Starts the Last Bullet game mode in which the players must fight aliens
         but they have a limited number of bullets, when a player remains with no bullets
         he dies, when both players are out of bullets, the game is over."""
+<<<<<<< HEAD
+
+        aliens_remaining = len(self.game.aliens.sprites())
+
+        flying_thunder_bullets = sum(
+            bullet.rect.left > 0
+            and bullet.rect.right < self.settings.screen_width
+            and bullet.rect.top > 0
+            and bullet.rect.bottom < self.settings.screen_height
+            for bullet in self.game.thunderbird_bullets.sprites()
+        )
+        flying_phoenix_bullets = sum(
+            bullet.rect.left > 0
+            and bullet.rect.right < self.settings.screen_width
+            and bullet.rect.top > 0
+            and bullet.rect.bottom < self.settings.screen_height
+            for bullet in self.game.phoenix_bullets.sprites()
+        )
+        if thunderbird.remaining_bullets <= 0 and flying_thunder_bullets <= 0 \
+            and aliens_remaining > 0:
+            thunderbird.state.alive = False
+
+        if phoenix.remaining_bullets <= 0 and flying_phoenix_bullets <= 0 \
+            and aliens_remaining > 0:
+            phoenix.state.alive = False
+=======
         for player in [thunderbird, phoenix]:
             if player.remaining_bullets <= 0:
                 player.state.alive = False
+>>>>>>> 3034d0c87f65fb882db55122af241e8ee7958458
 
         if all(not player.state.alive for player in [thunderbird, phoenix]):
             self.stats.game_active = False
