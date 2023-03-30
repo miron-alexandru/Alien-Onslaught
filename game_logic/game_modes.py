@@ -91,6 +91,7 @@ class GameModesManager:
             and bullet.rect.bottom < self.settings.screen_height
             for bullet in self.game.thunderbird_bullets.sprites()
         )
+
         flying_phoenix_bullets = sum(
             bullet.rect.left > 0
             and bullet.rect.right < self.settings.screen_width
@@ -98,6 +99,7 @@ class GameModesManager:
             and bullet.rect.bottom < self.settings.screen_height
             for bullet in self.game.phoenix_bullets.sprites()
         )
+
         if thunderbird.remaining_bullets <= 0 and flying_thunder_bullets <= 0 \
             and aliens_remaining > 0:
             thunderbird.state.alive = False

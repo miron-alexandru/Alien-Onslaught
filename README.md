@@ -83,3 +83,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Refactored code in multiple modules and created two new @dataclasses to hold values for different parts of the game.
 * Created a new module 'game_modes' that manages the different game modes available in the game.
 * Implemented new power_ups, alien speed and alien bullet speed decreased.
+* New power up that is available only in the Last Bullet game mode, remaining bullets increased.

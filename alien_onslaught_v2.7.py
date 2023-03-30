@@ -79,7 +79,7 @@ class AlienOnslaught:
                                         self.buttons, self.screen)
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
-        self.power_ups_manager = PowerUpsManager(self)
+        self.power_ups_manager = PowerUpsManager(self, self.score_board)
         self.asteroids_manager = AsteroidsManager(self)
         self.alien_bullets_manager = AlienBulletsManager(self)
         self.aliens_manager = AliensManager(self, self.aliens, self.settings, self.screen)
@@ -213,6 +213,7 @@ class AlienOnslaught:
             elif event.type == pygame.VIDEORESIZE:
                 self._resize_screen(event.size)
                 self.manage_screen.update_buttons()
+
 
     def _create_button_actions_dict(self):
         """Create a dictionary mapping buttons to their corresponding actions."""
@@ -380,6 +381,8 @@ class AlienOnslaught:
     def _fire_bullet(self, bullets, bullets_allowed, bullet_class, num_bullets, ship):
         """Create new player bullets."""
         # Create the bullets at and position them correctly as the number of bullets increases
+        if ship.remaining_bullets <= 0:
+            return
         if len(bullets) < bullets_allowed:
             offset_amount = 25
             for i in range(num_bullets):
@@ -411,28 +414,21 @@ class AlienOnslaught:
 
     def _power_up_player(self, player):
         """Powers up the specified player"""
-        # each lambda function performs a different power up on the player.
         power_up_choices = [
-            lambda: setattr(self.settings, f"{player}_ship_speed",
-                             getattr(self.settings, f"{player}_ship_speed") + 0.3),
-            lambda: setattr(self.settings, f"{player}_bullet_speed",
-                             getattr(self.settings, f"{player}_bullet_speed") + 0.3),
-            lambda: setattr(self.settings, f"{player}_bullets_allowed",
-                             getattr(self.settings, f"{player}_bullets_allowed") + 2),
-            lambda: setattr(self.settings, f"{player}_bullet_count",
-                             getattr(self.settings, f"{player}_bullet_count") + 1),
-            lambda: getattr(self, f"{player}_ship").draw_shield(),
-            lambda: setattr(self.settings, "alien_speed",
-                        getattr(self.settings, "alien_speed") - 0.1) \
-                        if self.settings.alien_speed > 0 else None,
-            lambda: setattr(self.settings, "alien_bullet_speed",
-                        getattr(self.settings, "alien_bullet_speed") - 0.1) \
-                        if self.settings.alien_bullet_speed > 0 else None,
-
+            self.power_ups_manager.increase_ship_speed,
+            self.power_ups_manager.increase_bullet_speed,
+            self.power_ups_manager.increase_bullets_allowed,
+            self.power_ups_manager.draw_ship_shield,
+            self.power_ups_manager.decrease_alien_speed,
+            self.power_ups_manager.decrease_alien_bullet_speed,
         ]
         # randomly select one of the power ups and activate it.
+        if self.settings.gm.last_bullet:
+            power_up_choices.append(self.power_ups_manager.increase_bullets_remaining)
+        else:
+            power_up_choices.append(self.power_ups_manager.increase_bullet_count)
         power_up_choice = random.choice(power_up_choices)
-        power_up_choice()
+        power_up_choice(player)
 
 
     def _health_power_up(self, player):

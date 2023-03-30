@@ -45,10 +45,13 @@ class PowerUp(Sprite):
 class PowerUpsManager:
     """The PowerUpsManager class manages the creation and,
     update of the power ups that appear in the game."""
-    def __init__(self, game):
+    def __init__(self, game, score_board):
         self.game = game
         self.screen = game.screen
         self.settings = game.settings
+        self.thunderbird_ship = game.thunderbird_ship
+        self.phoenix_ship = game.phoenix_ship
+        self.score_board = score_board
         self.last_power_up_time = 0
 
     def create_power_ups(self):
@@ -77,3 +80,53 @@ class PowerUpsManager:
         for power in self.game.power_ups.copy():
             if power.rect.y  > self.settings.screen_height:
                 self.game.power_ups.remove(power)
+
+
+    def increase_ship_speed(self, player):
+        """Increases the ship speed of the specified player"""
+        setattr(self.settings, f"{player}_ship_speed",
+                getattr(self.settings, f"{player}_ship_speed") + 0.3)
+
+    def increase_bullet_speed(self, player):
+        """Increases the bullet speed of the specified player"""
+        setattr(self.settings, f"{player}_bullet_speed",
+                getattr(self.settings, f"{player}_bullet_speed") + 0.3)
+
+    def increase_bullets_allowed(self, player):
+        """Increases the bullets allowed for the specified player"""
+        setattr(self.settings, f"{player}_bullets_allowed",
+                getattr(self.settings, f"{player}_bullets_allowed") + 2)
+
+    def increase_bullet_count(self, player):
+        """Increases the bullet number of the specified player"""
+        setattr(self.settings, f"{player}_bullet_count",
+                getattr(self.settings, f"{player}_bullet_count") + 1)
+
+    def draw_ship_shield(self, player):
+        """Activates the shield on the specified player"""
+        getattr(self, f"{player}_ship").draw_shield()
+
+    def decrease_alien_speed(self, _=None):
+        """Decreases alien speed."""
+        if self.settings.alien_speed > 0:
+            setattr(self.settings, "alien_speed", getattr(self.settings, "alien_speed") - 0.1)
+        else:
+            return None
+
+    def decrease_alien_bullet_speed(self, _=None):
+        """Decreases alien bullet speed."""
+        if self.settings.alien_bullet_speed > 1:
+            setattr(self.settings, "alien_bullet_speed",
+                getattr(self.settings, "alien_bullet_speed") - 0.1)
+        else:
+            return None
+
+    def increase_bullets_remaining(self, player):
+        """Power up special for the Last Bullet game mode, it increases
+        the remaining bullets number by one."""
+        players = {
+            "thunderbird": self.thunderbird_ship,
+            "phoenix": self.phoenix_ship
+        }
+        players[player].remaining_bullets += 1
+        self.score_board.render_bullets_num()
