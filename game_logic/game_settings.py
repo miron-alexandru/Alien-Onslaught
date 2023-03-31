@@ -44,6 +44,7 @@ class Settings:
         self.ui_options = UIOptions()
         # How quickly the game speeds up
         self.speedup_scale = 0.3
+        self.missiles_speed = 5.0
 
         self.dynamic_settings()
 
@@ -55,12 +56,14 @@ class Settings:
         self.thunderbird_bullet_speed = 5.0
         self.thunderbird_bullets_allowed = 1
         self.thunderbird_bullet_count = 1
+        self.thunderbird_missiles_num = 3
 
         # Phoenix settings
         self.phoenix_ship_speed = 3.5
         self.phoenix_bullet_speed = 5.0
         self.phoenix_bullets_allowed = 1
         self.phoenix_bullet_count = 1
+        self.phoenix_missiles_num = 3
 
         # Alien Settings
         self.alien_speed = 1.0

@@ -84,3 +84,5 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Created a new module 'game_modes' that manages the different game modes available in the game.
 * Implemented new power_ups, alien speed and alien bullet speed decreased.
 * New power up that is available only in the Last Bullet game mode, remaining bullets increased.
+* Implemented a new feature to the game which introduces a new weapon for players. Each player now starts with three missiles that can cause damage to multiple aliens when they explode. Additionally, a power-up has been included which increases the number of missiles available to the player.
+* Moved all projectiles into a new module called 'projectiles' and refactored the code in the 'collision_detection' module.

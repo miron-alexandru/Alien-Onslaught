@@ -26,6 +26,7 @@ class Thunderbird(Sprite):
 
         self.immune_start_time = 0
         self.remaining_bullets = 17 if singleplayer else 9
+        self.missiles_num = self.settings.thunderbird_missiles_num
 
         self.moving_flags = {
             'right': False,
@@ -144,6 +145,8 @@ class Phoenix(Thunderbird):
         self.rect = self.image.get_rect()
         self.rect.x = self.screen_rect.centerx + 200
         self.rect.y = self.screen_rect.bottom - self.rect.height
+
+        self.missiles_num = self.settings.phoenix_missiles_num
 
     def _update_position(self):
         """Updates the position of the ship based on the current state of movement flags."""

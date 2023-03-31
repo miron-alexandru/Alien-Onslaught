@@ -47,6 +47,19 @@ AVAILABLE_BULLETS_MAP = {
         10: 25,
 }
 
+ALIENS_HP_MAP = {
+    1: 1,
+    2: 1,
+    3: 1,
+    4: 1,
+    5: 2,
+    6: 2,
+    7: 2,
+    8: 2,
+    9: 2,
+    10: 3,
+}
+
 
 AVAILABLE_BULLETS_MAP_SINGLE = {
         1: 17,

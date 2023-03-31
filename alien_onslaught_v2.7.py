@@ -70,6 +70,8 @@ class AlienOnslaught:
         # Sprite Groups
         self.thunderbird_bullets = pygame.sprite.Group()
         self.phoenix_bullets = pygame.sprite.Group()
+        self.thunderbird_missiles = pygame.sprite.Group()
+        self.phoenix_missiles = pygame.sprite.Group()
         self.alien_bullet = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -168,8 +170,9 @@ class AlienOnslaught:
         self.collision_handler.check_alien_bullets_collisions(
                                 self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
-        self._update_bullets()
+        self.update_projectiles()
         self.collision_handler.check_bullet_alien_collisions()
+        self.collision_handler.check_missile_alien_collisions()
         self.aliens_manager.update_aliens(self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
         self.thunderbird_ship.update_state()
@@ -203,7 +206,7 @@ class AlienOnslaught:
                 if self.stats.game_active:
                     self.player_input.check_keydown_events(
                                     event, self._fire_bullet,
-                                    self._reset_game, self.run_menu)
+                                    self._reset_game, self.run_menu, self._fire_missile)
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
@@ -397,19 +400,38 @@ class AlienOnslaught:
                     self.score_board.render_bullets_num()
 
 
-    def _update_bullets(self):
+    def _fire_missile(self, missiles, ship, missile_class):
+        if ship.missiles_num > 0:
+            new_missile = missile_class(self, ship)
+            missiles.add(new_missile)
+            ship.missiles_num -= 1
+
+
+    def update_projectiles(self):
         """Update position of bullets and get rid of bullets that went of screen."""
         self.thunderbird_bullets.update()
+        self.thunderbird_missiles.update()
+
         self.phoenix_bullets.update()
+        self.phoenix_missiles.update()
 
         # Get rid of bullets that went off screen.
         for bullet in self.thunderbird_bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.thunderbird_bullets.remove(bullet)
 
+        for missile in self.thunderbird_missiles.copy():
+            if missile.rect.bottom <= 0:
+                self.thunderbird_missiles.remove(missile)
+
         for bullet in self.phoenix_bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.phoenix_bullets.remove(bullet)
+
+        for missile in self.phoenix_missiles.copy():
+            if missile.rect.bottom <= 0:
+                self.phoenix_missiles.remove(missile)
+
 
 
     def _power_up_player(self, player):
@@ -426,7 +448,12 @@ class AlienOnslaught:
         if self.settings.gm.last_bullet:
             power_up_choices.append(self.power_ups_manager.increase_bullets_remaining)
         else:
-            power_up_choices.append(self.power_ups_manager.increase_bullet_count)
+            power_up_choices.extend(
+                (
+                    self.power_ups_manager.increase_bullet_count,
+                    self.power_ups_manager.increase_missiles_num,
+                )
+            )
         power_up_choice = random.choice(power_up_choices)
         power_up_choice(player)
 
@@ -690,8 +717,14 @@ class AlienOnslaught:
         for bullet in self.thunderbird_bullets.sprites():
             bullet.draw_bullet()
 
+        for missile in self.thunderbird_missiles.sprites():
+            missile.draw_missile()
+
         for bullet in self.phoenix_bullets.sprites():
             bullet.draw_bullet()
+
+        for missile in self.phoenix_missiles.sprites():
+            missile.draw_missile()
 
         for bullet in self.alien_bullet.sprites():
             bullet.draw_bullet()
@@ -790,9 +823,10 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.collision_handler.check_alien_bullets_collisions(
                                 self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
-        self._update_bullets()
+        self.update_projectiles()
 
         self.collision_handler.check_bullet_alien_collisions(singleplayer=True)
+        self.collision_handler.check_missile_alien_collisions(singleplayer=True)
         self.aliens_manager.update_aliens(self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
         self.thunderbird_ship.update_state()
@@ -810,7 +844,8 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
                 if self.stats.game_active:
                     self.player_input.check_keydown_events(
                             event, self._fire_bullet,
-                            self._reset_game, self.run_menu, singleplayer=True)
+                            self._reset_game, self.run_menu,
+                            self._fire_missile, singleplayer=True)
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
@@ -822,10 +857,11 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
                 self.manage_screen.update_buttons()
 
 
-    def _update_bullets(self):
+    def update_projectiles(self):
         """Update position of bullets and get rid of old bullets."""
         # Update bullet positions.
         self.thunderbird_bullets.update()
+        self.thunderbird_missiles.update()
 
         # Get rid of bullets that have disappeared.
         for bullet in self.thunderbird_bullets.copy():
@@ -911,6 +947,9 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
         for bullet in self.thunderbird_bullets.sprites():
             bullet.draw_bullet()
+
+        for missile in self.thunderbird_missiles.sprites():
+            missile.draw_missile()
 
         for power_up in self.power_ups.sprites():
             power_up.draw_powerup()

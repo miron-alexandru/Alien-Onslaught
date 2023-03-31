@@ -39,3 +39,11 @@ load_frames('asteroid/Asteroid-A-09-{:03d}.png', 120, frames)
 
 empower_frames = []
 load_frames('empower/empower-0{}.png', 6, empower_frames, start=1)
+
+missile_frames = []
+load_frames('player_bullets/missile-0{}.png', 9, missile_frames, start=1)
+
+missile_ex_frames = []
+load_frames('missile_explosion/missile_ex-0{}.png', 9, missile_ex_frames, start=1)
+
+

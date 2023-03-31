@@ -3,7 +3,7 @@ handling player input events in a game."""
 
 import sys
 import pygame
-from entities.player_bullets import Firebird, Thunderbolt
+from entities.projectiles import Missile, Firebird, Thunderbolt
 
 
 
@@ -16,7 +16,7 @@ class PlayerInput:
         self.phoenix_ship = self.game.phoenix_ship
 
     def check_keydown_events(self, event, fire_bullet_method, reset_game,
-                                        run_menu, singleplayer=False):
+                                        run_menu, fire_missile_method, singleplayer=False):
         """Respond to keys being pressed."""
         match event.key:
             # If the game is paused, check for Q, P, R, and M keys
@@ -62,6 +62,12 @@ class PlayerInput:
                             self.thunderbird_ship.image = self.thunderbird_ship.anims.ship_images[1]
                         case pygame.K_3:
                             self.thunderbird_ship.image = self.thunderbird_ship.anims.ship_images[2]
+                        case pygame.K_z:
+                            fire_missile_method(
+                                self.game.thunderbird_missiles,
+                                self.game.thunderbird_ship,
+                                missile_class=Missile)
+
 
                 # Phoenix controls
                 if not singleplayer:
@@ -77,6 +83,11 @@ class PlayerInput:
                                     num_bullets=self.game.settings.phoenix_bullet_count,
                                     ship=self.phoenix_ship)
                                 self.game.settings.fire_sound.play()
+                            case pygame.K_RCTRL:
+                                fire_missile_method(
+                                self.game.phoenix_missiles,
+                                self.game.phoenix_ship,
+                                missile_class=Missile)
 
                             case pygame.K_LEFT:
                                 self.phoenix_ship.moving_flags['left'] = True

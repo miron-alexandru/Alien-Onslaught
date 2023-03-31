@@ -1,7 +1,7 @@
 """This is the animation module where other animations for different
 parts of the game are located."""
 
-from utils.frames import destroy_frames
+from utils.frames import destroy_frames, missile_ex_frames
 
 class DestroyAnim:
     """Class that manages the animation for when an entity get's destroyed."""
@@ -22,3 +22,34 @@ class DestroyAnim:
         self.current_destroy_frame = (self.current_destroy_frame + 1) % len(self.destroy_frames)
         self.destroy_image = self.destroy_frames[self.current_destroy_frame]
         self.destroy_rect.center = self.entity.rect.center
+
+
+class MissileEx:
+    """The MissileEx class manages the explosion effect for the missiles"""
+    def __init__(self, missile):
+        super().__init__()
+        self.missile = missile
+        self.screen = missile.screen
+
+        self.ex_frames = missile_ex_frames
+        self.current_frame = 0
+        self.ex_image = self.ex_frames[self.current_frame]
+        self.ex_rect = self.ex_frames[0].get_rect(center=self.missile.rect.center)
+
+        self.frame_update_rate = 5
+        self.frame_counter = 0
+
+
+    def update_animation(self):
+        """Update and center the animation."""
+        self.frame_counter += 1
+        if self.frame_counter % self.frame_update_rate == 0:
+            self.current_frame = (self.current_frame + 1) % len(self.ex_frames)
+            self.ex_image = self.ex_frames[self.current_frame]
+            self.frame_counter = 0
+        self.ex_rect.center = self.missile.rect.center
+
+    def draw_explosion(self):
+        """Draw the image on screen."""
+        self.screen.blit(self.ex_image, self.ex_rect)
+                    

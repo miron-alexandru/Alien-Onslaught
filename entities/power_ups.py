@@ -102,6 +102,10 @@ class PowerUpsManager:
         setattr(self.settings, f"{player}_bullet_count",
                 getattr(self.settings, f"{player}_bullet_count") + 1)
 
+    def increase_missiles_num(self, player):
+        """Increases the number of missiles for the specified player."""
+        getattr(self, f"{player}_ship").missiles_num += 1
+
     def draw_ship_shield(self, player):
         """Activates the shield on the specified player"""
         getattr(self, f"{player}_ship").draw_shield()
