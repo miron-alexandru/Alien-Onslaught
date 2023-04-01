@@ -135,6 +135,7 @@ class CollisionManager:
             self._check_missile_ex_collision(self.game.aliens, player, missile)
 
 
+
     def check_alien_bullets_collisions(self, thunderbird_hit, phoenix_hit):
         """Manages collisions between the alien bullets and the players"""
         # check for collisions between each player and alien bullet and if a collision
