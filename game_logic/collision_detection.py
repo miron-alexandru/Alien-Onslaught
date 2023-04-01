@@ -13,8 +13,8 @@ class CollisionManager:
         self.stats =  game.stats
         self.settings = game.settings
         self.score_board = game.score_board
-        self.handled_collisions = {}
 
+        self.handled_collisions = {}
 
     def shield_collisions(self, ships, aliens, bullets, asteroids):
         """Destroy any aliens that collide with the shield of any of the given ships."""
@@ -35,7 +35,6 @@ class CollisionManager:
                     asteroid.kill()
                     ship.state.shielded = False
 
-
     def check_asteroids_collisions(self, thunderbird_hit, phoenix_hit):
         """Check for collisions between the ships and asteroids"""
         # loop through each player and check if it's alive,
@@ -54,7 +53,6 @@ class CollisionManager:
                         and not self.game.phoenix_ship.state.immune):
                         phoenix_hit()
                         collision.kill()
-
 
     def check_power_ups_collisions(self, power_up_method, health_power_up_method):
         """Check for collision between ships and power-ups
@@ -133,7 +131,6 @@ class CollisionManager:
         for missile in player_missile_collisions.keys():
             missile.explode()
             self._check_missile_ex_collision(self.game.aliens, player, missile)
-
 
 
     def check_alien_bullets_collisions(self, thunderbird_hit, phoenix_hit):
