@@ -39,7 +39,7 @@ class Asteroid(Sprite):
         self.y_pos += self.speed
         self.rect.y = self.y_pos
 
-    def draw_asteroid(self):
+    def draw(self):
         """Draw the asteroid"""
         self.screen.blit(self.image, self.rect)
 

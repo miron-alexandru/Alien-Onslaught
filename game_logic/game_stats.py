@@ -1,13 +1,10 @@
-"""
-The game_stats module contains code that manages the statistics that change during the game.
-"""
+"""The game_stats module contains code that manages the statistics that change during the game."""
 from utils.constants import STARTING_HP, MAX_HP
 
 
 class GameStats:
-    """Track statistics for the game."""
+    """The GameStats class tracks statistics for the game"""
     def __init__(self, game, phoenix_ship, thunderbird_ship):
-        """Initialize statistics."""
         self.settings = game.settings
         self.reset_stats(phoenix_ship, thunderbird_ship)
         self.game_active = False

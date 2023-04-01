@@ -27,7 +27,7 @@ class Thunderbolt(Sprite):
         self.y_pos -= self.settings.thunderbird_bullet_speed
         self.rect.y = self.y_pos
 
-    def draw_bullet(self):
+    def draw(self):
         """Draw the bullet to the screen."""
         self.screen.blit(self.image, self.rect)
 
@@ -92,7 +92,7 @@ class Missile(Sprite):
             self.y_pos -= self.settings.missiles_speed
             self.rect.y = self.y_pos
 
-    def draw_missile(self):
+    def draw(self):
         """Draw the missile or explosion effect,
         depending on whether it's destroyed or not."""
         if self.is_destroyed:

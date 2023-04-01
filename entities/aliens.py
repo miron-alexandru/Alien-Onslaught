@@ -58,11 +58,10 @@ class Alien(Sprite):
         self.motion.update_vertical_position()
         self.motion.update_horizontal_position()
 
-
     def destroy_alien(self):
         """Start alien destroyed animation and start it"""
         self.destroy.update_destroy_animation()
-        self.screen.blit(self.destroy.destroy_image, self.destroy.destroy_rect)
+        self.destroy.draw_animation()
 
 
 class BossAlien(Sprite):
@@ -110,6 +109,7 @@ class BossAlien(Sprite):
 
         self.motion.update_horizontal_position()
 
+
     def check_edges(self):
         """Return True if alien is at edge of screen."""
         screen_rect = self.screen.get_rect()
@@ -119,7 +119,7 @@ class BossAlien(Sprite):
         """Update and display destroy animation."""
         self.is_alive = False
         self.destroy.update_destroy_animation()
-        self.screen.blit(self.destroy.destroy_image, self.destroy.destroy_rect)
+        self.destroy.draw_animation()
 
 
 
@@ -266,8 +266,8 @@ class AlienAnimation:
         self.alien = alien
         self.game = game
 
-        self.last_update_time = pygame.time.get_ticks()
-        self.animation_delay = 70
+        self.frame_update_rate = 6
+        self.frame_counter = 0
         self.current_frame = 0
 
         level_prefix = LEVEL_PREFIX.get(game.stats.level // 4 + 1, "Alien4")
@@ -279,11 +279,11 @@ class AlienAnimation:
 
     def update_animation(self):
         """Update animation"""
-        now = pygame.time.get_ticks()
-        if now - self.last_update_time > self.animation_delay:
+        self.frame_counter += 1
+        if self.frame_counter % self.frame_update_rate == 0:
             self.current_frame = (self.current_frame + 1) % len(self.frames)
             self.image = self.frames[self.current_frame]
-            self.last_update_time = now
+            self.frame_counter = 0
 
     def get_current_image(self):
         """Return the current image"""

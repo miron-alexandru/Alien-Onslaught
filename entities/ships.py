@@ -134,6 +134,10 @@ class Thunderbird(Sprite):
         """Start the empower effect."""
         self.state.empowered = True
 
+    def update_missiles_number(self):
+        """Update the number of missiles"""
+        self.missiles_num = self.settings.thunderbird_missiles_num
+
 
 
 class Phoenix(Thunderbird):
@@ -158,6 +162,10 @@ class Phoenix(Thunderbird):
             self.y_pos -= self.settings.phoenix_ship_speed
         if self.moving_flags['down'] and self.rect.bottom <= self.screen_rect.bottom:
             self.y_pos += self.settings.phoenix_ship_speed
+
+    def update_missiles_number(self):
+        """Update the number of missiles."""
+        self.missiles_num = self.settings.thunderbird_missiles_num
 
 
 @dataclass

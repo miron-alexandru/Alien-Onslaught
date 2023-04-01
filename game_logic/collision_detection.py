@@ -13,6 +13,7 @@ class CollisionManager:
         self.stats =  game.stats
         self.settings = game.settings
         self.score_board = game.score_board
+        self.handled_collisions = {}
 
 
     def shield_collisions(self, ships, aliens, bullets, asteroids):
@@ -98,13 +99,13 @@ class CollisionManager:
 
         # Thunderbird collisions
         if thunderbird_ship_collisions:
-            self.handle_player_collisions(thunderbird_ship_collisions, 'thunderbird')
+            self._handle_player_collisions(thunderbird_ship_collisions, 'thunderbird')
 
         if (
             not singleplayer
             and phoenix_ship_collisions
         ):
-            self.handle_player_collisions(phoenix_ship_collisions, 'phoenix')
+            self._handle_player_collisions(phoenix_ship_collisions, 'phoenix')
 
 
     def check_missile_alien_collisions(self, singleplayer=False):
@@ -119,19 +120,20 @@ class CollisionManager:
 
         # Handle Thunderbird missile collisions
         if thunderbird_missile_collisions:
-            self.handle_player_missile_collisions(thunderbird_missile_collisions, 'thunderbird')
+            self._handle_player_missile_collisions(thunderbird_missile_collisions, 'thunderbird')
         # Handle Phoenix missile collisions
         if not singleplayer and phoenix_missile_collisions:
-            self.handle_player_missile_collisions(phoenix_missile_collisions, 'phoenix')
+            self._handle_player_missile_collisions(phoenix_missile_collisions, 'phoenix')
 
 
-    def handle_player_missile_collisions(self, player_missile_collisions, player):
+    def _handle_player_missile_collisions(self, player_missile_collisions, player):
         """This method handles what happens with the score and the aliens
         after they have been hit by a player missile. It also increases the
         hit_count of the aliens, making them stronger as the game progresses."""
         for missile in player_missile_collisions.keys():
             missile.explode()
-            self.check_missile_ex_collision(self.game.aliens, player, missile)
+            self._check_missile_ex_collision(self.game.aliens, player, missile)
+
 
     def check_alien_bullets_collisions(self, thunderbird_hit, phoenix_hit):
         """Manages collisions between the alien bullets and the players"""
@@ -167,7 +169,7 @@ class CollisionManager:
             self.score_board.update_high_score()
 
 
-    def handle_player_collisions(self, player_ship_collisions, player):
+    def _handle_player_collisions(self, player_ship_collisions, player):
         """This method handles what happens with the score and the aliens
         after they have been hit.It also increases the hit_count of the aliens
         making them stronger as the game progresses."""
@@ -199,14 +201,16 @@ class CollisionManager:
         self.score_board.update_high_score()
 
 
-    def check_missile_ex_collision(self, aliens, player, missile):
+    def _check_missile_ex_collision(self, aliens, player, missile):
         """Checks collisions between aliens and missile explosion."""
         for ex_frame in missile.destroy_anim.ex_frames:
             ex_rect = ex_frame.get_rect(center=missile.rect.center)
             for alien in aliens:
                 if isinstance(alien, BossAlien):
-                    alien.hit_count += 5
-                    self._handle_boss_alien_collision(alien, player)
+                    if (missile, alien) not in self.handled_collisions:
+                        alien.hit_count += 5
+                        print(alien.hit_count)
+                        self._handle_boss_alien_collision(alien, player)
+                        self.handled_collisions[(missile, alien)] = True
                 elif ex_rect.colliderect(alien.rect):
                     self._update_stats(alien, player)
-

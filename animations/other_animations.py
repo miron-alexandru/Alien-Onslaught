@@ -8,6 +8,7 @@ class DestroyAnim:
     def __init__(self, entity):
         self.entity = entity
         self.image = None
+        self.screen = entity.screen
 
 
         # Initialize frames
@@ -22,6 +23,10 @@ class DestroyAnim:
         self.current_destroy_frame = (self.current_destroy_frame + 1) % len(self.destroy_frames)
         self.destroy_image = self.destroy_frames[self.current_destroy_frame]
         self.destroy_rect.center = self.entity.rect.center
+
+    def draw_animation(self):
+        """Draws the animation on screen."""
+        self.screen.blit(self.destroy_image, self.destroy_rect)
 
 
 class MissileEx:

@@ -10,6 +10,7 @@ from utils.constants import (
     normal_boss_hp_map,
 )
 
+
 class GameModesManager:
     """The GameModesManager class manages game modes in the game."""
     def __init__(self, game, settings, stats):
@@ -100,13 +101,14 @@ class GameModesManager:
             for bullet in self.game.phoenix_bullets.sprites()
         )
 
-        if thunderbird.remaining_bullets <= 0 and flying_thunder_bullets <= 0 \
-            and aliens_remaining > 0:
+        if thunderbird.remaining_bullets <= 0 <= flying_thunder_bullets <= 0 \
+                and aliens_remaining > 0:
             thunderbird.state.alive = False
 
-        if phoenix.remaining_bullets <= 0 and flying_phoenix_bullets <= 0 \
-            and aliens_remaining > 0:
+        if phoenix.remaining_bullets <= 0 <= flying_phoenix_bullets <= 0 \
+                and aliens_remaining > 0:
             phoenix.state.alive = False
+
 
         if all(not player.state.alive for player in [thunderbird, phoenix]):
             self.stats.game_active = False

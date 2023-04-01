@@ -36,7 +36,7 @@ class AlienBullet(Sprite):
         self.y_pos += self.settings.alien_bullet_speed
         self.rect.y = self.y_pos
 
-    def draw_bullet(self):
+    def draw(self):
         """Draw the bullet"""
         self.screen.blit(self.image, self.rect)
 
@@ -81,7 +81,7 @@ class BossBullet(Sprite):
         self.rect.y = self.y_pos
         self.rect.x += round(self.x_vel)
 
-    def draw_bullet(self):
+    def draw(self):
         """Draw the bullet"""
         self.screen.blit(self.image, self.rect)
 

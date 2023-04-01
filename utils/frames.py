@@ -45,5 +45,3 @@ load_frames('player_bullets/missile-0{}.png', 9, missile_frames, start=1)
 
 missile_ex_frames = []
 load_frames('missile_explosion/missile_ex-0{}.png', 9, missile_ex_frames, start=1)
-
-

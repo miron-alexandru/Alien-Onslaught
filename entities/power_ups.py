@@ -37,7 +37,7 @@ class PowerUp(Sprite):
         self.y_pos += self.speed
         self.rect.y = self.y_pos
 
-    def draw_powerup(self):
+    def draw(self):
         """Draw the power-up."""
         self.screen.blit(self.image, self.rect)
 

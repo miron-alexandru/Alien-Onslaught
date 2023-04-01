@@ -50,6 +50,8 @@ class AlienOnslaught:
                                                             self.screen.get_size())
         self.third_bg = pygame.transform.smoothscale(self.settings.third_bg,
                                                             self.screen.get_size())
+        self.fourth_bg = pygame.transform.smoothscale(self.settings.fourth_bg,
+                                                            self.screen.get_size())
         self.ui_options = self.settings.ui_options
         self._initialize_game_objects()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
@@ -182,7 +184,6 @@ class AlienOnslaught:
                                  self.alien_bullet, self.asteroids)
 
 
-
     def _handle_level_progression(self):
         """Handles the progression of levels in the game, for different game modes."""
         if self.settings.gm.boss_rush and self.stats.level == 16:
@@ -194,7 +195,6 @@ class AlienOnslaught:
 
         if not self.settings.gm.meteor_madness and not self.aliens:
             self._prepare_next_level()
-
 
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
@@ -264,6 +264,8 @@ class AlienOnslaught:
                                                                 self.screen.get_size())
         self.third_bg = pygame.transform.smoothscale(self.settings.third_bg,
                                                                self.screen.get_size())
+        self.fourth_bg = pygame.transform.smoothscale(self.settings.fourth_bg,
+                                                                self.screen.get_size())
         self.reset_bg = pygame.transform.smoothscale(self.settings.bg_img,
                                                       self.screen.get_size())
 
@@ -291,6 +293,7 @@ class AlienOnslaught:
             1: self.reset_bg,
             9: self.second_bg,
             17: self.third_bg,
+            25: self.fourth_bg,
         }
         self.bg_img = bg_images.get(self.stats.level, self.bg_img)
 
@@ -366,6 +369,7 @@ class AlienOnslaught:
         # If Boss Rush game mode, create boss_aliens and return.
         if self.settings.gm.boss_rush:
             self.aliens_manager.create_boss_alien()
+            self.collision_handler.handled_collisions.clear()
             return
 
         if self.settings.gm.last_bullet:
@@ -375,6 +379,7 @@ class AlienOnslaught:
         # Create Bosses at the specified levels.
         if self.stats.level in BOSS_LEVELS:
             self.aliens_manager.create_boss_alien()
+            self.collision_handler.handled_collisions.clear()
 
         # Create normal fleets of aliens.
         else:
@@ -409,29 +414,16 @@ class AlienOnslaught:
 
     def update_projectiles(self):
         """Update position of bullets and get rid of bullets that went of screen."""
-        self.thunderbird_bullets.update()
-        self.thunderbird_missiles.update()
+        all_projectiles = [self.thunderbird_bullets, self.thunderbird_missiles,
+                           self.phoenix_bullets, self.phoenix_missiles]
 
-        self.phoenix_bullets.update()
-        self.phoenix_missiles.update()
+        for projectiles in all_projectiles:
+            projectiles.update()
 
-        # Get rid of bullets that went off screen.
-        for bullet in self.thunderbird_bullets.copy():
-            if bullet.rect.bottom <= 0:
-                self.thunderbird_bullets.remove(bullet)
-
-        for missile in self.thunderbird_missiles.copy():
-            if missile.rect.bottom <= 0:
-                self.thunderbird_missiles.remove(missile)
-
-        for bullet in self.phoenix_bullets.copy():
-            if bullet.rect.bottom <= 0:
-                self.phoenix_bullets.remove(bullet)
-
-        for missile in self.phoenix_missiles.copy():
-            if missile.rect.bottom <= 0:
-                self.phoenix_missiles.remove(missile)
-
+            # Get rid of projectiles that went off screen.
+            for projectile in projectiles.copy():
+                if projectile.rect.bottom <= 0:
+                    projectiles.remove(projectile)
 
 
     def _power_up_player(self, player):
@@ -478,16 +470,16 @@ class AlienOnslaught:
         if self.stats.thunderbird_hp:
             self._destroy_thunderbird()
             self.thunderbird_ship.set_immune()
-        else:
-            # player becomes inactive when loses all hp
-            self.thunderbird_ship.state.alive = False
-            # if the other player is active, remove bullets and continue
-            # until both players are dead
-            if self.phoenix_ship.state.alive:
-                return
-            else:
-                # game over if both player are inactive.
-                self.stats.game_active = False
+            return
+
+        # player becomes inactive when loses all hp
+        self.thunderbird_ship.state.alive = False
+
+        if self.phoenix_ship.state.alive:
+            return
+
+        # game over if both player are inactive.
+        self.stats.game_active = False
 
 
     def _destroy_thunderbird(self):
@@ -511,16 +503,15 @@ class AlienOnslaught:
         if self.stats.phoenix_hp:
             self._destroy_phoenix()
             self.phoenix_ship.set_immune()
-        else:
-            # player becomes inactive when loses all hp
-            self.phoenix_ship.state.alive = False
-            # if the other player is active, remove bullets and continue
-            # until both players are dead
-            if self.thunderbird_ship.state.alive:
-                return
-            else:
-                # game over if both players are inactive.
-                self.stats.game_active = False
+            return
+
+        self.phoenix_ship.state.alive = False
+
+        if self.thunderbird_ship.state.alive:
+            return
+
+        # game over if both player are inactive.
+        self.stats.game_active = False
 
 
     def _destroy_phoenix(self):
@@ -640,11 +631,10 @@ class AlienOnslaught:
 
     def _reset_ships(self):
         """Reset the ships by playing the warp animation and centering them."""
-        self.thunderbird_ship.start_warp()
-        self.phoenix_ship.start_warp()
-        self.thunderbird_ship.center_ship()
-        self.phoenix_ship.center_ship()
-
+        for ship in self.ships:
+            ship.start_warp()
+            ship.center_ship()
+            ship.update_missiles_number()
 
     def _display_pause(self):
         """Display the Pause image on screen."""
@@ -714,26 +704,12 @@ class AlienOnslaught:
         self.thunderbird_ship.blitme()
         self.phoenix_ship.blitme()
 
-        for bullet in self.thunderbird_bullets.sprites():
-            bullet.draw_bullet()
+        sprite_groups = [self.thunderbird_bullets, self.thunderbird_missiles, self.phoenix_bullets,
+                         self.phoenix_missiles, self.alien_bullet, self.power_ups, self.asteroids]
 
-        for missile in self.thunderbird_missiles.sprites():
-            missile.draw_missile()
-
-        for bullet in self.phoenix_bullets.sprites():
-            bullet.draw_bullet()
-
-        for missile in self.phoenix_missiles.sprites():
-            missile.draw_missile()
-
-        for bullet in self.alien_bullet.sprites():
-            bullet.draw_bullet()
-
-        for power_up in self.power_ups.sprites():
-            power_up.draw_powerup()
-
-        for asteroid in self.asteroids.sprites():
-            asteroid.draw_asteroid()
+        for group in sprite_groups:
+            for sprite in group.sprites():
+                sprite.draw()
 
         self.aliens.draw(self.screen)
         self.score_board.show_score()
@@ -945,20 +921,12 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         """Draw game objects on screen"""
         self.thunderbird_ship.blitme()
 
-        for bullet in self.thunderbird_bullets.sprites():
-            bullet.draw_bullet()
+        sprite_groups = [self.thunderbird_bullets, self.thunderbird_missiles,
+                        self.power_ups, self.alien_bullet, self.asteroids]
 
-        for missile in self.thunderbird_missiles.sprites():
-            missile.draw_missile()
-
-        for power_up in self.power_ups.sprites():
-            power_up.draw_powerup()
-
-        for bullet in self.alien_bullet.sprites():
-            bullet.draw_bullet()
-
-        for asteroid in self.asteroids.sprites():
-            asteroid.draw_asteroid()
+        for group in sprite_groups:
+            for sprite in group.sprites():
+                sprite.draw()
 
         self.aliens.draw(self.screen)
 

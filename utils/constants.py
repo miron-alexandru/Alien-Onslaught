@@ -30,6 +30,7 @@ P1_CONTROLS = ("Thunderbird controls:\n"
 BACKGROUNDS = {
     'space': 'images/background/space.jpg',
     'space2': 'images/background/space2.png',
+    'space3': 'images/background/space3.jpg',
     'space4': 'images/background/space4.jpg',
 }
 

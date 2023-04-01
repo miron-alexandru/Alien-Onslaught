@@ -13,40 +13,49 @@ from utils.game_utils import load_images, load_sounds
 
 
 class Settings:
-    """A class to store all settings for Alien Invasion."""
+    """A class to store all settings for Alien Onslaught."""
     def __init__(self):
         """Initialize the game's static settings."""
-        # Screen Settings
+        self._init_screen_settings()
+        self._init_images()
+        self._init_sounds()
+        self._init_game_mode_settings()
+        self._init_ui_options_settings()
+        self.dynamic_settings()
+
+    def _init_screen_settings(self):
+        """Initialize screen settings."""
         self.screen_width = 1260
         self.screen_height = 700
-        # load images and sounds
+
+    def _init_images(self):
+        """Initialize images for the game."""
         self.bg_images = load_images(BACKGROUNDS)
         self.other_images = load_images(OTHER)
-        self.sounds = load_sounds(SOUNDS)
-        # define background images
         self.bg_img = self.bg_images['space']
         self.second_bg = self.bg_images['space2']
-        self.third_bg = self.bg_images['space4']
-        # define other images
+        self.third_bg = self.bg_images['space3']
+        self.fourth_bg = self.bg_images['space4']
         self.game_over = self.other_images['gameover']
         self.pause = self.other_images['pause']
         self.game_title = self.other_images['game_title']
-
         self.game_title_rect = self.game_title.get_rect()
         self.game_title_rect.y = - 270
 
-        # define sounds
+    def _init_sounds(self):
+        """Initialize sounds for the game."""
+        self.sounds = load_sounds(SOUNDS)
         self.fire_sound = self.sounds['bullet']
 
-        # Game modes settings
+    def _init_game_mode_settings(self):
+        """Initialize game mode settings."""
         self.gm = GameModes()
-        # UiOptions
-        self.ui_options = UIOptions()
-        # How quickly the game speeds up
         self.speedup_scale = 0.3
         self.missiles_speed = 5.0
 
-        self.dynamic_settings()
+    def _init_ui_options_settings(self):
+        """Initialize UI options settings."""
+        self.ui_options = UIOptions()
 
 
     def dynamic_settings(self):
@@ -54,8 +63,8 @@ class Settings:
         # Thunderbird settings
         self.thunderbird_ship_speed = 3.5
         self.thunderbird_bullet_speed = 5.0
-        self.thunderbird_bullets_allowed = 1
-        self.thunderbird_bullet_count = 1
+        self.thunderbird_bullets_allowed = 552
+        self.thunderbird_bullet_count = 40
         self.thunderbird_missiles_num = 3
 
         # Phoenix settings
