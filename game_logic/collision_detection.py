@@ -13,6 +13,7 @@ class CollisionManager:
         self.stats =  game.stats
         self.settings = game.settings
         self.score_board = game.score_board
+        self.handled_collisions = {}
 
 
     def shield_collisions(self, ships, aliens, bullets, asteroids):
@@ -133,6 +134,7 @@ class CollisionManager:
             missile.explode()
             self.check_missile_ex_collision(self.game.aliens, player, missile)
 
+
     def check_alien_bullets_collisions(self, thunderbird_hit, phoenix_hit):
         """Manages collisions between the alien bullets and the players"""
         # check for collisions between each player and alien bullet and if a collision
@@ -205,8 +207,11 @@ class CollisionManager:
             ex_rect = ex_frame.get_rect(center=missile.rect.center)
             for alien in aliens:
                 if isinstance(alien, BossAlien):
-                    alien.hit_count += 5
-                    self._handle_boss_alien_collision(alien, player)
+                    if (missile, alien) not in self.handled_collisions:
+                        alien.hit_count += 5
+                        print(alien.hit_count)
+                        self._handle_boss_alien_collision(alien, player)
+                        self.handled_collisions[(missile, alien)] = True
                 elif ex_rect.colliderect(alien.rect):
                     self._update_stats(alien, player)
 
