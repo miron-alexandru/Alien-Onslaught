@@ -182,7 +182,6 @@ class AlienOnslaught:
                                  self.alien_bullet, self.asteroids)
 
 
-
     def _handle_level_progression(self):
         """Handles the progression of levels in the game, for different game modes."""
         if self.settings.gm.boss_rush and self.stats.level == 16:
@@ -366,6 +365,7 @@ class AlienOnslaught:
         # If Boss Rush game mode, create boss_aliens and return.
         if self.settings.gm.boss_rush:
             self.aliens_manager.create_boss_alien()
+            self.collision_handler.handled_collisions.clear()
             return
 
         if self.settings.gm.last_bullet:
@@ -375,6 +375,7 @@ class AlienOnslaught:
         # Create Bosses at the specified levels.
         if self.stats.level in BOSS_LEVELS:
             self.aliens_manager.create_boss_alien()
+            self.collision_handler.handled_collisions.clear()
 
         # Create normal fleets of aliens.
         else:
