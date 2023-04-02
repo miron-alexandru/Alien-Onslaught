@@ -83,8 +83,8 @@ OTHER = {
 }
 
 
-POWER_UPS = {
-    'power_up': 'images/power_ups/power_up.png',
+POWERS = {
+    'power': 'images/power_ups/power_up.png',
     'health': 'images/power_ups/health.png',
 }
 
@@ -256,7 +256,7 @@ GAME_CONSTANTS = {
     'ENDLESS_MAX_ALIENS': 50,
     'MAX_ALIEN_SPEED': 4.0,
     'MAX_ALIEN_NUM': 35,
-    'POWER_UP_SPEED': 1.5,
+    'POWER_SPEED': 1.5,
     'SCORE_SCALE': 4,
     'MAX_AS_SPEED': 3.0,
     'MAX_AS_FREQ': 200,

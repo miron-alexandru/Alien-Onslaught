@@ -29,7 +29,7 @@ from ui.game_buttons import GameButtons
 from entities.ships import Thunderbird, Phoenix
 from entities.alien_bullets import AlienBulletsManager
 from entities.aliens import AliensManager
-from entities.power_ups import PowerUpsManager
+from entities.powers import PowerEffectsManager
 from entities.asteroid import AsteroidsManager
 
 
@@ -75,7 +75,7 @@ class AlienOnslaught:
         self.thunderbird_missiles = pygame.sprite.Group()
         self.phoenix_missiles = pygame.sprite.Group()
         self.alien_bullet = pygame.sprite.Group()
-        self.power_ups = pygame.sprite.Group()
+        self.powers = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         # Managers and handlers
@@ -83,7 +83,7 @@ class AlienOnslaught:
                                         self.buttons, self.screen)
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
-        self.power_ups_manager = PowerUpsManager(self, self.score_board)
+        self.powers_manager = PowerEffectsManager(self, self.score_board)
         self.asteroids_manager = AsteroidsManager(self)
         self.alien_bullets_manager = AlienBulletsManager(self)
         self.aliens_manager = AliensManager(self, self.aliens, self.settings, self.screen)
@@ -162,11 +162,12 @@ class AlienOnslaught:
         self.start_game_mode()
         self._handle_level_progression()
         self._handle_normal_game()
+        self.powers_manager.manage_power_downs()
 
-        self.power_ups_manager.create_power_ups()
-        self.power_ups_manager.update_power_ups()
-        self.collision_handler.check_power_ups_collisions(
-                                self._power_up_player, self._health_power_up)
+        self.powers_manager.create_powers()
+        self.powers_manager.update_powers()
+        self.collision_handler.check_powers_collisions(
+                                self._apply_powerup_or_penalty, self._health_power_up)
 
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(
@@ -195,6 +196,7 @@ class AlienOnslaught:
 
         if not self.settings.gm.meteor_madness and not self.aliens:
             self._prepare_next_level()
+
 
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
@@ -391,6 +393,8 @@ class AlienOnslaught:
         # Create the bullets at and position them correctly as the number of bullets increases
         if ship.remaining_bullets <= 0:
             return
+        if ship.state.disarmed:
+            return
         if len(bullets) < bullets_allowed:
             offset_amount = 25
             for i in range(num_bullets):
@@ -426,28 +430,30 @@ class AlienOnslaught:
                     projectiles.remove(projectile)
 
 
-    def _power_up_player(self, player):
+    def _apply_powerup_or_penalty(self, player):
         """Powers up the specified player"""
-        power_up_choices = [
-            self.power_ups_manager.increase_ship_speed,
-            self.power_ups_manager.increase_bullet_speed,
-            self.power_ups_manager.increase_bullets_allowed,
-            self.power_ups_manager.draw_ship_shield,
-            self.power_ups_manager.decrease_alien_speed,
-            self.power_ups_manager.decrease_alien_bullet_speed,
+        effect_choices = [
+            self.powers_manager.increase_ship_speed,
+            self.powers_manager.increase_bullet_speed,
+            self.powers_manager.increase_bullets_allowed,
+            self.powers_manager.draw_ship_shield,
+            self.powers_manager.decrease_alien_speed,
+            self.powers_manager.decrease_alien_bullet_speed,
+            self.powers_manager.reverse_keys,
+            self.powers_manager.disarm_ship,
         ]
-        # randomly select one of the power ups and activate it.
+        # randomly select one of the powers and activate it.
         if self.settings.gm.last_bullet:
-            power_up_choices.append(self.power_ups_manager.increase_bullets_remaining)
+            effect_choices.append(self.powers_manager.increase_bullets_remaining)
         else:
-            power_up_choices.extend(
+            effect_choices.extend(
                 (
-                    self.power_ups_manager.increase_bullet_count,
-                    self.power_ups_manager.increase_missiles_num,
+                    self.powers_manager.increase_bullet_count,
+                    self.powers_manager.increase_missiles_num,
                 )
             )
-        power_up_choice = random.choice(power_up_choices)
-        power_up_choice(player)
+        effect_choice = random.choice(effect_choices)
+        effect_choice(player)
 
 
     def _health_power_up(self, player):
@@ -574,7 +580,7 @@ class AlienOnslaught:
         self.thunderbird_bullets.empty()
         self.phoenix_bullets.empty()
         self.alien_bullet.empty()
-        self.power_ups.empty()
+        self.powers.empty()
         self.asteroids.empty()
 
 
@@ -590,7 +596,7 @@ class AlienOnslaught:
         self.thunderbird_bullets.empty()
         self.phoenix_bullets.empty()
         self.alien_bullet.empty()
-        self.power_ups.empty()
+        self.powers.empty()
         self.asteroids.empty()
 
         self.settings.increase_speed()
@@ -624,7 +630,7 @@ class AlienOnslaught:
         self.thunderbird_bullets.empty()
         self.phoenix_bullets.empty()
         self.alien_bullet.empty()
-        self.power_ups.empty()
+        self.powers.empty()
         self.aliens.empty()
         self.asteroids.empty()
 
@@ -672,7 +678,7 @@ class AlienOnslaught:
         self.score_board.prep_level()
         self.score_board.create_health()
 
-        # Clear the screen of remaining aliens, bullets, asteroids and power-ups.
+        # Clear the screen of remaining aliens, bullets, asteroids and powers.
         self._reset_game_objects()
 
         # Play the warp animation and center the ships.
@@ -701,11 +707,12 @@ class AlienOnslaught:
 
     def _draw_game_objects(self):
         """Draw game objects and the score on screen."""
-        self.thunderbird_ship.blitme()
-        self.phoenix_ship.blitme()
+        for ship in self.ships:
+            if ship.state.alive:
+                ship.blitme()
 
         sprite_groups = [self.thunderbird_bullets, self.thunderbird_missiles, self.phoenix_bullets,
-                         self.phoenix_missiles, self.alien_bullet, self.power_ups, self.asteroids]
+                         self.phoenix_missiles, self.alien_bullet, self.powers, self.asteroids]
 
         for group in sprite_groups:
             for sprite in group.sprites():
@@ -790,10 +797,10 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self._handle_normal_game()
         self._handle_level_progression()
 
-        self.power_ups_manager.create_power_ups()
-        self.power_ups_manager.update_power_ups()
-        self.collision_handler.check_power_ups_collisions(
-                                self._power_up_player, self._health_power_up)
+        self.powers_manager.create_powers()
+        self.powers_manager.update_powers()
+        self.collision_handler.check_powers_collisions(
+                                self._apply_powerup_or_penalty, self._health_power_up)
 
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(
@@ -847,7 +854,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
     def _prepare_next_level(self):
         """Handle level progression"""
-        self.power_ups.empty()
+        self.powers.empty()
         self.alien_bullet.empty()
         self.asteroids.empty()
         self.thunderbird_bullets.empty()
@@ -896,10 +903,10 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.score_board.render_bullets_num()
         self.score_board.create_health()
 
-        # Clear the screen of remaining aliens, bullets, asteroids and power ups
+        # Clear the screen of remaining aliens, bullets, asteroids and powers
         self.thunderbird_bullets.empty()
         self.alien_bullet.empty()
-        self.power_ups.empty()
+        self.powers.empty()
         self.aliens.empty()
         self.asteroids.empty()
 
@@ -922,7 +929,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.thunderbird_ship.blitme()
 
         sprite_groups = [self.thunderbird_bullets, self.thunderbird_missiles,
-                        self.power_ups, self.alien_bullet, self.asteroids]
+                        self.powers, self.alien_bullet, self.asteroids]
 
         for group in sprite_groups:
             for sprite in group.sprites():

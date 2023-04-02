@@ -69,14 +69,17 @@ class Thunderbird(Sprite):
 
     def _update_position(self):
         """Updates the position of the ship based on the current state of movement flags."""
-        if self.moving_flags['right'] and self.rect.right < self.screen_rect.right:
-            self.x_pos += self.settings.thunderbird_ship_speed
-        if self.moving_flags['left'] and self.rect.left > 0:
-            self.x_pos -= self.settings.thunderbird_ship_speed
-        if self.moving_flags['up'] and self.rect.top > 0:
-            self.y_pos -= self.settings.thunderbird_ship_speed
-        if self.moving_flags['down'] and self.rect.bottom <= self.screen_rect.bottom:
-            self.y_pos += self.settings.thunderbird_ship_speed
+        direction = -1 if self.state.reverse else 1
+        self.x_pos += direction * (self.moving_flags['right'] - self.moving_flags['left']) \
+                    * self.settings.thunderbird_ship_speed
+        self.y_pos += direction * (self.moving_flags['down'] - self.moving_flags['up']) \
+                    * self.settings.thunderbird_ship_speed
+
+
+        # Keep the ship within the screen boundaries
+        self.x_pos = max(0, min(self.x_pos, self.screen_rect.width - self.rect.width))
+        self.y_pos = max(0, min(self.y_pos, self.screen_rect.height - self.rect.height))
+
 
     def blitme(self):
         """Draws the ship on the screen at its current location."""
@@ -138,6 +141,13 @@ class Thunderbird(Sprite):
         """Update the number of missiles"""
         self.missiles_num = self.settings.thunderbird_missiles_num
 
+    def reverse_keys(self):
+        """Toggles the reverse state"""
+        self.state.reverse = not self.state.reverse
+
+    def disarm(self):
+        """Toggles the disarmed state."""
+        self.state.disarmed = not self.state.disarmed
 
 
 class Phoenix(Thunderbird):
@@ -154,14 +164,15 @@ class Phoenix(Thunderbird):
 
     def _update_position(self):
         """Updates the position of the ship based on the current state of movement flags."""
-        if self.moving_flags['right'] and self.rect.right < self.screen_rect.right:
-            self.x_pos += self.settings.phoenix_ship_speed
-        if self.moving_flags['left'] and self.rect.left > 0:
-            self.x_pos -= self.settings.phoenix_ship_speed
-        if self.moving_flags['up'] and self.rect.top > 0:
-            self.y_pos -= self.settings.phoenix_ship_speed
-        if self.moving_flags['down'] and self.rect.bottom <= self.screen_rect.bottom:
-            self.y_pos += self.settings.phoenix_ship_speed
+        direction = -1 if self.state.reverse else 1
+        self.x_pos += direction * (self.moving_flags['right'] - self.moving_flags['left']) \
+                    * self.settings.phoenix_ship_speed
+        self.y_pos += direction * (self.moving_flags['down'] - self.moving_flags['up']) \
+                    * self.settings.phoenix_ship_speed
+
+        # Keep the ship within the screen boundaries
+        self.x_pos = max(0, min(self.x_pos, self.screen_rect.width - self.rect.width))
+        self.y_pos = max(0, min(self.y_pos, self.screen_rect.height - self.rect.height))
 
     def update_missiles_number(self):
         """Update the number of missiles."""
@@ -178,3 +189,5 @@ class ShipStates:
     single_player: bool = False
     immune: bool = False
     empowered: bool = False
+    reverse: bool = False
+    disarmed: bool = False

@@ -1,22 +1,22 @@
-"""The power_ups module contains the class for creating instances of power-ups."""
+"""The powers module contains the class for creating instances of power-ups or penalties"""
 
 import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import POWER_UPS, GAME_CONSTANTS
+from utils.constants import POWERS, GAME_CONSTANTS
 
 
 
-class PowerUp(Sprite):
-    """A class that manages the power ups for the game"""
+class Power(Sprite):
+    """A class that manages the power ups or penalties for the game"""
     def __init__(self, game):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.image = pygame.image.load(POWER_UPS['power_up'])
-        self.speed = GAME_CONSTANTS['POWER_UP_SPEED']
-        self.last_power_up_time = 0
+        self.image = pygame.image.load(POWERS['power'])
+        self.speed = GAME_CONSTANTS['POWER_SPEED']
+        self.last_power_time = 0
         self._initialize_position()
         self.health = False
 
@@ -30,21 +30,21 @@ class PowerUp(Sprite):
     def make_health_power_up(self):
         """Makes health power up"""
         self.health = True
-        self.image = pygame.image.load(POWER_UPS['health'])
+        self.image = pygame.image.load(POWERS['health'])
 
     def update(self):
-        """Update the power-up position."""
+        """Update the power position."""
         self.y_pos += self.speed
         self.rect.y = self.y_pos
 
     def draw(self):
-        """Draw the power-up."""
+        """Draw the power."""
         self.screen.blit(self.image, self.rect)
 
 
-class PowerUpsManager:
-    """The PowerUpsManager class manages the creation and,
-    update of the power ups that appear in the game."""
+class PowerEffectsManager:
+    """The PowerEffectsManager class manages the creation and,
+    update of the power ups and penalties that appear in the game."""
     def __init__(self, game, score_board):
         self.game = game
         self.screen = game.screen
@@ -53,34 +53,41 @@ class PowerUpsManager:
         self.phoenix_ship = game.phoenix_ship
         self.score_board = score_board
         self.last_power_up_time = 0
+        self.last_power_down_time = 0
 
-    def create_power_ups(self):
-        """Create multiple power ups after a certain time has passed"""
+    def create_powers(self):
+        """Create multiple power ups or penalties after a certain time has passed"""
         if self.last_power_up_time == 0:
             self.last_power_up_time = pygame.time.get_ticks()
 
         current_time = pygame.time.get_ticks()
-        # change the range to determine how often power ups are created
+        # change the range to determine how often power ups or penalties are created
         if current_time - self.last_power_up_time >= random.randint(25000, 45000): # miliseconds
             self.last_power_up_time = current_time
             # change the range to determine the chance for a power up to be health power up
             if random.randint(0, 4) == 0:
-                power_up = PowerUp(self)
-                power_up.make_health_power_up()
+                power = Power(self)
+                power.make_health_power_up()
             else:
-                power_up = PowerUp(self)
-            # create power up at a random location, at the top of the screen.
-            power_up.rect.x = random.randint(0, self.settings.screen_width - power_up.rect.width)
-            power_up.rect.y = random.randint(-100, -40)
-            self.game.power_ups.add(power_up)
+                power = Power(self)
+            # create a power up or a penalty at a random location, at the top of the screen.
+            power.rect.x = random.randint(0, self.settings.screen_width - power.rect.width)
+            power.rect.y = random.randint(-100, -40)
+            self.game.powers.add(power)
 
-    def update_power_ups(self):
-        """Update power-ups and remove power ups that went off screen."""
-        self.game.power_ups.update()
-        for power in self.game.power_ups.copy():
+    def update_powers(self):
+        """Update power-ups or penalties and remove the ones that went off screen."""
+        self.game.powers.update()
+        for power in self.game.powers.copy():
             if power.rect.y  > self.settings.screen_height:
-                self.game.power_ups.remove(power)
+                self.game.powers.remove(power)
 
+    def reverse_keys(self, player):
+        """Trigger the reverse key state on the specified player."""
+        getattr(self, f"{player}_ship").reverse_keys()
+
+    def disarm_ship(self, player):
+        getattr(self, f"{player}_ship").disarm()
 
     def increase_ship_speed(self, player):
         """Increases the ship speed of the specified player"""
@@ -134,3 +141,18 @@ class PowerUpsManager:
         }
         players[player].remaining_bullets += 1
         self.score_board.render_bullets_num()
+
+    def manage_power_downs(self):
+        """Set the power down states of the ship to False after a period of time."""
+        for ship in self.game.ships:
+            if ship.state.reverse or ship.state.disarmed:
+                power_down_time = 10000
+                current_time = pygame.time.get_ticks()
+                if current_time > self.last_power_down_time + power_down_time:
+                    self.last_power_down_time = current_time
+                    if ship.state.reverse:
+                        ship.state.reverse = False
+                    if ship.state.disarmed:
+                        ship.state.disarmed = False
+
+

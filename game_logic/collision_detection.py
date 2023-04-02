@@ -54,36 +54,36 @@ class CollisionManager:
                         phoenix_hit()
                         collision.kill()
 
-    def check_power_ups_collisions(self, power_up_method, health_power_up_method):
-        """Check for collision between ships and power-ups
-        If a collision occurs, a random power up is activated for the corresponding player
-        and the power up is removed.
+    def check_powers_collisions(self, power_method, health_power_method):
+        """Check for collision between ships and powers
+        If a collision occurs, a random power is activated for the corresponding player
+        and the power is removed.
         """
         # Define a dict that maps each player to their corresponding ship,
-        # active status, and power-up functions
+        # active status, and power functions
         player_info = {
             "thunderbird": {
                 "ship": self.game.thunderbird_ship,
                 "active": self.game.thunderbird_ship.state.alive,
-                "power_up": power_up_method,
-                "health_power_up": health_power_up_method,
+                "power": power_method,
+                "health_power_up": health_power_method,
             },
             "phoenix": {
                 "ship": self.game.phoenix_ship,
                 "active": self.game.phoenix_ship.state.alive,
-                "power_up": power_up_method,
-                "health_power_up": health_power_up_method,
+                "power": power_method,
+                "health_power_up": health_power_method,
             },
         }
         # loop through each player and check for collisions
         for player, info in player_info.items():
-            collision = pygame.sprite.spritecollideany(info["ship"], self.game.power_ups)
+            collision = pygame.sprite.spritecollideany(info["ship"], self.game.powers)
             if info["active"] and collision:
-                # play the empower effect, check the type of the power up and activate the func
+                # play the empower effect, check the type of the power and activate the func
                 if collision.health:
                     info["health_power_up"](player)
                 else:
-                    info["power_up"](player)
+                    info["power"](player)
                 collision.kill()
                 info["ship"].empower()
 
@@ -207,7 +207,6 @@ class CollisionManager:
                 if isinstance(alien, BossAlien):
                     if (missile, alien) not in self.handled_collisions:
                         alien.hit_count += 5
-                        print(alien.hit_count)
                         self._handle_boss_alien_collision(alien, player)
                         self.handled_collisions[(missile, alien)] = True
                 elif ex_rect.colliderect(alien.rect):
