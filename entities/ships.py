@@ -83,29 +83,32 @@ class Thunderbird(Sprite):
 
     def blitme(self):
         """Draws the ship on the screen at its current location."""
-        if not self.state.alive:
+
+        if self.state.warping:
+            # If the ship is warping, display the warp animation
+            self.screen.blit(self.anims.warp_frames[self.anims.warp_index], self.rect)
             return
 
-        # If the ship is warping, display the warp animation
-        if self.state.warping:
-            self.screen.blit(self.anims.warp_frames[self.anims.warp_index], self.rect)
-
-        # If the ship is not exploding, display regular ship image
-        elif not self.state.exploding:
-            self.screen.blit(self.image, self.rect)
-
-            # If shield is on, display the shield
-            if self.state.shielded:
-                self.screen.blit(self.anims.shield_image, self.anims.shield_rect)
-
-            if self.state.immune:
-                self.screen.blit(self.anims.immune_image, self.anims.immune_rect)
-
-            if self.state.empowered:
-                self.screen.blit(self.anims.empower_image, self.anims.empower_rect)
-        else:
-            # display the explosion
+        if self.state.exploding:
+            # If the ship is exploding, display the explosion
             self.screen.blit(self.anims.explosion_image, self.anims.explosion_rect)
+            return
+
+        # Display regular ship image
+        self.screen.blit(self.image, self.rect)
+
+        if self.state.shielded:
+            # Display shield if shielded
+            self.screen.blit(self.anims.shield_image, self.anims.shield_rect)
+
+        if self.state.immune:
+            # Display immune image if immune
+            self.screen.blit(self.anims.immune_image, self.anims.immune_rect)
+
+        if self.state.empowered:
+            # Display empower image if empowered
+            self.screen.blit(self.anims.empower_image, self.anims.empower_rect)
+
 
     def center_ship(self):
         """Center the ship on the screen."""

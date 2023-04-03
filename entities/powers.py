@@ -87,6 +87,7 @@ class PowerEffectsManager:
         getattr(self, f"{player}_ship").reverse_keys()
 
     def disarm_ship(self, player):
+        """Trigger the disarm state on the specified player."""
         getattr(self, f"{player}_ship").disarm()
 
     def increase_ship_speed(self, player):
@@ -154,5 +155,3 @@ class PowerEffectsManager:
                         ship.state.reverse = False
                     if ship.state.disarmed:
                         ship.state.disarmed = False
-
-

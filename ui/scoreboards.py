@@ -180,7 +180,7 @@ class ScoreBoard:
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        if not self.settings.gm.meteor_madness and not self.settings.gm.boss_rush:
+        if not any([self.settings.gm.meteor_madness, self.settings.gm.boss_rush]):
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
             self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
         if self.settings.gm.last_bullet:
@@ -255,3 +255,24 @@ class SecondScoreBoard(ScoreBoard):
         self.screen.blit(self.level_image, self.level_rect)
         if self.game.thunderbird_ship.state.alive:
             self.thunderbird_health.draw(self.screen)
+
+    def save_high_score(self, score_key):
+        """Save the high score to a JSON file."""
+        filename = 'single_high_score.json'
+        try:
+            with open(filename, 'r', encoding='utf-8') as score_file:
+                high_scores = json.load(score_file)
+        except json.JSONDecodeError:
+            high_scores = {'high_scores': [0] * 10}
+
+        scores = high_scores[score_key]
+        new_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
+
+        if new_score not in scores:
+            scores.append(new_score)
+            scores.sort(reverse=True)
+            scores = scores[:10]
+            high_scores[score_key] = scores
+
+            with open(filename, 'w', encoding='utf-8') as score_file:
+                json.dump(high_scores, score_file)
