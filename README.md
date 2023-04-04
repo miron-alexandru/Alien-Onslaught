@@ -91,5 +91,5 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Solved a bug that prevented the ships from playing their destroy animation when losing their last health.
 
 ### Version 2.8:
-* Implemented a new feature: Gift boxes now drop from the top of the screen, each containing a new weapon for players to use.
+* Implemented a new feature: Gift boxes now drop from the top of the screen, each containing different weapon for players to use.
 * Implemented two new powers, bonus points and invincibility.

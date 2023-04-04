@@ -85,7 +85,7 @@ class CollisionManager:
                 if collision.health:
                     info["health_power_up"](player)
                 if collision.weapon:
-                    info["weapon"](player)
+                    info["weapon"](player, collision.weapon_name)
                 else:
                     info["power"](player)
                 collision.kill()

@@ -18,8 +18,10 @@ class Power(Sprite):
         self.speed = GAME_CONSTANTS['POWER_SPEED']
         self.last_power_time = 0
         self._initialize_position()
+
         self.health = False
         self.weapon = False
+        self.weapon_name = None
 
     def _initialize_position(self):
         """Set the initial position of the power up."""
@@ -38,6 +40,7 @@ class Power(Sprite):
         self.weapon = True
         random_box = random.choice(list(WEAPON_BOXES.keys()))
         self.image = pygame.image.load(WEAPON_BOXES[random_box])
+        self.weapon_name = random_box
 
     def update(self):
         """Update the power position."""

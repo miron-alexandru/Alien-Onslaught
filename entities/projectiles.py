@@ -1,9 +1,9 @@
 """The projectiles module contains different projectiles for the players"""
-import random
+
 import pygame
 from pygame.sprite import Sprite
 from utils.frames import missile_frames
-from utils.constants import SHIPS, WEAPONS
+from utils.constants import WEAPONS
 from animations.other_animations import MissileEx
 
 
@@ -54,16 +54,15 @@ class BulletsManager:
     """The BulletsManager class manages the player bullets."""
     def __init__(self, game):
         self.game = game
-        self.thunderbolt = pygame.image.load(SHIPS['thunderbolt'])
-        self.firebird = pygame.image.load(SHIPS['firebird'])
+        self.thunderbolt = pygame.image.load(WEAPONS['thunderbolt'])
+        self.firebird = pygame.image.load(WEAPONS['firebird'])
 
-    def randomize_bullet(self, player):
+    def randomize_bullet(self, player, weapon_name):
         """Change the player bullet to a random one."""
-        random_bullet = random.choice(list(WEAPONS.keys()))
         if player == "thunderbird":
-            self.thunderbolt = pygame.image.load(WEAPONS[random_bullet])
+            self.thunderbolt = pygame.image.load(WEAPONS[weapon_name])
         elif player == "phoenix":
-            self.firebird = pygame.image.load(WEAPONS[random_bullet])
+            self.firebird = pygame.image.load(WEAPONS[weapon_name])
 
     def update_projectiles(self, singleplayer=False):
         """Update position of projectiles and get rid of projectiles that went of screen."""
@@ -80,6 +79,8 @@ class BulletsManager:
             for projectile in projectiles.copy():
                 if projectile.rect.bottom <= 0:
                     projectiles.remove(projectile)
+
+
 
 class Missile(Sprite):
     """The Missile class represents a missile object in the game."""

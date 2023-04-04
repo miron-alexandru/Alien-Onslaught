@@ -198,6 +198,7 @@ class AlienOnslaught:
         if not self.settings.gm.meteor_madness and not self.aliens:
             self._prepare_next_level()
 
+
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
         for event in pygame.event.get():
@@ -457,8 +458,8 @@ class AlienOnslaught:
         self.score_board.create_health()
 
 
-    def _weapon_power_up(self, player):
-        self.bullets_manager.randomize_bullet(player)
+    def _weapon_power_up(self, player, weapon_name):
+        self.bullets_manager.randomize_bullet(player, weapon_name)
 
 
     def _thunderbird_ship_hit(self):
