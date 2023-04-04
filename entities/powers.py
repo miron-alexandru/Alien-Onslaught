@@ -4,7 +4,7 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import POWERS, GAME_CONSTANTS
+from utils.constants import POWERS, GAME_CONSTANTS, WEAPON_BOXES
 
 
 
@@ -19,6 +19,7 @@ class Power(Sprite):
         self.last_power_time = 0
         self._initialize_position()
         self.health = False
+        self.weapon = False
 
     def _initialize_position(self):
         """Set the initial position of the power up."""
@@ -31,6 +32,12 @@ class Power(Sprite):
         """Makes health power up"""
         self.health = True
         self.image = pygame.image.load(POWERS['health'])
+
+    def make_weapon_power_up(self):
+        """Makes a random weapon power up."""
+        self.weapon = True
+        random_box = random.choice(list(WEAPON_BOXES.keys()))
+        self.image = pygame.image.load(WEAPON_BOXES[random_box])
 
     def update(self):
         """Update the power position."""
@@ -45,21 +52,22 @@ class Power(Sprite):
 class PowerEffectsManager:
     """The PowerEffectsManager class manages the creation and,
     update of the power ups and penalties that appear in the game."""
-    def __init__(self, game, score_board):
+    def __init__(self, game, score_board, stats):
         self.game = game
         self.screen = game.screen
         self.settings = game.settings
         self.thunderbird_ship = game.thunderbird_ship
         self.phoenix_ship = game.phoenix_ship
         self.score_board = score_board
+        self.stats = stats
         self.last_power_up_time = 0
         self.last_power_down_time = 0
+
 
     def create_powers(self):
         """Create multiple power ups or penalties after a certain time has passed"""
         if self.last_power_up_time == 0:
             self.last_power_up_time = pygame.time.get_ticks()
-
         current_time = pygame.time.get_ticks()
         # change the range to determine how often power ups or penalties are created
         if current_time - self.last_power_up_time >= random.randint(25000, 45000): # miliseconds
@@ -67,13 +75,17 @@ class PowerEffectsManager:
             # change the range to determine the chance for a power up to be health power up
             if random.randint(0, 4) == 0:
                 power = Power(self)
-                power.make_health_power_up()
+                if random.randint(0, 1) == 0:
+                    power.make_health_power_up()
+                else:
+                    power.make_weapon_power_up()
             else:
                 power = Power(self)
             # create a power up or a penalty at a random location, at the top of the screen.
             power.rect.x = random.randint(0, self.settings.screen_width - power.rect.width)
             power.rect.y = random.randint(-100, -40)
             self.game.powers.add(power)
+
 
     def update_powers(self):
         """Update power-ups or penalties and remove the ones that went off screen."""
@@ -89,6 +101,17 @@ class PowerEffectsManager:
     def disarm_ship(self, player):
         """Trigger the disarm state on the specified player."""
         getattr(self, f"{player}_ship").disarm()
+
+    def bonus_points(self, player):
+        """Increases the points for the specified player"""
+        setattr(self.stats, f"{player}_score",
+                getattr(self.stats, f"{player}_score") + 550)
+        self.score_board.render_scores()
+        self.score_board.update_high_score()
+
+    def invincibility(self, player):
+        """Trigger the invincibility state on the specified player"""
+        getattr(self, f"{player}_ship").set_immune()
 
     def increase_ship_speed(self, player):
         """Increases the ship speed of the specified player"""

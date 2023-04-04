@@ -60,6 +60,7 @@ class BossBullet(Sprite):
         """Initializes position and speed variables"""
         self.rect.inflate_ip(-50, -50)
         self.rect.center = alien.rect.center
+        self.rect.bottom = alien.rect.bottom
         self.y_pos = float(self.rect.y)
         self.x_vel = random.uniform(-4, 4)
 

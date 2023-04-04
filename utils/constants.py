@@ -88,6 +88,14 @@ POWERS = {
     'health': 'images/power_ups/health.png',
 }
 
+WEAPON_BOXES = {
+    'blaster': 'images/weapon_boxes/box1.png',
+    'discharger': 'images/weapon_boxes/box2.png',
+    'distorter': 'images/weapon_boxes/box3.png',
+    'entangler': 'images/weapon_boxes/box4.png',
+    'disruptor': 'images/weapon_boxes/box5.png',
+}
+
 
 ALIEN_BULLETS_IMG = {
     'alien_bullet': 'images/alien_bullets/alien_bullet.png',
@@ -225,14 +233,22 @@ normal_image_map = {
 }
 
 
+
 SHIPS = {
-    'thunderbolt': 'images/player_bullets/thunder_bullet.png',
-    'firebird': 'images/player_bullets/fire_bullet.png',
+    'thunderbolt': 'images/projectiles/bullets/thunder_bullet.png',
+    'firebird': 'images/projectiles/bullets/fire_bullet.png',
     'thunderbird': 'images/ships/ship1.png',
     'phoenix': 'images/ships/ship4.png',
 
     }
 
+WEAPONS = {
+    'blaster': 'images/projectiles/bullets/blaster.png',
+    'discharger': 'images/projectiles/bullets/discharger.png',
+    'distorter': 'images/projectiles/bullets/distorter.png',
+    'entangler': 'images/projectiles/bullets/entangler.png',
+    'disruptor': 'images/projectiles/bullets/disruptor.png',
+}
 
 # Sounds for the game.
 SOUNDS = {

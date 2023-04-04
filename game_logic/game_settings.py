@@ -19,8 +19,7 @@ class Settings:
         self._init_screen_settings()
         self._init_images()
         self._init_sounds()
-        self._init_game_mode_settings()
-        self._init_ui_options_settings()
+        self._init_game_settings()
         self.dynamic_settings()
 
     def _init_screen_settings(self):
@@ -47,24 +46,21 @@ class Settings:
         self.sounds = load_sounds(SOUNDS)
         self.fire_sound = self.sounds['bullet']
 
-    def _init_game_mode_settings(self):
+    def _init_game_settings(self):
         """Initialize game mode settings."""
         self.gm = GameModes()
+        self.ui_options = UIOptions()
         self.speedup_scale = 0.3
         self.missiles_speed = 5.0
-
-    def _init_ui_options_settings(self):
-        """Initialize UI options settings."""
-        self.ui_options = UIOptions()
-
+        self.immune_time = 5000
 
     def dynamic_settings(self):
         """Settings that can change during the game."""
         # Thunderbird settings
         self.thunderbird_ship_speed = 3.5
         self.thunderbird_bullet_speed = 5.0
-        self.thunderbird_bullets_allowed = 552
-        self.thunderbird_bullet_count = 40
+        self.thunderbird_bullets_allowed = 1
+        self.thunderbird_bullet_count = 1
         self.thunderbird_missiles_num = 3
 
         # Phoenix settings

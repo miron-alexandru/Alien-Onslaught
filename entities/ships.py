@@ -41,7 +41,8 @@ class Thunderbird(Sprite):
 
     def update_state(self):
         """Updates the ship state and position."""
-        if self.state.immune and pygame.time.get_ticks() - self.immune_start_time > 4000:
+        if (self.state.immune and pygame.time.get_ticks() - self.immune_start_time >
+                self.settings.immune_time):
             self.state.immune = False
 
         if self.state.exploding:

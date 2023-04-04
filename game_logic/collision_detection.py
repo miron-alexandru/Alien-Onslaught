@@ -54,7 +54,7 @@ class CollisionManager:
                         phoenix_hit()
                         collision.kill()
 
-    def check_powers_collisions(self, power_method, health_power_method):
+    def check_powers_collisions(self, power_method, health_power_method, weapon_power_method):
         """Check for collision between ships and powers
         If a collision occurs, a random power is activated for the corresponding player
         and the power is removed.
@@ -67,12 +67,14 @@ class CollisionManager:
                 "active": self.game.thunderbird_ship.state.alive,
                 "power": power_method,
                 "health_power_up": health_power_method,
+                "weapon": weapon_power_method,
             },
             "phoenix": {
                 "ship": self.game.phoenix_ship,
                 "active": self.game.phoenix_ship.state.alive,
                 "power": power_method,
                 "health_power_up": health_power_method,
+                "weapon": weapon_power_method,
             },
         }
         # loop through each player and check for collisions
@@ -82,6 +84,8 @@ class CollisionManager:
                 # play the empower effect, check the type of the power and activate the func
                 if collision.health:
                     info["health_power_up"](player)
+                if collision.weapon:
+                    info["weapon"](player)
                 else:
                     info["power"](player)
                 collision.kill()

@@ -31,6 +31,7 @@ from entities.alien_bullets import AlienBulletsManager
 from entities.aliens import AliensManager
 from entities.powers import PowerEffectsManager
 from entities.asteroid import AsteroidsManager
+from entities.projectiles import BulletsManager
 
 
 class AlienOnslaught:
@@ -81,9 +82,10 @@ class AlienOnslaught:
                                         self.buttons, self.screen)
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
-        self.powers_manager = PowerEffectsManager(self, self.score_board)
+        self.powers_manager = PowerEffectsManager(self, self.score_board, self.stats)
         self.asteroids_manager = AsteroidsManager(self)
         self.alien_bullets_manager = AlienBulletsManager(self)
+        self.bullets_manager = BulletsManager(self)
         self.aliens_manager = AliensManager(self, self.aliens, self.settings, self.screen)
         self.gm_manager = GameModesManager(self, self.settings, self.stats)
 
@@ -166,13 +168,14 @@ class AlienOnslaught:
         self.powers_manager.create_powers()
         self.powers_manager.update_powers()
         self.collision_handler.check_powers_collisions(
-                                self._apply_powerup_or_penalty, self._health_power_up)
+                                self._apply_powerup_or_penalty, self._health_power_up,
+                                self._weapon_power_up)
 
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(
                                 self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
-        self.update_projectiles()
+        self.bullets_manager.update_projectiles()
         self.collision_handler.check_bullet_alien_collisions()
         self.collision_handler.check_missile_alien_collisions()
         self.aliens_manager.update_aliens(self._thunderbird_ship_hit, self._phoenix_ship_hit)
@@ -182,7 +185,6 @@ class AlienOnslaught:
 
         self.collision_handler.shield_collisions(self.ships, self.aliens,
                                  self.alien_bullet, self.asteroids)
-
 
     def _handle_level_progression(self):
         """Handles the progression of levels in the game, for different game modes."""
@@ -195,7 +197,6 @@ class AlienOnslaught:
 
         if not self.settings.gm.meteor_madness and not self.aliens:
             self._prepare_next_level()
-
 
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
@@ -408,25 +409,12 @@ class AlienOnslaught:
                     self.score_board.render_bullets_num()
 
 
+
     def _fire_missile(self, missiles, ship, missile_class):
         if ship.missiles_num > 0:
             new_missile = missile_class(self, ship)
             missiles.add(new_missile)
             ship.missiles_num -= 1
-
-
-    def update_projectiles(self):
-        """Update position of projectiles and get rid of projectiles that went of screen."""
-        all_projectiles = [self.thunderbird_bullets, self.thunderbird_missiles,
-                           self.phoenix_bullets, self.phoenix_missiles]
-
-        for projectiles in all_projectiles:
-            projectiles.update()
-
-            # Get rid of projectiles that went off screen.
-            for projectile in projectiles.copy():
-                if projectile.rect.bottom <= 0:
-                    projectiles.remove(projectile)
 
 
     def _apply_powerup_or_penalty(self, player):
@@ -440,6 +428,8 @@ class AlienOnslaught:
             self.powers_manager.decrease_alien_bullet_speed,
             self.powers_manager.reverse_keys,
             self.powers_manager.disarm_ship,
+            self.powers_manager.bonus_points,
+            self.powers_manager.invincibility,
         ]
         # randomly select one of the powers and activate it.
         if self.settings.gm.last_bullet:
@@ -465,6 +455,10 @@ class AlienOnslaught:
             setattr(self.stats, player_health_attr[player],
                      getattr(self.stats, player_health_attr[player]) + 1)
         self.score_board.create_health()
+
+
+    def _weapon_power_up(self, player):
+        self.bullets_manager.randomize_bullet(player)
 
 
     def _thunderbird_ship_hit(self):
@@ -775,13 +769,14 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.powers_manager.create_powers()
         self.powers_manager.update_powers()
         self.collision_handler.check_powers_collisions(
-                                self._apply_powerup_or_penalty, self._health_power_up)
+                                self._apply_powerup_or_penalty, self._health_power_up,
+                                self._weapon_power_up)
 
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(
                                 self._thunderbird_ship_hit, self._phoenix_ship_hit)
 
-        self.update_projectiles()
+        self.bullets_manager.update_projectiles(singleplayer=True)
 
         self.collision_handler.check_bullet_alien_collisions(singleplayer=True)
         self.collision_handler.check_missile_alien_collisions(singleplayer=True)
@@ -813,19 +808,6 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
             elif event.type == pygame.VIDEORESIZE:
                 self._resize_screen(event.size)
                 self.manage_screen.update_buttons()
-
-
-    def update_projectiles(self):
-        """Update position of projectiles and get rid of projectiles that went of screen."""
-        all_projectiles = [self.thunderbird_bullets, self.thunderbird_missiles]
-
-        for projectiles in all_projectiles:
-            projectiles.update()
-
-            # Get rid of projectiles that went off screen.
-            for projectile in projectiles.copy():
-                if projectile.rect.bottom <= 0:
-                    projectiles.remove(projectile)
 
 
     def _prepare_last_bullet_bullets(self):
