@@ -84,7 +84,7 @@ class CollisionManager:
                 # play the empower effect, check the type of the power and activate the func
                 if collision.health:
                     info["health_power_up"](player)
-                if collision.weapon:
+                elif collision.weapon:
                     info["weapon"](player, collision.weapon_name)
                 else:
                     info["power"](player)

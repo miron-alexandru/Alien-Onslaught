@@ -63,6 +63,7 @@ class PowerEffectsManager:
         self.phoenix_ship = game.phoenix_ship
         self.score_board = score_board
         self.stats = stats
+
         self.last_power_up_time = 0
         self.last_power_down_time = 0
 
@@ -88,7 +89,6 @@ class PowerEffectsManager:
             power.rect.x = random.randint(0, self.settings.screen_width - power.rect.width)
             power.rect.y = random.randint(-100, -40)
             self.game.powers.add(power)
-
 
     def update_powers(self):
         """Update power-ups or penalties and remove the ones that went off screen."""

@@ -16,7 +16,7 @@ class Thunderbolt(Sprite):
         self.game = game
         self.screen = game.screen
         self.settings = game.settings
-        self.image = self.game.bullets_manager.thunderbolt
+        self.image = self.game.bullets_manager.weapons['thunderbird']['weapon']
         self.rect = self.image.get_rect()
         self.rect.midtop = (game.thunderbird_ship.rect.centerx,
                             game.thunderbird_ship.rect.top)
@@ -37,7 +37,7 @@ class Firebird(Thunderbolt):
     """A class to manage bullets for Phoenix ship."""
     def __init__(self, game):
         super().__init__(game)
-        self.image = self.game.bullets_manager.firebird
+        self.image = self.game.bullets_manager.weapons['phoenix']['weapon']
         self.rect = self.image.get_rect()
         self.rect.midtop = (game.phoenix_ship.rect.centerx,
                              game.phoenix_ship.rect.top)
@@ -50,19 +50,32 @@ class Firebird(Thunderbolt):
         self.rect.y = self.y_pos
 
 
+
 class BulletsManager:
     """The BulletsManager class manages the player bullets."""
     def __init__(self, game):
         self.game = game
-        self.thunderbolt = pygame.image.load(WEAPONS['thunderbolt'])
-        self.firebird = pygame.image.load(WEAPONS['firebird'])
+        self.weapons = {
+            "thunderbird": {
+                "weapon": pygame.image.load(WEAPONS['thunderbolt']),
+                "current": "thunderbolt"
+            },
+            "phoenix": {
+                "weapon": pygame.image.load(WEAPONS["firebird"]),
+                "current": "firebird"
+            }
+        }
 
-    def randomize_bullet(self, player, weapon_name):
-        """Change the player bullet to a random one."""
-        if player == "thunderbird":
-            self.thunderbolt = pygame.image.load(WEAPONS[weapon_name])
-        elif player == "phoenix":
-            self.firebird = pygame.image.load(WEAPONS[weapon_name])
+
+    def set_weapon(self, player, weapon_name):
+        """Change the player weapon."""
+        weapon = self.weapons.get(player)
+        if weapon_name == weapon["current"]:
+            self.game.powers_manager.increase_bullet_count(player)
+        else:
+            weapon["weapon"] = pygame.image.load(WEAPONS[weapon_name])
+            weapon["current"] = weapon_name
+
 
     def update_projectiles(self, singleplayer=False):
         """Update position of projectiles and get rid of projectiles that went of screen."""

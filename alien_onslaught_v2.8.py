@@ -459,7 +459,7 @@ class AlienOnslaught:
 
 
     def _weapon_power_up(self, player, weapon_name):
-        self.bullets_manager.randomize_bullet(player, weapon_name)
+        self.bullets_manager.set_weapon(player, weapon_name)
 
 
     def _thunderbird_ship_hit(self):
