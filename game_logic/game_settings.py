@@ -60,7 +60,7 @@ class Settings:
         self.thunderbird_ship_speed = 3.5
         self.thunderbird_bullet_speed = 5.0
         self.thunderbird_bullets_allowed = 1
-        self.thunderbird_bullet_count = 6
+        self.thunderbird_bullet_count = 1
         self.thunderbird_missiles_num = 3
 
         # Phoenix settings

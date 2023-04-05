@@ -186,6 +186,7 @@ class AlienOnslaught:
         self.collision_handler.shield_collisions(self.ships, self.aliens,
                                  self.alien_bullet, self.asteroids)
 
+
     def _handle_level_progression(self):
         """Handles the progression of levels in the game, for different game modes."""
         if self.settings.gm.boss_rush and self.stats.level == 16:
@@ -416,6 +417,7 @@ class AlienOnslaught:
             new_missile = missile_class(self, ship)
             missiles.add(new_missile)
             ship.missiles_num -= 1
+            self.score_board.render_scores()
 
 
     def _apply_powerup_or_penalty(self, player):

@@ -66,16 +66,14 @@ class BulletsManager:
             }
         }
 
-
     def set_weapon(self, player, weapon_name):
         """Change the player weapon."""
-        weapon = self.weapons.get(player)
-        if weapon_name == weapon["current"]:
-            self.game.powers_manager.increase_bullet_count(player)
-        else:
-            weapon["weapon"] = pygame.image.load(WEAPONS[weapon_name])
-            weapon["current"] = weapon_name
-
+        if weapon := self.weapons.get(player):
+            if weapon_name == weapon["current"]:
+                self.game.powers_manager.increase_bullet_count(player)
+            else:
+                weapon["weapon"] = pygame.image.load(WEAPONS[weapon_name])
+                weapon["current"] = weapon_name
 
     def update_projectiles(self, singleplayer=False):
         """Update position of projectiles and get rid of projectiles that went of screen."""

@@ -34,28 +34,47 @@ class ScoreBoard:
         self.render_bullets_num()
 
     def render_scores(self):
-        """Render the scores for Thunderbird and Phoenix ships and display them on the screen."""
-        # Calculate the rounded scores
-        rounded_thunderbird_score = round(self.stats.thunderbird_score)
-        rounded_phoenix_score = round(self.second_stats.phoenix_score)
+        """Render the scores and missiles number for the ships and display them on the screen."""
+        screen_rect = self.screen.get_rect()
+        ship_scores = [("Thunderbird", self.stats.thunderbird_score),
+                       ("Phoenix", self.second_stats.phoenix_score)]
+        y_pos = 20
 
-        # Convert the scores into strings with proper formatting.
-        thunderbird_score_str = f"Thunderbird: {rounded_thunderbird_score:,}"
-        phoenix_score_str = f"Phoenix: {rounded_phoenix_score:,}"
+        for i, (ship_name, score) in enumerate(ship_scores):
+            # Calculate the rounded score and convert it into a string with proper formatting.
+            rounded_score = round(score)
+            score_str = f"{ship_name}: {rounded_score:,}"
+            score_img = self.font.render(score_str, True, self.text_color, None)
+            score_rect = score_img.get_rect()
 
-        # Render the score images.
-        self.thunderbird_score_image = self.font.render(thunderbird_score_str,
-                                                         True, self.text_color, None)
-        self.phoenix_score_image = self.font.render(phoenix_score_str, True, self.text_color, None)
+            # Set the position of the score image.
+            if i == 0:
+                score_rect.right = self.level_rect.centerx - 200
+            else:
+                score_rect.right = self.level_rect.centerx + 300
+            score_rect.top = y_pos
 
-        # Set the positions of the score images.
-        self.thunderbird_score_rect = self.thunderbird_score_image.get_rect()
-        self.thunderbird_score_rect.right = self.level_rect.centerx - 200
-        self.thunderbird_score_rect.top = 20
+            if ship_name == "Thunderbird":
+                self.thunderbird_score_image = score_img
+                self.thunderbird_score_rect = score_rect
+            else:
+                self.phoenix_score_image = score_img
+                self.phoenix_score_rect = score_rect
 
-        self.phoenix_score_rect = self.phoenix_score_image.get_rect()
-        self.phoenix_score_rect.right = self.level_rect.centerx + 300
-        self.phoenix_score_rect.top = 20
+            missiles_str = (
+                f"Missiles: {getattr(self.game, f'{ship_name.lower()}_ship').missiles_num}")
+            missiles_img = self.font.render(missiles_str, True, self.text_color, None)
+            missiles_rect = missiles_img.get_rect()
+            missiles_rect.left = screen_rect.left + 5
+            missiles_rect.bottom = screen_rect.bottom - 10
+
+            if ship_name == "Thunderbird":
+                self.thunderbird_missiles_img = missiles_img
+                self.thunderbird_missiles_rect = missiles_rect
+            else:
+                self.phoenix_missiles_img = missiles_img
+                self.phoenix_missiles_rect = missiles_rect
+                self.phoenix_missiles_rect.right = screen_rect.right - 10
 
     def render_high_score(self):
         """Render the high score and display it at the center of the top of the screen."""
@@ -81,26 +100,19 @@ class ScoreBoard:
             self.render_high_score()
 
     def prep_level(self):
-        """Render the current level as an image and position it at the center of the screen."""
-        if self.settings.gm.endless_onslaught:
-            level_str =  "Endless Onslaught"
-        elif self.settings.gm.slow_burn:
-            level_str = f"Slow Burn Level {str(self.stats.level)}"
-        elif self.settings.gm.meteor_madness:
-            level_str = f"Meteor Madness Level {str(self.stats.level)}"
-        elif self.settings.gm.last_bullet:
-            level_str = f"Last Bullet Level {str(self.stats.level)}"
-        elif self.settings.gm.boss_rush:
-            if boss_name := boss_rush_image_map.get(self.stats.level, None):
-                level_str = f"Boss Rush: {boss_name.capitalize()}"
+        """Render the current level as an image and position it at the center of the screen
+        based on the game mode."""
+        level_map = {
+            "endless_onslaught": "Endless Onslaught",
+            "slow_burn": f"Slow Burn Level {str(self.stats.level)}",
+            "meteor_madness": f"Meteor Madness Level {str(self.stats.level)}",
+            "last_bullet": f"Last Bullet Level {str(self.stats.level)}",
+            "boss_rush": "Boss Rush: " + \
+                boss_rush_image_map.get(self.stats.level, f'Level {str(self.stats.level)}').title()
+        }
 
-            else:
-                level_str = f"Boss Rush Level:  {str(self.stats.level)}"
-        else:
-            level_str = f"Level {str(self.stats.level)}"
-
+        level_str = level_map.get(self.settings.gm.game_mode, f"Level {str(self.stats.level)}")
         self.level_image = self.font.render(level_str, True, self.level_color, None)
-
 
         # Position the level image in the center of the screen.
         screen_width, _ = self.screen.get_size()
@@ -112,29 +124,27 @@ class ScoreBoard:
     def render_bullets_num(self):
         """Renders the remaining bullets number for Thunderbird and Pheonix
         and if they are out of bullets, displays an appropriate message."""
-        thunder_alive = self.game.thunderbird_ship.state.alive
-        phoenix_alive = self.game.phoenix_ship.state.alive
-
-        thunder_bullets = self.game.thunderbird_ship.remaining_bullets if thunder_alive else 0
-        phoenix_bullets = self.game.phoenix_ship.remaining_bullets if phoenix_alive else 0
-
-        thunder_bullets_str = (f"Remaining bullets: {thunder_bullets}"
-                                if thunder_bullets else "Out of bullets!")
-        phoenix_bullets_str = (f"Remaining bullets: {phoenix_bullets}"
-                                if phoenix_bullets  else "Out of bullets!")
-
-
-        self.thunder_bullets_num_img = self.bullets_num_font.render(thunder_bullets_str,
-                                                            True, self.text_color, None)
-        self.phoenix_bullets_num_img = self.bullets_num_font.render(phoenix_bullets_str,
-                                                             True, self.text_color, None)
         screen_rect = self.screen.get_rect()
-        self.thunder_bullets_num_rect = self.thunder_bullets_num_img.get_rect()
-        self.phoenix_bullets_num_rect = self.phoenix_bullets_num_img.get_rect()
+        bullets_num = {}
+        ships = [("Thunderbird", self.game.thunderbird_ship),
+                 ("Phoenix", self.game.phoenix_ship)]
+
+        for ship_name, ship in ships:
+            bullets = ship.remaining_bullets if ship.state.alive else 0
+            bullets_str = f"Remaining bullets: {bullets}" if bullets else "Out of bullets!"
+            bullets_num[ship_name] = self.bullets_num_font.render(bullets_str, True,
+                                                                   self.text_color, None)
+
+        self.thunder_bullets_num_rect = bullets_num["Thunderbird"].get_rect()
+        self.phoenix_bullets_num_rect = bullets_num["Phoenix"].get_rect()
 
         self.thunder_bullets_num_rect.top = self.phoenix_bullets_num_rect.top = 55
-        self.thunder_bullets_num_rect.left = self.screen_rect.left + 10
+        self.thunder_bullets_num_rect.left = screen_rect.left + 10
         self.phoenix_bullets_num_rect.right = screen_rect.right - 10
+
+        self.thunder_bullets_num_img = bullets_num["Thunderbird"]
+        self.phoenix_bullets_num_img = bullets_num["Phoenix"]
+
 
     def create_health(self):
         """Creates heart sprites for both players based on their health points."""
@@ -186,6 +196,8 @@ class ScoreBoard:
         if self.settings.gm.last_bullet:
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
             self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
+        self.screen.blit(self.thunderbird_missiles_img, self.thunderbird_missiles_rect)
+        self.screen.blit(self.phoenix_missiles_img, self.phoenix_missiles_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         if self.game.thunderbird_ship.state.alive:
@@ -209,15 +221,24 @@ class SecondScoreBoard(ScoreBoard):
 
     def render_scores(self):
         """Turn the score into a rendered image."""
+        screen_rect = self.screen.get_rect()
         rounded_thunderbird_score = round(self.stats.thunderbird_score)
         thunderbird_score_str = f"Score: {rounded_thunderbird_score:,}"
-        self.thunderbird_score_image = self.font.render(thunderbird_score_str, True,
-            self.text_color, None)
+        thunderbird_missiles = f"Missiles: {self.game.thunderbird_ship.missiles_num}"
+
+        self.thunderbird_score_image = self.font.render(thunderbird_score_str,
+                                                        True,self.text_color, None)
+        self.thunderbird_missiles_img = self.font.render(thunderbird_missiles,
+                                                        True, self.text_color, None)
 
         # Display the score at the stop right of the screen.
         self.thunderbird_score_rect = self.thunderbird_score_image.get_rect()
         self.thunderbird_score_rect.right = self.level_rect.centerx + 250
         self.thunderbird_score_rect.top = 20
+
+        self.thunderbird_missiles_rect = self.thunderbird_missiles_img.get_rect()
+        self.thunderbird_missiles_rect.left = screen_rect.left + 5
+        self.thunderbird_missiles_rect.bottom = screen_rect.bottom - 10
 
 
     def update_high_score(self):
@@ -251,6 +272,7 @@ class SecondScoreBoard(ScoreBoard):
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
         if self.settings.gm.last_bullet:
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
+        self.screen.blit(self.thunderbird_missiles_img, self.thunderbird_missiles_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         if self.game.thunderbird_ship.state.alive:
