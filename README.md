@@ -93,3 +93,5 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 ### Version 2.8:
 * Implemented a new feature: Gift boxes now drop from the top of the screen, each containing different weapon for players to use.
 * Implemented two new powers, bonus points and invincibility.
+* Code refactored
+* Improved UI by adding a description for every game mode available in the game

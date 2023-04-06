@@ -16,7 +16,7 @@ class PlayerInput:
         self.phoenix_ship = self.game.phoenix_ship
 
     def check_keydown_events(self, event, fire_bullet_method, reset_game,
-                                        run_menu, fire_missile_method, singleplayer=False):
+                                    run_menu, fire_missile_method, singleplayer=False):
         """Respond to keys being pressed."""
         match event.key:
             # If the game is paused, check for Q, P, R, and M keys
@@ -67,7 +67,6 @@ class PlayerInput:
                                 self.game.thunderbird_missiles,
                                 self.game.thunderbird_ship,
                                 missile_class=Missile)
-
 
                 # Phoenix controls
                 if not singleplayer:

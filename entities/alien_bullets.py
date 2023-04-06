@@ -1,5 +1,4 @@
-"""
-The alien_bullets module contains the classes for creating and
+"""The alien_bullets module contains the classes for creating and
 managing aliens and boss alien bullets."""
 
 import random
@@ -74,7 +73,6 @@ class BossBullet(Sprite):
         image_name = level_image_map.get(level)
         if image_name is not None:
             self.image = self.bullet_images[image_name]
-
 
     def update(self):
         """Update the bullet location"""

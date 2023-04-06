@@ -3,7 +3,11 @@ import os
 import json
 import pygame
 
-from .constants import P1_CONTROLS, P2_CONTROLS, BOSS_RUSH, ALIEN_BULLETS_IMG
+from .constants import(
+    P1_CONTROLS, P2_CONTROLS,
+     BOSS_RUSH, ALIEN_BULLETS_IMG,
+     game_modes_description,
+)
 
 
 def load_images(image_dict):
@@ -38,6 +42,12 @@ def load_alien_images(alien_prefix):
         frames.append(frame)
 
     return frames
+
+def resize_image(image, screen_size=None):
+    """Resizes an image to match the current screen size."""
+    if screen_size is None:
+        screen_size = pygame.display.get_surface().get_size()
+    return pygame.transform.smoothscale(image, screen_size)
 
 
 def load_button_imgs(button_names):
@@ -165,6 +175,23 @@ def display_high_scores(screen, score_key, singleplayer=False):
                                     (scores_surfaces, scores_rects)]:
         for surface, rect in zip(surfaces, rects):
             screen.blit(surface, rect)
+
+
+def display_game_modes_description(screen):
+    """Render game modes description on screen."""
+    _, screen_height = screen.get_size()
+    font = pygame.font.SysFont('verdana', int(screen_height * 0.021))
+    text_x = 10
+    text_y = 10
+    text_surfaces, text_rects = render_text(
+                        game_modes_description,
+                        font,
+                        'white',
+                        (text_x, text_y),
+                        int(screen_height * 0.03))
+
+    for i, surface in enumerate(text_surfaces):
+        screen.blit(surface, text_rects[i])
 
 
 def display_controls(buttons, settings):

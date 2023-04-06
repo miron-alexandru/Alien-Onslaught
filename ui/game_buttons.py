@@ -10,7 +10,6 @@ from utils.constants import BUTTON_NAMES
 from utils.game_utils import load_button_imgs, display_controls
 
 
-
 class Button:
     """A class that manages the button"""
     def __init__(self, game, image_loc, pos, center=False):
@@ -31,13 +30,13 @@ class Button:
         else:
             self.rect.x, self.rect.y = pos
 
-
-    def update_pos(self, *args):
+    def update_pos(self, *args, x=0, y=0):
         """Update the button's position."""
         if len(args) == 1:
             self.rect.center = args[0]
         elif len(args) == 2:
             self.rect.topleft = args
+        self.rect.move_ip(x, y)
 
     def draw_button(self):
         """Draws the button"""
@@ -59,7 +58,6 @@ class GameButtons:
         self._create_controls()
         self._create_game_buttons()
         self._create_menu_buttons()
-
 
     def _create_game_buttons(self):
         """Create buttons for the game"""
@@ -101,7 +99,6 @@ class GameButtons:
         self.menu_quit = Button(self, self.button_imgs["menu_quit_button"],
                             (self.multi.rect.centerx - 100, self.multi.rect.bottom))
 
-
     def _create_controls(self):
         """This method creates the images and positions
         for the controls that will be displayed on the game menu."""
@@ -110,7 +107,6 @@ class GameButtons:
          self.t1_surfaces, self.t1_rects,
          self.t2_surfaces, self.t2_rects) = display_controls(self.button_imgs, self.screen)
 
-
     def handle_play_button(self, reset_game):
         """Reset game and hide all buttons"""
         reset_game()
@@ -118,22 +114,18 @@ class GameButtons:
         self.ui_options.show_high_scores = False
         self.ui_options.show_game_modes = False
 
-
     def handle_quit_button(self):
         """Quit game"""
         pygame.quit()
         sys.exit()
 
-
     def handle_high_scores_button(self):
         """Toggle the visibility of the high score"""
         self.ui_options.show_high_scores = not self.ui_options.show_high_scores
 
-
     def handle_game_modes_button(self):
         """Toggle the visibility of the game modes"""
         self.ui_options.show_game_modes = not self.ui_options.show_game_modes
-
 
     def _set_game_mode_settings(self, game_mode_setting):
         """Helper function to set the game mode settings based on the current mode."""

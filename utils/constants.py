@@ -12,17 +12,38 @@ BUTTON_NAMES = [
 
 # Player1 controls
 P2_CONTROLS = ("Phoenix controls:\n"
-                "Movement: Arrow Keys\n"
-                "Shoot: Enter\n"
-                "Ship skin: Numpad 1, 2, 3\n"
+                "Move: Arrow Keys\n"
+                "Fire: Enter\n"
+                "Change Ship: Numpad 1, 2, 3\n"
+                "Launch Missiles: R-Ctrl\n"
                 "Pause: P")
+
+
+game_modes_description = ("Endless Onslaught:\n"
+    "Survive against an infinite swarm of aliens and asteroids.\n"
+    "As time passes, the speed and numbers of your enemies will increase.\n\n"
+    "Slow Burn:\n"
+    "Take on the alien threat with reduced speed and firepower that\n"
+    "gradually decreases over time.\n\n"
+    "Meteor Madness:\n"
+    "Navigate through a relentless barrage of asteroids that\n"
+    "become increasingly difficult to avoid as their numbers and speed increase,\n" 
+    "and your speed is also decreasing over time.\n\n"
+    "Boss Rush:\n"
+    "Face off against a series of challenging bosses,\n"
+    "with each level presenting a new challenge\n\n"
+    "Last Bullet:\n"
+    "You must use your limited supply of bullets to fight off waves of aliens.\n"
+    "If you run out of bullets, you'll become inactive and the game will be over."
+    )
 
 
 # Player2 controls
 P1_CONTROLS = ("Thunderbird controls:\n"
-                "Movement: W, A, S, D\n"
-                "Shoot: Space\n"
-                "Ship skin: 1, 2, 3\n"
+                "Move: W, A, S, D\n"
+                "Fire: Space\n"
+                "Change Ship: 1, 2, 3\n"
+                "Launch Missiles: Z\n"
                 "Pause: P")
 
 

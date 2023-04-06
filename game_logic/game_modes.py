@@ -123,7 +123,7 @@ class GameModesManager:
 
     def endless_onslaught(self, aliens_manager, asteroid_handler):
         """Starts the Endless Onslaught game mode,
-        where fleets of aliens and asteroids swarm towards the player.
+        where fleets of aliens and asteroids are endlessly swarming towards the player.
         As time goes on, the speed of the aliens and their bullets will increase."""
         if len(self.game.aliens) < GAME_CONSTANTS['ENDLESS_MAX_ALIENS']:
             aliens_manager(self.settings.fleet_rows)

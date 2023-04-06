@@ -145,7 +145,6 @@ class ScoreBoard:
         self.thunder_bullets_num_img = bullets_num["Thunderbird"]
         self.phoenix_bullets_num_img = bullets_num["Phoenix"]
 
-
     def create_health(self):
         """Creates heart sprites for both players based on their health points."""
         # Create heart sprites for the thunderbird player.
@@ -165,7 +164,6 @@ class ScoreBoard:
                 (10 + (phoenix_heart_num + 1) * phoenix_heart.rect.width))
             phoenix_heart.rect.y = 10
             self.phoenix_health.add(phoenix_heart)
-
 
     def save_high_score(self, score_key):
         """Save the high score to a JSON file."""
@@ -207,7 +205,6 @@ class ScoreBoard:
 
 
 
-
 class SecondScoreBoard(ScoreBoard):
     """A class to report scoring information for the single player mode."""
     def __init__(self, game):
@@ -239,7 +236,6 @@ class SecondScoreBoard(ScoreBoard):
         self.thunderbird_missiles_rect = self.thunderbird_missiles_img.get_rect()
         self.thunderbird_missiles_rect.left = screen_rect.left + 5
         self.thunderbird_missiles_rect.bottom = screen_rect.bottom - 10
-
 
     def update_high_score(self):
         """Updates the high score if the current score is higher and,

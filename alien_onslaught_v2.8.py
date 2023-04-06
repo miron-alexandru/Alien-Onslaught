@@ -15,7 +15,10 @@ from game_logic.collision_detection import CollisionManager
 from game_logic.input_handling import PlayerInput
 from game_logic.game_modes import GameModesManager
 
-from utils.game_utils import display_high_scores
+from utils.game_utils import (
+    display_high_scores, resize_image,
+    display_game_modes_description
+)
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
     BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
@@ -42,16 +45,14 @@ class AlienOnslaught:
         self.clock = pygame.time.Clock()
         self.settings = Settings()
         self.screen = pygame.display.set_mode((self.settings.screen_width,
-                                                self.settings.screen_height), pygame.RESIZABLE)
-        self.bg_img = pygame.transform.smoothscale(self.settings.bg_img,self.screen.get_size())
+                                        self.settings.screen_height), pygame.RESIZABLE)
+        self.bg_img = resize_image(self.settings.bg_img, self.screen.get_size())
         self.bg_img_rect = self.bg_img.get_rect()
         self.reset_bg = self.bg_img.copy()
-        self.second_bg = pygame.transform.smoothscale(self.settings.second_bg,
-                                                            self.screen.get_size())
-        self.third_bg = pygame.transform.smoothscale(self.settings.third_bg,
-                                                            self.screen.get_size())
-        self.fourth_bg = pygame.transform.smoothscale(self.settings.fourth_bg,
-                                                self.screen.get_size())
+
+        self.second_bg = resize_image(self.settings.second_bg, self.screen.get_size())
+        self.third_bg = resize_image(self.settings.third_bg, self.screen.get_size())
+        self.fourth_bg = resize_image(self.settings.fourth_bg, self.screen.get_size())
 
         self.ui_options = self.settings.ui_options
         self._initialize_game_objects()
@@ -68,6 +69,7 @@ class AlienOnslaught:
         self.buttons = GameButtons(self, self.screen, self.ui_options, self.settings.gm)
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
+
         # Sprite Groups
         self.thunderbird_bullets = pygame.sprite.Group()
         self.phoenix_bullets = pygame.sprite.Group()
@@ -77,6 +79,7 @@ class AlienOnslaught:
         self.powers = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+
         # Managers and handlers
         self.manage_screen = ScreenManager(self.settings, self.score_board,
                                         self.buttons, self.screen)
@@ -152,7 +155,6 @@ class AlienOnslaught:
                 if self.stats.game_active:
                     self._handle_game_logic()
 
-
                 self._update_screen()
                 self._check_for_pause()
                 self.clock.tick(60)
@@ -172,9 +174,8 @@ class AlienOnslaught:
                                 self._weapon_power_up)
 
         self.alien_bullets_manager.update_alien_bullets()
-        self.collision_handler.check_alien_bullets_collisions(
-                                self._thunderbird_ship_hit, self._phoenix_ship_hit)
-
+        self.collision_handler.check_alien_bullets_collisions(self._thunderbird_ship_hit,
+                                                            self._phoenix_ship_hit)
         self.bullets_manager.update_projectiles()
         self.collision_handler.check_bullet_alien_collisions()
         self.collision_handler.check_missile_alien_collisions()
@@ -193,13 +194,13 @@ class AlienOnslaught:
             self.stats.game_active = False
             return
 
-        if self.settings.gm.last_bullet and not self.aliens:
-            self._prepare_last_bullet_level()
+        if not self.aliens:
+            if self.settings.gm.last_bullet:
+                self._prepare_last_bullet_level()
+            elif not self.settings.gm.meteor_madness:
+                self._prepare_next_level()
 
-        if not self.settings.gm.meteor_madness and not self.aliens:
-            self._prepare_next_level()
-
-
+   
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
         for event in pygame.event.get():
@@ -250,7 +251,6 @@ class AlienOnslaught:
             if button.rect.collidepoint(mouse_pos) and not self.stats.game_active:
                 action()
 
-
     def _resize_screen(self, size):
         """Resize the game screen and update relevant game objects.
         Screen has max width and max height."""
@@ -263,15 +263,12 @@ class AlienOnslaught:
         self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
-        self.bg_img = pygame.transform.smoothscale(self.settings.bg_img, self.screen.get_size())
-        self.second_bg = pygame.transform.smoothscale(self.settings.second_bg,
-                                                                self.screen.get_size())
-        self.third_bg = pygame.transform.smoothscale(self.settings.third_bg,
-                                                               self.screen.get_size())
-        self.fourth_bg = pygame.transform.smoothscale(self.settings.fourth_bg,
-                                                                self.screen.get_size())
-        self.reset_bg = pygame.transform.smoothscale(self.settings.bg_img,
-                                                      self.screen.get_size())
+
+        self.bg_img = resize_image(self.settings.bg_img)
+        self.second_bg = resize_image(self.settings.second_bg)
+        self.third_bg = resize_image(self.settings.third_bg)
+        self.fourth_bg = resize_image(self.settings.fourth_bg)
+        self.reset_bg = resize_image(self.settings.bg_img)
 
         self._set_game_over()
         self.thunderbird_ship.screen_rect = self.screen.get_rect()
@@ -326,8 +323,7 @@ class AlienOnslaught:
             self.asteroids_manager.create_asteroids()
             self.asteroids_manager.update_asteroids()
             self.collision_handler.check_asteroids_collisions(self._thunderbird_ship_hit,
-                                                                self._phoenix_ship_hit)
-
+                                                        self._phoenix_ship_hit)
     def _handle_boss_stats(self):
         """Updates stats for bosses based on the game mode."""
         if self.settings.gm.boss_rush:
@@ -398,7 +394,7 @@ class AlienOnslaught:
         if ship.state.disarmed:
             return
         if len(bullets) < bullets_allowed:
-            offset_amount = 25
+            offset_amount = 30
             for i in range(num_bullets):
                 new_bullet = bullet_class(self)
                 bullets.add(new_bullet)
@@ -409,7 +405,6 @@ class AlienOnslaught:
                 if self.settings.gm.last_bullet:
                     ship.remaining_bullets -= 1
                     self.score_board.render_bullets_num()
-
 
 
     def _fire_missile(self, missiles, ship, missile_class):
@@ -467,41 +462,33 @@ class AlienOnslaught:
     def _thunderbird_ship_hit(self):
         """Respond to the Thunderbird ship being hit by an alien, bullet or asteroid."""
         if self.stats.thunderbird_hp >= 0:
-            self._destroy_thunderbird()
-            self.thunderbird_ship.set_immune()
-
-
-    def _destroy_thunderbird(self):
-        """Destroy the thunderbird ship then center it."""
-        self.thunderbird_ship.explode()
-        self.thunderbird_ship.state.shielded = False
-        self.settings.thunderbird_bullet_count = 1
-        if self.settings.thunderbird_bullets_allowed > 1:
-            self.settings.thunderbird_bullets_allowed -= 2
-        self.stats.thunderbird_hp -= 1
-
-        self.thunderbird_ship.center_ship()
-        self.score_board.create_health()
+            self.destroy_ship(self.thunderbird_ship)
 
 
     def _phoenix_ship_hit(self):
         """Respond to the Phoenix ship being hit by an alien, bullet or asteroid."""
         if self.stats.phoenix_hp >= 0:
-            self._destroy_phoenix()
-            self.phoenix_ship.set_immune()
+            self.destroy_ship(self.phoenix_ship)
 
 
-    def _destroy_phoenix(self):
-        """Destroy the Phoenix ship and center it."""
-        self.phoenix_ship.explode()
-        self.phoenix_ship.state.shielded = False
-        self.settings.phoenix_bullet_count = 1
-        if self.settings.phoenix_bullets_allowed > 1:
-            self.settings.phoenix_bullets_allowed -= 2
-        self.stats.phoenix_hp -= 1
+    def destroy_ship(self, ship):
+        """Destroy the given ship and center it."""
+        ship.explode()
+        ship.state.shielded = False
+        if ship == self.thunderbird_ship:
+            self.settings.thunderbird_bullet_count = 1
+            if self.settings.thunderbird_bullets_allowed > 1:
+                self.settings.thunderbird_bullets_allowed -= 2
+            self.stats.thunderbird_hp -= 1
+        elif ship == self.phoenix_ship:
+            self.settings.phoenix_bullet_count = 1
+            if self.settings.phoenix_bullets_allowed > 1:
+                self.settings.phoenix_bullets_allowed -= 2
+            self.stats.phoenix_hp -= 1
 
-        self.phoenix_ship.center_ship()
+        ship.center_ship()
         self.score_board.create_health()
+        ship.set_immune()
 
 
     def _check_game_over(self):
@@ -741,6 +728,7 @@ class AlienOnslaught:
 
             if self.ui_options.show_game_modes:
                 self._draw_game_mode_buttons()
+                display_game_modes_description(self.screen)
 
         pygame.display.flip()
 
@@ -908,6 +896,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
             if self.ui_options.show_game_modes:
                 self._draw_game_mode_buttons()
+                display_game_modes_description(self.screen)
 
         pygame.display.flip()
 

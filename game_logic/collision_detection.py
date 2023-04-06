@@ -35,8 +35,8 @@ class CollisionManager:
                     asteroid.kill()
                     ship.state.shielded = False
 
-    def check_asteroids_collisions(self, thunderbird_hit, phoenix_hit):
-        """Check for collisions between the ships and asteroids"""
+    def check_asteroids_collisions(self, thunder_hit_method, phoenix_hit_method):
+        """Check for collisions between the ships, missiles and asteroids"""
         # loop through each player and check if it's alive,
         # then check for collisions with asteroids and which player collided
         # and activate the corresponding method
@@ -47,12 +47,19 @@ class CollisionManager:
                 ):
                     if (ship is self.game.thunderbird_ship
                         and not self.game.thunderbird_ship.state.immune):
-                        thunderbird_hit()
+                        thunder_hit_method()
                         collision.kill()
                     if (ship is self.game.phoenix_ship
                         and not self.game.phoenix_ship.state.immune):
-                        phoenix_hit()
+                        phoenix_hit_method()
                         collision.kill()
+
+        missiles = pygame.sprite.Group(self.game.thunderbird_missiles, self.game.phoenix_missiles)
+        # Check for collisions between missiles and asteroids
+        for missile in missiles:
+            if collision := pygame.sprite.spritecollideany(missile, self.game.asteroids):
+                missile.explode()
+                collision.kill()
 
     def check_powers_collisions(self, power_method, health_power_method, weapon_power_method):
         """Check for collision between ships and powers
@@ -90,7 +97,6 @@ class CollisionManager:
                     info["power"](player)
                 collision.kill()
                 info["ship"].empower()
-
 
     def check_bullet_alien_collisions(self, singleplayer=False):
         """Respond to bullet-alien collisions."""
@@ -137,27 +143,16 @@ class CollisionManager:
             self._check_missile_ex_collision(self.game.aliens, player, missile)
 
 
-    def check_alien_bullets_collisions(self, thunderbird_hit, phoenix_hit):
+    def check_alien_bullets_collisions(self, thunder_hit_method, phoenix_hit_method):
         """Manages collisions between the alien bullets and the players"""
-        # check for collisions between each player and alien bullet and if a collision
-        # occurrs, call the appropriate method and kill the collision.
-        thunderbird_collision = pygame.sprite.spritecollideany(self.game.thunderbird_ship,
-                                                                 self.game.alien_bullet)
-        phoenix_collision = pygame.sprite.spritecollideany(self.game.phoenix_ship,
-                                                                  self.game.alien_bullet)
+        player_ships = [self.game.thunderbird_ship, self.game.phoenix_ship]
+        player_methods = [thunder_hit_method, phoenix_hit_method]
 
-        if (self.game.thunderbird_ship.state.alive
-            and not self.game.thunderbird_ship.state.immune
-            and thunderbird_collision):
-            thunderbird_hit()
-            thunderbird_collision.kill()
-
-        if (self.game.phoenix_ship.state.alive
-         and not self.game.phoenix_ship.state.immune
-         and phoenix_collision):
-            phoenix_hit()
-            phoenix_collision.kill()
-
+        for ship, hit_method in zip(player_ships, player_methods):
+            if (ship.state.alive and not ship.state.immune and
+                    (collision := pygame.sprite.spritecollideany(ship, self.game.alien_bullet))):
+                hit_method()
+                collision.kill()
 
     def _handle_boss_alien_collision(self, alien, player):
         if alien.hit_count >= self.settings.boss_hp and alien.is_alive:
@@ -169,7 +164,6 @@ class CollisionManager:
                 self.stats.phoenix_score += self.settings.boss_points
             self.score_board.render_scores()
             self.score_board.update_high_score()
-
 
     def _handle_player_collisions(self, player_ship_collisions, player):
         """This method handles what happens with the score and the aliens
@@ -186,7 +180,6 @@ class CollisionManager:
                     if alien.hit_count >= max_hit_count:
                         self._update_stats(alien, player)
 
-
     def _update_stats(self, alien, player):
         """Update player score and remove alien"""
         # when collision happen, update the stats and remove the alien that
@@ -201,7 +194,6 @@ class CollisionManager:
         self.game.aliens.remove(alien)
         self.score_board.render_scores()
         self.score_board.update_high_score()
-
 
     def _check_missile_ex_collision(self, aliens, player, missile):
         """Checks collisions between aliens and missile explosion."""
