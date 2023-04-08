@@ -25,6 +25,8 @@ class ScoreBoard:
         self.level_color = 'blue'
         self.font = pygame.font.SysFont('', 27)
         self.bullets_num_font = pygame.font.SysFont('', 25)
+        self.missiles_icon = pygame.image.load('images/other/missile_icon.png')
+        self.phoenix_missiles_icon = pygame.image.load('images/other/phoenix_missile_icon.png')
 
         # Prepare the initial score and player health images.
         self.prep_level()
@@ -62,19 +64,25 @@ class ScoreBoard:
                 self.phoenix_score_rect = score_rect
 
             missiles_str = (
-                f"Missiles: {getattr(self.game, f'{ship_name.lower()}_ship').missiles_num}")
-            missiles_img = self.font.render(missiles_str, True, self.text_color, None)
-            missiles_rect = missiles_img.get_rect()
-            missiles_rect.left = screen_rect.left + 5
+                f"{getattr(self.game, f'{ship_name.lower()}_ship').missiles_num}")
+            rend_missiles_num = self.font.render(missiles_str, True, (71,71,71,255), None)
+            missiles_img_rect = self.missiles_icon.get_rect()
+            missiles_rect = rend_missiles_num.get_rect()
+            missiles_rect.left = screen_rect.left + 28
             missiles_rect.bottom = screen_rect.bottom - 10
+            missiles_img_rect.bottom = screen_rect.bottom - 5
 
             if ship_name == "Thunderbird":
-                self.thunderbird_missiles_img = missiles_img
+                self.thunderbird_rend_missiles_num = rend_missiles_num
                 self.thunderbird_missiles_rect = missiles_rect
+                self.thunderbird_missiles_img_rect = missiles_img_rect
+                self.thunderbird_missiles_img_rect.left = screen_rect.left
             else:
-                self.phoenix_missiles_img = missiles_img
+                self.phoenix_rend_missiles_num = rend_missiles_num
                 self.phoenix_missiles_rect = missiles_rect
-                self.phoenix_missiles_rect.right = screen_rect.right - 10
+                self.phoenix_missiles_rect.right = screen_rect.right - 28
+                self.phoenix_missiles_img_rect = missiles_img_rect
+                self.phoenix_missiles_img_rect.right = screen_rect.right
 
     def render_high_score(self):
         """Render the high score and display it at the center of the top of the screen."""
@@ -194,8 +202,10 @@ class ScoreBoard:
         if self.settings.gm.last_bullet:
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
             self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
-        self.screen.blit(self.thunderbird_missiles_img, self.thunderbird_missiles_rect)
-        self.screen.blit(self.phoenix_missiles_img, self.phoenix_missiles_rect)
+        self.screen.blit(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
+        self.screen.blit(self.missiles_icon, self.thunderbird_missiles_img_rect)
+        self.screen.blit(self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
+        self.screen.blit(self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         if self.game.thunderbird_ship.state.alive:
@@ -221,21 +231,25 @@ class SecondScoreBoard(ScoreBoard):
         screen_rect = self.screen.get_rect()
         rounded_thunderbird_score = round(self.stats.thunderbird_score)
         thunderbird_score_str = f"Score: {rounded_thunderbird_score:,}"
-        thunderbird_missiles = f"Missiles: {self.game.thunderbird_ship.missiles_num}"
+        thunderbird_missiles = f"{self.game.thunderbird_ship.missiles_num}"
+        missiles_img_rect = self.missiles_icon.get_rect()
+        missiles_img_rect.bottom = screen_rect.bottom - 5
+        self.thunderbird_missiles_img_rect = missiles_img_rect
 
         self.thunderbird_score_image = self.font.render(thunderbird_score_str,
                                                         True,self.text_color, None)
-        self.thunderbird_missiles_img = self.font.render(thunderbird_missiles,
-                                                        True, self.text_color, None)
+        self.thunderbird_rend_missiles_num = self.font.render(thunderbird_missiles,
+                                                        True, (71,71,71,255), None)
 
         # Display the score at the stop right of the screen.
         self.thunderbird_score_rect = self.thunderbird_score_image.get_rect()
         self.thunderbird_score_rect.right = self.level_rect.centerx + 250
         self.thunderbird_score_rect.top = 20
 
-        self.thunderbird_missiles_rect = self.thunderbird_missiles_img.get_rect()
-        self.thunderbird_missiles_rect.left = screen_rect.left + 5
+        self.thunderbird_missiles_rect = self.thunderbird_rend_missiles_num.get_rect()
+        self.thunderbird_missiles_rect.left = screen_rect.left + 28
         self.thunderbird_missiles_rect.bottom = screen_rect.bottom - 10
+        self.thunderbird_missiles_img_rect.left = screen_rect.left
 
     def update_high_score(self):
         """Updates the high score if the current score is higher and,
@@ -268,7 +282,8 @@ class SecondScoreBoard(ScoreBoard):
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
         if self.settings.gm.last_bullet:
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
-        self.screen.blit(self.thunderbird_missiles_img, self.thunderbird_missiles_rect)
+        self.screen.blit(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
+        self.screen.blit(self.missiles_icon, self.thunderbird_missiles_img_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
         if self.game.thunderbird_ship.state.alive:

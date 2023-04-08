@@ -97,6 +97,17 @@ class PowerEffectsManager:
             if power.rect.y  > self.settings.screen_height:
                 self.game.powers.remove(power)
 
+    def alien_upgrade(self, _=None):
+        """Gives an upgrade to the aliens."""
+        aliens = self.game.aliens.sprites()
+        if len(aliens) >= 12:
+            selected_aliens = random.sample(aliens, 12)
+        else:
+            selected_aliens = random.choices(aliens, k=len(aliens))
+        for alien in selected_aliens:
+            alien.upgrade()
+
+
     def reverse_keys(self, player):
         """Trigger the reverse key state on the specified player."""
         getattr(self, f"{player}_ship").reverse_keys()

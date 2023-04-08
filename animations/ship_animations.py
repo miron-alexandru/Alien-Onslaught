@@ -1,5 +1,6 @@
 """The Animations class in this module manages the animations for the ships"""
 
+import pygame
 from utils.frames import (
     ship_images,
     warp_frames,

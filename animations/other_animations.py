@@ -1,7 +1,7 @@
 """This is the animation module where other animations for different
 parts of the game are located."""
 
-from utils.frames import destroy_frames, missile_ex_frames
+from utils.frames import destroy_frames, missile_ex_frames, alien_immune_frames
 
 class DestroyAnim:
     """Class that manages the animation for when an entity get's destroyed."""
@@ -58,3 +58,23 @@ class MissileEx:
         """Draw the image on screen."""
         self.screen.blit(self.ex_image, self.ex_rect)
                     
+
+class Immune:
+    """The Immune class manages the Immune animation for aliens in the game."""
+    def __init__(self, alien):
+        self.alien = alien
+        self.screen = alien.screen
+        self.boss = False
+
+        self.immune_frames = alien_immune_frames
+        self.current_immune_frame = 0
+        self.immune_image = self.immune_frames[self.current_immune_frame]
+        self.immune_rect = self.immune_image.get_rect()
+
+    def update_immune_anim(self):
+        self.current_immune_frame = (self.current_immune_frame + 1) % len(self.immune_frames)
+        self.immune_image = self.immune_frames[self.current_immune_frame]
+        self.immune_rect.center = self.alien.rect.center
+
+    def draw_immune_anim(self):
+        self.screen.blit(self.immune_image, self.immune_rect)

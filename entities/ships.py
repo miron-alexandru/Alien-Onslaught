@@ -154,6 +154,7 @@ class Thunderbird(Sprite):
         self.state.disarmed = not self.state.disarmed
 
 
+
 class Phoenix(Thunderbird):
     """A class to manage the Phoenix ship."""
     def __init__(self, game):

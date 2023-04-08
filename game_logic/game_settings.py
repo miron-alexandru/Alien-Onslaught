@@ -53,6 +53,7 @@ class Settings:
         self.speedup_scale = 0.3
         self.missiles_speed = 5.0
         self.immune_time = 5000
+        self.alien_immune_time = 12000
 
     def dynamic_settings(self):
         """Settings that can change during the game."""

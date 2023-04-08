@@ -9,7 +9,7 @@ import pygame
 from pygame.sprite import Sprite
 from utils.constants import LEVEL_PREFIX, boss_rush_image_map, normal_image_map
 from utils.game_utils import load_alien_images, load_boss_images
-from animations.other_animations import DestroyAnim
+from animations.other_animations import DestroyAnim, Immune
 
 class Alien(Sprite):
     """A class to represent an alien."""
@@ -21,10 +21,13 @@ class Alien(Sprite):
 
         self.hit_count = 0
         self.last_bullet_time = 0
+        self.immune_state = False
+        self.immune_start_time = 0
 
         self.motion = AlienMovement(self, game)
         self.animation = AlienAnimation(self, game)
         self.destroy = DestroyAnim(self)
+        self.immune = Immune(self)
         self.image = self.animation.get_current_image()
         self._init_position()
 
@@ -40,12 +43,10 @@ class Alien(Sprite):
         screen_rect = self.screen.get_rect()
         return (self.rect.right >= screen_rect.right or self.rect.left <= 0)
 
-
     def check_top_edges(self):
         """Return True if alien is at the top of the screen."""
         screen_rect = self.screen.get_rect()
         return self.rect.top <= screen_rect.top
-
 
     def update(self):
         """Update alien position on screen."""
@@ -58,10 +59,24 @@ class Alien(Sprite):
         self.motion.update_vertical_position()
         self.motion.update_horizontal_position()
 
+        if self.immune_state:
+            self.immune.draw_immune_anim()
+            self.immune.update_immune_anim()
+
+        if (self.immune_state and pygame.time.get_ticks() - self.immune_start_time >
+                self.settings.alien_immune_time):
+            self.immune_state = False
+
     def destroy_alien(self):
         """Start alien destroyed animation and start it"""
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
+
+    def upgrade(self):
+        """Gives a bonus to the alien."""
+        self.immune_state = True
+        self.immune.immune_rect.center = self.rect.center
+        self.immune_start_time = pygame.time.get_ticks()
 
 
 class BossAlien(Sprite):
@@ -89,7 +104,6 @@ class BossAlien(Sprite):
         self.motion = AlienMovement(self, game)
         self.destroy = DestroyAnim(self)
 
-
     def _update_image(self, game):
         """Change image for specific boss fight"""
         if self.settings.gm.boss_rush:
@@ -101,14 +115,12 @@ class BossAlien(Sprite):
         if image_name is not None:
             self.image = self.boss_images[image_name]
 
-
     def update(self):
         """Update position and movement."""
         self.x_pos += self.settings.alien_speed * self.motion.direction
         self.rect.x = round(self.x_pos)
 
         self.motion.update_horizontal_position()
-
 
     def check_edges(self):
         """Return True if alien is at edge of screen."""
@@ -121,6 +133,9 @@ class BossAlien(Sprite):
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
 
+    def upgrade(self):
+        """Gives a bonus to the alien."""
+        self.settings.boss_hp += 15
 
 
 class AliensManager:

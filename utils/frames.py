@@ -45,3 +45,7 @@ load_frames('projectiles/missiles/missile-0{}.png', 9, missile_frames, start=1)
 
 missile_ex_frames = []
 load_frames('missile_explosion/missile_ex-0{}.png', 9, missile_ex_frames, start=1)
+
+alien_immune_frames = []
+load_frames('alien_immune/immune-0{}.png', 20, alien_immune_frames, start=1)
+

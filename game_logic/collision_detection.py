@@ -171,14 +171,15 @@ class CollisionManager:
         making them stronger as the game progresses."""
         for aliens in player_ship_collisions.values():
             for alien in aliens:
-                alien.hit_count += 1
-                if isinstance(alien, BossAlien):
-                    self._handle_boss_alien_collision(alien, player)
-                else:
-                    level = self.stats.level
-                    max_hit_count = ALIENS_HP_MAP.get(level, 3)
-                    if alien.hit_count >= max_hit_count:
-                        self._update_stats(alien, player)
+                if not alien.immune_state:
+                    alien.hit_count += 1
+                    if isinstance(alien, BossAlien):
+                        self._handle_boss_alien_collision(alien, player)
+                    else:
+                        level = self.stats.level
+                        max_hit_count = ALIENS_HP_MAP.get(level, 3)
+                        if alien.hit_count >= max_hit_count:
+                            self._update_stats(alien, player)
 
     def _update_stats(self, alien, player):
         """Update player score and remove alien"""

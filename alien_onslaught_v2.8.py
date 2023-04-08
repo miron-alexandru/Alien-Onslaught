@@ -140,6 +140,7 @@ class AlienOnslaught:
         running = True
         i = 0
         while running:
+            print(self.settings.boss_hp)
             if not self.ui_options.paused:  # check if the game is paused
                 self._handle_background_change()
                 self.screen.blit(self.bg_img, [0, i])
@@ -200,7 +201,7 @@ class AlienOnslaught:
             elif not self.settings.gm.meteor_madness:
                 self._prepare_next_level()
 
-   
+
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
         for event in pygame.event.get():
@@ -428,6 +429,7 @@ class AlienOnslaught:
             self.powers_manager.disarm_ship,
             self.powers_manager.bonus_points,
             self.powers_manager.invincibility,
+            self.powers_manager.alien_upgrade,
         ]
         # randomly select one of the powers and activate it.
         if self.settings.gm.last_bullet:
@@ -621,12 +623,6 @@ class AlienOnslaught:
         self.stats.game_active = True
         self.ui_options.high_score_saved = False
 
-        # Prepare the scoreboard and health.
-        self.score_board.render_scores()
-        self.score_board.render_high_score()
-        self.score_board.prep_level()
-        self.score_board.create_health()
-
         # Clear the screen of remaining aliens, bullets, asteroids and powers.
         self._reset_game_objects()
 
@@ -641,6 +637,13 @@ class AlienOnslaught:
 
         # for resetting self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
+
+        # Prepare the scoreboard and health.
+        self.score_board.render_scores()
+        self.score_board.show_score()
+        self.score_board.render_high_score()
+        self.score_board.prep_level()
+        self.score_board.create_health()
 
 
     def _prepare_last_bullet_bullets(self):
@@ -818,18 +821,11 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.stats.game_active = True
         self.ui_options.high_score_saved = False
 
-        self.score_board.render_scores()
-        self.score_board.render_high_score()
-        self.score_board.prep_level()
-        self.score_board.render_bullets_num()
-        self.score_board.create_health()
-
         # Clear the screen of remaining aliens, bullets, asteroids and powers
         self._reset_game_objects(self.phoenix_bullets)
 
         # Create a new fleet and center the ship.
-        self.thunderbird_ship.start_warp()
-        self.thunderbird_ship.center_ship()
+        self._reset_ships()
         self.player_input.reset_ship_movement_flags()
 
         self._handle_alien_creation()
@@ -839,6 +835,13 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
         # This resets self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
+
+        self.score_board.render_scores()
+        self.score_board.render_high_score()
+        self.score_board.prep_level()
+        self.score_board.render_bullets_num()
+        self.score_board.create_health()
+
 
 
     def _draw_game_objects(self):

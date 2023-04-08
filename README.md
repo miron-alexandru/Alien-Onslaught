@@ -95,3 +95,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Implemented two new powers, bonus points and invincibility.
 * Code refactored
 * Improved UI by adding a description for every game mode available in the game
+* Implemented missiles icons where the number of missiles is displayed on screen and a new penalty that gives to the normal aliens a shielded state for a period of time and for bosses 15 HP.
