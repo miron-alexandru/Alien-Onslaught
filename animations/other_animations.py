@@ -57,7 +57,8 @@ class MissileEx:
     def draw_explosion(self):
         """Draw the image on screen."""
         self.screen.blit(self.ex_image, self.ex_rect)
-                    
+
+
 
 class Immune:
     """The Immune class manages the Immune animation for aliens in the game."""
@@ -72,9 +73,11 @@ class Immune:
         self.immune_rect = self.immune_image.get_rect()
 
     def update_immune_anim(self):
+        """Update the immune animation."""
         self.current_immune_frame = (self.current_immune_frame + 1) % len(self.immune_frames)
         self.immune_image = self.immune_frames[self.current_immune_frame]
         self.immune_rect.center = self.alien.rect.center
 
     def draw_immune_anim(self):
+        """Draw the immune image"""
         self.screen.blit(self.immune_image, self.immune_rect)

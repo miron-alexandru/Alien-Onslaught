@@ -140,7 +140,6 @@ class AlienOnslaught:
         running = True
         i = 0
         while running:
-            print(self.settings.boss_hp)
             if not self.ui_options.paused:  # check if the game is paused
                 self._handle_background_change()
                 self.screen.blit(self.bg_img, [0, i])
@@ -430,6 +429,7 @@ class AlienOnslaught:
             self.powers_manager.bonus_points,
             self.powers_manager.invincibility,
             self.powers_manager.alien_upgrade,
+            self.powers_manager.change_ship_size,
         ]
         # randomly select one of the powers and activate it.
         if self.settings.gm.last_bullet:

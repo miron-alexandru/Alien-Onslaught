@@ -153,6 +153,9 @@ class Thunderbird(Sprite):
         """Toggles the disarmed state."""
         self.state.disarmed = not self.state.disarmed
 
+    def scale_ship(self, scale_factor):
+        """Call the 'change_ship_size' method and change the size of the ship."""
+        self.anims.change_ship_size(scale_factor)
 
 
 class Phoenix(Thunderbird):

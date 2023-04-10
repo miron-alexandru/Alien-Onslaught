@@ -112,6 +112,10 @@ class PowerEffectsManager:
         """Trigger the reverse key state on the specified player."""
         getattr(self, f"{player}_ship").reverse_keys()
 
+    def change_ship_size(self, player):
+        """Change the ship size based on the scale factor."""
+        getattr(self, f"{player}_ship").scale_ship(0.5)
+
     def disarm_ship(self, player):
         """Trigger the disarm state on the specified player."""
         getattr(self, f"{player}_ship").disarm()
