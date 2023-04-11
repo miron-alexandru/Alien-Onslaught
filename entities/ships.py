@@ -25,6 +25,7 @@ class Thunderbird(Sprite):
         self.state = ShipStates()
 
         self.immune_start_time = 0
+        self.small_ship_time = 0
         self.remaining_bullets = 17 if singleplayer else 9
         self.missiles_num = self.settings.thunderbird_missiles_num
 
@@ -44,6 +45,10 @@ class Thunderbird(Sprite):
         if (self.state.immune and pygame.time.get_ticks() - self.immune_start_time >
                 self.settings.immune_time):
             self.state.immune = False
+
+        if (self.state.scaled and pygame.time.get_ticks() - self.small_ship_time >
+                self.settings.scaled_time):
+            self.reset_ship_size()
 
         if self.state.exploding:
             self.anims.update_explosion_animation()
@@ -84,7 +89,6 @@ class Thunderbird(Sprite):
 
     def blitme(self):
         """Draws the ship on the screen at its current location."""
-
         if self.state.warping:
             # If the ship is warping, display the warp animation
             self.screen.blit(self.anims.warp_frames[self.anims.warp_index], self.rect)
@@ -110,11 +114,10 @@ class Thunderbird(Sprite):
             # Display empower image if empowered
             self.screen.blit(self.anims.empower_image, self.anims.empower_rect)
 
-
     def center_ship(self):
         """Center the ship on the screen."""
         self.rect.bottom = self.screen_rect.bottom
-        self.x_pos = float(self.rect.x)
+        self.x_pos = self.screen_rect.centerx - 300
         self.y_pos = float(self.rect.y - 10)
 
     def draw_shield(self):
@@ -154,8 +157,19 @@ class Thunderbird(Sprite):
         self.state.disarmed = not self.state.disarmed
 
     def scale_ship(self, scale_factor):
-        """Call the 'change_ship_size' method and change the size of the ship."""
+        """Make the ship smaller"""
         self.anims.change_ship_size(scale_factor)
+        self.state.scaled = True
+
+    def reset_ship_size(self):
+        """Reset the ship size to the original size."""
+        self.image = pygame.image.load(SHIPS['thunderbird'])
+        self.rect = self.image.get_rect()
+        self.anims.reset_size()
+
+        self.state.scaled = False
+        self.small_ship_time = pygame.time.get_ticks()
+
 
 
 class Phoenix(Thunderbird):
@@ -182,9 +196,24 @@ class Phoenix(Thunderbird):
         self.x_pos = max(0, min(self.x_pos, self.screen_rect.width - self.rect.width))
         self.y_pos = max(0, min(self.y_pos, self.screen_rect.height - self.rect.height))
 
+    def center_ship(self):
+        """Center the ship on the screen."""
+        self.rect.bottom = self.screen_rect.bottom
+        self.x_pos = self.screen_rect.centerx + 200
+        self.y_pos = float(self.rect.y - 10)
+
     def update_missiles_number(self):
         """Update the number of missiles."""
         self.missiles_num = self.settings.thunderbird_missiles_num
+
+    def reset_ship_size(self):
+        """Reset the ship to the original size."""
+        self.image = pygame.image.load(SHIPS['phoenix'])
+        self.rect = self.image.get_rect()
+        self.anims.reset_size()
+
+        self.state.scaled = False
+        self.small_ship_time = pygame.time.get_ticks()
 
 
 @dataclass
@@ -199,3 +228,4 @@ class ShipStates:
     empowered: bool = False
     reverse: bool = False
     disarmed: bool = False
+    scaled: bool = False

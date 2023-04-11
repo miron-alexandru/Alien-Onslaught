@@ -19,7 +19,7 @@ P2_CONTROLS = ("Phoenix controls:\n"
                 "Pause: P")
 
 
-game_modes_description = ("Endless Onslaught:\n"
+GAME_MODES_DESCRIPTION = ("Endless Onslaught:\n"
     "Survive against an infinite swarm of aliens and asteroids.\n"
     "As time passes, the speed and numbers of your enemies will increase.\n\n"
     "Slow Burn:\n"

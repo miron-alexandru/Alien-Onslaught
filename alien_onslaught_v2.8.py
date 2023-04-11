@@ -588,8 +588,9 @@ class AlienOnslaught:
     def _reset_ships(self):
         """Reset the ships by playing the warp animation and centering them."""
         for ship in self.ships:
-            ship.start_warp()
+            ship.reset_ship_size()
             ship.center_ship()
+            ship.start_warp()
             ship.update_missiles_number()
 
 

@@ -59,28 +59,47 @@ class Animations:
         self.empower_rect = self.empower_image.get_rect()
 
     def change_ship_size(self, scale_factor):
-        """Change the ship size based on the scale_factor."""
-        self.ship.image = pygame.transform.smoothscale(self.ship.image,
-                                                (int(self.ship.image.get_width() * scale_factor),
-                                                int(self.ship.image.get_height() * scale_factor)))
-        self.ship.rect = self.ship.image.get_rect()
-        self.ship_images = [pygame.transform.scale(ship, (int(ship.get_width() * scale_factor),
-                                    int(ship.get_height() * scale_factor))) for ship in ship_images]
+        """Change the ship size and animations based on the scale_factor."""
+        def scale_image(image):
+            return pygame.transform.smoothscale(image, (int(image.get_width() * scale_factor),
+                                                int(image.get_height() * scale_factor)))
 
-        self.immune_frames = [pygame.transform.scale(frame, (int(frame.get_width() * scale_factor),
-                                int(frame.get_height() * scale_factor))) for frame in immune_frames]
+        self.ship.image = scale_image(self.ship.image)
+        self.ship.rect = self.ship.image.get_rect()
+
+        self.ship_images = [scale_image(ship) for ship in self.ship_images]
+        self.immune_frames = [scale_image(frame) for frame in self.immune_frames]
+        self.immune_image = self.immune_frames[self.current_immune_frame]
+        self.immune_rect = self.immune_image.get_rect()
+        self.shield_frames = [scale_image(frame) for frame in self.shield_frames]
+        self.shield_image = self.shield_frames[self.current_immune_frame]
+        self.shield_rect = self.shield_image.get_rect()
+        self.explosion_frames = [scale_image(exp) for exp in self.explosion_frames]
+        self.explosion_image = self.explosion_frames[self.current_explosion_frame]
+        self.explosion_rect = self.explosion_image.get_rect()
+        self.empower_frames = [scale_image(frame) for frame in self.empower_frames]
+        self.empower_image = self.empower_frames[self.current_empower_frame]
+        self.empower_rect = self.empower_image.get_rect()
+
+    def reset_size(self):
+        """Reset all animations and ship images to their original size."""
+        self.ship_images = ship_images
+
+        self.immune_frames = immune_frames
         self.immune_image = self.immune_frames[self.current_immune_frame]
         self.immune_rect = self.immune_image.get_rect()
 
-        self.explosion_frames = [pygame.transform.scale(exp, (int(exp.get_width() * scale_factor),
-                            int(exp.get_height() * scale_factor))) for exp in explosion_frames]
+        self.explosion_frames =  explosion_frames
         self.explosion_image = self.explosion_frames[self.current_explosion_frame]
         self.explosion_rect = self.explosion_image.get_rect()
 
-        self.empower_frames = [pygame.transform.scale(frame, (int(frame.get_width() * scale_factor),
-                            int(frame.get_height() * scale_factor))) for frame in empower_frames]
+        self.empower_frames = empower_frames
         self.empower_image = self.empower_frames[self.current_empower_frame]
         self.empower_rect = self.empower_image.get_rect()
+
+        self.shield_frames = shield_frames
+        self.shield_image = self.shield_frames[self.current_immune_frame]
+        self.shield_rect = self.shield_image.get_rect()
 
 
     def update_warp_animation(self):

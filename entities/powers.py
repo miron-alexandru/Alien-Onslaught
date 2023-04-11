@@ -74,8 +74,7 @@ class PowerEffectsManager:
             self.last_power_up_time = pygame.time.get_ticks()
         current_time = pygame.time.get_ticks()
         # change the range to determine how often power ups or penalties are created
-        if current_time - self.last_power_up_time >= random.randint(25000, 45000): # miliseconds
-            self.last_power_up_time = current_time
+        if current_time - self.last_power_up_time >= random.randint(25000, 45000):
             # change the range to determine the chance for a power up to be health power up
             if random.randint(0, 4) == 0:
                 power = Power(self)
@@ -107,13 +106,12 @@ class PowerEffectsManager:
         for alien in selected_aliens:
             alien.upgrade()
 
-
     def reverse_keys(self, player):
         """Trigger the reverse key state on the specified player."""
         getattr(self, f"{player}_ship").reverse_keys()
 
     def change_ship_size(self, player):
-        """Change the ship size based on the scale factor."""
+        """Make the specified player smaller (for a period of time)."""
         getattr(self, f"{player}_ship").scale_ship(0.5)
 
     def disarm_ship(self, player):
@@ -188,7 +186,7 @@ class PowerEffectsManager:
         """Set the power down states of the ship to False after a period of time."""
         for ship in self.game.ships:
             if ship.state.reverse or ship.state.disarmed:
-                power_down_time = 10000
+                power_down_time = 20000
                 current_time = pygame.time.get_ticks()
                 if current_time > self.last_power_down_time + power_down_time:
                     self.last_power_down_time = current_time

@@ -6,7 +6,7 @@ import pygame
 from .constants import(
     P1_CONTROLS, P2_CONTROLS,
      BOSS_RUSH, ALIEN_BULLETS_IMG,
-     game_modes_description,
+     GAME_MODES_DESCRIPTION,
 )
 
 
@@ -184,7 +184,7 @@ def display_game_modes_description(screen):
     text_x = 10
     text_y = 10
     text_surfaces, text_rects = render_text(
-                        game_modes_description,
+                        GAME_MODES_DESCRIPTION,
                         font,
                         'white',
                         (text_x, text_y),
