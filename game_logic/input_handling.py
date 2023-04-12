@@ -6,17 +6,18 @@ import pygame
 from entities.projectiles import Missile, Firebird, Thunderbolt
 
 
-
 class PlayerInput:
     """Class for handling player input events in a game."""
+
     def __init__(self, game, ui_options):
         self.game = game
+        self.settings = game.settings
         self.ui_options = ui_options
         self.thunderbird_ship = self.game.thunderbird_ship
         self.phoenix_ship = self.game.phoenix_ship
 
-    def check_keydown_events(self, event, fire_bullet_method, reset_game,
-                                    run_menu, fire_missile_method, singleplayer=False):
+    def check_keydown_events(self, event, reset_game, run_menu,
+                             fire_missile_method, singleplayer=False):
         """Respond to keys being pressed."""
         match event.key:
             # If the game is paused, check for Q, P, R, and M keys
@@ -32,21 +33,14 @@ class PlayerInput:
                 run_menu()
 
             # If the game is not paused, check for player keypresses
-            case _ if not self.game.ui_options.paused:
+            case _ if not self.ui_options.paused:
                 # Thunderbird controls
                 if (self.thunderbird_ship.state.alive and
                     not self.thunderbird_ship.state.warping and
-                    not self.thunderbird_ship.state.exploding):
+                        not self.thunderbird_ship.state.exploding):
                     match event.key:
                         case pygame.K_SPACE:
-                            fire_bullet_method(
-                                self.game.thunderbird_bullets,
-                                self.game.settings.thunderbird_bullets_allowed,
-                                bullet_class=Thunderbolt,
-                                num_bullets=self.game.settings.thunderbird_bullet_count,
-                                ship=self.thunderbird_ship)
-                            self.game.settings.fire_sound.play()
-
+                            self.thunderbird_ship.state.firing = True
                         case pygame.K_d:
                             self.thunderbird_ship.moving_flags['right'] = True
                         case pygame.K_a:
@@ -65,28 +59,22 @@ class PlayerInput:
                         case pygame.K_z:
                             fire_missile_method(
                                 self.game.thunderbird_missiles,
-                                self.game.thunderbird_ship,
+                                self.thunderbird_ship,
                                 missile_class=Missile)
 
                 # Phoenix controls
                 if not singleplayer:
                     if (self.phoenix_ship.state.alive and
-                    not self.phoenix_ship.state.warping and
-                    not self.phoenix_ship.state.exploding):
+                        not self.phoenix_ship.state.warping and
+                            not self.phoenix_ship.state.exploding):
                         match event.key:
                             case pygame.K_RETURN:
-                                fire_bullet_method(
-                                    self.game.phoenix_bullets,
-                                    self.game.settings.phoenix_bullets_allowed,
-                                    bullet_class=Firebird,
-                                    num_bullets=self.game.settings.phoenix_bullet_count,
-                                    ship=self.phoenix_ship)
-                                self.game.settings.fire_sound.play()
+                                self.phoenix_ship.state.firing = True
                             case pygame.K_RCTRL:
                                 fire_missile_method(
-                                self.game.phoenix_missiles,
-                                self.game.phoenix_ship,
-                                missile_class=Missile)
+                                    self.game.phoenix_missiles,
+                                    self.phoenix_ship,
+                                    missile_class=Missile)
 
                             case pygame.K_LEFT:
                                 self.phoenix_ship.moving_flags['left'] = True
@@ -103,7 +91,6 @@ class PlayerInput:
                             case pygame.K_KP3:
                                 self.phoenix_ship.image = self.phoenix_ship.anims.ship_images[5]
 
-
     def check_keyup_events(self, event):
         """Respond to keys being released."""
         # Thunderbird controls
@@ -118,6 +105,8 @@ class PlayerInput:
                     self.thunderbird_ship.moving_flags['up'] = False
                 case pygame.K_s:
                     self.thunderbird_ship.moving_flags['down'] = False
+                case pygame.K_SPACE:
+                    self.thunderbird_ship.state.firing = False
 
             # Phoenix controls
         if self.phoenix_ship.state.alive:
@@ -130,6 +119,35 @@ class PlayerInput:
                     self.phoenix_ship.moving_flags['up'] = False
                 case pygame.K_DOWN:
                     self.phoenix_ship.moving_flags['down'] = False
+                case pygame.K_RETURN:
+                    self.phoenix_ship.state.firing = False
+
+    def handle_ship_firing(self, fire_bullet_method):
+        """Handles the ship firing."""
+        current_time = pygame.time.get_ticks()
+        ships = {
+            "thunderbird": (
+                self.thunderbird_ship,
+                self.game.thunderbird_bullets,
+                self.game.settings.thunderbird_bullets_allowed,
+                Thunderbolt,
+                self.game.settings.thunderbird_bullet_count
+            ),
+            "phoenix": (
+                self.phoenix_ship,
+                self.game.phoenix_bullets,
+                self.game.settings.phoenix_bullets_allowed,
+                Firebird,
+                self.game.settings.phoenix_bullet_count
+            )}
+
+        for ship, bullets, bullets_allowed, bullet_class, bullet_count in ships.values():
+            if ship.state.firing and current_time - ship.last_bullet_time > 200:
+                fire_bullet_method(
+                    bullets, bullets_allowed, bullet_class=bullet_class,
+                    num_bullets=bullet_count, ship=ship)
+                self.game.settings.fire_sound.play()
+                ship.last_bullet_time = current_time
 
 
     def reset_ship_movement_flags(self):

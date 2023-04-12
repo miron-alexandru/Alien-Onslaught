@@ -26,6 +26,7 @@ class Thunderbird(Sprite):
 
         self.immune_start_time = 0
         self.small_ship_time = 0
+        self.last_bullet_time = 0
         self.remaining_bullets = 17 if singleplayer else 9
         self.missiles_num = self.settings.thunderbird_missiles_num
 
@@ -229,3 +230,4 @@ class ShipStates:
     reverse: bool = False
     disarmed: bool = False
     scaled: bool = False
+    firing: bool = False
