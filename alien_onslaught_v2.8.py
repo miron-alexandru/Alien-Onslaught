@@ -201,6 +201,7 @@ class AlienOnslaught:
             elif not self.settings.gm.meteor_madness:
                 self._prepare_next_level()
 
+
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
         for event in pygame.event.get():
@@ -770,6 +771,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(
                                 self._thunderbird_ship_hit, self._phoenix_ship_hit)
+
         self.player_input.handle_ship_firing(self._fire_bullet)
         self.bullets_manager.update_projectiles(singleplayer=True)
 
@@ -841,7 +843,6 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.score_board.prep_level()
         self.score_board.render_bullets_num()
         self.score_board.create_health()
-
 
 
     def _draw_game_objects(self):

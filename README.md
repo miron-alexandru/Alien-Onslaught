@@ -98,3 +98,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Implemented missiles icons where the number of missiles is displayed on screen and a new penalty that gives to the normal aliens a shielded state for a period of time and for bosses 15 HP.
 * Implemented a new power that changes the ship size.
 * Now the players are able to fire continuously while holding down their fire button.
+* Alien bullets are now 'smarter', they are following the player, making it harder to avoid them.
