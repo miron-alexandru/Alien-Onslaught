@@ -159,7 +159,7 @@ class ScoreBoard:
         self.thunderbird_health = Group()
         for thunderbird_heart_number in range(self.stats.thunderbird_hp):
             thunderbird_heart = Heart(self.game)
-            thunderbird_heart.rect.x = 10 + thunderbird_heart_number * thunderbird_heart.rect.width
+            thunderbird_heart.rect.x = 5 + thunderbird_heart_number  * (thunderbird_heart.rect.width + 5)
             thunderbird_heart.rect.y = 10
             self.thunderbird_health.add(thunderbird_heart)
 
@@ -169,7 +169,7 @@ class ScoreBoard:
             phoenix_heart = Heart(self.game)
             phoenix_heart.rect.x = (
                 self.settings.screen_width -
-                (10 + (phoenix_heart_num + 1) * phoenix_heart.rect.width))
+                (5 + (phoenix_heart_num + 1) * (phoenix_heart.rect.width + 5)))
             phoenix_heart.rect.y = 10
             self.phoenix_health.add(phoenix_heart)
 

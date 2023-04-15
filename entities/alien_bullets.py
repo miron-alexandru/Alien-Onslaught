@@ -143,15 +143,19 @@ class AlienBulletsManager:
         # calculate the time since any alien fired a bullet
         if current_time - self.last_alien_bullet_time >= bullet_int:
             self.last_alien_bullet_time = current_time
-            aliens = random.sample(self.aliens.sprites(), k=min(num_bullets,
-                                                                     len(self.aliens.sprites())))
-            for alien in aliens:
-                # calculate the time since a specific alien fired a bullet
-                if (alien.last_bullet_time == 0 or
-                current_time - alien.last_bullet_time >= alien_int):
-                    alien.last_bullet_time = current_time
-                    target_ship = random.choice(self.game.ships)
-                    self._create_alien_bullet(alien, target_ship)
+            if valid_ships := [
+                ship for ship in self.game.ships if ship.state.alive
+            ]:
+                aliens = random.sample(self.aliens.sprites(), k=min(num_bullets,
+                                                            len(self.aliens.sprites())))
+                for alien in aliens:
+                    # calculate the time since a specific alien fired a bullet
+                    if (alien.last_bullet_time == 0 or
+                    current_time - alien.last_bullet_time >= alien_int):
+                        alien.last_bullet_time = current_time
+                        target_ship = random.choice(valid_ships)
+                        self._create_alien_bullet(alien, target_ship)
+
 
 
     def update_alien_bullets(self):
