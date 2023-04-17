@@ -58,6 +58,7 @@ class AlienOnslaught:
         self._initialize_game_objects()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
+        self.current_sound_name = None
 
         pygame.display.set_caption("Alien Onslaught")
 
@@ -96,6 +97,8 @@ class AlienOnslaught:
     def run_menu(self):
         """Runs the menu screen"""
         self.screen = pygame.display.set_mode(self.screen.get_size())
+        pygame.mixer.stop()
+        self.settings.menu_music.play()
         while True:
             # Check for mouse click events
             for event in pygame.event.get():
@@ -390,6 +393,7 @@ class AlienOnslaught:
     def _fire_bullet(self, bullets, bullets_allowed, bullet_class, num_bullets, ship):
         """Create new player bullets."""
         # Create the bullets at and position them correctly as the number of bullets increases
+        bullet_fired = False
         if ship.remaining_bullets <= 0:
             return
         if ship.state.disarmed:
@@ -406,6 +410,10 @@ class AlienOnslaught:
                 if self.settings.gm.last_bullet:
                     ship.remaining_bullets -= 1
                     self.score_board.render_bullets_num()
+                bullet_fired = True
+
+        if bullet_fired:
+            self.settings.fire_sound.play()
 
 
     def _fire_missile(self, missiles, ship, missile_class):
@@ -546,6 +554,7 @@ class AlienOnslaught:
         self.score_board.prep_level()
         self._handle_alien_creation()
         self._handle_boss_stats()
+        self.prepare_level_sounds()
 
 
     def _prepare_last_bullet_level(self):
@@ -646,7 +655,21 @@ class AlienOnslaught:
         self.score_board.render_high_score()
         self.score_board.prep_level()
         self.score_board.create_health()
+        self.prepare_level_sounds()
 
+
+    def prepare_level_sounds(self):
+        """Play the background music based on the current level."""
+        current_sound_name = self.current_sound_name
+
+        for key, sound_name in self.settings.level_sounds.items():
+            if self.stats.level in key:
+                if sound_name != current_sound_name:
+                    pygame.mixer.stop()
+                    self.settings.level_sounds[key].play(-1)
+                    self.settings.level_sounds[key].set_volume(0.05)
+                    self.current_sound_name = sound_name
+                return
 
     def _prepare_last_bullet_bullets(self):
         """Prepare the number of bullets in the Last Bullet game mode

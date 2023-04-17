@@ -3,7 +3,7 @@ import os
 import json
 import pygame
 
-from .constants import(
+from .constants import (
     P1_CONTROLS, P2_CONTROLS,
      BOSS_RUSH, ALIEN_BULLETS_IMG,
      GAME_MODES_DESCRIPTION,
@@ -16,13 +16,12 @@ def load_images(image_dict):
     value: path to image location"""
     return {key: pygame.image.load(value) for key, value in image_dict.items()}
 
-
 def load_sounds(sounds_dict):
     """A function that loads multiple sounds from a dict of the form:
     key: sound name:
     value: path to sound location."""
+    pygame.mixer.init()
     return {key: pygame.mixer.Sound(value) for key, value in sounds_dict.items()}
-
 
 def load_frames(filename_pattern, num_frames, frame_list, start=0):
     """Loads a sequence of images frames into a list"""

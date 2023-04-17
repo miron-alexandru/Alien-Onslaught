@@ -273,11 +273,20 @@ SHIPS = {
     }
 
 
-
 # Sounds for the game.
 SOUNDS = {
     'bullet': 'sounds/fire.wav',
+    'menu': 'sounds/menu.wav',
 }
+
+
+LEVEL_SOUNDS = {
+    range(1, 8): "sounds/battle_one.wav",
+    range(9, 16): "sounds/battle_two.wav",
+    range(17, 24): "sounds/battle_three.wav",
+    range(25, 9999): "sounds/battle_four.wav",
+}
+
 
 # Dict used to map levels to alien images
 LEVEL_PREFIX = {

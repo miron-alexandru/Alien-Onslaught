@@ -146,7 +146,6 @@ class PlayerInput:
                 fire_bullet_method(
                     bullets, bullets_allowed, bullet_class=bullet_class,
                     num_bullets=bullet_count, ship=ship)
-                self.game.settings.fire_sound.play()
                 ship.last_bullet_time = current_time
 
 
