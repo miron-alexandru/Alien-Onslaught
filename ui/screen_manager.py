@@ -1,6 +1,8 @@
 """This module contains a class that updates the position of different objects
 in the game"""
 
+import pygame
+
 
 class ScreenManager:
     """This class updates the position of objects after resizing the screen."""
@@ -47,3 +49,38 @@ class ScreenManager:
         self.score_board.render_high_score()
         self.score_board.create_health()
         self.score_board.render_bullets_num()
+
+
+
+class LoadingScreen:
+    """The LoadingScreen class manages the loading screen for the game."""
+    def __init__(self, screen, width, height):
+        self.screen = screen
+        self.width = width
+        self.height = height
+        self.load_bar_width = 400
+        self.load_bar_height = 25
+        self.load_bar_x = (self.width - self.load_bar_width) // 2
+        self.load_bar_y = (self.height - self.load_bar_height) // 2
+        self.load_percent = 0
+        self.font = pygame.font.Font(None, 30)
+        self.text = self.font.render("Loading...", True, (255, 255, 255))
+
+    def update(self, progress):
+        """Update progress of the loading bar."""
+        self.load_percent = progress
+        self.draw()
+
+    def draw(self):
+        """Draw the loading screen on the screen"""
+        self.screen.fill((0, 0, 0))
+        pygame.draw.rect(self.screen, (255, 255, 255),
+                        (self.load_bar_x, self.load_bar_y, self.load_bar_width,
+                          self.load_bar_height), 2)
+        load_bar_fill = self.load_bar_width * self.load_percent // 100
+        pygame.draw.rect(self.screen, (255, 255, 255),
+                         (self.load_bar_x, self.load_bar_y, load_bar_fill,
+                           self.load_bar_height))
+        self.screen.blit(self.text, ((self.width - self.text.get_width()) // 2,
+                                    (self.height - self.text.get_height()) // 2 - 50))
+        pygame.display.update()

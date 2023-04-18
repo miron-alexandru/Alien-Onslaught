@@ -100,3 +100,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Now the players are able to fire continuously while holding down their fire button.
 * The alien bullets in the game have become more advanced, adapting to the player's movements and tracking their position to create a more challenging gameplay experience.
 * The game now features dynamic background music that changes as the player progresses through the different levels. The menu also has its own distinct background music.
+* Implemented loading screen.

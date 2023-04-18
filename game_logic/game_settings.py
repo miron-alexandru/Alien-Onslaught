@@ -5,24 +5,18 @@ background , sounds, bullet, ships, aliens, game speed.
 from dataclasses import dataclass
 from utils.constants import (
     BACKGROUNDS,
-    SOUNDS,
-    LEVEL_SOUNDS,
     GAME_CONSTANTS,
     OTHER,
 )
-from utils.game_utils import load_images, load_sounds
+from utils.game_utils import load_images
 
 
 class Settings:
     """A class to store all settings for Alien Onslaught."""
-    lv_sounds = load_sounds(LEVEL_SOUNDS)
-    game_sounds = load_sounds(SOUNDS)
-
     def __init__(self):
         """Initialize the game's static settings."""
         self._init_screen_settings()
         self._init_images()
-        self._init_sounds()
         self._init_game_settings()
         self.dynamic_settings()
 
@@ -44,15 +38,6 @@ class Settings:
         self.game_title = self.other_images['game_title']
         self.game_title_rect = self.game_title.get_rect()
         self.game_title_rect.y = - 270
-
-    def _init_sounds(self):
-        """Initialize sounds for the game."""
-        self.level_sounds = self.lv_sounds
-        self.fire_sound = self.game_sounds['bullet']
-        self.menu_music = self.game_sounds['menu']
-
-        self.menu_music.set_volume(0.4)
-        self.fire_sound.set_volume(0.1)
 
     def _init_game_settings(self):
         """Initialize game mode settings."""

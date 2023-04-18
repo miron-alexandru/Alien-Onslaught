@@ -6,7 +6,7 @@ import pygame
 from .constants import (
     P1_CONTROLS, P2_CONTROLS,
      BOSS_RUSH, ALIEN_BULLETS_IMG,
-     GAME_MODES_DESCRIPTION,
+     GAME_MODES_DESCRIPTION
 )
 
 

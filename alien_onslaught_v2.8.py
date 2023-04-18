@@ -17,15 +17,15 @@ from game_logic.game_modes import GameModesManager
 
 from utils.game_utils import (
     display_high_scores, resize_image,
-    display_game_modes_description
+    display_game_modes_description, load_sounds
 )
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
     BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
-    AVAILABLE_BULLETS_MAP_SINGLE,
+    AVAILABLE_BULLETS_MAP_SINGLE, LEVEL_SOUNDS, SOUNDS
 )
 
-from ui.screen_manager import ScreenManager
+from ui.screen_manager import ScreenManager, LoadingScreen
 from ui.scoreboards import ScoreBoard, SecondScoreBoard
 from ui.game_buttons import GameButtons
 
@@ -59,6 +59,8 @@ class AlienOnslaught:
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
         self.current_sound_name = None
+        self.level_sounds = {}
+        self.game_sounds = {}
 
         pygame.display.set_caption("Alien Onslaught")
 
@@ -92,13 +94,15 @@ class AlienOnslaught:
         self.bullets_manager = BulletsManager(self)
         self.aliens_manager = AliensManager(self, self.aliens, self.settings, self.screen)
         self.gm_manager = GameModesManager(self, self.settings, self.stats)
-
+        self.loading_screen = LoadingScreen(self.screen, self.settings.screen_width,
+                                             self.settings.screen_height)
 
     def run_menu(self):
         """Runs the menu screen"""
+        self.start_loading_screen()
         self.screen = pygame.display.set_mode(self.screen.get_size())
         pygame.mixer.stop()
-        self.settings.menu_music.play()
+        self.game_sounds['menu'].play()
         while True:
             # Check for mouse click events
             for event in pygame.event.get():
@@ -110,11 +114,12 @@ class AlienOnslaught:
                     if self.buttons.single.rect.collidepoint(mouse_x, mouse_y):
                         # Start single player game
                         single_player_game = SingleplayerAlienOnslaught()
+                        single_player_game.start_loading_screen()
                         single_player_game.run_game()
                     elif self.buttons.multi.rect.collidepoint(mouse_x, mouse_y):
                         # Start multiplayer game
-                        multiplayer_game = AlienOnslaught()
-                        multiplayer_game.run_game()
+                        self.reset_game()
+                        self.run_game()
                     elif self.buttons.menu_quit.rect.collidepoint(mouse_x, mouse_y):
                         # Quit menu
                         pygame.quit()
@@ -137,6 +142,17 @@ class AlienOnslaught:
 
             pygame.display.flip()
 
+    def start_loading_screen(self):
+        """Start the loading screen and load necessary files."""
+        while not self.level_sounds or not self.game_sounds:
+            if not self.level_sounds:
+                self.level_sounds = load_sounds(LEVEL_SOUNDS)
+                self.loading_screen.update(50)
+            else:
+                self.game_sounds = (
+                    self.game_sounds or load_sounds(SOUNDS)
+                )
+                self.loading_screen.update(100)
 
     def run_game(self):
         """Main loop for the game."""
@@ -161,6 +177,26 @@ class AlienOnslaught:
                 self._update_screen()
                 self._check_for_pause()
                 self.clock.tick(60)
+
+    def reset_game(self):
+        """Reset all game objects to their initial state."""
+        # Reset game settings
+        self.settings = Settings()
+
+        # Recreate game resources
+        self.bg_img = resize_image(self.settings.bg_img, self.screen.get_size())
+        self.bg_img_rect = self.bg_img.get_rect()
+        self.reset_bg = self.bg_img.copy()
+
+        self.second_bg = resize_image(self.settings.second_bg, self.screen.get_size())
+        self.third_bg = resize_image(self.settings.third_bg, self.screen.get_size())
+        self.fourth_bg = resize_image(self.settings.fourth_bg, self.screen.get_size())
+
+        self.ui_options = self.settings.ui_options
+        self._initialize_game_objects()
+        self.ships = [self.thunderbird_ship, self.phoenix_ship]
+        self.last_increase_time = self.last_level_time = self.pause_time = 0
+        self.current_sound_name = None
 
 
     def _handle_game_logic(self):
@@ -413,7 +449,7 @@ class AlienOnslaught:
                 bullet_fired = True
 
         if bullet_fired:
-            self.settings.fire_sound.play()
+            self.game_sounds['bullet'].play()
 
 
     def _fire_missile(self, missiles, ship, missile_class):
@@ -662,12 +698,12 @@ class AlienOnslaught:
         """Play the background music based on the current level."""
         current_sound_name = self.current_sound_name
 
-        for key, sound_name in self.settings.level_sounds.items():
+        for key, sound_name in self.level_sounds.items():
             if self.stats.level in key:
                 if sound_name != current_sound_name:
                     pygame.mixer.stop()
-                    self.settings.level_sounds[key].play(-1)
-                    self.settings.level_sounds[key].set_volume(0.05)
+                    self.level_sounds[key].play(-1)
+                    self.level_sounds[key].set_volume(0.05)
                     self.current_sound_name = sound_name
                 return
 
@@ -777,7 +813,6 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.manage_screen = ScreenManager(self.settings, self.score_board,
                                         self.buttons, self.screen)
 
-
     def _handle_game_logic(self):
         """Handle game logic"""
         self.start_game_mode()
@@ -866,6 +901,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.score_board.prep_level()
         self.score_board.render_bullets_num()
         self.score_board.create_health()
+        self.prepare_level_sounds()
 
 
     def _draw_game_objects(self):
