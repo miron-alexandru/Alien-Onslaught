@@ -274,11 +274,19 @@ SHIPS = {
 
 
 # Sounds for the game.
-SOUNDS = {
-    'bullet': 'sounds/fire.wav',
+MENU_SOUNDS = {
     'menu': 'sounds/menu.wav',
 }
 
+GAME_SOUNDS = {
+    'bullet': 'sounds/fire.wav',
+    'explode': 'sounds/explode.wav',
+    'game_over': 'sounds/game_over.wav',
+    'power_up': 'sounds/power_up.mp3',
+    'penalty': 'sounds/penalty.wav',
+    'health': 'sounds/health.wav',
+    'weapon': 'sounds/weapon.wav',
+}
 
 LEVEL_SOUNDS = {
     range(1, 8): "sounds/battle_one.wav",

@@ -22,7 +22,9 @@ from utils.game_utils import (
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
     BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
-    AVAILABLE_BULLETS_MAP_SINGLE, LEVEL_SOUNDS, SOUNDS
+    AVAILABLE_BULLETS_MAP_SINGLE, LEVEL_SOUNDS,
+    MENU_SOUNDS, GAME_SOUNDS
+
 )
 
 from ui.screen_manager import ScreenManager, LoadingScreen
@@ -59,8 +61,7 @@ class AlienOnslaught:
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
         self.current_sound_name = None
-        self.level_sounds = {}
-        self.game_sounds = {}
+        self.level_sounds, self.menu_sounds, self.game_sounds = {}, {}, {}
 
         pygame.display.set_caption("Alien Onslaught")
 
@@ -99,10 +100,10 @@ class AlienOnslaught:
 
     def run_menu(self):
         """Runs the menu screen"""
-        self.start_loading_screen()
+        self.start_loading_screen('menu_sounds')
         self.screen = pygame.display.set_mode(self.screen.get_size())
         pygame.mixer.stop()
-        self.game_sounds['menu'].play()
+        self.menu_sounds['menu'].play()
         while True:
             # Check for mouse click events
             for event in pygame.event.get():
@@ -114,12 +115,13 @@ class AlienOnslaught:
                     if self.buttons.single.rect.collidepoint(mouse_x, mouse_y):
                         # Start single player game
                         single_player_game = SingleplayerAlienOnslaught()
-                        single_player_game.start_loading_screen()
+                        single_player_game.start_loading_screen('level_sounds')
                         single_player_game.run_game()
                     elif self.buttons.multi.rect.collidepoint(mouse_x, mouse_y):
                         # Start multiplayer game
-                        self.reset_game()
-                        self.run_game()
+                        multiplayer_game = AlienOnslaught()
+                        multiplayer_game.start_loading_screen('level_sounds')
+                        multiplayer_game.run_game()
                     elif self.buttons.menu_quit.rect.collidepoint(mouse_x, mouse_y):
                         # Quit menu
                         pygame.quit()
@@ -142,16 +144,19 @@ class AlienOnslaught:
 
             pygame.display.flip()
 
-    def start_loading_screen(self):
-        """Start the loading screen and load necessary files."""
-        while not self.level_sounds or not self.game_sounds:
-            if not self.level_sounds:
+    def start_loading_screen(self, sounds_to_load):
+        """Start the loading screen and load necessary sound files."""
+        if sounds_to_load == 'level_sounds':
+            while not self.level_sounds:
+                self.loading_screen.update(25)
                 self.level_sounds = load_sounds(LEVEL_SOUNDS)
                 self.loading_screen.update(50)
-            else:
-                self.game_sounds = (
-                    self.game_sounds or load_sounds(SOUNDS)
-                )
+                self.game_sounds = load_sounds(GAME_SOUNDS)
+                self.loading_screen.update(100)
+        elif sounds_to_load == 'menu_sounds':
+            while not self.menu_sounds:
+                self.loading_screen.update(50)
+                self.menu_sounds = load_sounds(MENU_SOUNDS)
                 self.loading_screen.update(100)
 
     def run_game(self):
@@ -462,32 +467,37 @@ class AlienOnslaught:
 
     def _apply_powerup_or_penalty(self, player):
         """Powers the specified player"""
-        effect_choices = [
+        powerup_choices = [
             self.powers_manager.increase_ship_speed,
             self.powers_manager.increase_bullet_speed,
             self.powers_manager.increase_bullets_allowed,
             self.powers_manager.draw_ship_shield,
             self.powers_manager.decrease_alien_speed,
             self.powers_manager.decrease_alien_bullet_speed,
-            self.powers_manager.reverse_keys,
-            self.powers_manager.disarm_ship,
             self.powers_manager.bonus_points,
             self.powers_manager.invincibility,
-            self.powers_manager.alien_upgrade,
             self.powers_manager.change_ship_size,
+            self.powers_manager.increase_bullet_count,
+            self.powers_manager.increase_missiles_num,
+            self.powers_manager.increase_bullets_remaining,
+        ]
+        penalty_choices = [
+            self.powers_manager.disarm_ship,
+            self.powers_manager.reverse_keys,
+            self.powers_manager.alien_upgrade,
         ]
         # randomly select one of the powers and activate it.
         if self.settings.gm.last_bullet:
-            effect_choices.append(self.powers_manager.increase_bullets_remaining)
-        else:
-            effect_choices.extend(
-                (
-                    self.powers_manager.increase_bullet_count,
-                    self.powers_manager.increase_missiles_num,
-                )
-            )
-        effect_choice = random.choice(effect_choices)
+            powerup_choices.append(self.powers_manager.increase_bullets_remaining)
+        effect_choice = random.choice(powerup_choices + penalty_choices)
         effect_choice(player)
+
+        # Play sound effect
+        if effect_choice in powerup_choices:
+            self.game_sounds['power_up'].play()
+        elif effect_choice in penalty_choices:
+            self.game_sounds['penalty'].play()
+
 
 
     def _health_power_up(self, player):
@@ -500,10 +510,12 @@ class AlienOnslaught:
             setattr(self.stats, player_health_attr[player],
                      getattr(self.stats, player_health_attr[player]) + 1)
         self.score_board.create_health()
+        self.game_sounds['health'].play()
 
 
     def _weapon_power_up(self, player, weapon_name):
         self.bullets_manager.set_weapon(player, weapon_name)
+        self.game_sounds['weapon'].play()
 
 
     def _thunderbird_ship_hit(self):
@@ -521,6 +533,7 @@ class AlienOnslaught:
     def destroy_ship(self, ship):
         """Destroy the given ship and center it."""
         ship.explode()
+        self.game_sounds['explode'].play()
         ship.state.shielded = False
         if ship == self.thunderbird_ship:
             self.settings.thunderbird_bullet_count = 1
@@ -572,6 +585,10 @@ class AlienOnslaught:
             self.score_board.save_high_score(high_score_key)
             self.ui_options.high_score_saved = True
 
+        if not self.ui_options.game_over_sound_played:
+            pygame.mixer.stop()
+            self.game_sounds['game_over'].play(-1)
+            self.ui_options.game_over_sound_played = True
 
     def _set_game_over(self):
         """Set the location of the game over image on the screen"""

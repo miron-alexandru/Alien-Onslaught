@@ -82,7 +82,6 @@ class Thunderbird(Sprite):
         self.y_pos += direction * (self.moving_flags['down'] - self.moving_flags['up']) \
                     * self.settings.thunderbird_ship_speed
 
-
         # Keep the ship within the screen boundaries
         self.x_pos = max(0, min(self.x_pos, self.screen_rect.width - self.rect.width))
         self.y_pos = max(0, min(self.y_pos, self.screen_rect.height - self.rect.height))

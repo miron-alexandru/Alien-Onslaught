@@ -103,6 +103,7 @@ class UIOptions:
     high_score_saved: bool = False
     show_high_scores: bool = False
     show_game_modes: bool = False
+    game_over_sound_played: bool = False
 
 
 @dataclass

@@ -73,7 +73,7 @@ class LoadingScreen:
 
     def draw(self):
         """Draw the loading screen on the screen"""
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((2,24,49,255))
         pygame.draw.rect(self.screen, (255, 255, 255),
                         (self.load_bar_x, self.load_bar_y, self.load_bar_width,
                           self.load_bar_height), 2)
