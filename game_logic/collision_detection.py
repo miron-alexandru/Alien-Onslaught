@@ -115,7 +115,6 @@ class CollisionManager:
         ):
             self._handle_player_collisions(phoenix_ship_collisions, 'phoenix')
 
-
     def check_missile_alien_collisions(self, singleplayer=False):
         """Respond to missile-alien collisions."""
         # Collisions with Thunderbird missiles
@@ -129,10 +128,19 @@ class CollisionManager:
         # Handle Thunderbird missile collisions
         if thunderbird_missile_collisions:
             self._handle_player_missile_collisions(thunderbird_missile_collisions, 'thunderbird')
+            self._play_missile_sound(thunderbird_missile_collisions.values())
+
         # Handle Phoenix missile collisions
         if not singleplayer and phoenix_missile_collisions:
             self._handle_player_missile_collisions(phoenix_missile_collisions, 'phoenix')
+            self._play_missile_sound(phoenix_missile_collisions.values())
 
+    def _play_missile_sound(self, aliens):
+        """Helper method that plays the missile sound when colliding with normal aliens."""
+        for alien_list in aliens:
+            for alien in alien_list:
+                if not isinstance(alien, BossAlien):
+                    self.game.game_sounds['missile'].play()
 
     def _handle_player_missile_collisions(self, player_missile_collisions, player):
         """This method handles what happens with the score and the aliens
@@ -203,6 +211,7 @@ class CollisionManager:
             for alien in aliens:
                 if isinstance(alien, BossAlien):
                     if (missile, alien) not in self.handled_collisions:
+                        self.game.game_sounds['missile'].play()
                         alien.hit_count += 5
                         self._handle_boss_alien_collision(alien, player)
                         self.handled_collisions[(missile, alien)] = True

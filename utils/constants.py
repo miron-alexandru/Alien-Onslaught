@@ -276,6 +276,8 @@ SHIPS = {
 # Sounds for the game.
 MENU_SOUNDS = {
     'menu': 'sounds/menu.wav',
+    'click_menu': 'sounds/click_menu.wav',
+    'quit_effect': 'sounds/quit_effect.wav'
 }
 
 GAME_SOUNDS = {
@@ -286,6 +288,10 @@ GAME_SOUNDS = {
     'penalty': 'sounds/penalty.wav',
     'health': 'sounds/health.wav',
     'weapon': 'sounds/weapon.wav',
+    'missile': 'sounds/missile.wav',
+    'missile_launch': 'sounds/missile_launch.wav',
+    'click': 'sounds/click_button.wav',
+    'quit_effect': 'sounds/quit_effect.wav',
 }
 
 LEVEL_SOUNDS = {

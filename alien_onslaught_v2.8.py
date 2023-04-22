@@ -62,7 +62,6 @@ class AlienOnslaught:
         self.last_increase_time = self.last_level_time = self.pause_time = 0
         self.current_sound_name = None
         self.level_sounds, self.menu_sounds, self.game_sounds = {}, {}, {}
-
         pygame.display.set_caption("Alien Onslaught")
 
 
@@ -98,6 +97,7 @@ class AlienOnslaught:
         self.loading_screen = LoadingScreen(self.screen, self.settings.screen_width,
                                              self.settings.screen_height)
 
+
     def run_menu(self):
         """Runs the menu screen"""
         self.start_loading_screen('menu_sounds')
@@ -113,17 +113,20 @@ class AlienOnslaught:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     if self.buttons.single.rect.collidepoint(mouse_x, mouse_y):
+                        self.menu_sounds['click_menu'].play()
                         # Start single player game
                         single_player_game = SingleplayerAlienOnslaught()
                         single_player_game.start_loading_screen('level_sounds')
                         single_player_game.run_game()
                     elif self.buttons.multi.rect.collidepoint(mouse_x, mouse_y):
+                        self.menu_sounds['click_menu'].play()
                         # Start multiplayer game
                         multiplayer_game = AlienOnslaught()
                         multiplayer_game.start_loading_screen('level_sounds')
                         multiplayer_game.run_game()
                     elif self.buttons.menu_quit.rect.collidepoint(mouse_x, mouse_y):
-                        # Quit menu
+                        self.menu_sounds['quit_effect'].play()
+                        pygame.time.delay(800)
                         pygame.quit()
                         sys.exit()
 
@@ -159,49 +162,38 @@ class AlienOnslaught:
                 self.menu_sounds = load_sounds(MENU_SOUNDS)
                 self.loading_screen.update(100)
 
+    def _update_background(self, i):
+        """Animate background image"""
+        self._handle_background_change()
+        self.screen.blit(self.bg_img, [0, i])
+        self.screen.blit(self.bg_img, [0, i - self.settings.screen_height])
+        if i >= self.settings.screen_height:
+            i = 0
+        i += 1
+        return i
+
     def run_game(self):
         """Main loop for the game."""
         running = True
         i = 0
         while running:
-            if not self.ui_options.paused:  # check if the game is paused
-                self._handle_background_change()
-                self.screen.blit(self.bg_img, [0, i])
-                self.screen.blit(self.bg_img, [0, i  - self.settings.screen_height])
-                if i >= self.settings.screen_height:
-                    i = 0
-                i += 1
+            self.check_events()
+            self._check_game_over()
+            self._check_for_resize()
 
-                self.check_events()
-                self._check_game_over()
-                self._check_for_resize()
-
-                if self.stats.game_active:
+            if self.stats.game_active:
+                if not self.ui_options.paused:  # check if the game is paused
+                    i = self._update_background(i)
                     self._handle_game_logic()
 
                 self._update_screen()
                 self._check_for_pause()
-                self.clock.tick(60)
+            else:
+                self.screen.blit(self.bg_img, [0, 0])
+                self._check_game_over()
+                self._update_screen()
 
-    def reset_game(self):
-        """Reset all game objects to their initial state."""
-        # Reset game settings
-        self.settings = Settings()
-
-        # Recreate game resources
-        self.bg_img = resize_image(self.settings.bg_img, self.screen.get_size())
-        self.bg_img_rect = self.bg_img.get_rect()
-        self.reset_bg = self.bg_img.copy()
-
-        self.second_bg = resize_image(self.settings.second_bg, self.screen.get_size())
-        self.third_bg = resize_image(self.settings.third_bg, self.screen.get_size())
-        self.fourth_bg = resize_image(self.settings.fourth_bg, self.screen.get_size())
-
-        self.ui_options = self.settings.ui_options
-        self._initialize_game_objects()
-        self.ships = [self.thunderbird_ship, self.phoenix_ship]
-        self.last_increase_time = self.last_level_time = self.pause_time = 0
-        self.current_sound_name = None
+            self.clock.tick(60)
 
 
     def _handle_game_logic(self):
@@ -294,7 +286,11 @@ class AlienOnslaught:
         button_actions = self._create_button_actions_dict()
         for button, action in button_actions.items():
             if button.rect.collidepoint(mouse_pos) and not self.stats.game_active:
+                if button != self.buttons.quit:
+                    self.game_sounds['click'].play()
+                pygame.time.delay(200)
                 action()
+
 
     def _resize_screen(self, size):
         """Resize the game screen and update relevant game objects.
@@ -460,6 +456,7 @@ class AlienOnslaught:
     def _fire_missile(self, missiles, ship, missile_class):
         if ship.missiles_num > 0:
             new_missile = missile_class(self, ship)
+            self.game_sounds['missile_launch'].play()
             missiles.add(new_missile)
             ship.missiles_num -= 1
             self.score_board.render_scores()

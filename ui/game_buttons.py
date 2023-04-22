@@ -116,6 +116,8 @@ class GameButtons:
 
     def handle_quit_button(self):
         """Quit game"""
+        self.game.game_sounds['quit_effect'].play()
+        pygame.time.delay(800)
         pygame.quit()
         sys.exit()
 
