@@ -120,15 +120,23 @@ def display_high_scores(screen, score_key, singleplayer=False):
 
     # Get the scores from the high score list and create a new list of tuples
     # containing the score and its rank
-    scores = high_scores[score_key]
-    ranked_scores = [(i, score) for i, score in enumerate(scores, 1) if score]
+    try:
+        scores = high_scores[score_key]
+    except KeyError:
+        scores = []
 
-    # Create formatted strings for each rank and score
-    rank_strings = [
-        f"{('1st' if rank == 1 else '2nd' if rank == 2 else '3rd' if rank == 3 else rank)}:" 
-        for rank, score in ranked_scores
+    ranked_scores = [
+        (i+1, entry['name'], entry['score'])
+        for i, entry in enumerate(scores)
+        if isinstance(entry, dict)
     ]
-    score_strings = [f"{score}" for rank, score in ranked_scores]
+
+
+    rank_strings = [
+        f"{('1st' if rank == 1 else '2nd' if rank == 2 else '3rd' if rank == 3 else rank)} {name}" 
+        for rank, name, score in ranked_scores
+    ]
+    score_strings = [f"{score}" for rank, name, score in ranked_scores]
 
     score_text = "\n".join(score_strings)
     rank_text = "\n".join(rank_strings)

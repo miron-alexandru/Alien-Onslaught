@@ -62,6 +62,7 @@ class AlienOnslaught:
         self.last_increase_time = self.last_level_time = self.pause_time = 0
         self.current_sound_name = None
         self.level_sounds, self.menu_sounds, self.game_sounds = {}, {}, {}
+        self.player_name = ''
         pygame.display.set_caption("Alien Onslaught")
 
 
@@ -163,7 +164,6 @@ class AlienOnslaught:
                 self.loading_screen.update(100)
 
     def _update_background(self, i):
-        """Animate background image"""
         self._handle_background_change()
         self.screen.blit(self.bg_img, [0, i])
         self.screen.blit(self.bg_img, [0, i - self.settings.screen_height])
@@ -435,6 +435,7 @@ class AlienOnslaught:
             return
         if ship.state.disarmed:
             return
+
         if len(bullets) < bullets_allowed:
             offset_amount = 30
             for i in range(num_bullets):
@@ -482,6 +483,9 @@ class AlienOnslaught:
             self.powers_manager.disarm_ship,
             self.powers_manager.reverse_keys,
             self.powers_manager.alien_upgrade,
+            self.powers_manager.decrease_ship_speed,
+            self.powers_manager.increase_alien_numbers,
+            self.powers_manager.increase_alien_hp,
         ]
         # randomly select one of the powers and activate it.
         if self.settings.gm.last_bullet:
@@ -494,7 +498,6 @@ class AlienOnslaught:
             self.game_sounds['power_up'].play()
         elif effect_choice in penalty_choices:
             self.game_sounds['penalty'].play()
-
 
 
     def _health_power_up(self, player):
@@ -566,7 +569,12 @@ class AlienOnslaught:
         self.screen.blit(self.settings.game_over, self.game_over_rect)
         self._reset_game_objects()
         self.score_board.update_high_score()
-        self.score_board.show_score()
+
+        if not self.ui_options.game_over_sound_played:
+            pygame.mixer.stop()
+            self.game_sounds['game_over'].play(-1)
+            self.ui_options.game_over_sound_played = True
+            self.current_sound_name = self.game_sounds['game_over']
 
         if not self.ui_options.high_score_saved:
             game_mode_high_score_keys = {
@@ -581,11 +589,6 @@ class AlienOnslaught:
             high_score_key = game_mode_high_score_keys.get(game_mode, 'high_scores')
             self.score_board.save_high_score(high_score_key)
             self.ui_options.high_score_saved = True
-
-        if not self.ui_options.game_over_sound_played:
-            pygame.mixer.stop()
-            self.game_sounds['game_over'].play(-1)
-            self.ui_options.game_over_sound_played = True
 
     def _set_game_over(self):
         """Set the location of the game over image on the screen"""
@@ -689,6 +692,7 @@ class AlienOnslaught:
 
         # Play the warp animation and center the ships.
         self._reset_ships()
+
         self.player_input.reset_ship_movement_flags()
 
         # Create aliens
@@ -706,6 +710,7 @@ class AlienOnslaught:
         self.score_board.prep_level()
         self.score_board.create_health()
         self.prepare_level_sounds()
+        self.game_sounds['warp'].play()
 
 
     def prepare_level_sounds(self):
@@ -916,12 +921,14 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.score_board.render_bullets_num()
         self.score_board.create_health()
         self.prepare_level_sounds()
+        self.game_sounds['warp'].play()
 
 
     def _draw_game_objects(self):
         """Draw game objects on screen"""
         if self.stats.thunderbird_hp < 0 and not self.thunderbird_ship.state.exploding:
             self.thunderbird_ship.state.alive = False
+            self.ui_options.game_over_sound_played = False
         self.thunderbird_ship.blitme()
 
         sprite_groups = [self.thunderbird_bullets, self.thunderbird_missiles,

@@ -275,30 +275,32 @@ SHIPS = {
 
 # Sounds for the game.
 MENU_SOUNDS = {
-    'menu': 'sounds/menu.wav',
-    'click_menu': 'sounds/click_menu.wav',
-    'quit_effect': 'sounds/quit_effect.wav'
+    'menu': 'sounds/ui/menu.wav',
+    'click_menu': 'sounds/ui/click_menu.wav',
+    'quit_effect': 'sounds/ui/quit_effect.wav'
 }
 
 GAME_SOUNDS = {
-    'bullet': 'sounds/fire.wav',
-    'explode': 'sounds/explode.wav',
-    'game_over': 'sounds/game_over.wav',
-    'power_up': 'sounds/power_up.mp3',
-    'penalty': 'sounds/penalty.wav',
-    'health': 'sounds/health.wav',
-    'weapon': 'sounds/weapon.wav',
-    'missile': 'sounds/missile.wav',
-    'missile_launch': 'sounds/missile_launch.wav',
-    'click': 'sounds/click_button.wav',
-    'quit_effect': 'sounds/quit_effect.wav',
+    'bullet': 'sounds/gameplay/fire.wav',
+    'explode': 'sounds/gameplay/explode.wav',
+    'game_over': 'sounds/ui/game_over.wav',
+    'power_up': 'sounds/gameplay/power_up.mp3',
+    'penalty': 'sounds/gameplay/penalty.wav',
+    'health': 'sounds/gameplay/health.wav',
+    'weapon': 'sounds/gameplay/weapon.wav',
+    'missile': 'sounds/gameplay/missile.wav',
+    'missile_launch': 'sounds/gameplay/missile_launch.wav',
+    'click': 'sounds/ui/click_button.wav',
+    'quit_effect': 'sounds/ui/quit_effect.wav',
+    'keypress': 'sounds/ui/keypress.wav',
+    'warp': 'sounds/gameplay/warp_sound.mp3',
 }
 
 LEVEL_SOUNDS = {
-    range(1, 8): "sounds/battle_one.wav",
-    range(9, 16): "sounds/battle_two.wav",
-    range(17, 24): "sounds/battle_three.wav",
-    range(25, 9999): "sounds/battle_four.wav",
+    range(1, 8): "sounds/level/battle_one.wav",
+    range(9, 16): "sounds/level/battle_two.wav",
+    range(17, 24): "sounds/level/battle_three.wav",
+    range(25, 9999): "sounds/level/battle_four.wav",
 }
 
 

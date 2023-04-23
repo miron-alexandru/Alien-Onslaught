@@ -97,6 +97,20 @@ class PowerEffectsManager:
             if power.rect.y  > self.settings.screen_height:
                 self.game.powers.remove(power)
 
+    # Penalties
+    def reverse_keys(self, player):
+        """Trigger the reverse key state on the specified player."""
+        getattr(self, f"{player}_ship").reverse_keys()
+
+    def decrease_ship_speed(self, player):
+        """Decreases the ship speed of the specified player"""
+        setattr(self.settings, f"{player}_ship_speed",
+                getattr(self.settings, f"{player}_ship_speed") - 0.4)
+
+    def disarm_ship(self, player):
+        """Trigger the disarm state on the specified player."""
+        getattr(self, f"{player}_ship").disarm()
+
     def alien_upgrade(self, _=None):
         """Gives an upgrade to the aliens."""
         aliens = self.game.aliens.sprites()
@@ -107,24 +121,26 @@ class PowerEffectsManager:
         for alien in selected_aliens:
             alien.upgrade()
 
-    def reverse_keys(self, player):
-        """Trigger the reverse key state on the specified player."""
-        getattr(self, f"{player}_ship").reverse_keys()
+    def increase_alien_numbers(self, _=None):
+        """Increases the number of aliens by creating one fleet"""
+        self.game.aliens_manager.create_fleet(1)
 
-    def change_ship_size(self, player):
-        """Make the specified player smaller (for a period of time)."""
-        getattr(self, f"{player}_ship").scale_ship(0.5)
+    def increase_alien_hp(self, _=None):
+        """Aliens are harder to destroy."""
+        for alien in self.game.aliens:
+            alien.hit_count -= 1
 
-    def disarm_ship(self, player):
-        """Trigger the disarm state on the specified player."""
-        getattr(self, f"{player}_ship").disarm()
-
+    # Power Ups
     def bonus_points(self, player):
         """Increases the points for the specified player"""
         setattr(self.stats, f"{player}_score",
                 getattr(self.stats, f"{player}_score") + 550)
         self.score_board.render_scores()
         self.score_board.update_high_score()
+
+    def change_ship_size(self, player):
+        """Make the specified player smaller (for a period of time)."""
+        getattr(self, f"{player}_ship").scale_ship(0.5)
 
     def invincibility(self, player):
         """Trigger the invincibility state on the specified player"""
@@ -162,16 +178,13 @@ class PowerEffectsManager:
         """Decreases alien speed."""
         if self.settings.alien_speed > 0:
             setattr(self.settings, "alien_speed", getattr(self.settings, "alien_speed") - 0.1)
-        else:
-            return None
 
     def decrease_alien_bullet_speed(self, _=None):
         """Decreases alien bullet speed."""
+        print('called')
         if self.settings.alien_bullet_speed > 1:
             setattr(self.settings, "alien_bullet_speed",
                 getattr(self.settings, "alien_bullet_speed") - 0.1)
-        else:
-            return None
 
     def increase_bullets_remaining(self, player):
         """Power up special for the Last Bullet game mode, it increases

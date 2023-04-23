@@ -102,4 +102,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * The game now features dynamic background music that changes as the player progresses through the different levels. The menu also has its own distinct background music.
 * Implemented loading screen.
 * Implemented sound effects for: Ship exploding, gift boxes, power ups, penalties, health and game over screen.
-* New sound effects for the gameplay and also the UI.
+* New sound effects for both the gameplay and UI and in addition to the new sound effects, there are also new penalties to make the game more challenging.

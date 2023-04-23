@@ -22,14 +22,20 @@ class PlayerInput:
         match event.key:
             # If the game is paused, check for Q, P, R, and M keys
             case pygame.K_q if self.ui_options.paused:
+                self.game.game_sounds['quit_effect'].play()
+                pygame.time.delay(800)
                 pygame.quit()
                 sys.exit()
             case pygame.K_p:
+                self.game.game_sounds['keypress'].play()
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_r if self.ui_options.paused:
+                self.game.game_sounds['keypress'].play()
                 reset_game()
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_m if self.ui_options.paused:
+                self.game.game_sounds['keypress'].play()
+                pygame.time.delay(300)
                 run_menu()
 
             # If the game is not paused, check for player keypresses
@@ -141,12 +147,14 @@ class PlayerInput:
                 self.game.settings.phoenix_bullet_count
             )}
 
-        for ship, bullets, bullets_allowed, bullet_class, bullet_count in ships.values():
+        for ship_data in ships.values():
+            ship, bullets, bullets_allowed, bullet_class, bullet_count = ship_data
             if ship.state.firing and current_time - ship.last_bullet_time > 200:
                 fire_bullet_method(
                     bullets, bullets_allowed, bullet_class=bullet_class,
                     num_bullets=bullet_count, ship=ship)
                 ship.last_bullet_time = current_time
+
 
 
     def reset_ship_movement_flags(self):

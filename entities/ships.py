@@ -79,6 +79,7 @@ class Thunderbird(Sprite):
         direction = -1 if self.state.reverse else 1
         self.x_pos += direction * (self.moving_flags['right'] - self.moving_flags['left']) \
                     * self.settings.thunderbird_ship_speed
+
         self.y_pos += direction * (self.moving_flags['down'] - self.moving_flags['up']) \
                     * self.settings.thunderbird_ship_speed
 
@@ -132,6 +133,7 @@ class Thunderbird(Sprite):
 
     def start_warp(self):
         """Starts the warp animation"""
+        self.game.game_sounds['warp'].play()
         self.state.warping = True
 
     def set_immune(self):
