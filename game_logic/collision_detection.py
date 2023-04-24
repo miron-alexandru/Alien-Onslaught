@@ -135,8 +135,10 @@ class CollisionManager:
             self._handle_player_missile_collisions(phoenix_missile_collisions, 'phoenix')
             self._play_missile_sound(phoenix_missile_collisions.values())
 
+
     def _play_missile_sound(self, aliens):
         """Helper method that plays the missile sound when colliding with normal aliens."""
+        print('called')
         for alien_list in aliens:
             for alien in alien_list:
                 if not isinstance(alien, BossAlien):

@@ -7,6 +7,7 @@ import pygame.font
 from pygame.sprite import Group
 from entities.player_health import Heart
 from utils.constants import boss_rush_image_map
+from utils.game_utils import get_player_name
 
 
 class ScoreBoard:
@@ -21,7 +22,7 @@ class ScoreBoard:
         self.second_stats = game.stats
 
         # Font settings
-        self.text_color = 'red'
+        self.text_color = (238, 75, 43)
         self.level_color = 'blue'
         self.font = pygame.font.SysFont('', 27)
         self.bullets_num_font = pygame.font.SysFont('', 25)
@@ -173,50 +174,10 @@ class ScoreBoard:
             phoenix_heart.rect.y = 10
             self.phoenix_health.add(phoenix_heart)
 
-    def get_player_name(self, screen, background_image, game_over_img, game_over_rect):
-        """Get's the player name that is used for the high score."""
-        font = self.font
-        input_box = pygame.Rect(0, 0, 200, 32)
-        input_box.center = screen.get_rect().center
-        color_inactive = pygame.Color('lightskyblue3')
-        color_active = pygame.Color('dodgerblue2')
-        color = color_inactive
-        player_name = 'Anonymous'
-        active = True
-
-        while active:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    color = color_active if input_box.collidepoint(event.pos) else color_inactive
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        active = False
-                    elif event.key == pygame.K_BACKSPACE:
-                        player_name = player_name[:-1]
-                    else:
-                        player_name += event.unicode
-                    player_name = ''.join(e for e in player_name if e.isalnum())
-
-            screen.blit(background_image, (0, 0))
-            screen.blit(game_over_img, game_over_rect)
-
-            text_surface = font.render("Save High Score as:", True, (255, 255, 255))
-            screen.blit(text_surface, (input_box.centerx - text_surface.get_width() / 2,
-                                                            input_box.centery - 50))
-
-            pygame.draw.rect(screen, color, input_box, 2)
-
-            text_surface = font.render(player_name, True, (255, 0, 0))
-            screen.blit(text_surface, (input_box.x + 5, input_box.y + 5))
-            pygame.display.flip()
-
-        return player_name
 
     def save_high_score(self, score_key):
         """Save the high score to a JSON file."""
-        player_name = self.get_player_name(self.screen, self.game.bg_img, self.settings.game_over,
+        player_name = get_player_name(self.screen, self.game.bg_img, self.settings.game_over,
                                             self.game.game_over_rect)
         filename = 'high_score.json'
         try:
@@ -341,7 +302,7 @@ class SecondScoreBoard(ScoreBoard):
 
     def save_high_score(self, score_key):
         """Save the high score to a JSON file."""
-        player_name = self.get_player_name(self.screen, self.game.bg_img,
+        player_name = get_player_name(self.screen, self.game.bg_img,
                                 self.settings.game_over, self.game.game_over_rect)
         filename = 'single_high_score.json'
         try:

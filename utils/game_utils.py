@@ -1,4 +1,5 @@
 """The "utils" module provides various utility functions"""
+import sys
 import os
 import json
 import pygame
@@ -22,6 +23,11 @@ def load_sounds(sounds_dict):
     value: path to sound location."""
     pygame.mixer.init()
     return {key: pygame.mixer.Sound(value) for key, value in sounds_dict.items()}
+
+def set_sounds_volume(sounds, volume):
+    """Set the volume for all sounds in the passed sounds dict."""
+    for sound in sounds.values():
+        sound.set_volume(volume)
 
 def load_frames(filename_pattern, num_frames, frame_list, start=0):
     """Loads a sequence of images frames into a list"""
@@ -145,7 +151,7 @@ def display_high_scores(screen, score_key, singleplayer=False):
     screen_width, screen_height = screen.get_size()
     centerx = int(screen_width / 2)
     centery = int(screen_height / 2)
-    title_x = int(centerx - 500)
+    title_x = int(centerx - 520)
     title_y = int(centery - 150)
     rank_x = int(centerx - 550)
     rank_y = int(centery - 50)
@@ -157,7 +163,7 @@ def display_high_scores(screen, score_key, singleplayer=False):
     text_surfaces, text_rects = render_text(
             "HIGH SCORES",
             font,
-            'yellow',
+            (255, 215, 0),
             (title_x, title_y),
             int(screen_height * 0.06))
 
@@ -230,3 +236,51 @@ def display_controls(buttons, settings):
             p2_controls, p2_controls_rect,
             t1_surfaces, t1_rects,
             t2_surfaces, t2_rects)
+
+
+def get_player_name(screen, background_image, game_over_img, game_over_rect):
+    """Get the player name for the high score."""
+    font = pygame.font.SysFont('verdana', 19)
+    text_font = pygame.font.SysFont('verdana', 23)
+    text_color = 'silver'
+    input_box = pygame.Rect(0, 0, 200, 26)
+    input_box.center = (screen.get_width() / 2 + 100, screen.get_height() / 2)
+    color_inactive = text_color
+    color_active = (217, 217, 217)
+    color = color_inactive
+    player_name = 'Player'
+    active = True
+
+    while active:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                color = color_active if input_box.collidepoint(event.pos) else color_inactive
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    active = False
+                elif event.key == pygame.K_BACKSPACE:
+                    player_name = player_name[:-1]
+                else:
+                    player_name += event.unicode
+                player_name = ''.join(e for e in player_name if e.isalnum())
+                if len(player_name) > 12:
+                    player_name = player_name[:12]
+
+        screen.blit(background_image, (0, 0))
+        screen.blit(game_over_img, game_over_rect)
+
+        text_surface = text_font.render("High score name:", True, text_color)
+        screen.blit(text_surface, (input_box.centerx - text_surface.get_width() / 2 - 205,
+                                            input_box.centery - 18))
+
+
+        pygame.draw.rect(screen, color, input_box, 1)
+
+        text_surface = font.render(player_name, True, (90, 90, 90))
+        screen.blit(text_surface, (input_box.x + 5, input_box.y))
+        pygame.display.flip()
+
+    return player_name
