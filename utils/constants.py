@@ -3,7 +3,7 @@
 
 BUTTON_NAMES = [
                 "play_button", "quit_button", "menu_button",
-                'difficulty', 'easy', 'medium', 'hard', 'high_scores',
+                'difficulty', 'easy', 'medium', 'hard', 'high_scores', 'delete_scores',
                 'game_modes', 'endless', 'normal', 'slow_burn', 'meteor_madness',
                 "single_player", "multiplayer","player_controls",
                 "menu_quit_button", 'boss_rush', 'last_bullet',
@@ -333,6 +333,15 @@ DIFFICULTIES = {
     'MEDIUM': 0.5,
     'HARD': 0.7
 }
+
+GAME_MODE_SCORE_KEYS = {
+                'boss_rush': 'boss_rush_scores',
+                'endless_onslaught': 'endless_scores',
+                'meteor_madness': 'meteor_madness_scores',
+                'slow_burn': 'slow_burn_scores',
+                'last_bullet': 'last_bullet_scores',
+                'normal': 'high_scores'
+            }
 
 # Ships settings
 MAX_HP = 5

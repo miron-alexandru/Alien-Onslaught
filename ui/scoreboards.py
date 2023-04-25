@@ -7,7 +7,7 @@ import pygame.font
 from pygame.sprite import Group
 from entities.player_health import Heart
 from utils.constants import boss_rush_image_map
-from utils.game_utils import get_player_name
+from utils.game_utils import get_player_name, display_message
 
 
 class ScoreBoard:
@@ -20,6 +20,7 @@ class ScoreBoard:
         self.settings = game.settings
         self.stats = game.stats
         self.second_stats = game.stats
+        self.high_scores_file = 'high_score.json'
 
         # Font settings
         self.text_color = (238, 75, 43)
@@ -174,12 +175,9 @@ class ScoreBoard:
             phoenix_heart.rect.y = 10
             self.phoenix_health.add(phoenix_heart)
 
-
     def save_high_score(self, score_key):
         """Save the high score to a JSON file."""
-        player_name = get_player_name(self.screen, self.game.bg_img, self.settings.game_over,
-                                            self.game.game_over_rect)
-        filename = 'high_score.json'
+        filename = self.high_scores_file
         try:
             with open(filename, 'r', encoding='utf-8') as score_file:
                 high_scores = json.load(score_file)
@@ -188,6 +186,18 @@ class ScoreBoard:
 
         scores = high_scores.get(score_key, [])
         new_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
+
+        while True:
+            player_name = get_player_name(self.screen, self.game.bg_img, self.settings.game_over,
+                                          self.game.game_over_rect)
+            for i, score in enumerate(scores):
+                if score['name'] == player_name:
+                    message = f"A high score with the name '{player_name}' already exists."
+                    display_message(self.screen, message, 2)
+                    break
+            else:
+                break
+
         new_entry = {'name': player_name, 'score': new_score}
 
         # Check if new score matches an existing score
@@ -204,6 +214,23 @@ class ScoreBoard:
 
         with open(filename, 'w', encoding='utf-8') as score_file:
             json.dump(high_scores, score_file)
+
+
+    def delete_high_scores(self, score_key):
+        """Delete the high scores for a specified score key."""
+        filename = self.high_scores_file
+        try:
+            with open(filename, 'r', encoding='utf-8') as score_file:
+                high_scores = json.load(score_file)
+        except json.JSONDecodeError:
+            high_scores = {'high_scores': []}
+
+        if score_key in high_scores:
+            del high_scores[score_key]
+
+        with open(filename, 'w', encoding='utf-8') as score_file:
+            json.dump(high_scores, score_file)
+
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
@@ -230,6 +257,7 @@ class SecondScoreBoard(ScoreBoard):
     """A class to report scoring information for the single player mode."""
     def __init__(self, game):
         super().__init__(game)
+        self.high_scores_file = 'single_high_score.json'
 
         self.prep_level()
         self.render_scores()
@@ -299,33 +327,3 @@ class SecondScoreBoard(ScoreBoard):
         self.screen.blit(self.level_image, self.level_rect)
         if self.game.thunderbird_ship.state.alive:
             self.thunderbird_health.draw(self.screen)
-
-    def save_high_score(self, score_key):
-        """Save the high score to a JSON file."""
-        player_name = get_player_name(self.screen, self.game.bg_img,
-                                self.settings.game_over, self.game.game_over_rect)
-        filename = 'single_high_score.json'
-        try:
-            with open(filename, 'r', encoding='utf-8') as score_file:
-                high_scores = json.load(score_file)
-        except json.JSONDecodeError:
-            high_scores = {'high_scores': []}
-
-        scores = high_scores.get(score_key, [])
-        new_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
-        new_entry = {'name': player_name, 'score': new_score}
-
-        # Check if new score matches an existing score
-        for i, score in enumerate(scores):
-            if score['score'] == new_score:
-                scores[i] = new_entry
-                break
-        else:
-            scores.append(new_entry)
-
-        # Sort scores by score value in descending order
-        scores = sorted(scores, key=lambda x: x['score'], reverse=True)[:10]
-        high_scores[score_key] = scores
-
-        with open(filename, 'w', encoding='utf-8') as score_file:
-            json.dump(high_scores, score_file)

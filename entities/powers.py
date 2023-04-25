@@ -181,7 +181,6 @@ class PowerEffectsManager:
 
     def decrease_alien_bullet_speed(self, _=None):
         """Decreases alien bullet speed."""
-        print('called')
         if self.settings.alien_bullet_speed > 1:
             setattr(self.settings, "alien_bullet_speed",
                 getattr(self.settings, "alien_bullet_speed") - 0.1)
@@ -208,3 +207,32 @@ class PowerEffectsManager:
                         ship.state.reverse = False
                     if ship.state.disarmed:
                         ship.state.disarmed = False
+
+
+    def get_powerup_choices(self):
+        """Return a list with all power_ups"""
+        return [
+            self.increase_ship_speed,
+            self.increase_bullet_speed,
+            self.increase_bullets_allowed,
+            self.draw_ship_shield,
+            self.decrease_alien_speed,
+            self.decrease_alien_bullet_speed,
+            self.bonus_points,
+            self.invincibility,
+            self.change_ship_size,
+            self.increase_bullet_count,
+            self.increase_missiles_num,
+            self.increase_bullets_remaining,
+        ]
+
+    def get_penalty_choices(self):
+        """Return a list with all penalties."""
+        return [
+            self.disarm_ship,
+            self.reverse_keys,
+            self.alien_upgrade,
+            self.decrease_ship_speed,
+            self.increase_alien_numbers,
+            self.increase_alien_hp,
+        ]

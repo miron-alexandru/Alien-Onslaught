@@ -237,50 +237,56 @@ def display_controls(buttons, settings):
             t1_surfaces, t1_rects,
             t2_surfaces, t2_rects)
 
+def display_message(screen, message, duration):
+    """Display a message on the screen for a specified amount of time."""
+    font = pygame.font.SysFont('verdana', 14)
+    text = font.render(message, True, (255, 255, 255))
+    rect = text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 25))
+    screen.blit(text, rect)
+    pygame.display.flip()
+    pygame.time.wait(int(duration * 1000))
+
 
 def get_player_name(screen, background_image, game_over_img, game_over_rect):
     """Get the player name for the high score."""
+
+    # Set up fonts and colors
     font = pygame.font.SysFont('verdana', 19)
     text_font = pygame.font.SysFont('verdana', 23)
-    text_color = 'silver'
+    text_color = pygame.Color('silver')
+
+    # Set up input box and initial player name
     input_box = pygame.Rect(0, 0, 200, 26)
     input_box.center = (screen.get_width() / 2 + 100, screen.get_height() / 2)
-    color_inactive = text_color
-    color_active = (217, 217, 217)
-    color = color_inactive
     player_name = 'Player'
-    active = True
 
-    while active:
+    # Loop until player name is confirmed
+    while True:
+        # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                color = color_active if input_box.collidepoint(event.pos) else color_inactive
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    active = False
+                    return player_name  # exit loop and return player name
                 elif event.key == pygame.K_BACKSPACE:
                     player_name = player_name[:-1]
-                else:
+                elif event.unicode.isalnum():
                     player_name += event.unicode
-                player_name = ''.join(e for e in player_name if e.isalnum())
-                if len(player_name) > 12:
-                    player_name = player_name[:12]
+                    player_name = player_name[:12]  # limit length of player name to 12 characters
 
+        # Draw the input box and player name
         screen.blit(background_image, (0, 0))
         screen.blit(game_over_img, game_over_rect)
-
-        text_surface = text_font.render("High score name:", True, text_color)
-        screen.blit(text_surface, (input_box.centerx - text_surface.get_width() / 2 - 205,
-                                            input_box.centery - 18))
-
-
-        pygame.draw.rect(screen, color, input_box, 1)
-
-        text_surface = font.render(player_name, True, (90, 90, 90))
+        pygame.draw.rect(screen, text_color, input_box, 1)
+        text_surface = font.render(player_name, True, pygame.Color(90, 90, 90))
         screen.blit(text_surface, (input_box.x + 5, input_box.y))
-        pygame.display.flip()
 
-    return player_name
+        # Draw the text label
+        text_surface = text_font.render("High score name:", True, text_color)
+        text_x = input_box.centerx - text_surface.get_width() / 2 - 205
+        text_y = input_box.centery - 18
+        screen.blit(text_surface, (text_x, text_y))
+
+        pygame.display.flip()

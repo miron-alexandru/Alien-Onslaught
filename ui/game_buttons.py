@@ -6,7 +6,7 @@ import sys
 import pygame
 import pygame.font
 
-from utils.constants import BUTTON_NAMES
+from utils.constants import BUTTON_NAMES, GAME_MODE_SCORE_KEYS
 from utils.game_utils import load_button_imgs, display_controls
 
 
@@ -80,6 +80,8 @@ class GameButtons:
                             (self.boss_rush.rect.right - 5, self.boss_rush.rect.y))
         self.high_scores = Button(self, self.button_imgs['high_scores'],
                             (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom))
+        self.delete_scores = Button(self, self.button_imgs['delete_scores'],
+                            (self.high_scores.rect.right - 10, self.high_scores.rect.y))
         self.menu = Button(self, self.button_imgs["menu_button"],
                             (self.high_scores.rect.centerx - 74, self.high_scores.rect.bottom))
         self.quit = Button(self, self.button_imgs["quit_button"],
@@ -190,3 +192,9 @@ class GameButtons:
     def handle_difficulty_toggle(self):
         """Toggle visibility of the difficulty buttons"""
         self.ui_options.show_difficulty = not self.ui_options.show_difficulty
+
+    def handle_delete_button(self):
+        """Delete all high scores for the current game mode."""
+        game_mode = self.game.settings.gm.game_mode or 'normal'
+        high_score_key = GAME_MODE_SCORE_KEYS.get(game_mode, 'high_scores')
+        self.game.score_board.delete_high_scores(high_score_key)
