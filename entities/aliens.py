@@ -94,6 +94,7 @@ class BossAlien(Sprite):
         self.last_bullet_time = 0
         self.hit_count = 0
         self.is_alive = True
+        self.immune_state = False
 
         self.rect = self.image.get_rect()
         self.rect = self.rect.inflate(-30, 0)
@@ -136,6 +137,7 @@ class BossAlien(Sprite):
     def upgrade(self):
         """Gives a bonus to the alien."""
         self.settings.boss_hp += 15
+
 
 
 class AliensManager:

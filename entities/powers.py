@@ -208,10 +208,9 @@ class PowerEffectsManager:
                     if ship.state.disarmed:
                         ship.state.disarmed = False
 
-
     def get_powerup_choices(self):
         """Return a list with all power_ups"""
-        return [
+        power_ups = [
             self.increase_ship_speed,
             self.increase_bullet_speed,
             self.increase_bullets_allowed,
@@ -223,16 +222,22 @@ class PowerEffectsManager:
             self.change_ship_size,
             self.increase_bullet_count,
             self.increase_missiles_num,
-            self.increase_bullets_remaining,
         ]
+        if self.settings.gm.last_bullet:
+            power_ups.append(self.increase_bullets_remaining)
+
+        return power_ups
+
 
     def get_penalty_choices(self):
         """Return a list with all penalties."""
-        return [
+        penalties = [
             self.disarm_ship,
             self.reverse_keys,
             self.alien_upgrade,
             self.decrease_ship_speed,
-            self.increase_alien_numbers,
-            self.increase_alien_hp,
         ]
+        if not self.settings.gm.last_bullet:
+            penalties += [self.increase_alien_numbers, self.increase_alien_hp]
+
+        return penalties

@@ -98,7 +98,7 @@ class CollisionManager:
                 collision.kill()
                 info["ship"].empower()
 
-    def check_bullet_alien_collisions(self, singleplayer=False):
+    def check_bullet_alien_collisions(self):
         """Respond to bullet-alien collisions."""
         thunderbird_ship_collisions = pygame.sprite.groupcollide(
             self.game.thunderbird_bullets, self.game.aliens, True, False)
@@ -110,12 +110,13 @@ class CollisionManager:
             self._handle_player_collisions(thunderbird_ship_collisions, 'thunderbird')
 
         if (
-            not singleplayer
+            not self.game.singleplayer
             and phoenix_ship_collisions
         ):
             self._handle_player_collisions(phoenix_ship_collisions, 'phoenix')
 
-    def check_missile_alien_collisions(self, singleplayer=False):
+
+    def check_missile_alien_collisions(self):
         """Respond to missile-alien collisions."""
         # Collisions with Thunderbird missiles
         thunderbird_missile_collisions = pygame.sprite.groupcollide(
@@ -131,14 +132,13 @@ class CollisionManager:
             self._play_missile_sound(thunderbird_missile_collisions.values())
 
         # Handle Phoenix missile collisions
-        if not singleplayer and phoenix_missile_collisions:
+        if not self.game.singleplayer and phoenix_missile_collisions:
             self._handle_player_missile_collisions(phoenix_missile_collisions, 'phoenix')
             self._play_missile_sound(phoenix_missile_collisions.values())
 
 
     def _play_missile_sound(self, aliens):
         """Helper method that plays the missile sound when colliding with normal aliens."""
-        print('called')
         for alien_list in aliens:
             for alien in alien_list:
                 if not isinstance(alien, BossAlien):
@@ -155,7 +155,13 @@ class CollisionManager:
 
     def check_alien_bullets_collisions(self, thunder_hit_method, phoenix_hit_method):
         """Manages collisions between the alien bullets and the players"""
-        player_ships = [self.game.thunderbird_ship, self.game.phoenix_ship]
+        if not self.game.singleplayer:
+            player_ships = [self.game.thunderbird_ship, self.game.phoenix_ship]
+            player_methods = [thunder_hit_method, phoenix_hit_method]
+        else:
+            player_ships = [self.game.thunderbird_ship]
+            player_methods = [thunder_hit_method]
+
         player_methods = [thunder_hit_method, phoenix_hit_method]
 
         for ship, hit_method in zip(player_ships, player_methods):
@@ -166,6 +172,8 @@ class CollisionManager:
 
     def _handle_boss_alien_collision(self, alien, player):
         if alien.hit_count >= self.settings.boss_hp and alien.is_alive:
+            self.game.game_sounds['boss_exploding'].set_volume(0.3)
+            self.game.game_sounds['boss_exploding'].play()
             alien.destroy_alien()
             self.game.aliens.remove(alien)
             if player == 'thunderbird':
@@ -179,17 +187,15 @@ class CollisionManager:
         """This method handles what happens with the score and the aliens
         after they have been hit.It also increases the hit_count of the aliens
         making them stronger as the game progresses."""
+        level = self.stats.level
+        max_hit_count = ALIENS_HP_MAP.get(level, 3)
         for aliens in player_ship_collisions.values():
             for alien in aliens:
-                if not alien.immune_state:
-                    alien.hit_count += 1
-                    if isinstance(alien, BossAlien):
-                        self._handle_boss_alien_collision(alien, player)
-                    else:
-                        level = self.stats.level
-                        max_hit_count = ALIENS_HP_MAP.get(level, 3)
-                        if alien.hit_count >= max_hit_count:
-                            self._update_stats(alien, player)
+                alien.hit_count += 1
+                if isinstance(alien, BossAlien):
+                    self._handle_boss_alien_collision(alien, player)
+                elif not alien.immune_state and alien.hit_count >= max_hit_count:
+                    self._update_stats(alien, player)
 
     def _update_stats(self, alien, player):
         """Update player score and remove alien"""
@@ -202,6 +208,8 @@ class CollisionManager:
             case 'phoenix':
                 self.stats.phoenix_score += self.settings.alien_points
         alien.destroy_alien()
+        self.game.game_sounds['alien_exploding'].set_volume(0.1)
+        self.game.game_sounds['alien_exploding'].play()
         self.game.aliens.remove(alien)
         self.score_board.render_scores()
         self.score_board.update_high_score()

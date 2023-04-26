@@ -105,3 +105,7 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * New sound effects for both the gameplay and UI and in addition to the new sound effects, there are also new penalties to make the game more challenging.
 * Enhanced the high score system to allow players to enter a personalized name for their achievement. This allows players to see their name next to their high score which is adding a sense of ownership and accomplishment.
 * Players can now delete all high scores with the click of a button. Additionally, if a player's name already exists in the high scores, they will be prompted to enter a new name.
+
+### Version 2.9:
+* New sound effects for aliens being destroyed.
+* The code has been refactored to enhance compatibility with both the singleplayer and multiplayer versions of the game. And by doing this, the duplicated code in the Singleplayer class has been reduced.

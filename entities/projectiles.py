@@ -75,9 +75,9 @@ class BulletsManager:
                 weapon["weapon"] = pygame.image.load(WEAPONS[weapon_name])
                 weapon["current"] = weapon_name
 
-    def update_projectiles(self, singleplayer=False):
+    def update_projectiles(self):
         """Update position of projectiles and get rid of projectiles that went of screen."""
-        if singleplayer:
+        if self.game.singleplayer:
             all_projectiles = [self.game.thunderbird_bullets, self.game.thunderbird_missiles]
         else:
             all_projectiles = [self.game.thunderbird_bullets, self.game.thunderbird_missiles,

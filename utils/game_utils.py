@@ -113,11 +113,11 @@ def render_text(text, font, color, start_pos, line_spacing, second_color=None):
     return text_surfaces, text_rects
 
 
-def display_high_scores(screen, score_key, singleplayer=False):
+def display_high_scores(game, screen, score_key):
     """Display the high scores on the screen."""
     # Load the high score data from the JSON file,
     # or create a new high score list if there is an error
-    filename = 'single_high_score.json' if singleplayer else 'high_score.json'
+    filename = 'single_high_score.json' if game.singleplayer else 'high_score.json'
     try:
         with open(filename, 'r', encoding='utf-8') as score_file:
             high_scores = json.load(score_file)

@@ -294,6 +294,8 @@ GAME_SOUNDS = {
     'quit_effect': 'sounds/ui/quit_effect.wav',
     'keypress': 'sounds/ui/keypress.wav',
     'warp': 'sounds/gameplay/warp_sound.mp3',
+    'alien_exploding': 'sounds/gameplay/alien_exploding.wav',
+    'boss_exploding': 'sounds/gameplay/boss_exploding.wav',
 }
 
 LEVEL_SOUNDS = {

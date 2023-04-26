@@ -9,7 +9,7 @@ from utils.constants import SHIPS
 
 class Thunderbird(Sprite):
     """A class to manage the Thunderbird ship."""
-    def __init__(self, game, singleplayer=False):
+    def __init__(self, game):
         """Initialize the ship and set its starting position."""
         super().__init__()
         self.screen = game.screen
@@ -19,7 +19,12 @@ class Thunderbird(Sprite):
         self.image = pygame.image.load(SHIPS['thunderbird'])
 
         self.rect = self.image.get_rect()
-        self.rect.x = self.screen_rect.centerx if singleplayer else self.screen_rect.centerx - 300
+        self.rect.x = (
+            self.screen_rect.centerx
+            if self.game.singleplayer
+            else self.screen_rect.centerx - 300
+        )
+
         self.rect.y = self.screen_rect.bottom - self.rect.height
         self.anims = Animations(self)
         self.state = ShipStates()
@@ -27,7 +32,7 @@ class Thunderbird(Sprite):
         self.immune_start_time = 0
         self.small_ship_time = 0
         self.last_bullet_time = 0
-        self.remaining_bullets = 17 if singleplayer else 9
+        self.remaining_bullets = 17 if self.game.singleplayer else 9
         self.missiles_num = self.settings.thunderbird_missiles_num
 
         self.moving_flags = {
@@ -49,7 +54,7 @@ class Thunderbird(Sprite):
 
         if (self.state.scaled and pygame.time.get_ticks() - self.small_ship_time >
                 self.settings.scaled_time):
-            self.reset_ship_size()
+            self.reset_ship_state()
 
         if self.state.exploding:
             self.anims.update_explosion_animation()
@@ -118,7 +123,11 @@ class Thunderbird(Sprite):
     def center_ship(self):
         """Center the ship on the screen."""
         self.rect.bottom = self.screen_rect.bottom
-        self.x_pos = self.screen_rect.centerx - 300
+        self.x_pos = (
+            self.screen_rect.centerx
+            if self.game.singleplayer
+            else self.screen_rect.centerx - 300
+        )
         self.y_pos = float(self.rect.y - 10)
 
     def draw_shield(self):
@@ -163,14 +172,16 @@ class Thunderbird(Sprite):
         self.anims.change_ship_size(scale_factor)
         self.state.scaled = True
 
-    def reset_ship_size(self):
-        """Reset the ship size to the original size."""
+    def reset_ship_state(self):
+        """Reset the ship size to the original state."""
         self.image = pygame.image.load(SHIPS['thunderbird'])
         self.rect = self.image.get_rect()
         self.anims.reset_size()
 
         self.state.scaled = False
         self.small_ship_time = pygame.time.get_ticks()
+        self.state.disarmed = False
+        self.state.reverse = False
 
 
 
@@ -208,14 +219,16 @@ class Phoenix(Thunderbird):
         """Update the number of missiles."""
         self.missiles_num = self.settings.thunderbird_missiles_num
 
-    def reset_ship_size(self):
-        """Reset the ship to the original size."""
+    def reset_ship_state(self):
+        """Reset the ship to the original state."""
         self.image = pygame.image.load(SHIPS['phoenix'])
         self.rect = self.image.get_rect()
         self.anims.reset_size()
 
         self.state.scaled = False
         self.small_ship_time = pygame.time.get_ticks()
+        self.state.disarmed = False
+        self.state.reverse = False
 
 
 @dataclass
