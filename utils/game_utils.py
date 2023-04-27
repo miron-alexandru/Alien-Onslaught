@@ -29,6 +29,13 @@ def set_sounds_volume(sounds, volume):
     for sound in sounds.values():
         sound.set_volume(volume)
 
+def play_sound(sounds_list, sound_name, loop=False):
+    """Plays a certain sound located in the 'sounds_list'."""
+    if loop:
+        sounds_list[sound_name].play(-1)
+    else:
+        sounds_list[sound_name].play()
+
 def load_frames(filename_pattern, num_frames, frame_list, start=0):
     """Loads a sequence of images frames into a list"""
     for i in range(start, start + num_frames):

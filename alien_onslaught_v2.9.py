@@ -18,7 +18,7 @@ from game_logic.game_modes import GameModesManager
 from utils.game_utils import (
     display_high_scores, resize_image,
     display_game_modes_description, load_sounds,
-    set_sounds_volume
+    set_sounds_volume, play_sound
 )
 from utils.constants import (
     DIFFICULTIES, GAME_CONSTANTS,
@@ -64,6 +64,7 @@ class AlienOnslaught:
         self.last_increase_time = self.last_level_time = self.pause_time = 0
         self.current_sound_name = None
         self.level_sounds, self.menu_sounds, self.game_sounds = {}, {}, {}
+
         pygame.display.set_caption("Alien Onslaught")
 
 
@@ -106,7 +107,7 @@ class AlienOnslaught:
         self.load_sounds_and_display_loading_screen('menu_sounds')
         set_sounds_volume(self.menu_sounds, 0.2)
         pygame.mixer.stop()
-        self.menu_sounds['menu'].play()
+        play_sound(self.menu_sounds, 'menu', loop=True)
 
         while True:
             self.handle_menu_events()
@@ -122,13 +123,13 @@ class AlienOnslaught:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if self.buttons.single.rect.collidepoint(mouse_x, mouse_y):
-                    self.menu_sounds['click_menu'].play()
+                    play_sound(self.menu_sounds, 'click_menu')
                     self.start_single_player_game()
                 elif self.buttons.multi.rect.collidepoint(mouse_x, mouse_y):
-                    self.menu_sounds['click_menu'].play()
+                    play_sound(self.menu_sounds, 'click_menu')
                     self.start_multiplayer_game()
                 elif self.buttons.menu_quit.rect.collidepoint(mouse_x, mouse_y):
-                    self.menu_sounds['quit_effect'].play()
+                    play_sound(self.menu_sounds, 'quit_effect')
                     pygame.time.delay(800)
                     pygame.quit()
                     sys.exit()
@@ -279,8 +280,8 @@ class AlienOnslaught:
         """Create a dictionary mapping buttons to their corresponding actions."""
         return {
             self.buttons.play: lambda: self.buttons.handle_play_button(self._reset_game),
-            self.buttons.quit: self.buttons.handle_quit_button,
             self.buttons.menu: self.run_menu,
+            self.buttons.quit: self.buttons.handle_quit_button,
             self.buttons.high_scores: self.buttons.handle_high_scores_button,
             self.buttons.game_modes: self.buttons.handle_game_modes_button,
             self.buttons.endless: self.buttons.handle_endless_button,
@@ -303,7 +304,7 @@ class AlienOnslaught:
         for button, action in button_actions.items():
             if button.rect.collidepoint(mouse_pos) and not self.stats.game_active:
                 if button != self.buttons.quit:
-                    self.game_sounds['click'].play()
+                    play_sound(self.game_sounds, 'click')
                 pygame.time.delay(200)
                 action()
 
@@ -411,59 +412,47 @@ class AlienOnslaught:
 
     def _handle_alien_creation(self):
         """Choose what aliens to create for every game mode."""
-        # Don't create any aliens in Meteor Madness
-        if self.settings.gm.meteor_madness:
-            return
-
-        # If Boss Rush game mode, create boss_aliens and return.
-        if self.settings.gm.boss_rush:
-            self.aliens_manager.create_boss_alien()
-            self.collision_handler.handled_collisions.clear()
-            return
-
-        if self.settings.gm.last_bullet:
-            self.aliens_manager.create_fleet(self.settings.last_bullet_rows)
-            return
-
-        # Create Bosses at the specified levels.
-        if self.stats.level in BOSS_LEVELS:
-            self.aliens_manager.create_boss_alien()
-            self.collision_handler.handled_collisions.clear()
-
-        # Create normal fleets of aliens.
-        else:
-            self.aliens_manager.create_fleet(self.settings.fleet_rows)
+        match self.settings.gm.game_mode:
+            case 'meteor_madness':
+                return
+            case 'boss_rush':
+                self.aliens_manager.create_boss_alien()
+                self.collision_handler.handled_collisions.clear() # clear missile collisions dict
+            case 'last_bullet':
+                self.aliens_manager.create_fleet(self.settings.last_bullet_rows)
+            case _ if self.stats.level in BOSS_LEVELS:
+                self.aliens_manager.create_boss_alien()
+                self.collision_handler.handled_collisions.clear() # clear missile collisions dict
+            case _:
+                self.aliens_manager.create_fleet(self.settings.fleet_rows)
 
     def _fire_bullet(self, bullets, bullets_allowed, bullet_class, num_bullets, ship):
         """Create new player bullets."""
         # Create the bullets at and position them correctly as the number of bullets increases
-        bullet_fired = False
-        if ship.remaining_bullets <= 0:
-            return
-        if ship.state.disarmed:
+        if ship.remaining_bullets <= 0 or ship.state.disarmed:
             return
 
+        bullet_fired = False
         if len(bullets) < bullets_allowed:
-            offset_amount = 30
-            for i in range(num_bullets):
-                new_bullet = bullet_class(self)
-                bullets.add(new_bullet)
-                offset_x = offset_amount * (i - (num_bullets - 1) / 2)
-                offset_y = offset_amount * (i - (num_bullets - 1) / 2)
-                new_bullet.rect.centerx = ship.rect.centerx + offset_x
-                new_bullet.rect.centery = ship.rect.centery + offset_y
+            new_bullets = [bullet_class(self) for _ in range(num_bullets)]
+            bullets.add(new_bullets)
+            for i, new_bullet in enumerate(new_bullets):
+                offset = 30 * (i - (num_bullets // 2))
+                new_bullet.rect.centerx = ship.rect.centerx + offset
+                new_bullet.rect.centery = ship.rect.centery + offset
+
                 if self.settings.gm.last_bullet:
                     ship.remaining_bullets -= 1
                     self.score_board.render_bullets_num()
                 bullet_fired = True
 
         if bullet_fired:
-            self.game_sounds['bullet'].play()
+            play_sound(self.game_sounds, 'bullet')
 
     def _fire_missile(self, missiles, ship, missile_class):
         if ship.missiles_num > 0:
             new_missile = missile_class(self, ship)
-            self.game_sounds['missile_launch'].play()
+            play_sound(self.game_sounds, 'missile_launch')
             missiles.add(new_missile)
             ship.missiles_num -= 1
             self.score_board.render_scores()
@@ -479,9 +468,9 @@ class AlienOnslaught:
 
         # Play sound effect
         if effect_choice in powerup_choices:
-            self.game_sounds['power_up'].play()
+            play_sound(self.game_sounds, 'power_up')
         elif effect_choice in penalty_choices:
-            self.game_sounds['penalty'].play()
+            play_sound(self.game_sounds, 'penalty')
 
 
     def _health_power_up(self, player):
@@ -494,11 +483,11 @@ class AlienOnslaught:
             setattr(self.stats, player_health_attr[player],
                      getattr(self.stats, player_health_attr[player]) + 1)
         self.score_board.create_health()
-        self.game_sounds['health'].play()
+        play_sound(self.game_sounds, 'health')
 
     def _weapon_power_up(self, player, weapon_name):
         self.bullets_manager.set_weapon(player, weapon_name)
-        self.game_sounds['weapon'].play()
+        play_sound(self.game_sounds, 'weapon')
 
     def _thunderbird_ship_hit(self):
         """Respond to the Thunderbird ship being hit by an alien, bullet or asteroid."""
@@ -513,7 +502,7 @@ class AlienOnslaught:
     def destroy_ship(self, ship):
         """Destroy the given ship and center it."""
         ship.explode()
-        self.game_sounds['explode'].play()
+        play_sound(self.game_sounds, 'explode')
         ship.state.shielded = False
 
         if ship == self.thunderbird_ship:
@@ -551,7 +540,7 @@ class AlienOnslaught:
 
         if not self.ui_options.game_over_sound_played:
             pygame.mixer.stop()
-            self.game_sounds['game_over'].play(-1)
+            play_sound(self.game_sounds, 'game_over', loop=True)
             self.ui_options.game_over_sound_played = True
             self.current_sound_name = self.game_sounds['game_over']
 
@@ -565,24 +554,28 @@ class AlienOnslaught:
         self.game_over_rect = pygame.Rect(game_over_x, game_over_y,
                                         game_over_rect.width, game_over_rect.height)
 
+    def kill_aliens(self):
+        for alien in self.aliens:
+            alien.kill()
+
+    def _reset_level(self):
+        """Common level progression handler"""
+        print('called')
+        self._reset_game_objects()
+        self.settings.increase_speed()
+        self.stats.increase_level()
+        self.score_board.prep_level()
+        self._handle_alien_creation()
+        self.prepare_level_sounds()
 
     def _prepare_next_level(self):
         """Level progression handler"""
-        self._reset_game_objects()
-        self.settings.increase_speed()
-        self.stats.increase_level()
-        self.score_board.prep_level()
-        self._handle_alien_creation()
+        self._reset_level()
         self._handle_boss_stats()
-        self.prepare_level_sounds()
 
     def _prepare_last_bullet_level(self):
         """Level progression handler for the Last Bullet game mode"""
-        self._reset_game_objects()
-        self.settings.increase_speed()
-        self.stats.increase_level()
-        self.score_board.prep_level()
-        self._handle_alien_creation()
+        self._reset_level()
         self._prepare_last_bullet_bullets()
 
     def _prepare_asteroids_level(self):
@@ -671,7 +664,7 @@ class AlienOnslaught:
         self.score_board.create_health()
         # Prepare sounds
         self.prepare_level_sounds()
-        self.game_sounds['warp'].play()
+        play_sound(self.game_sounds, 'warp')
 
     def prepare_level_sounds(self):
         """Play the background music based on the current level."""
@@ -681,7 +674,7 @@ class AlienOnslaught:
             if self.stats.level in key:
                 if sound_name != current_sound_name:
                     pygame.mixer.stop()
-                    self.level_sounds[key].play(-1)
+                    play_sound(self.level_sounds, key, loop=True)
                     self.current_sound_name = sound_name
                 return
 
@@ -706,6 +699,7 @@ class AlienOnslaught:
                 health = self.stats.thunderbird_hp
             else:
                 health = self.stats.phoenix_hp
+            # The ship waits for the explosion anim to finish before changing it's alive state
             if health < 0 and not ship.state.exploding:
                 ship.state.alive = False
             # Draw the ships on screen only when alive.
@@ -725,30 +719,6 @@ class AlienOnslaught:
         self.aliens.draw(self.screen)
         self.score_board.show_score()
 
-    def _draw_buttons(self):
-        """Draw buttons on screen"""
-        self.buttons.play.draw_button()
-        self.buttons.quit.draw_button()
-        self.buttons.menu.draw_button()
-        self.buttons.difficulty.draw_button()
-        self.buttons.high_scores.draw_button()
-        self.buttons.game_modes.draw_button()
-
-    def _draw_difficulty_buttons(self):
-        """Draw difficulty buttons on screen."""
-        self.buttons.easy.draw_button()
-        self.buttons.medium.draw_button()
-        self.buttons.hard.draw_button()
-
-    def _draw_game_mode_buttons(self):
-        """Draw game mode buttons on screen."""
-        self.buttons.endless.draw_button()
-        self.buttons.normal.draw_button()
-        self.buttons.slow_burn.draw_button()
-        self.buttons.meteor_madness.draw_button()
-        self.buttons.boss_rush.draw_button()
-        self.buttons.last_bullet.draw_button()
-
     def update_ship_state(self):
         """Update the state for the ships."""
         for ship in self.ships:
@@ -765,17 +735,17 @@ class AlienOnslaught:
 
         else:
             # Draw buttons if game is not active
-            self._draw_buttons()
+            self.buttons.draw_buttons()
 
             if self.ui_options.show_difficulty:
-                self._draw_difficulty_buttons()
+                self.buttons.draw_difficulty_buttons()
 
             if self.ui_options.show_high_scores:
                 self._display_high_scores_on_screen()
                 self.buttons.delete_scores.draw_button()
 
             if self.ui_options.show_game_modes:
-                self._draw_game_mode_buttons()
+                self.buttons.draw_game_mode_buttons()
                 display_game_modes_description(self.screen)
 
         pygame.display.flip()
@@ -824,7 +794,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
         self.score_board.create_health()
         # Prepare sound
         self.prepare_level_sounds()
-        self.game_sounds['warp'].play()
+        play_sound(self.game_sounds, 'warp')
 
 
 if __name__ =='__main__':

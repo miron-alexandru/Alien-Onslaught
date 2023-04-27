@@ -4,6 +4,7 @@ handling player input events in a game."""
 import sys
 import pygame
 from entities.projectiles import Missile, Firebird, Thunderbolt
+from utils.game_utils import play_sound
 
 
 class PlayerInput:
@@ -22,19 +23,19 @@ class PlayerInput:
         match event.key:
             # If the game is paused, check for Q, P, R, and M keys
             case pygame.K_q if self.ui_options.paused:
-                self.game.game_sounds['quit_effect'].play()
+                play_sound(self.game.game_sounds, 'quit_effect')
                 pygame.time.delay(800)
                 pygame.quit()
                 sys.exit()
             case pygame.K_p:
-                self.game.game_sounds['keypress'].play()
+                play_sound(self.game.game_sounds, 'keypress')
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_r if self.ui_options.paused:
-                self.game.game_sounds['keypress'].play()
+                play_sound(self.game.game_sounds, 'keypress')
                 reset_game()
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_m if self.ui_options.paused:
-                self.game.game_sounds['keypress'].play()
+                play_sound(self.game.game_sounds, 'keypress')
                 pygame.time.delay(300)
                 run_menu()
 

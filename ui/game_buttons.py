@@ -30,6 +30,8 @@ class Button:
         else:
             self.rect.x, self.rect.y = pos
 
+        self.visible = True
+
     def update_pos(self, *args, x=0, y=0):
         """Update the button's position."""
         if len(args) == 1:
@@ -39,8 +41,9 @@ class Button:
         self.rect.move_ip(x, y)
 
     def draw_button(self):
-        """Draws the button"""
+        """Draws the button if it is visible."""
         self.screen.blit(self.image, self.rect)
+
 
 
 class GameButtons:
@@ -92,6 +95,26 @@ class GameButtons:
                                                             self.easy.rect.y))
         self.hard = Button(self, self.button_imgs['hard'], (self.medium.rect.right - 5,
                                                             self.medium.rect.y))
+        self.game_buttons = [self.play, self.quit, self.menu, self.difficulty, self.high_scores,
+                            self.game_modes]
+        self.difficulty_buttons = [self.easy, self.medium, self.hard]
+        self.game_mode_buttons = [self.endless, self.normal, self.slow_burn, self.meteor_madness,
+                                self.boss_rush, self.last_bullet]
+
+    def draw_difficulty_buttons(self):
+        """Draw difficulty buttons on screen."""
+        for button in self.difficulty_buttons:
+            button.draw_button()
+
+    def draw_game_mode_buttons(self):
+        """Draw game mode buttons on screen."""
+        for button in self.game_mode_buttons:
+            button.draw_button()
+
+    def draw_buttons(self):
+        """Draw buttons on screen."""
+        for button in self.game_buttons:
+            button.draw_button()
 
     def _create_menu_buttons(self):
         """Create the buttons for the game menu"""

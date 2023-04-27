@@ -3,6 +3,7 @@
 import pygame
 from entities.aliens import BossAlien
 from utils.constants import ALIENS_HP_MAP
+from utils.game_utils import play_sound
 
 
 class CollisionManager:
@@ -142,7 +143,7 @@ class CollisionManager:
         for alien_list in aliens:
             for alien in alien_list:
                 if not isinstance(alien, BossAlien):
-                    self.game.game_sounds['missile'].play()
+                    play_sound(self.game.game_sounds, 'missile')
 
     def _handle_player_missile_collisions(self, player_missile_collisions, player):
         """This method handles what happens with the score and the aliens
@@ -173,7 +174,7 @@ class CollisionManager:
     def _handle_boss_alien_collision(self, alien, player):
         if alien.hit_count >= self.settings.boss_hp and alien.is_alive:
             self.game.game_sounds['boss_exploding'].set_volume(0.3)
-            self.game.game_sounds['boss_exploding'].play()
+            play_sound(self.game.game_sounds, 'boss_exploding')
             alien.destroy_alien()
             self.game.aliens.remove(alien)
             if player == 'thunderbird':
@@ -209,7 +210,7 @@ class CollisionManager:
                 self.stats.phoenix_score += self.settings.alien_points
         alien.destroy_alien()
         self.game.game_sounds['alien_exploding'].set_volume(0.1)
-        self.game.game_sounds['alien_exploding'].play()
+        play_sound(self.game.game_sounds, 'alien_exploding')
         self.game.aliens.remove(alien)
         self.score_board.render_scores()
         self.score_board.update_high_score()
@@ -221,7 +222,7 @@ class CollisionManager:
             for alien in aliens:
                 if isinstance(alien, BossAlien):
                     if (missile, alien) not in self.handled_collisions:
-                        self.game.game_sounds['missile'].play()
+                        play_sound(self.game.game_sounds, 'missile')
                         alien.hit_count += 5
                         self._handle_boss_alien_collision(alien, player)
                         self.handled_collisions[(missile, alien)] = True

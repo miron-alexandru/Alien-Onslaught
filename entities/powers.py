@@ -225,7 +225,7 @@ class PowerEffectsManager:
         ]
         if self.settings.gm.last_bullet:
             power_ups.append(self.increase_bullets_remaining)
-
+            power_ups.remove(self.increase_bullet_count)
         return power_ups
 
 
