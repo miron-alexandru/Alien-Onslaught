@@ -2,6 +2,7 @@
 The game_settings module contains the settings for the game such as:
 background , sounds, bullet, ships, aliens, game speed.
 """
+
 from dataclasses import dataclass
 from utils.constants import (
     BACKGROUNDS,

@@ -21,8 +21,7 @@ from utils.game_utils import (
     set_sounds_volume, play_sound
 )
 from utils.constants import (
-    DIFFICULTIES, GAME_CONSTANTS,
-    BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
+    GAME_CONSTANTS, BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
     AVAILABLE_BULLETS_MAP_SINGLE, LEVEL_SOUNDS,
     MENU_SOUNDS, GAME_SOUNDS, GAME_MODE_SCORE_KEYS
 
@@ -276,33 +275,16 @@ class AlienOnslaught:
                 self._resize_screen(event.size)
                 self.manage_screen.update_buttons()
 
-    def _create_button_actions_dict(self):
-        """Create a dictionary mapping buttons to their corresponding actions."""
-        return {
-            self.buttons.play: lambda: self.buttons.handle_play_button(self._reset_game),
-            self.buttons.menu: self.run_menu,
-            self.buttons.quit: self.buttons.handle_quit_button,
-            self.buttons.high_scores: self.buttons.handle_high_scores_button,
-            self.buttons.game_modes: self.buttons.handle_game_modes_button,
-            self.buttons.endless: self.buttons.handle_endless_button,
-            self.buttons.meteor_madness: self.buttons.handle_meteor_madness_button,
-            self.buttons.boss_rush: self.buttons.handle_boss_rush_button,
-            self.buttons.last_bullet: self.buttons.handle_last_bullet_button,
-            self.buttons.slow_burn: self.buttons.handle_slow_burn_button,
-            self.buttons.normal: self.buttons.handle_normal_button,
-            self.buttons.easy: self.buttons.handle_difficulty_button(DIFFICULTIES['EASY']),
-            self.buttons.medium: self.buttons.handle_difficulty_button(DIFFICULTIES['MEDIUM']),
-            self.buttons.hard: self.buttons.handle_difficulty_button(DIFFICULTIES['HARD']),
-            self.buttons.difficulty: self.buttons.handle_difficulty_toggle,
-            self.buttons.delete_scores: self.buttons.handle_delete_button,
-        }
-
-
     def _check_buttons(self, mouse_pos):
         """Check for buttons being clicked and act accordingly."""
-        button_actions = self._create_button_actions_dict()
+        self.buttons.handle_buttons_visibility()
+        button_actions = self.buttons.create_button_actions_dict(self.run_menu, self._reset_game)
         for button, action in button_actions.items():
-            if button.rect.collidepoint(mouse_pos) and not self.stats.game_active:
+            if (
+                button.rect.collidepoint(mouse_pos)
+                and not self.stats.game_active
+                and not button.visible
+            ):
                 if button != self.buttons.quit:
                     play_sound(self.game_sounds, 'click')
                 pygame.time.delay(200)
@@ -554,13 +536,9 @@ class AlienOnslaught:
         self.game_over_rect = pygame.Rect(game_over_x, game_over_y,
                                         game_over_rect.width, game_over_rect.height)
 
-    def kill_aliens(self):
-        for alien in self.aliens:
-            alien.kill()
 
     def _reset_level(self):
         """Common level progression handler"""
-        print('called')
         self._reset_game_objects()
         self.settings.increase_speed()
         self.stats.increase_level()
@@ -611,6 +589,7 @@ class AlienOnslaught:
             ship.center_ship()
             ship.start_warp()
             ship.update_missiles_number()
+        play_sound(self.game_sounds, 'warp')
 
     def _display_pause(self):
         """Display the Pause image on screen."""

@@ -6,7 +6,7 @@ import sys
 import pygame
 import pygame.font
 
-from utils.constants import BUTTON_NAMES, GAME_MODE_SCORE_KEYS
+from utils.constants import BUTTON_NAMES, GAME_MODE_SCORE_KEYS, DIFFICULTIES
 from utils.game_utils import load_button_imgs, display_controls
 
 
@@ -16,6 +16,7 @@ class Button:
         """Initialize button attributes."""
         self.screen = game.screen
         self.screen_rect = self.screen.get_rect()
+        self.visible = False  # variable used for buttons that need to be visible
 
         # Load button image and scale it to the desired size.
         self.image = pygame.image.load(image_loc)
@@ -29,8 +30,6 @@ class Button:
             self.rect.y -= 50
         else:
             self.rect.x, self.rect.y = pos
-
-        self.visible = True
 
     def update_pos(self, *args, x=0, y=0):
         """Update the button's position."""
@@ -56,6 +55,7 @@ class GameButtons:
         self.ui_options = ui_options
         self.gm_options = gm_options
         self.screen_rect = self.screen.get_rect()
+
         self.button_imgs = load_button_imgs(BUTTON_NAMES)
 
         self._create_controls()
@@ -123,6 +123,14 @@ class GameButtons:
                             (self.single.rect.centerx - 100, self.single.rect.bottom))
         self.menu_quit = Button(self, self.button_imgs["menu_quit_button"],
                             (self.multi.rect.centerx - 100, self.multi.rect.bottom))
+
+    def handle_buttons_visibility(self):
+        """Handle the visibility of buttons based on the current ui options."""
+        for button in self.difficulty_buttons:
+            button.visible = not self.ui_options.show_difficulty
+        for button in self.game_mode_buttons:
+            button.visible = not self.ui_options.show_game_modes
+        self.delete_scores.visible = not self.ui_options.show_high_scores
 
     def _create_controls(self):
         """This method creates the images and positions
@@ -221,3 +229,24 @@ class GameButtons:
         game_mode = self.game.settings.gm.game_mode or 'normal'
         high_score_key = GAME_MODE_SCORE_KEYS.get(game_mode, 'high_scores')
         self.game.score_board.delete_high_scores(high_score_key)
+
+    def create_button_actions_dict(self, menu_method, reset_method):
+        """Create a dictionary mapping buttons to their corresponding actions."""
+        return {
+            self.play: lambda: self.handle_play_button(reset_method),
+            self.menu: menu_method,
+            self.quit: self.handle_quit_button,
+            self.high_scores: self.handle_high_scores_button,
+            self.game_modes: self.handle_game_modes_button,
+            self.endless: self.handle_endless_button,
+            self.meteor_madness: self.handle_meteor_madness_button,
+            self.boss_rush: self.handle_boss_rush_button,
+            self.last_bullet: self.handle_last_bullet_button,
+            self.slow_burn: self.handle_slow_burn_button,
+            self.normal: self.handle_normal_button,
+            self.easy: self.handle_difficulty_button(DIFFICULTIES['EASY']),
+            self.medium: self.handle_difficulty_button(DIFFICULTIES['MEDIUM']),
+            self.hard: self.handle_difficulty_button(DIFFICULTIES['HARD']),
+            self.difficulty: self.handle_difficulty_toggle,
+            self.delete_scores: self.handle_delete_button,
+        }

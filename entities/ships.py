@@ -141,8 +141,7 @@ class Thunderbird(Sprite):
         self.anims.explosion_rect.center = self.rect.center
 
     def start_warp(self):
-        """Starts the warp animation"""
-        self.game.game_sounds['warp'].play()
+        """Starts the warp animation."""
         self.state.warping = True
 
     def set_immune(self):
