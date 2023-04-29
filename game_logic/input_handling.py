@@ -23,19 +23,19 @@ class PlayerInput:
         match event.key:
             # If the game is paused, check for Q, P, R, and M keys
             case pygame.K_q if self.ui_options.paused:
-                play_sound(self.game.game_sounds, 'quit_effect')
+                play_sound(self.game.sound_manager.game_sounds, 'quit_effect')
                 pygame.time.delay(800)
                 pygame.quit()
                 sys.exit()
             case pygame.K_p:
-                play_sound(self.game.game_sounds, 'keypress')
+                play_sound(self.game.sound_manager.game_sounds, 'keypress')
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_r if self.ui_options.paused:
-                play_sound(self.game.game_sounds, 'keypress')
+                play_sound(self.game.sound_manager.game_sounds, 'keypress')
                 reset_game()
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_m if self.ui_options.paused:
-                play_sound(self.game.game_sounds, 'keypress')
+                play_sound(self.game.sound_manager.game_sounds, 'keypress')
                 pygame.time.delay(300)
                 run_menu()
 
@@ -108,8 +108,8 @@ class PlayerInput:
     def handle_thunderbird_controls(self, event, fire_missile_method):
         """Handle Thunderbird controls."""
         if (self.thunderbird.state.alive and
-            not self.thunderbird.state.warping and
-            not self.thunderbird.state.exploding):
+                not self.thunderbird.state.warping and
+                not self.thunderbird.state.exploding):
             match event.key:
                 case pygame.K_SPACE:
                     self.thunderbird.state.firing = True
@@ -136,8 +136,8 @@ class PlayerInput:
     def _handle_phoenix_controls(self, event, fire_missile_method):
         """Handle Phoenix controls."""
         if (self.phoenix.state.alive and
-            not self.phoenix.state.warping and
-            not self.phoenix.state.exploding):
+                not self.phoenix.state.warping and
+                not self.phoenix.state.exploding):
             match event.key:
                 case pygame.K_RETURN:
                     self.phoenix.state.firing = True

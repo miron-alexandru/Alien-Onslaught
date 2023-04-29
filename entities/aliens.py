@@ -33,6 +33,7 @@ class Alien(Sprite):
 
 
     def _init_position(self):
+        """Set the initial position of the alien sprite."""
         self.rect = self.animation.image.get_rect()
         self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = self.rect.height
@@ -98,7 +99,7 @@ class BossAlien(Sprite):
 
         self.rect = self.image.get_rect()
         self.rect = self.rect.inflate(-30, 0)
-        self.rect.x =  self.rect.width
+        self.rect.x = self.rect.width
         self.rect.y = self.rect.height - self.image.get_height() + 50
         self.x_pos = float(self.rect.x)
 
@@ -107,7 +108,7 @@ class BossAlien(Sprite):
 
     def _update_image(self, game):
         """Change image for specific boss fight"""
-        if self.settings.gm.boss_rush:
+        if self.settings.game_modes.boss_rush:
             level_image_map = boss_rush_image_map
         else:
             level_image_map = normal_image_map

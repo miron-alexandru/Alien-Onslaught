@@ -19,7 +19,7 @@ class ScreenManager:
                                     self.buttons.play.rect.bottom)
         self.buttons.game_modes.update_pos(self.buttons.difficulty.rect.centerx - 74,
                                     self.buttons.difficulty.rect.bottom)
-        self.buttons.high_scores.update_pos(self.buttons.game_modes.rect.centerx -74,
+        self.buttons.high_scores.update_pos(self.buttons.game_modes.rect.centerx - 74,
                                     self.buttons.game_modes.rect.bottom)
         self.buttons.menu.update_pos(self.buttons.high_scores.rect.centerx - 74,
                                      self.buttons.high_scores.rect.bottom)
@@ -35,9 +35,9 @@ class ScreenManager:
                                     self.buttons.game_modes.rect.y)
         self.buttons.endless.update_pos(self.buttons.normal.rect.right - 5,
                                     self.buttons.normal.rect.y)
-        self.buttons.slow_burn.update_pos(self.buttons.endless.rect.right -5,
+        self.buttons.slow_burn.update_pos(self.buttons.endless.rect.right - 5,
                                     self.buttons.endless.rect.y)
-        self.buttons.meteor_madness.update_pos(self.buttons.slow_burn.rect.right -5,
+        self.buttons.meteor_madness.update_pos(self.buttons.slow_burn.rect.right - 5,
                                     self.buttons.slow_burn.rect.y)
         self.buttons.boss_rush.update_pos(self.buttons.meteor_madness.rect.right - 5,
                                     self.buttons.meteor_madness.rect.y)

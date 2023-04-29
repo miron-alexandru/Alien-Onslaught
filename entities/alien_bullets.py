@@ -6,7 +6,7 @@ import math
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import  boss_rush_bullet_map, normal_bullet_map
+from utils.constants import boss_rush_bullet_map, normal_bullet_map
 from utils.game_utils import load_alien_bullets
 from entities.aliens import BossAlien
 
@@ -83,7 +83,7 @@ class BossBullet(Sprite):
 
     def _update_image(self, game):
         """Change image for specific boss fight"""
-        if self.settings.gm.boss_rush:
+        if self.settings.game_modes.boss_rush:
             level_image_map = boss_rush_bullet_map
         else:
             level_image_map = normal_bullet_map

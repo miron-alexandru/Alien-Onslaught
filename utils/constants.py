@@ -35,7 +35,7 @@ GAME_MODES_DESCRIPTION = ("Endless Onslaught:\n"
     "Last Bullet:\n"
     "You must use your limited supply of bullets to fight off waves of aliens.\n"
     "If you run out of bullets, you'll become inactive and the game will be over."
-    )
+)
 
 
 # Player2 controls

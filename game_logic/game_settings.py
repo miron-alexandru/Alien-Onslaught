@@ -42,7 +42,7 @@ class Settings:
 
     def _init_game_settings(self):
         """Initialize game mode settings."""
-        self.gm = GameModes()
+        self.game_modes = GameModes()
         self.ui_options = UIOptions()
         self.speedup_scale = 0.3
         self.missiles_speed = 5.0
@@ -76,8 +76,8 @@ class Settings:
         self.alien_direction = 1
 
         # Bosses Settings
-        self.boss_hp = 25 if self.gm.boss_rush else 50
-        self.boss_points = 1000 if self.gm.boss_rush else 2500
+        self.boss_hp = 25 if self.game_modes.boss_rush else 50
+        self.boss_points = 1000 if self.game_modes.boss_rush else 2500
 
         # Asteroid settings
         self.asteroid_speed = 1.5
@@ -90,7 +90,7 @@ class Settings:
             self.alien_bullet_speed += self.speedup_scale
         self.alien_points = int(self.alien_points + GAME_CONSTANTS['SCORE_SCALE'])
 
-        if not self.gm.last_bullet and self.aliens_num < GAME_CONSTANTS['MAX_ALIEN_NUM']:
+        if not self.game_modes.last_bullet and self.aliens_num < GAME_CONSTANTS['MAX_ALIEN_NUM']:
             self.aliens_num += 2
 
 

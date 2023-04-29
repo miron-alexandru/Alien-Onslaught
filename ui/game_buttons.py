@@ -4,7 +4,6 @@ the buttons and displays the controls used in the game.
 """
 import sys
 import pygame
-import pygame.font
 
 from utils.constants import BUTTON_NAMES, GAME_MODE_SCORE_KEYS, DIFFICULTIES
 from utils.game_utils import load_button_imgs, display_controls
@@ -216,6 +215,7 @@ class GameButtons:
     def handle_difficulty_button(self, speedup_scale):
         """Set the game difficulty (speed-up scale)"""
         def handle():
+            """Set the speedup scale and hide the difficulty options UI"""
             self.game.settings.speedup_scale = speedup_scale
             self.ui_options.show_difficulty = False
         return handle

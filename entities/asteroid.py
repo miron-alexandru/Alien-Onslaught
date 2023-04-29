@@ -1,6 +1,4 @@
-"""
-The asteroid module contains the class for creating instances of asteroids in the game.
-"""
+"""The asteroid module contains the class for creating instances of asteroids in the game."""
 
 import random
 import pygame

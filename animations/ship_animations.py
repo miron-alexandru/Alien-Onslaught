@@ -61,6 +61,7 @@ class Animations:
     def change_ship_size(self, scale_factor):
         """Change the ship size and animations based on the scale_factor."""
         def scale_image(image):
+            """Scales the given image and returns the scaled image."""
             return pygame.transform.smoothscale(image, (int(image.get_width() * scale_factor),
                                                 int(image.get_height() * scale_factor)))
 
@@ -89,7 +90,7 @@ class Animations:
         self.immune_image = self.immune_frames[self.current_immune_frame]
         self.immune_rect = self.immune_image.get_rect()
 
-        self.explosion_frames =  explosion_frames
+        self.explosion_frames = explosion_frames
         self.explosion_image = self.explosion_frames[self.current_explosion_frame]
         self.explosion_rect = self.explosion_image.get_rect()
 

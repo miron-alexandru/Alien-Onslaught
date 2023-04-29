@@ -121,7 +121,7 @@ class ScoreBoard:
                 boss_rush_image_map.get(self.stats.level, f'Level {str(self.stats.level)}').title()
         }
 
-        level_str = level_map.get(self.settings.gm.game_mode, f"Level {str(self.stats.level)}")
+        level_str = level_map.get(self.settings.game_modes.game_mode, f"Level {str(self.stats.level)}")
         self.level_image = self.font.render(level_str, True, self.level_color, None)
 
         # Position the level image in the center of the screen.
@@ -234,10 +234,10 @@ class ScoreBoard:
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        if not any([self.settings.gm.meteor_madness, self.settings.gm.boss_rush]):
+        if not any([self.settings.game_modes.meteor_madness, self.settings.game_modes.boss_rush]):
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
             self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
-        if self.settings.gm.last_bullet:
+        if self.settings.game_modes.last_bullet:
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
             self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
         self.screen.blit(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
@@ -317,9 +317,9 @@ class SecondScoreBoard(ScoreBoard):
 
     def show_score(self):
         """Draw scores, level and health to the screen."""
-        if not self.settings.gm.meteor_madness:
+        if not self.settings.game_modes.meteor_madness:
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
-        if self.settings.gm.last_bullet:
+        if self.settings.game_modes.last_bullet:
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
         self.screen.blit(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
         self.screen.blit(self.missiles_icon, self.thunderbird_missiles_img_rect)

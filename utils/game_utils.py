@@ -6,8 +6,8 @@ import pygame
 
 from .constants import (
     P1_CONTROLS, P2_CONTROLS,
-     BOSS_RUSH, ALIEN_BULLETS_IMG,
-     GAME_MODES_DESCRIPTION
+    BOSS_RUSH, ALIEN_BULLETS_IMG,
+    GAME_MODES_DESCRIPTION,
 )
 
 
@@ -17,7 +17,7 @@ def load_images(image_dict):
     value: path to image location"""
     return {key: pygame.image.load(value) for key, value in image_dict.items()}
 
-def load_sounds(sounds_dict):
+def load_sound_files(sounds_dict):
     """A function that loads multiple sounds from a dict of the form:
     key: sound name:
     value: path to sound location."""
@@ -277,7 +277,7 @@ def get_player_name(screen, background_image, game_over_img, game_over_rect):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     return player_name  # exit loop and return player name
-                elif event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE:
                     player_name = player_name[:-1]
                 elif event.unicode.isalnum():
                     player_name += event.unicode

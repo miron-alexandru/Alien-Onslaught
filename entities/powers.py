@@ -177,13 +177,12 @@ class PowerEffectsManager:
     def decrease_alien_speed(self, _=None):
         """Decreases alien speed."""
         if self.settings.alien_speed > 0:
-            setattr(self.settings, "alien_speed", getattr(self.settings, "alien_speed") - 0.1)
+            self.settings.alien_speed -= 0.1
 
     def decrease_alien_bullet_speed(self, _=None):
         """Decreases alien bullet speed."""
         if self.settings.alien_bullet_speed > 1:
-            setattr(self.settings, "alien_bullet_speed",
-                getattr(self.settings, "alien_bullet_speed") - 0.1)
+            self.settings.alien_bullet_speed -= 0.1
 
     def increase_bullets_remaining(self, player):
         """Power up special for the Last Bullet game mode, it increases
@@ -223,7 +222,7 @@ class PowerEffectsManager:
             self.increase_bullet_count,
             self.increase_missiles_num,
         ]
-        if self.settings.gm.last_bullet:
+        if self.settings.game_modes.last_bullet:
             power_ups.append(self.increase_bullets_remaining)
             power_ups.remove(self.increase_bullet_count)
         return power_ups
@@ -237,7 +236,7 @@ class PowerEffectsManager:
             self.alien_upgrade,
             self.decrease_ship_speed,
         ]
-        if not self.settings.gm.last_bullet:
+        if not self.settings.game_modes.last_bullet:
             penalties += [self.increase_alien_numbers, self.increase_alien_hp]
 
         return penalties

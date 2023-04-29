@@ -110,3 +110,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * New sound effects for aliens being destroyed.
 * The code has been refactored to enhance compatibility with both the singleplayer and multiplayer versions of the game. And by doing this, the duplicated code in the Singleplayer class has been reduced.
 * Fixed a bug that caused some buttons to remain clickable even when they were not visible on the screen.
+* Moved sound related code from the main game class into a new SoundManager class to improve code maintainability
