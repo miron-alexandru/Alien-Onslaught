@@ -56,9 +56,8 @@ class GameModesManager:
         """Create bullets for the normal game."""
         if self.stats.level in BOSS_LEVELS:
             bullets_manager(1, 500, 500)
-
         else:
-            bullets_manager(4, 4500, 7000)
+            bullets_manager(self.settings.alien_bullets_num, 500, 7000)
 
 
     def meteor_madness(self, create_asteroids, update_asteroids, collision_handler,
@@ -78,10 +77,11 @@ class GameModesManager:
                 self.game.last_level_time = current_time
                 prepare_level()
 
-    def last_bullet(self, thunderbird, phoenix):
+    def last_bullet(self, thunderbird, phoenix, asteroid_handler):
         """Starts the Last Bullet game mode in which the players must fight aliens
         but they have a limited number of bullets, when a player remains with no bullets
         he dies, when both players are out of bullets, the game is over."""
+        asteroid_handler(start_at_level_7=True)
 
         aliens_remaining = len(self.game.aliens.sprites())
 

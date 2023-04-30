@@ -111,3 +111,5 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * The code has been refactored to enhance compatibility with both the singleplayer and multiplayer versions of the game. And by doing this, the duplicated code in the Singleplayer class has been reduced.
 * Fixed a bug that caused some buttons to remain clickable even when they were not visible on the screen.
 * Moved sound related code from the main game class into a new SoundManager class to improve code maintainability
+* Removed the player position tracking feature from alien bullets because it was making the game less enjoyable.
+* Added new sound tracks for the Boss Rush game mode.

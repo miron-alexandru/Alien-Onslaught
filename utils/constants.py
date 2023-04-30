@@ -305,6 +305,11 @@ LEVEL_SOUNDS = {
     range(25, 9999): "sounds/level/battle_four.wav",
 }
 
+BOSS_RUSH_MUSIC = {
+    range(1, 5): "sounds/boss_rush/first_phase.wav",
+    range(6, 9): "sounds/boss_rush/second_phase.wav",
+    range(10, 15): "sounds/boss_rush/third_phase.wav",
+}
 
 # Dict used to map levels to alien images
 LEVEL_PREFIX = {

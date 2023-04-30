@@ -2,7 +2,6 @@
 managing aliens and boss alien bullets."""
 
 import random
-import math
 import pygame
 
 from pygame.sprite import Sprite
@@ -16,15 +15,13 @@ class AlienBullet(Sprite):
 
     bullet_images = load_alien_bullets()
 
-    def __init__(self, game, target_ship=None):
+    def __init__(self, game):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
         self.image = self.bullet_images['alien_bullet']
         self.rect = self.image.get_rect()
         self._choose_random_alien(game)
-        self.target_ship = target_ship
-
 
     def _choose_random_alien(self, game):
         """Choose a random alien as the source of the bullet"""
@@ -35,27 +32,12 @@ class AlienBullet(Sprite):
 
     def update(self):
         """Update bullet position"""
-        if self.target_ship:
-            # Check if bullet has passed the target ship's y-coordinate
-            if self.rect.y > self.target_ship.rect.centery:
-                # Move the bullet downwards
-                self.rect.y += self.settings.alien_bullet_speed
-                return
-
-            # Update bullet position based on target ship's location
-            x_diff = self.target_ship.rect.centerx - self.rect.centerx
-            y_diff = self.target_ship.rect.centery - self.rect.centery
-            angle = math.atan2(y_diff, x_diff)
-            move_x = math.cos(angle) * self.settings.alien_bullet_speed
-            self.rect.x += move_x
-
-        # Update bullet position if no target ship is set
-        self.rect.y += self.settings.alien_bullet_speed
+        self.y_pos += self.settings.alien_bullet_speed
+        self.rect.y = self.y_pos
 
     def draw(self):
         """Draw the bullet"""
         self.screen.blit(self.image, self.rect)
-
 
 
 class BossBullet(Sprite):
@@ -103,7 +85,6 @@ class BossBullet(Sprite):
         self.screen.blit(self.image, self.rect)
 
 
-
 class AlienBulletsManager:
     """The AlienBulletsManager manages the creation and update for the normal
     and boss bullets in the game."""
@@ -120,16 +101,13 @@ class AlienBulletsManager:
         self.last_alien_bullet_time = 0
 
 
-    def _create_alien_bullet(self, alien, target_ship):
-        """Create an alien bullet at the specified alien rect,
-        targeting the given ship.
-        """
+    def _create_alien_bullet(self, alien):
+        """Create an alien bullet at the specified alien rect"""
         # create different bullets for bosses
         if isinstance(alien, BossAlien):
             bullet = BossBullet(self, alien)
         else:
             bullet = AlienBullet(self)
-            bullet.target_ship = target_ship
         bullet.rect.centerx = alien.rect.centerx
         bullet.rect.bottom = alien.rect.bottom
         self.alien_bullet.add(bullet)
@@ -143,20 +121,14 @@ class AlienBulletsManager:
         # calculate the time since any alien fired a bullet
         if current_time - self.last_alien_bullet_time >= bullet_int:
             self.last_alien_bullet_time = current_time
-            if valid_ships := [
-                ship for ship in self.game.ships if ship.state.alive
-            ]:
-                aliens = random.sample(self.aliens.sprites(), k=min(num_bullets,
-                                                            len(self.aliens.sprites())))
-                for alien in aliens:
-                    # calculate the time since a specific alien fired a bullet
-                    if (alien.last_bullet_time == 0 or
-                    current_time - alien.last_bullet_time >= alien_int):
-                        alien.last_bullet_time = current_time
-                        target_ship = random.choice(valid_ships)
-                        self._create_alien_bullet(alien, target_ship)
-
-
+            aliens = random.sample(self.aliens.sprites(), k=min(num_bullets,
+                                                                     len(self.aliens.sprites())))
+            for alien in aliens:
+                # calculate the time since a specific alien fired a bullet
+                if (alien.last_bullet_time == 0 or
+                current_time - alien.last_bullet_time >= alien_int):
+                    alien.last_bullet_time = current_time
+                    self._create_alien_bullet(alien)
 
     def update_alien_bullets(self):
         """Update alien bullets and remove bullets that went off screen"""

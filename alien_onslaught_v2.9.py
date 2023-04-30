@@ -14,13 +14,12 @@ from game_logic.game_stats import GameStats
 from game_logic.collision_detection import CollisionManager
 from game_logic.input_handling import PlayerInput
 from game_logic.game_modes import GameModesManager
-
 from sounds.sounds_manager import SoundManager
 
 from utils.game_utils import (
     display_high_scores, resize_image,
     display_game_modes_description,
-    set_sounds_volume, play_sound
+    play_sound
 )
 from utils.constants import (
     GAME_CONSTANTS, BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
@@ -148,13 +147,13 @@ class AlienOnslaught:
             self.screen.blit(surface, self.buttons.t2_rects[i])
 
     def start_single_player_game(self):
-        """Starts single player game"""
+        """Creates and starts a new single player game instance"""
         single_player_game = SingleplayerAlienOnslaught()
         single_player_game.sound_manager.load_sounds('level_sounds')
         single_player_game.run_game()
 
     def start_multiplayer_game(self):
-        """Starts multiplayer game"""
+        """Creates and starts a new multiplayer game instance"""
         multiplayer_game = AlienOnslaught()
         multiplayer_game.sound_manager.load_sounds('level_sounds')
         multiplayer_game.run_game()
@@ -197,9 +196,8 @@ class AlienOnslaught:
 
     def _handle_game_logic(self):
         """Handle the game logic for each game iteration."""
-        self.start_game_mode()
+        self.apply_game_behaviors()
         self._handle_level_progression()
-        self._handle_normal_game()
 
         self.powers_manager.manage_power_downs()
         self.powers_manager.create_powers()
@@ -208,6 +206,7 @@ class AlienOnslaught:
                                 self._apply_powerup_or_penalty, self._health_power_up,
                                 self._weapon_power_up)
 
+        self.gm_manager.create_normal_level_bullets(self.alien_bullets_manager.create_alien_bullets)
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(self._thunderbird_ship_hit,
                                                             self._phoenix_ship_hit)
@@ -224,7 +223,7 @@ class AlienOnslaught:
 
 
     def _handle_level_progression(self):
-        """Handles the progression of levels in the game, for different game modes."""
+        """Handles the progression of levels in the game for different game modes."""
         if self.settings.game_modes.boss_rush and self.stats.level == 16:
             self.stats.game_active = False
             return
@@ -307,7 +306,7 @@ class AlienOnslaught:
             self.ui_options.resizable = False
 
     def _handle_background_change(self):
-        """Change the background at different levels."""
+        """Change the background image based on the current level."""
         bg_images = {
             1: self.reset_bg,
             9: self.second_bg,
@@ -327,15 +326,15 @@ class AlienOnslaught:
                     self.pause_time += pause_end_time - pause_start_time
                     break
 
-    def _handle_asteroids(self, create_when_7=True, always=False):
+    def _handle_asteroids(self, start_at_level_7=True, always=False):
         """Create, update, and check collisions for asteroids.
         Args:
-        create_when_7 (bool, optional): Whether to create asteroids when 
+        start_at_level_7 (bool, optional): Whether to create asteroids when 
         the current level is 7 or above.
         Defaults to True.
         always (bool, optional): Whether to always create and update asteroids.
         Defaults to False."""
-        if always or (create_when_7 and self.stats.level >= 7):
+        if always or (start_at_level_7 and self.stats.level >= 7):
             self.asteroids_manager.create_asteroids()
             self.asteroids_manager.update_asteroids()
             self.collision_handler.check_asteroids_collisions(self._thunderbird_ship_hit,
@@ -345,15 +344,11 @@ class AlienOnslaught:
         if self.settings.game_modes.boss_rush:
             self.gm_manager.update_boss_rush_info()
             return
+
         self.gm_manager.update_normal_boss_info()
 
-    def _handle_normal_game(self):
-        """Handle behaviors for different levels."""
-        self._handle_asteroids(create_when_7=True)
-        self.gm_manager.create_normal_level_bullets(self.alien_bullets_manager.create_alien_bullets)
-
-    def start_game_mode(self):
-        """Starts the selected game mode."""
+    def apply_game_behaviors(self):
+        """Applies the game behaviors for the currently selected game mode."""
         if self.settings.game_modes.endless_onslaught:
             self.gm_manager.endless_onslaught(
                 self.aliens_manager.create_fleet, self._handle_asteroids)
@@ -364,14 +359,19 @@ class AlienOnslaught:
                 self._handle_asteroids, self.alien_bullets_manager.create_alien_bullets)
         elif self.settings.game_modes.meteor_madness:
             self.gm_manager.meteor_madness(
-                        self.asteroids_manager.create_asteroids,
-                        self.asteroids_manager.update_asteroids,
-                        self.collision_handler.check_asteroids_collisions,
-                        self._prepare_asteroids_level,
-                        self._thunderbird_ship_hit,
-                        self._phoenix_ship_hit)
+                self.asteroids_manager.create_asteroids,
+                self.asteroids_manager.update_asteroids,
+                self.collision_handler.check_asteroids_collisions,
+                self._prepare_asteroids_level,
+                self._thunderbird_ship_hit,
+                self._phoenix_ship_hit)
         elif self.settings.game_modes.last_bullet:
-            self.gm_manager.last_bullet(self.thunderbird_ship, self.phoenix_ship)
+            self.gm_manager.last_bullet(self.thunderbird_ship,
+                                        self.phoenix_ship,
+                                        self._handle_asteroids)
+        else:
+            self._handle_asteroids(start_at_level_7=True)  # Handle asteroids for normal game
+
 
     def _handle_alien_creation(self):
         """Choose what aliens to create for every game mode."""
@@ -422,7 +422,7 @@ class AlienOnslaught:
             self.score_board.render_scores()
 
     def _apply_powerup_or_penalty(self, player):
-        """Powers the specified player"""
+        """Powers up or applies a penalty on the specified player"""
         powerup_choices = self.powers_manager.get_powerup_choices()
         penalty_choices = self.powers_manager.get_penalty_choices()
         # randomly select one of the powers and activate it.
@@ -454,17 +454,17 @@ class AlienOnslaught:
         play_sound(self.sound_manager.game_sounds, 'weapon')
 
     def _thunderbird_ship_hit(self):
-        """Respond to the Thunderbird ship being hit by an alien, bullet or asteroid."""
+        """Respond to the Thunderbird ship being hit."""
         if self.stats.thunderbird_hp >= 0:
             self.destroy_ship(self.thunderbird_ship)
 
     def _phoenix_ship_hit(self):
-        """Respond to the Phoenix ship being hit by an alien, bullet or asteroid."""
+        """Respond to the Phoenix ship being hit."""
         if self.stats.phoenix_hp >= 0:
             self.destroy_ship(self.phoenix_ship)
 
     def destroy_ship(self, ship):
-        """Destroy the given ship and center it."""
+        """Destroy the given ship."""
         ship.explode()
         play_sound(self.sound_manager.game_sounds, 'explode')
         ship.state.shielded = False
@@ -495,8 +495,8 @@ class AlienOnslaught:
             self._display_game_over()
 
     def _display_game_over(self):
-        """Display the game over on screen and save the high score
-        for the active game mode"""
+        """Display the game over on screen play the game over sound
+        and save the high score for the active game mode"""
         self._set_game_over()
         self.screen.blit(self.settings.game_over, self.game_over_rect)
         self._reset_game_objects()
@@ -519,7 +519,7 @@ class AlienOnslaught:
                                         game_over_rect.width, game_over_rect.height)
 
 
-    def _reset_level(self):
+    def _prepare_level(self):
         """Common level progression handler"""
         self._reset_game_objects()
         self.settings.increase_speed()
@@ -530,12 +530,12 @@ class AlienOnslaught:
 
     def _prepare_next_level(self):
         """Level progression handler"""
-        self._reset_level()
+        self._prepare_level()
         self._handle_boss_stats()
 
     def _prepare_last_bullet_level(self):
         """Level progression handler for the Last Bullet game mode"""
-        self._reset_level()
+        self._prepare_level()
         self._prepare_last_bullet_bullets()
 
     def _prepare_asteroids_level(self):
@@ -565,16 +565,18 @@ class AlienOnslaught:
                 group.empty()
 
     def _reset_ships(self):
-        """Reset the ships by playing the warp animation and centering them."""
+        """Resets ships to their initial state, updates missiles number
+        and plays the warp sound effect."""
         for ship in self.ships:
             ship.reset_ship_state()
             ship.center_ship()
             ship.start_warp()
             ship.update_missiles_number()
+
         play_sound(self.sound_manager.game_sounds, 'warp')
 
     def _display_pause(self):
-        """Display the Pause image on screen."""
+        """Display the pause screen."""
         pause_rect = self.settings.pause.get_rect()
         pause_rect.centerx = self.screen.get_rect().centerx
         pause_rect.centery = self.screen.get_rect().centery
@@ -600,6 +602,7 @@ class AlienOnslaught:
         self.settings.dynamic_settings()
         self.stats.game_active = True
         self.ui_options.high_score_saved = False
+        self.ui_options.game_over_sound_played = False
 
         # Clear the screen of remaining aliens, bullets, asteroids and powers.
         self._reset_game_objects()
@@ -630,11 +633,10 @@ class AlienOnslaught:
     def _prepare_last_bullet_bullets(self):
         """Prepare the number of bullets in the Last Bullet game mode
         based on the level"""
-        available_bullets = (
-            AVAILABLE_BULLETS_MAP_SINGLE.get(self.stats.level, 50)
-            if self.singleplayer
-            else AVAILABLE_BULLETS_MAP.get(self.stats.level, 50)
-        )
+        level = self.stats.level
+        available_bullets = (AVAILABLE_BULLETS_MAP_SINGLE.get(level, 50)
+                             if self.singleplayer else
+                             AVAILABLE_BULLETS_MAP.get(level, 50))
         for ship in self.ships:
             ship.remaining_bullets = available_bullets
 
