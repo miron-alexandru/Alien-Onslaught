@@ -112,4 +112,5 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Fixed a bug that caused some buttons to remain clickable even when they were not visible on the screen.
 * Moved sound related code from the main game class into a new SoundManager class to improve code maintainability
 * Removed the player position tracking feature from alien bullets because it was making the game less enjoyable.
-* Added new sound tracks for the Boss Rush game mode.
+* Added new background music for the Boss Rush and Endless Onslaught game modes.
+* The intensity of the alien's firepower increases in correlation with the game level and/or selected difficulty.

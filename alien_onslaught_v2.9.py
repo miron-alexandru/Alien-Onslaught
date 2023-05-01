@@ -527,6 +527,8 @@ class AlienOnslaught:
         self.score_board.prep_level()
         self._handle_alien_creation()
         self.sound_manager.prepare_level_music()
+        self.gm_manager.set_max_alien_bullets(self.settings.speedup_scale)
+        self.gm_manager.check_alien_bullets_num()
 
     def _prepare_next_level(self):
         """Level progression handler"""

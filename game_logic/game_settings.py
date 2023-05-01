@@ -74,7 +74,8 @@ class Settings:
         self.last_bullet_rows = 2
         self.aliens_num = 8
         self.alien_direction = 1
-        self.alien_bullets_num = 1
+        self.alien_bullets_num = 2
+        self.max_alien_bullets = 8
 
         # Bosses Settings
         self.boss_hp = 25 if self.game_modes.boss_rush else 50

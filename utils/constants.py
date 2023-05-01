@@ -265,7 +265,6 @@ normal_image_map = {
 }
 
 
-
 SHIPS = {
     'thunderbird': 'images/ships/ship1.png',
     'phoenix': 'images/ships/ship4.png',
@@ -302,13 +301,17 @@ LEVEL_SOUNDS = {
     range(1, 8): "sounds/level/battle_one.wav",
     range(9, 16): "sounds/level/battle_two.wav",
     range(17, 24): "sounds/level/battle_three.wav",
-    range(25, 9999): "sounds/level/battle_four.wav",
+    range(25, 27): "sounds/level/battle_four.wav",
 }
 
 BOSS_RUSH_MUSIC = {
     range(1, 5): "sounds/boss_rush/first_phase.wav",
     range(6, 9): "sounds/boss_rush/second_phase.wav",
     range(10, 15): "sounds/boss_rush/third_phase.wav",
+}
+
+ENDLESS_SOUNDTRACK = {
+    range(1, 3): "sounds/endless/endless.mp3"
 }
 
 # Dict used to map levels to alien images

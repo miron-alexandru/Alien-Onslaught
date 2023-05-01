@@ -49,7 +49,7 @@ class GameModesManager:
         if self.stats.level < 10:
             bullets_manager(1, 500, 500)
         else:
-            bullets_manager(1, 200, 200)
+            bullets_manager(1, 75, 350)
 
 
     def create_normal_level_bullets(self, bullets_manager):
@@ -59,6 +59,17 @@ class GameModesManager:
         else:
             bullets_manager(self.settings.alien_bullets_num, 500, 7000)
 
+    def set_max_alien_bullets(self, difficulty):
+        """Set the maximum number of alien bullets based on difficulty."""
+        if difficulty == DIFFICULTIES['MEDIUM']:
+            self.settings.max_alien_bullets = 9
+        elif difficulty == DIFFICULTIES['HARD']:
+            self.settings.max_alien_bullets = 10
+
+    def check_alien_bullets_num(self):
+        """Increase alien bullets number every 3 levels, up to a maximum limit."""
+        if self.stats.level % 3 == 0 and self.settings.alien_bullets_num < self.settings.max_alien_bullets:
+            self.settings.alien_bullets_num += 1
 
     def meteor_madness(self, create_asteroids, update_asteroids, collision_handler,
                         prepare_level, thunderbird_hit, phoenix_hit):
