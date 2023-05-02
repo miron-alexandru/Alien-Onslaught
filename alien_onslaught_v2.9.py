@@ -305,6 +305,14 @@ class AlienOnslaught:
             pygame.display.set_mode((info.current_w, info.current_h))
             self.ui_options.resizable = False
 
+    def kill_players(self):
+        self.stats.thunderbird_hp -= 4
+        self.stats.phoenix_hp -=4
+
+    def kill_aliens(self):
+        for alien in self.aliens:
+            alien.kill()
+
     def _handle_background_change(self):
         """Change the background image based on the current level."""
         bg_images = {
@@ -400,10 +408,9 @@ class AlienOnslaught:
             new_bullets = [bullet_class(self) for _ in range(num_bullets)]
             bullets.add(new_bullets)
             for i, new_bullet in enumerate(new_bullets):
-                offset = 30 * (i - (num_bullets // 2))
+                offset = 30 * (i - (num_bullets - 1) / 2)
                 new_bullet.rect.centerx = ship.rect.centerx + offset
                 new_bullet.rect.centery = ship.rect.centery + offset
-
                 if self.settings.game_modes.last_bullet:
                     ship.remaining_bullets -= 1
                     self.score_board.render_bullets_num()
@@ -567,13 +574,15 @@ class AlienOnslaught:
                 group.empty()
 
     def _reset_ships(self):
-        """Resets ships to their initial state, updates missiles number
-        and plays the warp sound effect."""
+        """Resets ships to their initial state, updates missiles number,
+        resets the player weapon and plays the warp sound effect."""
         for ship in self.ships:
             ship.reset_ship_state()
             ship.center_ship()
             ship.start_warp()
             ship.update_missiles_number()
+        # reset player weapons
+        self.bullets_manager.reset_weapons()
 
         play_sound(self.sound_manager.game_sounds, 'warp')
 

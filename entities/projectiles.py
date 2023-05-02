@@ -91,7 +91,12 @@ class BulletsManager:
                 if projectile.rect.bottom <= 0:
                     projectiles.remove(projectile)
 
-
+    def reset_weapons(self):
+        """Reset the weapon to its original value for each player."""
+        for player in self.weapons:
+            default_weapon = "thunderbolt" if player == "thunderbird" else "firebird"
+            self.weapons[player]["current"] = default_weapon
+            self.weapons[player]["weapon"] = pygame.image.load(WEAPONS[default_weapon])
 
 class Missile(Sprite):
     """The Missile class represents a missile object in the game."""

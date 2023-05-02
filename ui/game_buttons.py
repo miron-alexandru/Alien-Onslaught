@@ -226,7 +226,7 @@ class GameButtons:
 
     def handle_delete_button(self):
         """Delete all high scores for the current game mode."""
-        game_mode = self.game.settings.gm.game_mode or 'normal'
+        game_mode = self.game.settings.game_modes.game_mode or 'normal'
         high_score_key = GAME_MODE_SCORE_KEYS.get(game_mode, 'high_scores')
         self.game.score_board.delete_high_scores(high_score_key)
 

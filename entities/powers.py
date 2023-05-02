@@ -130,6 +130,10 @@ class PowerEffectsManager:
         for alien in self.game.aliens:
             alien.hit_count -= 1
 
+    def increase_asteroid_freq(self, _=None):
+        """Increases asteroid frequency, used only in the Meteor Madness game mode."""
+        self.settings.asteroid_freq += 100
+
     # Power Ups
     def bonus_points(self, player):
         """Increases the points for the specified player"""
@@ -169,6 +173,7 @@ class PowerEffectsManager:
     def increase_missiles_num(self, player):
         """Increases the number of missiles for the specified player."""
         getattr(self, f"{player}_ship").missiles_num += 1
+        self.score_board.render_scores()
 
     def draw_ship_shield(self, player):
         """Activates the shield on the specified player"""
@@ -198,7 +203,7 @@ class PowerEffectsManager:
         """Set the power down states of the ship to False after a period of time."""
         for ship in self.game.ships:
             if ship.state.reverse or ship.state.disarmed:
-                power_down_time = 20000
+                power_down_time = 15000
                 current_time = pygame.time.get_ticks()
                 if current_time > self.last_power_down_time + power_down_time:
                     self.last_power_down_time = current_time
@@ -225,6 +230,16 @@ class PowerEffectsManager:
         if self.settings.game_modes.last_bullet:
             power_ups.append(self.increase_bullets_remaining)
             power_ups.remove(self.increase_bullet_count)
+        elif self.settings.game_modes.meteor_madness:
+            power_ups = [
+            self.increase_ship_speed,
+            self.draw_ship_shield,
+            self.bonus_points,
+            self.invincibility,
+            self.change_ship_size,
+            self.increase_missiles_num
+        ]
+
         return power_ups
 
 
@@ -238,5 +253,11 @@ class PowerEffectsManager:
         ]
         if not self.settings.game_modes.last_bullet:
             penalties += [self.increase_alien_numbers, self.increase_alien_hp]
+        if self.settings.game_modes.meteor_madness:
+            penalties = [
+            self.reverse_keys,
+            self.decrease_ship_speed,
+            self.increase_asteroid_freq,
+        ]
 
         return penalties
