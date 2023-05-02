@@ -4,7 +4,6 @@
 - The game offers a range of game modes (e.g.: Boss Rush, Endless Onslaught), including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased speed, bullet speed, and bullets allowed, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, Boss Fights, and more other features.
 
 ## Game Images:
-# More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/images/game_images)
 ![Menu](images/game_images/menu.PNG)
 ![Menu](images/game_images/menu2.PNG)
 ![Gameplay](images/game_images/game_modes.PNG)
@@ -12,6 +11,7 @@
 ![Gameplay](images/game_images/normal3.PNG)
 ![Gameplay](images/game_images/boss_fight.PNG)
 ![HighScores](images/game_images/high_scores.PNG)
+### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/images/game_images)
 
 ## Alien-Onslaught Changelog
 
