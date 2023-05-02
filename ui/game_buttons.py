@@ -5,17 +5,21 @@ the buttons and displays the controls used in the game.
 import sys
 import pygame
 
-from utils.constants import BUTTON_NAMES, GAME_MODE_SCORE_KEYS, DIFFICULTIES
-from utils.game_utils import load_button_imgs, display_controls
+from utils.constants import (
+    BUTTON_NAMES, GAME_MODE_SCORE_KEYS,
+    DIFFICULTIES, GAME_MODES_DESCRIPTIONS
+)
+from utils.game_utils import load_button_imgs, display_controls, display_game_modes_description
 
 
 class Button:
     """A class that manages the button"""
-    def __init__(self, game, image_loc, pos, center=False):
+    def __init__(self, game, image_loc, pos, description='', center=False):
         """Initialize button attributes."""
         self.screen = game.screen
         self.screen_rect = self.screen.get_rect()
         self.visible = False  # variable used for buttons that need to be visible
+        self.description = description
 
         # Load button image and scale it to the desired size.
         self.image = pygame.image.load(image_loc)
@@ -42,12 +46,17 @@ class Button:
         """Draws the button if it is visible."""
         self.screen.blit(self.image, self.rect)
 
+    def show_button_info(self):
+        """Display the information about the button on the screen.
+        This method is mainly used for displaying the description for the game modes.
+        """
+        display_game_modes_description(self.screen, self.description)
 
 
 class GameButtons:
     """This class creates the buttons for the game.
     Contains the methods for handling every button action, 
-    and displays the controls in the game menu"""
+    and displays the controls in the game menu."""
     def __init__(self, game, screen, ui_options, gm_options):
         self.screen = screen
         self.game = game
@@ -62,43 +71,73 @@ class GameButtons:
         self._create_menu_buttons()
 
     def _create_game_buttons(self):
-        """Create buttons for the game"""
-        self.play = Button(self, self.button_imgs["play_button"],(0, 0), center=True)
+        """Create buttons for the game menu."""
+        self.play = Button(self, self.button_imgs["play_button"], (0, 0), center=True)
+        # Difficulty buttons
         self.difficulty = Button(self, self.button_imgs["difficulty"],
-                            (self.play.rect.centerx - 74, self.play.rect.bottom))
+                                 (self.play.rect.centerx - 74, self.play.rect.bottom))
+        self.easy = Button(self, self.button_imgs['easy'],
+                           (self.difficulty.rect.right - 10, self.difficulty.rect.y))
+        self.medium = Button(self, self.button_imgs['medium'],
+                             (self.easy.rect.right - 5, self.easy.rect.y))
+        self.hard = Button(self, self.button_imgs['hard'],
+                           (self.medium.rect.right - 5, self.medium.rect.y))
+
+        # Game mode buttons
         self.game_modes = Button(self, self.button_imgs["game_modes"],
-                            (self.difficulty.rect.centerx - 74, self.difficulty.rect.bottom))
+                                 (self.difficulty.rect.centerx - 74, self.difficulty.rect.bottom))
         self.normal = Button(self, self.button_imgs["normal"],
-                            (self.game_modes.rect.right - 10, self.game_modes.rect.y))
+                             (self.game_modes.rect.right - 10,
+                              self.game_modes.rect.y),
+                              GAME_MODES_DESCRIPTIONS[0])
         self.endless = Button(self, self.button_imgs["endless"],
-                            (self.normal.rect.right - 5, self.normal.rect.y))
+                              (self.normal.rect.right - 5,
+                               self.normal.rect.y),
+                               GAME_MODES_DESCRIPTIONS[1])
         self.slow_burn = Button(self, self.button_imgs["slow_burn"],
-                            (self.endless.rect.right - 5, self.endless.rect.y))
+                                (self.endless.rect.right - 5,
+                                 self.endless.rect.y),
+                                 GAME_MODES_DESCRIPTIONS[2])
         self.meteor_madness = Button(self, self.button_imgs['meteor_madness'],
-                            (self.slow_burn.rect.right - 5, self.slow_burn.rect.y))
+                                     (self.slow_burn.rect.right - 5,
+                                      self.slow_burn.rect.y),
+                                      GAME_MODES_DESCRIPTIONS[3])
         self.boss_rush = Button(self, self.button_imgs['boss_rush'],
-                            (self.meteor_madness.rect.right - 5, self.meteor_madness.rect.y))
+                                (self.meteor_madness.rect.right - 5,
+                                 self.meteor_madness.rect.y),
+                                 GAME_MODES_DESCRIPTIONS[4])
         self.last_bullet = Button(self, self.button_imgs['last_bullet'],
-                            (self.boss_rush.rect.right - 5, self.boss_rush.rect.y))
+                                  (self.boss_rush.rect.right - 5,
+                                   self.boss_rush.rect.y),
+                                   GAME_MODES_DESCRIPTIONS[5])
+
+        # High scores and other menu buttons
         self.high_scores = Button(self, self.button_imgs['high_scores'],
-                            (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom))
+                                  (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom))
         self.delete_scores = Button(self, self.button_imgs['delete_scores'],
-                            (self.high_scores.rect.right - 10, self.high_scores.rect.y))
+                                    (self.high_scores.rect.right - 10, self.high_scores.rect.y))
         self.menu = Button(self, self.button_imgs["menu_button"],
-                            (self.high_scores.rect.centerx - 74, self.high_scores.rect.bottom))
+                           (self.high_scores.rect.centerx - 74, self.high_scores.rect.bottom))
         self.quit = Button(self, self.button_imgs["quit_button"],
-                            (self.menu.rect.centerx - 74, self.menu.rect.bottom))
-        self.easy = Button(self, self.button_imgs['easy'], (self.difficulty.rect.right - 10,
-                                                            self.difficulty.rect.y))
-        self.medium = Button(self, self.button_imgs['medium'], (self.easy.rect.right - 5,
-                                                            self.easy.rect.y))
-        self.hard = Button(self, self.button_imgs['hard'], (self.medium.rect.right - 5,
-                                                            self.medium.rect.y))
+                           (self.menu.rect.centerx - 74, self.menu.rect.bottom))
+
+        # Lists containing the game buttons, difficulty buttons and game mode buttons
         self.game_buttons = [self.play, self.quit, self.menu, self.difficulty, self.high_scores,
-                            self.game_modes]
+                             self.game_modes]
         self.difficulty_buttons = [self.easy, self.medium, self.hard]
         self.game_mode_buttons = [self.endless, self.normal, self.slow_burn, self.meteor_madness,
-                                self.boss_rush, self.last_bullet]
+                                  self.boss_rush, self.last_bullet]
+
+    def display_description(self):
+        """Display the description of the game mode button currently
+        hovered over by the mouse cursor."""
+        for button in self.game_mode_buttons:
+            # Create a smaller rectangle for collision detection
+            # to avoid triggering for adjacent buttons
+            collision_rect = button.rect.inflate(-10, -10)
+            if collision_rect.collidepoint(pygame.mouse.get_pos()):
+                button.show_button_info()
+
 
     def draw_difficulty_buttons(self):
         """Draw difficulty buttons on screen."""
@@ -109,6 +148,7 @@ class GameButtons:
         """Draw game mode buttons on screen."""
         for button in self.game_mode_buttons:
             button.draw_button()
+        self.display_description()
 
     def draw_buttons(self):
         """Draw buttons on screen."""
@@ -116,12 +156,12 @@ class GameButtons:
             button.draw_button()
 
     def _create_menu_buttons(self):
-        """Create the buttons for the game menu"""
+        """Create the buttons for the main menu."""
         self.single = Button(self, self.button_imgs["single_player"], (0, 0), center=True)
         self.multi = Button(self, self.button_imgs["multiplayer"],
                             (self.single.rect.centerx - 100, self.single.rect.bottom))
         self.menu_quit = Button(self, self.button_imgs["menu_quit_button"],
-                            (self.multi.rect.centerx - 100, self.multi.rect.bottom))
+                                (self.multi.rect.centerx - 100, self.multi.rect.bottom))
 
     def handle_buttons_visibility(self):
         """Handle the visibility of buttons based on the current ui options."""

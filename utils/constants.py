@@ -19,23 +19,31 @@ P2_CONTROLS = ("Phoenix controls:\n"
                 "Pause: P")
 
 
-GAME_MODES_DESCRIPTION = ("Endless Onslaught:\n"
+GAME_MODES_DESCRIPTIONS = (
+    # Normal
+    "Engage in an intense battle against waves of aliens, asteroids and also\n"
+    "boss battles, with a standard set of firepower and speed.\n"
+    "As you progress, the enemies will become more challenging but,\n"
+    "you'll have the opportunity to power up your weapons and defenses.\n\n"
+    # Endless Onslaught
     "Survive against an infinite swarm of aliens and asteroids.\n"
     "As time passes, the speed and numbers of your enemies will increase.\n\n"
-    "Slow Burn:\n"
-    "Take on the alien threat with reduced speed and firepower that\n"
-    "gradually decreases over time.\n\n"
-    "Meteor Madness:\n"
-    "Navigate through a relentless barrage of asteroids that\n"
-    "become increasingly difficult to avoid as their numbers and speed increase,\n" 
+    # Slow Burn
+    "Take on the alien threat with reduced speed and firepower that gradually\n"
+    "decreases over time.\n\n"
+    # Meteor Madness
+    "Navigate through a relentless barrage of asteroids that become\n"
+    "increasingly difficult to avoid as their numbers and speed increase,\n" 
     "and your speed is also decreasing over time.\n\n"
-    "Boss Rush:\n"
-    "Face off against a series of challenging bosses,\n"
-    "with each level presenting a new challenge\n\n"
-    "Last Bullet:\n"
+    # Boss Rush
+    "Face off against a series of challenging bosses with each level presenting\n"
+    "a new challenge.\n\n"
+    # Last Bullet
     "You must use your limited supply of bullets to fight off waves of aliens.\n"
     "If you run out of bullets, you'll become inactive and the game will be over."
 )
+
+GAME_MODES_DESCRIPTIONS = GAME_MODES_DESCRIPTIONS.split('\n\n')
 
 
 # Player2 controls

@@ -16,11 +16,7 @@ from game_logic.input_handling import PlayerInput
 from game_logic.game_modes import GameModesManager
 from sounds.sounds_manager import SoundManager
 
-from utils.game_utils import (
-    display_high_scores, resize_image,
-    display_game_modes_description,
-    play_sound
-)
+from utils.game_utils import display_high_scores, resize_image, play_sound
 from utils.constants import (
     GAME_CONSTANTS, BOSS_LEVELS, AVAILABLE_BULLETS_MAP,
     AVAILABLE_BULLETS_MAP_SINGLE, GAME_MODE_SCORE_KEYS
@@ -305,14 +301,6 @@ class AlienOnslaught:
             pygame.display.set_mode((info.current_w, info.current_h))
             self.ui_options.resizable = False
 
-    def kill_players(self):
-        self.stats.thunderbird_hp -= 4
-        self.stats.phoenix_hp -=4
-
-    def kill_aliens(self):
-        for alien in self.aliens:
-            alien.kill()
-
     def _handle_background_change(self):
         """Change the background image based on the current level."""
         bg_images = {
@@ -583,7 +571,7 @@ class AlienOnslaught:
             ship.update_missiles_number()
         # reset player weapons
         self.bullets_manager.reset_weapons()
-
+        # play warp sound
         play_sound(self.sound_manager.game_sounds, 'warp')
 
     def _display_pause(self):
@@ -708,7 +696,6 @@ class AlienOnslaught:
 
             if self.ui_options.show_game_modes:
                 self.buttons.draw_game_mode_buttons()
-                display_game_modes_description(self.screen)
 
         pygame.display.flip()
 

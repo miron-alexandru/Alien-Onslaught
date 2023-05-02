@@ -1,16 +1,17 @@
 ## Alien-Onslaught description:
-- Alien-Onslaught is an action-packed game that will test your shooting skills and reflexes. The game is set in outer space, where you must shoot fleets of aliens to reach higher levels and increase your high score. With each level, the game becomes more challenging as the aliens become stronger and faster, and more asteroids rain down from above.
+- Alien-Onslaught is an action-packed game that will test your shooting skills and reflexes. The game is set in outer space, where you must shoot fleets of aliens to reach higher levels and increase your high score. With each level, the game becomes more challenging as the aliens become stronger and faster bosses are starting to appear, and more asteroids rain down from above.
 
-- The game offers a range of game modes, including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased speed, bullet speed, and bullets allowed, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, Boss Fights, and more other features.
+- The game offers a range of game modes (e.g.: Boss Rush, Endless Onslaught), including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased speed, bullet speed, and bullets allowed, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, Boss Fights, and more other features.
 
 ## Game Images:
+# More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/images/game_images)
 ![Menu](images/game_images/menu.PNG)
 ![Menu](images/game_images/menu2.PNG)
-![HighScores](/images/game_images/high_scores.PNG)
-![Menu](images/game_images/game_modes.PNG)
+![Gameplay](images/game_images/game_modes.PNG)
 ![Gameplay](images/game_images/normal.PNG)
 ![Gameplay](images/game_images/normal3.PNG)
 ![Gameplay](images/game_images/boss_fight.PNG)
+![HighScores](images/game_images/high_scores.PNG)
 
 ## Alien-Onslaught Changelog
 
@@ -122,3 +123,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Removed the player position tracking feature from alien bullets because it was making the game less enjoyable.
 * Added new background music for the Boss Rush and Endless Onslaught game modes.
 * The intensity of the alien's firepower increases in correlation with the game level and/or selected difficulty.
+* Refactored the game modes display functionality to improve user experience. Instead of displaying the description for the game modes when the game modes button is clicked, the description for each game mode now appears when the user hovers the mouse over the corresponding button. 

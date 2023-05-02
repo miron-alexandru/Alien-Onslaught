@@ -7,7 +7,6 @@ import pygame
 from .constants import (
     P1_CONTROLS, P2_CONTROLS,
     BOSS_RUSH, ALIEN_BULLETS_IMG,
-    GAME_MODES_DESCRIPTION,
 )
 
 
@@ -197,14 +196,14 @@ def display_high_scores(game, screen, score_key):
             screen.blit(surface, rect)
 
 
-def display_game_modes_description(screen):
+def display_game_modes_description(screen, description):
     """Render game modes description on screen."""
-    _, screen_height = screen.get_size()
+    screen_width, screen_height = screen.get_size()
     font = pygame.font.SysFont('verdana', int(screen_height * 0.021))
-    text_x = 10
-    text_y = 10
+    text_x = int(screen_width * 0.56)
+    text_y = 430
     text_surfaces, text_rects = render_text(
-                        GAME_MODES_DESCRIPTION,
+                        description,
                         font,
                         'white',
                         (text_x, text_y),
