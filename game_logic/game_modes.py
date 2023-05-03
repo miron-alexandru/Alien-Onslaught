@@ -57,14 +57,14 @@ class GameModesManager:
         if self.stats.level in BOSS_LEVELS:
             bullets_manager(1, 500, 500)
         else:
-            bullets_manager(self.settings.alien_bullets_num, 500, 7000)
+            bullets_manager(self.settings.alien_bullets_num, 650, 6000)
 
     def set_max_alien_bullets(self, difficulty):
         """Set the maximum number of alien bullets based on difficulty."""
         if difficulty == DIFFICULTIES['MEDIUM']:
-            self.settings.max_alien_bullets = 9
-        elif difficulty == DIFFICULTIES['HARD']:
             self.settings.max_alien_bullets = 10
+        elif difficulty == DIFFICULTIES['HARD']:
+            self.settings.max_alien_bullets = 11
 
     def check_alien_bullets_num(self):
         """Increase alien bullets number every 3 levels, up to a maximum limit."""

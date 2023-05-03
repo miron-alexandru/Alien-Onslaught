@@ -123,4 +123,5 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Removed the player position tracking feature from alien bullets because it was making the game less enjoyable.
 * Added new background music for the Boss Rush and Endless Onslaught game modes.
 * The intensity of the alien's firepower increases in correlation with the game level and/or selected difficulty.
-* Refactored the game modes display functionality to improve user experience. Instead of displaying the description for the game modes when the game modes button is clicked, the description for each game mode now appears when the user hovers the mouse over the corresponding button. 
+* Refactored the game modes display functionality to improve user experience. Instead of displaying the description for the game modes when the game modes button is clicked, the description for each game mode now appears when the user hovers the mouse over the corresponding button.
+* Implemented a custom mouse cursor that is now displayed while navigating through both the main and game menus.

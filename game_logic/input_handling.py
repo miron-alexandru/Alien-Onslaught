@@ -127,6 +127,10 @@ class PlayerInput:
                     self.thunderbird.image = self.thunderbird.anims.ship_images[1]
                 case pygame.K_3:
                     self.thunderbird.image = self.thunderbird.anims.ship_images[2]
+                case pygame.K_4:
+                    self.game.kill_aliens()
+                case pygame.K_5:
+                    self.game.kill_players()
                 case pygame.K_z:
                     fire_missile_method(
                         self.game.thunderbird_missiles,

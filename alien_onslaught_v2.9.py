@@ -57,6 +57,7 @@ class AlienOnslaught:
         self._initialize_game_objects()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
+
         pygame.display.set_caption("Alien Onslaught")
 
 
@@ -93,17 +94,16 @@ class AlienOnslaught:
                                              self.settings.screen_height)
         self.sound_manager = SoundManager(self)
 
-
     def run_menu(self):
-        """Runs the menu screen"""
-        self.screen = pygame.display.set_mode(self.screen.get_size())
+        """Run the main menu screen"""
+        self.screen = pygame.display.set_mode(self.screen.get_size(), pygame.DOUBLEBUF)
         self.sound_manager.load_sounds('menu_sounds')
         pygame.mixer.stop()
         play_sound(self.sound_manager.menu_sounds, 'menu', loop=True)
-
         while True:
             self.handle_menu_events()
-            self.draw_menu_buttons()
+            self.draw_menu_objects()
+            self.manage_screen.draw_cursor()
             pygame.display.flip()
 
     def handle_menu_events(self):
@@ -126,8 +126,8 @@ class AlienOnslaught:
                     pygame.quit()
                     sys.exit()
 
-    def draw_menu_buttons(self):
-        """Draws buttons and controls on the menu screen"""
+    def draw_menu_objects(self):
+        """Draw the buttons, game title and controls on the menu screen"""
         self.screen.blit(self.bg_img, self.bg_img_rect)
         self.screen.blit(self.buttons.p1_controls, self.buttons.p1_controls_rect)
         self.screen.blit(self.buttons.p2_controls, self.buttons.p2_controls_rect)
@@ -186,7 +186,6 @@ class AlienOnslaught:
                 self.screen.blit(self.bg_img, [0, 0])
                 self._check_game_over()
                 self._update_screen()
-
             self.clock.tick(60)
 
 
@@ -240,7 +239,7 @@ class AlienOnslaught:
                 if self.stats.game_active:
                     self.player_input.check_keydown_events(
                                     event, self._reset_game, self.run_menu,
-                                    self._fire_missile)
+                                     self._fire_missile)
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
@@ -571,7 +570,7 @@ class AlienOnslaught:
             ship.update_missiles_number()
         # reset player weapons
         self.bullets_manager.reset_weapons()
-        # play warp sound
+
         play_sound(self.sound_manager.game_sounds, 'warp')
 
     def _display_pause(self):
@@ -660,6 +659,7 @@ class AlienOnslaught:
                  self.phoenix_missiles, self.alien_bullet, self.powers, self.asteroids]
 
         if self.singleplayer:
+            # delete phoenix related sprite groups from the list in the singleplayer mode
             del sprite_groups[2:4]
 
         for group in sprite_groups:
@@ -684,7 +684,7 @@ class AlienOnslaught:
                 self._display_pause()
 
         else:
-            # Draw buttons if game is not active
+            # Draw buttons and cursor if game is not active
             self.buttons.draw_buttons()
 
             if self.ui_options.show_difficulty:
@@ -696,6 +696,8 @@ class AlienOnslaught:
 
             if self.ui_options.show_game_modes:
                 self.buttons.draw_game_mode_buttons()
+
+            self.manage_screen.draw_cursor()
 
         pygame.display.flip()
 

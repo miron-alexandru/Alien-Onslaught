@@ -30,15 +30,20 @@ class Settings:
         """Initialize images for the game."""
         self.bg_images = load_images(BACKGROUNDS)
         self.other_images = load_images(OTHER)
+        # Background Images
         self.bg_img = self.bg_images['space']
         self.second_bg = self.bg_images['space2']
         self.third_bg = self.bg_images['space3']
         self.fourth_bg = self.bg_images['space4']
+        # Game over and pause images
         self.game_over = self.other_images['gameover']
         self.pause = self.other_images['pause']
+        # Game title and cursor images
         self.game_title = self.other_images['game_title']
         self.game_title_rect = self.game_title.get_rect()
         self.game_title_rect.y = - 270
+        self.cursor_img = self.other_images['cursor']
+        self.cursor_rect = self.cursor_img.get_rect()
 
     def _init_game_settings(self):
         """Initialize game mode settings."""
@@ -75,7 +80,7 @@ class Settings:
         self.aliens_num = 8
         self.alien_direction = 1
         self.alien_bullets_num = 2
-        self.max_alien_bullets = 8
+        self.max_alien_bullets = 9
 
         # Bosses Settings
         self.boss_hp = 25 if self.game_modes.boss_rush else 50

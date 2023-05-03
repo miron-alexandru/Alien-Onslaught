@@ -108,7 +108,8 @@ OTHER = {
     'gameover': 'images/other/gameover.png',
     'pause': 'images/other/pause.png',
     'heart': 'images/other/heart.png',
-    'game_title': 'images/other/alien_onslaught.png'
+    'game_title': 'images/other/alien_onslaught.bmp',
+    'cursor': 'images/other/cursor.bmp',
 }
 
 
