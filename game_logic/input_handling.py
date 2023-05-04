@@ -9,7 +9,6 @@ from utils.game_utils import play_sound
 
 class PlayerInput:
     """Class for handling player input events in a game."""
-
     def __init__(self, game, ui_options):
         self.game = game
         self.settings = game.settings
@@ -17,11 +16,11 @@ class PlayerInput:
         self.thunderbird = self.game.thunderbird_ship
         self.phoenix = self.game.phoenix_ship
 
-    def check_keydown_events(self, event, reset_game, run_menu,
+    def check_keydown_events(self, event, reset_game, run_menu, game_menu,
                              fire_missile_method):
         """Respond to keys being pressed."""
         match event.key:
-            # If the game is paused, check for Q, P, R, and M keys
+            # If the game is paused, check for Q, P, R, ESC and M keys
             case pygame.K_q if self.ui_options.paused:
                 play_sound(self.game.sound_manager.game_sounds, 'quit_effect')
                 pygame.time.delay(800)
@@ -33,6 +32,15 @@ class PlayerInput:
             case pygame.K_r if self.ui_options.paused:
                 play_sound(self.game.sound_manager.game_sounds, 'keypress')
                 reset_game()
+                self.ui_options.paused = not self.ui_options.paused
+            case pygame.K_ESCAPE if self.ui_options.paused:
+                pygame.mixer.stop()
+                self.game.sound_manager.load_sounds('menu_sounds')
+                play_sound(self.game.sound_manager.game_sounds, 'keypress')
+                play_sound(self.game.sound_manager.menu_sounds, 'menu', loop=True)
+                self.game.sound_manager.current_sound = 'menu'
+                self.game.return_to_menu = True
+                game_menu()
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_m if self.ui_options.paused:
                 play_sound(self.game.sound_manager.game_sounds, 'keypress')
@@ -127,10 +135,6 @@ class PlayerInput:
                     self.thunderbird.image = self.thunderbird.anims.ship_images[1]
                 case pygame.K_3:
                     self.thunderbird.image = self.thunderbird.anims.ship_images[2]
-                case pygame.K_4:
-                    self.game.kill_aliens()
-                case pygame.K_5:
-                    self.game.kill_players()
                 case pygame.K_z:
                     fire_missile_method(
                         self.game.thunderbird_missiles,

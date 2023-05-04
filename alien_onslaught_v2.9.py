@@ -57,6 +57,7 @@ class AlienOnslaught:
         self._initialize_game_objects()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
+        self.return_to_menu = False
 
         pygame.display.set_caption("Alien Onslaught")
 
@@ -80,7 +81,7 @@ class AlienOnslaught:
         self.asteroids = pygame.sprite.Group()
 
         # Managers and handlers
-        self.manage_screen = ScreenManager(self.settings, self.score_board,
+        self.screen_manager = ScreenManager(self.settings, self.score_board,
                                         self.buttons, self.screen)
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
@@ -103,7 +104,7 @@ class AlienOnslaught:
         while True:
             self.handle_menu_events()
             self.draw_menu_objects()
-            self.manage_screen.draw_cursor()
+            self.screen_manager.draw_cursor()
             pygame.display.flip()
 
     def handle_menu_events(self):
@@ -204,12 +205,14 @@ class AlienOnslaught:
         self.gm_manager.create_normal_level_bullets(self.alien_bullets_manager.create_alien_bullets)
         self.alien_bullets_manager.update_alien_bullets()
         self.collision_handler.check_alien_bullets_collisions(self._thunderbird_ship_hit,
-                                                            self._phoenix_ship_hit)
+                                                               self._phoenix_ship_hit)
         self.player_input.handle_ship_firing(self._fire_bullet)
         self.bullets_manager.update_projectiles()
         self.collision_handler.check_bullet_alien_collisions()
         self.collision_handler.check_missile_alien_collisions()
-        self.aliens_manager.update_aliens(self._thunderbird_ship_hit, self._phoenix_ship_hit)
+        self.aliens_manager.update_aliens()
+        self.collision_handler.check_alien_ship_collisions(self._thunderbird_ship_hit,
+                                                            self._phoenix_ship_hit)
 
         self.update_ship_state()
 
@@ -239,7 +242,7 @@ class AlienOnslaught:
                 if self.stats.game_active:
                     self.player_input.check_keydown_events(
                                     event, self._reset_game, self.run_menu,
-                                     self._fire_missile)
+                                     self._return_to_game_menu, self._fire_missile)
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
@@ -248,7 +251,7 @@ class AlienOnslaught:
                 self._check_buttons(mouse_pos)
             elif event.type == pygame.VIDEORESIZE:
                 self._resize_screen(event.size)
-                self.manage_screen.update_buttons()
+                self.screen_manager.update_buttons()
 
     def _check_buttons(self, mouse_pos):
         """Check for buttons being clicked and act accordingly."""
@@ -504,6 +507,13 @@ class AlienOnslaught:
 
         self._check_high_score_saved()
 
+    def _return_to_game_menu(self):
+        """End the current game, save the current high score and return to game menu."""
+        self.stats.game_active = False
+        self._reset_game_objects()
+        self.return_to_menu = False
+
+
     def _set_game_over(self):
         """Set the location of the game over image on the screen"""
         game_over_rect = self.settings.game_over.get_rect()
@@ -697,7 +707,7 @@ class AlienOnslaught:
             if self.ui_options.show_game_modes:
                 self.buttons.draw_game_mode_buttons()
 
-            self.manage_screen.draw_cursor()
+            self.screen_manager.draw_cursor()
 
         pygame.display.flip()
 
@@ -713,7 +723,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
 
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
-        self.manage_screen = ScreenManager(self.settings, self.score_board,
+        self.screen_manager = ScreenManager(self.settings, self.score_board,
                                         self.buttons, self.screen)
 
     def _reset_game(self):

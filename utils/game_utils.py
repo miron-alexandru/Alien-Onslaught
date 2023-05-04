@@ -253,7 +253,7 @@ def display_message(screen, message, duration):
     pygame.time.wait(int(duration * 1000))
 
 
-def get_player_name(screen, background_image, game_over_img, game_over_rect):
+def get_player_name(screen, background_image, game_over_img=None, game_over_rect=None):
     """Get the player name for the high score."""
 
     # Set up fonts and colors
@@ -284,7 +284,8 @@ def get_player_name(screen, background_image, game_over_img, game_over_rect):
 
         # Draw the input box and player name
         screen.blit(background_image, (0, 0))
-        screen.blit(game_over_img, game_over_rect)
+        if game_over_img is not None and game_over_rect is not None:
+            screen.blit(game_over_img, game_over_rect)
         pygame.draw.rect(screen, text_color, input_box, 1)
         text_surface = font.render(player_name, True, pygame.Color(90, 90, 90))
         screen.blit(text_surface, (input_box.x + 5, input_box.y))
@@ -296,3 +297,4 @@ def get_player_name(screen, background_image, game_over_img, game_over_rect):
         screen.blit(text_surface, (text_x, text_y))
 
         pygame.display.flip()
+

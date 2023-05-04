@@ -116,6 +116,14 @@ class CollisionManager:
         ):
             self._handle_player_collisions(phoenix_ship_collisions, 'phoenix')
 
+    def check_alien_ship_collisions(self, thunderbird_hit, phoenix_hit):
+        """Respond to collisions between aliens and ships."""
+        for ship in self.game.ships:
+            if pygame.sprite.spritecollideany(ship, self.game.aliens) and not ship.state.immune:
+                if ship is self.thunderbird_ship:
+                    thunderbird_hit()
+                else:
+                    phoenix_hit()
 
     def check_missile_alien_collisions(self):
         """Respond to missile-alien collisions."""

@@ -188,8 +188,12 @@ class ScoreBoard:
         new_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
 
         while True:
-            player_name = get_player_name(self.screen, self.game.bg_img, self.settings.game_over,
+            if self.game.return_to_menu:
+                player_name = get_player_name(self.screen, self.game.bg_img)
+            else:
+                player_name = get_player_name(self.screen, self.game.bg_img, self.settings.game_over,
                                           self.game.game_over_rect)
+
             for i, score in enumerate(scores):
                 if score['name'] == player_name:
                     message = f"A high score with the name '{player_name}' already exists."

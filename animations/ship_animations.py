@@ -1,6 +1,11 @@
-"""The Animations class in this module manages the animations for the ships"""
+"""
+The ship_animations module provides a Animations class for managing
+the animations of ships in the game. The class provides methods for creating,
+updating, and rendering ship animations.
+"""
 
 import pygame
+
 from utils.frames import (
     ship_images,
     warp_frames,
@@ -12,7 +17,7 @@ from utils.frames import (
 
 
 class Animations:
-    """A class to manage all of the animations for the ships"""
+    """A class to manage all of the animations for the ships."""
     def __init__(self, ship):
         self.ship = ship
         self.image = None
@@ -48,7 +53,7 @@ class Animations:
         self.explosion_image = self.explosion_frames[self.current_explosion_frame]
         self.explosion_rect = self.explosion_image.get_rect()
 
-        # Empower
+        # Initialize empower frames
         self.empower_frames = empower_frames
 
         self.empower_timer = 0

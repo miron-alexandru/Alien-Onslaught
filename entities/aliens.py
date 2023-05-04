@@ -1,6 +1,12 @@
 """
-Alien module
-This module contains the class for creating instances of aliens and bosses.
+The 'aliens' module contains classes for managing aliens and bosses in the game.
+
+Classes:
+    - 'Alien': A class that represents aliens in the game.
+    - 'BossAlien': A class that represents alien bosses in the game.
+    - 'AliensManager': A class that manages the creation, update and behavior of aliens and bosses.
+    - 'AlienMovement': A class that manages the movement of a single alien.
+    - 'AlienAnimation': This class manages the animation for normal aliens.
 """
 import math
 import random
@@ -12,8 +18,12 @@ from utils.game_utils import load_alien_images, load_boss_images
 from animations.other_animations import DestroyAnim, Immune
 
 class Alien(Sprite):
-    """A class to represent an alien."""
+    """A class that represents an alien."""
     def __init__(self, game):
+        """Initializes the Alien object and also creates instances of the
+        AlienMovement, AlienAnimation, DestroyAnim, and Immune classes which manage the
+        alien's movement, animation, destruction animation and immune state.
+        """
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
@@ -33,7 +43,7 @@ class Alien(Sprite):
 
 
     def _init_position(self):
-        """Set the initial position of the alien sprite."""
+        """Set the initial position of the alien."""
         self.rect = self.animation.image.get_rect()
         self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
         self.rect.y = self.rect.height
@@ -50,7 +60,9 @@ class Alien(Sprite):
         return self.rect.top <= screen_rect.top
 
     def update(self):
-        """Update alien position on screen."""
+        """Updates the position, animation, and state of the alien.
+        It also creates random movement for the alien.
+        """
         self.x_pos += self.settings.alien_speed * self.motion.direction
         self.rect.x = round(self.x_pos)
 
@@ -69,23 +81,26 @@ class Alien(Sprite):
             self.immune_state = False
 
     def destroy_alien(self):
-        """Start alien destroyed animation and start it"""
+        """Start the alien's destruction animation and draw it on the screen."""
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
 
     def upgrade(self):
-        """Gives a bonus to the alien."""
+        """Set the alien's immune state to True."""
         self.immune_state = True
         self.immune.immune_rect.center = self.rect.center
         self.immune_start_time = pygame.time.get_ticks()
 
 
 class BossAlien(Sprite):
-    """A class to represent Boss Aliens"""
+    """A class to represent alien bosses in the game."""
 
     boss_images = load_boss_images()
 
     def __init__(self, game):
+        """Initializes the BossAlien object, creates instances of AlienMovement
+        and DestroyAnim classes to manage the movement and destruction animation.
+        """
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
@@ -107,7 +122,7 @@ class BossAlien(Sprite):
         self.destroy = DestroyAnim(self)
 
     def _update_image(self, game):
-        """Change image for specific boss fight"""
+        """Change the image for specific boss fights."""
         if self.settings.game_modes.boss_rush:
             level_image_map = boss_rush_image_map
         else:
@@ -125,18 +140,18 @@ class BossAlien(Sprite):
         self.motion.update_horizontal_position()
 
     def check_edges(self):
-        """Return True if alien is at edge of screen."""
+        """Return True if boss is at edge of screen."""
         screen_rect = self.screen.get_rect()
         return self.rect.right >= screen_rect.right or self.rect.left <= 0
 
     def destroy_alien(self):
-        """Update and display destroy animation."""
+        """Set the is_alive attribute to False and display the destroy animation."""
         self.is_alive = False
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
 
     def upgrade(self):
-        """Gives a bonus to the alien."""
+        """Increase boss HP."""
         self.settings.boss_hp += 15
 
 
@@ -169,33 +184,16 @@ class AliensManager:
                 # Add the alien to the group of aliens
                 self.aliens.add(alien)
 
-
     def create_boss_alien(self):
         """Create a boss alien and add it to the aliens group."""
         boss_alien = BossAlien(self)
         self.aliens.add(boss_alien)
 
-
-    def update_aliens(self, thunderbird_hit_method, phoenix_hit_method, singleplayer=False):
-        """Check if the fleet is at an edge,
-        then update the positions of all aliens in the fleet."""
+    def update_aliens(self):
+        """Update the positions of all aliens in the fleet."""
         self._check_fleet_edges()
         self.aliens.update()
-
-        # Look for alien-ship collisions.
-        if (
-            pygame.sprite.spritecollideany(self.game.thunderbird_ship, self.aliens)
-            and not self.game.thunderbird_ship.state.immune
-        ):
-            thunderbird_hit_method()
-        if (
-            not singleplayer
-            and pygame.sprite.spritecollideany(self.game.phoenix_ship, self.aliens)
-            and not self.game.phoenix_ship.state.immune
-        ):
-            phoenix_hit_method()
-        self._check_aliens_bottom(thunderbird_hit_method, phoenix_hit_method)
-
+        self._check_aliens_bottom()
 
     def _check_fleet_edges(self):
         """Respond appropriately if any aliens have reached an edge."""
@@ -204,10 +202,11 @@ class AliensManager:
                 self._change_fleet_direction()
                 break
 
-
     def _change_fleet_direction(self):
-        """Change the direction of each alien and drop them down."""
-        # bosses are not moving down
+        """Change the direction of the fleet of aliens and move
+        them down if they reach the screen's edge.
+        Boss aliens do not move down.
+        """
         for alien in self.aliens.sprites():
             if isinstance(alien, BossAlien):
                 if alien.check_edges():
@@ -221,22 +220,20 @@ class AliensManager:
             elif alien.check_top_edges():
                 alien.rect.y += self.settings.alien_speed
 
-
-    def _check_aliens_bottom(self, thunderbird_hit_method, phoenix_hit_method):
-        """Check if an alien have reached the bottom of the screen"""
-        # if an alien reaches the bottom of the screen, both players are losing 1hp
+    def _check_aliens_bottom(self):
+        """Check if any aliens have reached the bottom of the screen"""
         screen_rect = self.screen.get_rect()
         for alien in self.aliens.sprites():
             if alien.rect.bottom >= screen_rect.bottom:
-                thunderbird_hit_method()
-                phoenix_hit_method()
                 alien.kill()
                 break
 
 
 
 class AlienMovement:
-    """A class to manage the movement of an alien."""
+    """Manages the creation, update, and behavior
+    of a fleet of aliens and bosses in a game.
+    """
     def __init__(self, alien, game):
         self.alien = alien
         self.settings = game.settings
@@ -252,8 +249,9 @@ class AlienMovement:
         }
 
     def update_horizontal_position(self):
-        """Update the horizontal position 
-        of the alien by creating random movement"""
+        """Update the horizontal position of the alien and
+        create random movement.
+        """
         now = pygame.time.get_ticks()
         if now - self.last_direction_change > self.direction_change_delay:
             # Check if alien is not near the edge of the screen
@@ -264,8 +262,9 @@ class AlienMovement:
             self.direction_change_delay = random.randint(3000, 5000) # miliseconds
 
     def update_vertical_position(self):
-        """Update the vertical position 
-        of the alien by creating random movement"""
+        """Update the vertical position of the alien and
+        create random movement.
+        """
         now = pygame.time.get_ticks()
         time = now + self.sins['time_offset']
         self.alien.rect.y = round(
@@ -276,8 +275,12 @@ class AlienMovement:
         )
 
 
+
 class AlienAnimation:
-    """This class manages alien animations"""
+    """This class manages the animation of an alien,
+    based on its level prefix. The alien frames are chosen
+    based on the current level in the game.
+    """
     frames = {}
 
     def __init__(self, game, alien):
@@ -296,7 +299,7 @@ class AlienAnimation:
         self.image = self.frames[self.current_frame]
 
     def update_animation(self):
-        """Update animation"""
+        """Update alien animation."""
         self.frame_counter += 1
         if self.frame_counter % self.frame_update_rate == 0:
             self.current_frame = (self.current_frame + 1) % len(self.frames)
@@ -304,5 +307,5 @@ class AlienAnimation:
             self.frame_counter = 0
 
     def get_current_image(self):
-        """Return the current image"""
+        """Return the current alien image."""
         return self.image
