@@ -1,6 +1,9 @@
 """
-The game_settings module contains the settings for the game such as:
-background , sounds, bullet, ships, aliens, game speed.
+The 'game_settings' module contains the Settings class which stores
+all settings for the Alien Onslaught game. This includes settings
+related to the screen, images, game modes, speed, and various entities
+such as ships, aliens, bosses, and asteroids.
+It also contains the UIOptions and GameModes dataclasses.
 """
 
 from dataclasses import dataclass
@@ -46,7 +49,10 @@ class Settings:
         self.cursor_rect = self.cursor_img.get_rect()
 
     def _init_game_settings(self):
-        """Initialize game mode settings."""
+        """This method initializes the settings
+        related to game modes and user interface options,
+        as well as other game-related settings.
+        """
         self.game_modes = GameModes()
         self.ui_options = UIOptions()
         self.speedup_scale = 0.3

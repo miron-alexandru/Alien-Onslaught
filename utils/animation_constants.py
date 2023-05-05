@@ -1,18 +1,17 @@
-"""This module contains constants used in the game, such as images and animations.
+"""
+The 'animation_constants' module contains constants used
+for different animations in the game.
 
 The constants include the following:
-- `destroy_frames`: a list of frames used for destruction animations.
-- `ship_images`: a list of images used for ship sprites.
-- `warp_frames`: a list of frames used for warp animations.
-- `shield_frames`: a list of frames used for shield animations.
-- `immune_frames`: a list of frames used for immune animations.
-- `explosion_frames`: a list of frames used for explosion animations.
-- `frames`: a list of frames used for asteroid sprites.
-- `empower_frames`: a list of frames used for empower animations.
-
-All frames are loaded using the `load_frames` function from the `game_utils` module.
+- 'destroy_frames': a list of frames used for destruction animations.
+- 'ship_images': a list of images used for ship sprites.
+- 'warp_frames': a list of frames used for warp animations.
+- 'shield_frames': a list of frames used for shield animations.
+- 'immune_frames': a list of frames used for immune animations.
+- 'explosion_frames': a list of frames used for explosion animations.
+- 'asteroid_frames': a list of frames used for asteroid sprites.
+- 'empower_frames': a list of frames used for empower animations.
 """
-
 
 from .game_utils import load_frames
 
@@ -32,10 +31,10 @@ immune_frames = []
 load_frames('immune/immune-0{}.png', 11, immune_frames, start=1)
 
 explosion_frames = []
-load_frames('explosionn/explosion1_{:04d}.png', 89, explosion_frames, start=2)
+load_frames('explosion/explosion1_{:04d}.png', 89, explosion_frames, start=2)
 
-frames = [] # asteroid frames
-load_frames('asteroid/Asteroid-A-09-{:03d}.png', 120, frames)
+asteroid_frames = []
+load_frames('asteroid/Asteroid-A-09-{:03d}.png', 120, asteroid_frames)
 
 empower_frames = []
 load_frames('empower/empower-0{}.png', 6, empower_frames, start=1)

@@ -1,4 +1,11 @@
-"""The ships module contains the class definitons for the ships in the game"""
+"""
+The 'ships' module contains classes for managing the player ships in the game.
+
+Classes:
+    - 'Thunderbird': Represents the Thunderbird ship in the game.
+    - 'Phoenix': Represents the Phoenix ship in the game.
+    - 'ShipStates': A dataclass that manages the state of the ships.
+"""
 
 from dataclasses import dataclass
 import pygame
@@ -8,7 +15,9 @@ from utils.constants import SHIPS
 
 
 class Thunderbird(Sprite):
-    """A class to manage the Thunderbird ship."""
+    """A class to manage the Thunderbird ship. This class also
+    creates instances of Animations and ShipStates class and dataclass
+    that are managing the ship's animation and state."""
     def __init__(self, game):
         """Initialize the ship and set its starting position."""
         super().__init__()
@@ -45,7 +54,6 @@ class Thunderbird(Sprite):
         self.x_pos = float(self.rect.x)
         self.y_pos = float(self.rect.y - 10)
 
-
     def update_state(self):
         """Updates the ship state and position."""
         if (self.state.immune and pygame.time.get_ticks() - self.immune_start_time >
@@ -78,9 +86,10 @@ class Thunderbird(Sprite):
         self.rect.x = int(self.x_pos)
         self.rect.y = int(self.y_pos)
 
-
     def _update_position(self):
-        """Updates the position of the ship based on the current state of movement flags."""
+        """Updates the position of the ship based 
+        on the current state of movement flags.
+        """
         direction = -1 if self.state.reverse else 1
         self.x_pos += direction * (self.moving_flags['right'] - self.moving_flags['left']) \
                     * self.settings.thunderbird_ship_speed
@@ -92,32 +101,34 @@ class Thunderbird(Sprite):
         self.x_pos = max(0, min(self.x_pos, self.screen_rect.width - self.rect.width))
         self.y_pos = max(0, min(self.y_pos, self.screen_rect.height - self.rect.height))
 
-
     def blitme(self):
-        """Draws the ship on the screen at its current location."""
+        """Draws the ship on the screen at its current location.
+        Depending on the current state of the ship,
+        it draws the corresponding animation.
+        """
         if self.state.warping:
-            # If the ship is warping, display the warp animation
+            # If the ship is warping, draw the warp animation
             self.screen.blit(self.anims.warp_frames[self.anims.warp_index], self.rect)
             return
 
         if self.state.exploding:
-            # If the ship is exploding, display the explosion
+            # If the ship is exploding, draw the explosion
             self.screen.blit(self.anims.explosion_image, self.anims.explosion_rect)
             return
 
-        # Display regular ship image
+        # Draw regular ship image
         self.screen.blit(self.image, self.rect)
 
         if self.state.shielded:
-            # Display shield if shielded
+            # Draw shield if shielded
             self.screen.blit(self.anims.shield_image, self.anims.shield_rect)
 
         if self.state.immune:
-            # Display immune image if immune
+            # Draw immune image if immune
             self.screen.blit(self.anims.immune_image, self.anims.immune_rect)
 
         if self.state.empowered:
-            # Display empower image if empowered
+            # Draw empower image if empowered
             self.screen.blit(self.anims.empower_image, self.anims.empower_rect)
 
     def center_ship(self):
@@ -131,35 +142,35 @@ class Thunderbird(Sprite):
         self.y_pos = float(self.rect.y - 10)
 
     def draw_shield(self):
-        """Turns the shield on"""
+        """Sets the shielded state to True."""
         self.state.shielded = True
         self.anims.shield_rect.center = self.rect.center
 
     def explode(self):
-        """Starts the explosion animation"""
+        """Sets the exploding state to True."""
         self.state.exploding = True
         self.anims.explosion_rect.center = self.rect.center
 
     def start_warp(self):
-        """Starts the warp animation."""
+        """Sets the warping state to True."""
         self.state.warping = True
 
     def set_immune(self):
-        """Starts the immune animation."""
+        """Sets the immuen state to True."""
         self.state.immune = True
         self.anims.immune_rect.center = self.rect.center
         self.immune_start_time = pygame.time.get_ticks()
 
     def empower(self):
-        """Start the empower effect."""
+        """Sets the empowered state to True."""
         self.state.empowered = True
 
     def update_missiles_number(self):
-        """Update the number of missiles"""
+        """Update the number of missiles."""
         self.missiles_num = self.settings.thunderbird_missiles_num
 
     def reverse_keys(self):
-        """Toggles the reverse state"""
+        """Toggles the reverse state."""
         self.state.reverse = not self.state.reverse
 
     def disarm(self):
@@ -167,12 +178,13 @@ class Thunderbird(Sprite):
         self.state.disarmed = not self.state.disarmed
 
     def scale_ship(self, scale_factor):
-        """Make the ship smaller"""
+        """Change the ship's size and set the scaled
+        state to True."""
         self.anims.change_ship_size(scale_factor)
         self.state.scaled = True
 
     def reset_ship_state(self):
-        """Reset the ship size to the original state."""
+        """Reset the ship to the original state and size."""
         self.image = pygame.image.load(SHIPS['thunderbird'])
         self.rect = self.image.get_rect()
         self.anims.reset_size()
@@ -197,7 +209,9 @@ class Phoenix(Thunderbird):
         self.missiles_num = self.settings.phoenix_missiles_num
 
     def _update_position(self):
-        """Updates the position of the ship based on the current state of movement flags."""
+        """Updates the position of the ship based 
+        on the current state of movement flags.
+        """
         direction = -1 if self.state.reverse else 1
         self.x_pos += direction * (self.moving_flags['right'] - self.moving_flags['left']) \
                     * self.settings.phoenix_ship_speed
@@ -219,7 +233,7 @@ class Phoenix(Thunderbird):
         self.missiles_num = self.settings.thunderbird_missiles_num
 
     def reset_ship_state(self):
-        """Reset the ship to the original state."""
+        """Reset the ship to the original state and size."""
         self.image = pygame.image.load(SHIPS['phoenix'])
         self.rect = self.image.get_rect()
         self.anims.reset_size()
@@ -232,7 +246,7 @@ class Phoenix(Thunderbird):
 
 @dataclass
 class ShipStates:
-    """This dataclass manages ship states"""
+    """A dataclass to manage ship states."""
     alive: bool = True
     exploding: bool = False
     shielded: bool = False

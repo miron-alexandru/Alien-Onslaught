@@ -1,12 +1,12 @@
 """
-The ship_animations module provides a Animations class for managing
+The 'ship_animations' module provides a Animations class for managing
 the animations of ships in the game. The class provides methods for creating,
 updating, and rendering ship animations.
 """
 
 import pygame
 
-from utils.frames import (
+from utils.animation_constants import (
     ship_images,
     warp_frames,
     shield_frames,

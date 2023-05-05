@@ -8,14 +8,17 @@ Classes:
     - 'AlienMovement': A class that manages the movement of a single alien.
     - 'AlienAnimation': This class manages the animation for normal aliens.
 """
+
 import math
 import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import LEVEL_PREFIX, boss_rush_image_map, normal_image_map
-from utils.game_utils import load_alien_images, load_boss_images
 from animations.other_animations import DestroyAnim, Immune
+from utils.constants import LEVEL_PREFIX, BOSS_RUSH_IMAGE_MAP, NORMAL_IMAGE_MAP
+from utils.game_utils import load_alien_images, load_boss_images
+
+
 
 class Alien(Sprite):
     """A class that represents an alien."""
@@ -124,9 +127,9 @@ class BossAlien(Sprite):
     def _update_image(self, game):
         """Change the image for specific boss fights."""
         if self.settings.game_modes.boss_rush:
-            level_image_map = boss_rush_image_map
+            level_image_map = BOSS_RUSH_IMAGE_MAP
         else:
-            level_image_map = normal_image_map
+            level_image_map = NORMAL_IMAGE_MAP
         level = game.stats.level
         image_name = level_image_map.get(level)
         if image_name is not None:
@@ -193,7 +196,6 @@ class AliensManager:
         """Update the positions of all aliens in the fleet."""
         self._check_fleet_edges()
         self.aliens.update()
-        self._check_aliens_bottom()
 
     def _check_fleet_edges(self):
         """Respond appropriately if any aliens have reached an edge."""
@@ -219,14 +221,6 @@ class AliensManager:
 
             elif alien.check_top_edges():
                 alien.rect.y += self.settings.alien_speed
-
-    def _check_aliens_bottom(self):
-        """Check if any aliens have reached the bottom of the screen"""
-        screen_rect = self.screen.get_rect()
-        for alien in self.aliens.sprites():
-            if alien.rect.bottom >= screen_rect.bottom:
-                alien.kill()
-                break
 
 
 

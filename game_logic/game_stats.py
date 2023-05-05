@@ -1,9 +1,17 @@
-"""The game_stats module contains code that manages the statistics that change during the game."""
+"""
+The 'game_stats' module contains the GameStats class
+that manages the statistics that change during the game.
+"""
+
 from utils.constants import STARTING_HP, MAX_HP
 
 
 class GameStats:
-    """The GameStats class tracks statistics for the game"""
+    """The GameStats class tracks statistics such as the current
+    health of the ships, the number of bullets for each ship,
+     the scores, and the level. It also provides methods
+    for resetting the statistics and increasing the level.
+    """
     def __init__(self, game, phoenix_ship, thunderbird_ship):
         self.settings = game.settings
         self.reset_stats(phoenix_ship, thunderbird_ship)
@@ -11,7 +19,7 @@ class GameStats:
         self.high_score = 0
 
     def reset_stats(self, phoenix_ship, thunderbird_ship):
-        """Initialize statistics that can change during the game."""
+        """Resets the statistics to their initial values."""
         phoenix_ship.state.alive = True
         thunderbird_ship.state.alive = True
         self.phoenix_hp = self.thunderbird_hp = STARTING_HP
@@ -24,5 +32,5 @@ class GameStats:
         self.high_score = 0
 
     def increase_level(self):
-        """Increases the level by one"""
+        """Increases the level by one."""
         self.level += 1

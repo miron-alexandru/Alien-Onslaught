@@ -1,4 +1,5 @@
-"""The "utils" module provides various utility functions"""
+"""The 'game_utils' module contains various utility functions."""
+
 import sys
 import os
 import json
@@ -60,30 +61,26 @@ def resize_image(image, screen_size=None):
         screen_size = pygame.display.get_surface().get_size()
     return pygame.transform.smoothscale(image, screen_size)
 
-
 def load_button_imgs(button_names):
-    """Load button images"""
+    """Load button images."""
     button_images = {}
     for name in button_names:
         filename = f"images/buttons/{name}.png"
         button_images[name] = filename
     return button_images
 
-
-def load_controls_image(image_loc, image_name, position):
-    """Loads images for controls displayed on menu screen"""
-    image = pygame.image.load(image_loc[image_name])
+def load_controls_image(image_surface, position):
+    """Loads images for controls displayed on menu screen."""
+    image = image_surface
     rect = image.get_rect(**position)
     return image, rect
 
-
 def load_boss_images():
-    """Loads and returns a dict of boss images"""
+    """Loads and returns a dict of boss images."""
     return {
         alien_name: pygame.image.load(alien_image_path)
         for alien_name, alien_image_path in BOSS_RUSH.items()
     }
-
 
 def load_alien_bullets():
     """Loads and returns a dict of alien bullet images."""
@@ -92,9 +89,8 @@ def load_alien_bullets():
         for bullet_name, bullet_image_path in ALIEN_BULLETS_IMG.items()
     }
 
-
 def render_text(text, font, color, start_pos, line_spacing, second_color=None):
-    """Render text with new_lines and tabs"""
+    """Render text with new_lines and tabs."""
     lines = text.split('\n')
 
     text_surfaces = []
@@ -117,7 +113,6 @@ def render_text(text, font, color, start_pos, line_spacing, second_color=None):
         text_rects.append(text_rect)
 
     return text_surfaces, text_rects
-
 
 def display_high_scores(game, screen, score_key):
     """Display the high scores on the screen."""
@@ -142,7 +137,6 @@ def display_high_scores(game, screen, score_key):
         for i, entry in enumerate(scores)
         if isinstance(entry, dict)
     ]
-
 
     rank_strings = [
         f"{('1st' if rank == 1 else '2nd' if rank == 2 else '3rd' if rank == 3 else rank)} {name}" 
@@ -195,7 +189,6 @@ def display_high_scores(game, screen, score_key):
         for surface, rect in zip(surfaces, rects):
             screen.blit(surface, rect)
 
-
 def display_game_modes_description(screen, description):
     """Render game modes description on screen."""
     screen_width, screen_height = screen.get_size()
@@ -212,16 +205,13 @@ def display_game_modes_description(screen, description):
     for i, surface in enumerate(text_surfaces):
         screen.blit(surface, text_rects[i])
 
-
-def display_controls(buttons, settings):
-    """Display controls on screen"""
+def display_controls(controls_frame, settings):
+    """Display controls on screen."""
     p1_controls, p1_controls_rect = load_controls_image(
-                                            buttons,
-                                            'player_controls',
+                                            controls_frame,
                                             {'topleft': (50, 220)})
     p2_controls, p2_controls_rect = load_controls_image(
-                                            buttons,
-                                            'player_controls',
+                                            controls_frame,
                                             {'topright':
                                             (settings.get_width() - 50, 220)})
 
@@ -297,4 +287,3 @@ def get_player_name(screen, background_image, game_over_img=None, game_over_rect
         screen.blit(text_surface, (text_x, text_y))
 
         pygame.display.flip()
-

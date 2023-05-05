@@ -1,5 +1,5 @@
 """
-The other_animations module provides classes for managing various animations in the game.
+The 'other_animations' module provides classes for managing various animations in the game.
 
 Classes:
 - DestroyAnim: Manages the animation for when an entity is destroyed.
@@ -7,7 +7,7 @@ Classes:
 - Immune: Manages the immune animation for aliens in the game.
 """
 
-from utils.frames import destroy_frames, missile_ex_frames, alien_immune_frames
+from utils.animation_constants import destroy_frames, missile_ex_frames, alien_immune_frames
 
 class DestroyAnim:
     """Class that manages the animation for when an entity get's destroyed."""

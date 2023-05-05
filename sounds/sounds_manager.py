@@ -1,8 +1,10 @@
-"""The sounds_manager module manages all music and sound effects in the game."""
+"""The 'sounds_manager' module contains the `SoundManager` class which manages
+different sounds in the game. 
+"""
 
 import pygame
 
-from utils.constants import ( 
+from utils.constants import (
     LEVEL_SOUNDS, MENU_SOUNDS, GAME_SOUNDS,
     BOSS_RUSH_MUSIC, ENDLESS_SOUNDTRACK
 )
@@ -10,7 +12,9 @@ from utils.game_utils import load_sound_files, set_sounds_volume, play_sound
 
 
 class SoundManager:
-    """The SoundManager class manages different sounds in the game."""
+    """This class is responsible for loading and playing various
+    sound effects and music.
+    """
     def __init__(self, game):
         self.game = game
         self.settings = game.settings
@@ -46,7 +50,9 @@ class SoundManager:
             set_sounds_volume(self.menu_sounds, 0.2)
 
     def prepare_level_music(self):
-        """Play the background music based on the current level."""
+        """This method determines the appropriate background music
+        to play based on the current game mode and level.
+        """
         if self.settings.game_modes.boss_rush:
             music_to_play = self.boss_rush_levels
         elif self.settings.game_modes.endless_onslaught:

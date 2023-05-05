@@ -1,5 +1,6 @@
 """
-The 'alien_bullets' module contains classes for managing bullets fired by aliens and bosses in the game.
+The 'alien_bullets' module contains classes for managing bullets fired
+by aliens and bosses in the game.
 
 Classes:
     - 'AlienBullet': A class to manage bullets fired by normal aliens in the game.
@@ -11,7 +12,7 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import boss_rush_bullet_map, normal_bullet_map
+from utils.constants import BOSS_RUSH_BULLET_MAP, NORMAL_BULLET_MAP
 from utils.game_utils import load_alien_bullets
 from entities.aliens import BossAlien
 
@@ -73,9 +74,9 @@ class BossBullet(Sprite):
     def _update_image(self, game):
         """Change bullet image for specific boss fights."""
         if self.settings.game_modes.boss_rush:
-            level_image_map = boss_rush_bullet_map
+            level_image_map = BOSS_RUSH_BULLET_MAP
         else:
-            level_image_map = normal_bullet_map
+            level_image_map = NORMAL_BULLET_MAP
         level = game.stats.level
         image_name = level_image_map.get(level)
         if image_name is not None:

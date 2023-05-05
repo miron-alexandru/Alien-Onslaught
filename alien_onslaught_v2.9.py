@@ -1,10 +1,19 @@
-"""The Alien Onslaught game module contains the multiplayer and singleplayer versions of the game.
+"""
 This module imports all other classes and modules required to run the game.
 
+Game description:
+    - Alien-Onslaught is an action-packed space shooter game that challenges
+your shooting skills and reflexes. You'll have to take on fleets of aliens
+to progress through increasingly challenging levels and earn a high score.
+As you play, be sure to collect ship power-ups that will enhance your gameplay.
+The game contains variety of game modes, including Boss Rush and Endless Onslaught,
+as well as both single-player and multiplayer.
 
 Author: [Miron Alexandru]
 Contact: quality_xqs@yahoo.com
+
 """
+
 import sys
 import random
 import pygame
@@ -14,7 +23,6 @@ from game_logic.game_stats import GameStats
 from game_logic.collision_detection import CollisionManager
 from game_logic.input_handling import PlayerInput
 from game_logic.game_modes import GameModesManager
-from sounds.sounds_manager import SoundManager
 
 from utils.game_utils import display_high_scores, resize_image, play_sound
 from utils.constants import (
@@ -24,7 +32,7 @@ from utils.constants import (
 )
 
 from ui.screen_manager import ScreenManager, LoadingScreen
-from ui.scoreboards import ScoreBoard, SecondScoreBoard
+from ui.scoreboards import ScoreBoard, SingleScoreBoard
 from ui.game_buttons import GameButtons
 
 from entities.ships import Thunderbird, Phoenix
@@ -33,6 +41,7 @@ from entities.aliens import AliensManager
 from entities.powers import PowerEffectsManager
 from entities.asteroid import AsteroidsManager
 from entities.projectiles import BulletsManager
+from sounds.sounds_manager import SoundManager
 
 
 class AlienOnslaught:
@@ -130,18 +139,18 @@ class AlienOnslaught:
     def draw_menu_objects(self):
         """Draw the buttons, game title and controls on the menu screen"""
         self.screen.blit(self.bg_img, self.bg_img_rect)
-        self.screen.blit(self.buttons.p1_controls, self.buttons.p1_controls_rect)
-        self.screen.blit(self.buttons.p2_controls, self.buttons.p2_controls_rect)
+        self.screen.blit(self.screen_manager.p1_controls, self.screen_manager.p1_controls_rect)
+        self.screen.blit(self.screen_manager.p2_controls, self.screen_manager.p2_controls_rect)
         self.screen.blit(self.settings.game_title, self.settings.game_title_rect)
         self.buttons.single.draw_button()
         self.buttons.multi.draw_button()
         self.buttons.menu_quit.draw_button()
 
-        for i, surface in enumerate(self.buttons.t1_surfaces):
-            self.screen.blit(surface, self.buttons.t1_rects[i])
+        for i, surface in enumerate(self.screen_manager.t1_surfaces):
+            self.screen.blit(surface, self.screen_manager.t1_rects[i])
 
-        for i, surface in enumerate(self.buttons.t2_surfaces):
-            self.screen.blit(surface, self.buttons.t2_rects[i])
+        for i, surface in enumerate(self.screen_manager.t2_surfaces):
+            self.screen.blit(surface, self.screen_manager.t2_rects[i])
 
     def start_single_player_game(self):
         """Creates and starts a new single player game instance"""
@@ -717,7 +726,7 @@ class SingleplayerAlienOnslaught(AlienOnslaught):
     """A class that manages the Singleplayer version of the game"""
     def __init__(self):
         super().__init__(singleplayer=True)
-        self.score_board = SecondScoreBoard(self)
+        self.score_board = SingleScoreBoard(self)
         self.thunderbird_ship.state.single_player = True
         self.ships = [self.thunderbird_ship]
 

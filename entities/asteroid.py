@@ -1,22 +1,27 @@
-"""The asteroid module contains the class for creating instances of asteroids in the game."""
+"""
+The 'asteroid' module contains classes for managing asteroids in the game.
+
+Classes:
+    - 'Asteroid': A class that represents the asteroids in the game.
+    - 'AsteroidsManager': A class that manages the update and creation of asteroids.
+"""
 
 import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.frames import frames
+from utils.animation_constants import asteroid_frames
 
 
 class Asteroid(Sprite):
-    """This class is responsible for managing the position
-    and animation of asteroids in the game."""
+    """A class to represent an asteroid in the game."""
     def __init__(self, game):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
         self.speed = self.settings.asteroid_speed
 
-        self.frames = frames
+        self.frames = asteroid_frames
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
 
@@ -38,14 +43,15 @@ class Asteroid(Sprite):
         self.rect.y = self.y_pos
 
     def draw(self):
-        """Draw the asteroid"""
+        """Draw the asteroid on the screen."""
         self.screen.blit(self.image, self.rect)
 
 
 
 class AsteroidsManager:
     """The AsteroidsManager class manages the creation and
-    update of the asteroids that appear on the game screen."""
+    update of the asteroids that appear in the game.
+    """
     def __init__(self, game):
         self.game = game
         self.screen = game.screen
@@ -54,20 +60,21 @@ class AsteroidsManager:
 
 
     def create_asteroids(self, frequency=random.randint(4000, 10000)):
-        """Create multiple asteroids"""
+        """Creates multiple asteroids at random intervals.
+        The frequency of asteroid creation is determined by the frequency
+        argument, which defaults to a random integer between 4000 and 10000 milliseconds.
+        """
         if self.last_asteroid_time == 0:
             self.last_asteroid_time = pygame.time.get_ticks()
 
         current_time = pygame.time.get_ticks()
-        # change the range to determine how often asteroids are created.
-        if current_time - self.last_asteroid_time >= frequency: # miliseconds
+        if current_time - self.last_asteroid_time >= frequency:
             self.last_asteroid_time = current_time
-            # create asteroid at a random location, at the top of the screen.
+            # Create an asteroid at a random location, at the top of the screen.
             asteroid = Asteroid(self)
             asteroid.rect.x = random.randint(0, self.settings.screen_width - asteroid.rect.width)
             asteroid.rect.y = random.randint(-100, -40)
             self.game.asteroids.add(asteroid)
-
 
     def update_asteroids(self):
         """Update asteroids and remove asteroids that went off screen."""

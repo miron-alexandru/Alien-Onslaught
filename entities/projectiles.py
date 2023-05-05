@@ -1,8 +1,17 @@
-"""The projectiles module contains different projectiles for the players"""
+"""
+The 'projectiles' module contains classes for managing different projectiles
+available in the game.
+
+Classes:
+    - 'Thunderbolt': A class that manages bullets for the Thunderbird ship.
+    - 'Firebird': A class that manages bullets for the Phoenix ship.
+    - 'Missile': A class that manages missles that the players have in the game.
+    - 'BulletsManager': A class that manages player bullets.
+"""
 
 import pygame
 from pygame.sprite import Sprite
-from utils.frames import missile_frames
+from utils.animation_constants import missile_frames
 from utils.constants import WEAPONS
 from animations.other_animations import MissileEx
 
@@ -24,7 +33,7 @@ class Thunderbolt(Sprite):
         self.y_pos = float(self.rect.y)
 
     def update(self):
-        """Update the bullet position on screen."""
+        """Update the bullet location on screen."""
         self.y_pos -= self.settings.thunderbird_bullet_speed
         self.rect.y = self.y_pos
 
@@ -51,55 +60,11 @@ class Firebird(Thunderbolt):
 
 
 
-class BulletsManager:
-    """The BulletsManager class manages the player bullets."""
-    def __init__(self, game):
-        self.game = game
-        self.weapons = {
-            "thunderbird": {
-                "weapon": pygame.image.load(WEAPONS['thunderbolt']),
-                "current": "thunderbolt"
-            },
-            "phoenix": {
-                "weapon": pygame.image.load(WEAPONS["firebird"]),
-                "current": "firebird"
-            }
-        }
-
-    def set_weapon(self, player, weapon_name):
-        """Change the player weapon."""
-        if weapon := self.weapons.get(player):
-            if weapon_name == weapon["current"]:
-                self.game.powers_manager.increase_bullet_count(player)
-            else:
-                weapon["weapon"] = pygame.image.load(WEAPONS[weapon_name])
-                weapon["current"] = weapon_name
-
-    def update_projectiles(self):
-        """Update position of projectiles and get rid of projectiles that went of screen."""
-        if self.game.singleplayer:
-            all_projectiles = [self.game.thunderbird_bullets, self.game.thunderbird_missiles]
-        else:
-            all_projectiles = [self.game.thunderbird_bullets, self.game.thunderbird_missiles,
-                           self.game.phoenix_bullets, self.game.phoenix_missiles]
-
-        for projectiles in all_projectiles:
-            projectiles.update()
-
-            # Get rid of projectiles that went off screen.
-            for projectile in projectiles.copy():
-                if projectile.rect.bottom <= 0:
-                    projectiles.remove(projectile)
-
-    def reset_weapons(self):
-        """Reset the weapon to its original value for each player."""
-        for player in self.weapons:
-            default_weapon = "thunderbolt" if player == "thunderbird" else "firebird"
-            self.weapons[player]["current"] = default_weapon
-            self.weapons[player]["weapon"] = pygame.image.load(WEAPONS[default_weapon])
-
 class Missile(Sprite):
-    """The Missile class represents a missile object in the game."""
+    """The Missile class represents a missile object in the game.
+    It also creates an instance of MissileEx class to manage the
+    explosion animation for the missile.
+    """
     def __init__(self, game, ship):
         super().__init__()
         self.screen = game.screen
@@ -116,7 +81,7 @@ class Missile(Sprite):
 
         self.y_pos = float(self.rect.y)
 
-        self.frame_update_rate = 5  # Update the frame once every 3 game loops
+        self.frame_update_rate = 5
         self.frame_counter = 0
 
         self.destroy_anim = MissileEx(self)
@@ -151,3 +116,53 @@ class Missile(Sprite):
     def explode(self):
         """Trigger the explosion effect."""
         self.is_destroyed = True
+
+
+
+class BulletsManager:
+    """The BulletsManager class manages the changing and update
+    of the player bullets.
+    """
+    def __init__(self, game):
+        self.game = game
+        self.weapons = {
+            "thunderbird": {
+                "weapon": pygame.image.load(WEAPONS['thunderbolt']),
+                "current": "thunderbolt"
+            },
+            "phoenix": {
+                "weapon": pygame.image.load(WEAPONS["firebird"]),
+                "current": "firebird"
+            }
+        }
+
+    def set_weapon(self, player, weapon_name):
+        """Change the player weapon."""
+        if weapon := self.weapons.get(player):
+            if weapon_name == weapon["current"]:
+                self.game.powers_manager.increase_bullet_count(player)
+            else:
+                weapon["weapon"] = pygame.image.load(WEAPONS[weapon_name])
+                weapon["current"] = weapon_name
+
+    def update_projectiles(self):
+        """Update position of projectiles and get rid of projectiles that went of screen."""
+        if self.game.singleplayer:
+            all_projectiles = [self.game.thunderbird_bullets, self.game.thunderbird_missiles]
+        else:
+            all_projectiles = [self.game.thunderbird_bullets, self.game.thunderbird_missiles,
+                           self.game.phoenix_bullets, self.game.phoenix_missiles]
+
+        for projectiles in all_projectiles:
+            projectiles.update()
+
+            for projectile in projectiles.copy():
+                if projectile.rect.bottom <= 0:
+                    projectiles.remove(projectile)
+
+    def reset_weapons(self):
+        """Reset the weapon to its original value for each player."""
+        for player, weapon_info in self.weapons.items():
+            default_weapon = "thunderbolt" if player == "thunderbird" else "firebird"
+            weapon_info["current"] = default_weapon
+            weapon_info["weapon"] = pygame.image.load(WEAPONS[default_weapon])

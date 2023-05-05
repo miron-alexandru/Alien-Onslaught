@@ -1,6 +1,6 @@
-"""Module that stores the constants for the game"""
-# Button names dict, used for loading and then creating the buttons in the game.
+"""The 'constants' module stores various constant for the game."""
 
+# Button names dict, used for loading and then creating the buttons in the game.
 BUTTON_NAMES = [
                 "play_button", "quit_button", "menu_button",
                 'difficulty', 'easy', 'medium', 'hard', 'high_scores', 'delete_scores',
@@ -9,13 +9,22 @@ BUTTON_NAMES = [
                 "menu_quit_button", 'boss_rush', 'last_bullet',
 ]
 
+#PLAYER_CONTROL
 
-# Player1 controls
+# Player2 controls
 P2_CONTROLS = ("Phoenix controls:\n"
                 "Move: Arrow Keys\n"
                 "Fire: Enter\n"
                 "Change Ship: Numpad 1, 2, 3\n"
                 "Launch Missiles: R-Ctrl\n"
+                "Pause: P")
+
+# Player1 controls
+P1_CONTROLS = ("Thunderbird controls:\n"
+                "Move: W, A, S, D\n"
+                "Fire: Space\n"
+                "Change Ship: 1, 2, 3\n"
+                "Launch Missiles: Z\n"
                 "Pause: P")
 
 
@@ -46,14 +55,6 @@ GAME_MODES_DESCRIPTIONS = (
 GAME_MODES_DESCRIPTIONS = GAME_MODES_DESCRIPTIONS.split('\n\n')
 
 
-# Player2 controls
-P1_CONTROLS = ("Thunderbird controls:\n"
-                "Move: W, A, S, D\n"
-                "Fire: Space\n"
-                "Change Ship: 1, 2, 3\n"
-                "Launch Missiles: Z\n"
-                "Pause: P")
-
 
 # Images for different parts of the game.
 BACKGROUNDS = {
@@ -63,7 +64,8 @@ BACKGROUNDS = {
     'space4': 'images/background/space4.jpg',
 }
 
-
+# Bullets map dict, used to map available bullets to each level
+# in the Last Bullet game mode.
 AVAILABLE_BULLETS_MAP = {
         1: 9,
         2: 9,
@@ -76,6 +78,7 @@ AVAILABLE_BULLETS_MAP = {
         9: 17,
         10: 25,
 }
+
 
 ALIENS_HP_MAP = {
     1: 1,
@@ -90,7 +93,7 @@ ALIENS_HP_MAP = {
     10: 3,
 }
 
-
+# Map available bullets to game level for Last Bullet, singleplayer.
 AVAILABLE_BULLETS_MAP_SINGLE = {
         1: 17,
         2: 17,
@@ -104,6 +107,7 @@ AVAILABLE_BULLETS_MAP_SINGLE = {
         10: 50,
 }
 
+# Other images used in the game.
 OTHER = {
     'gameover': 'images/other/gameover.png',
     'pause': 'images/other/pause.png',
@@ -177,7 +181,8 @@ BOSS_RUSH = {
 
 }
 
-boss_rush_image_map = {
+# Used to map boss images to game level for the boss rush
+BOSS_RUSH_IMAGE_MAP = {
                 1: 'nephilim',
                 2: 'xanathar',
                 3: 'scorpion',
@@ -194,8 +199,8 @@ boss_rush_image_map = {
                 14: 'typhon',
                 15: 'xixo',
 }
-
-boss_rush_bullet_map = {
+# Used to map boss bullets to game level for the boss rush
+BOSS_RUSH_BULLET_MAP = {
                 1: 'nephilim_bullet',
                 2: 'xanathar_bullet',
                 3: 'scorpion_bullet',
@@ -213,13 +218,15 @@ boss_rush_bullet_map = {
                 15: 'xixo_bullet',
 }
 
-normal_bullet_map = {
+
+NORMAL_BULLET_MAP = {
     15: 'scorpion_bullet',
     20: 'mothership_bullet',
     25: 'xyranth_bullet',
 }
 
-boss_rush_points_map = {
+# used to map points given by bosses in boss rush
+BOSS_RUSH_POINTS_MAP = {
             1: 1000,
             2: 1250,
             3: 1700,
@@ -236,7 +243,8 @@ boss_rush_points_map = {
             15: 10000,
 }
 
-boss_rush_hp_map = {
+# used to map the hp of bosses in boss rush
+BOSS_RUSH_HP_MAP = {
             1: 25,
             2: 50,
             3: 75,
@@ -254,20 +262,20 @@ boss_rush_hp_map = {
 
 }
 
-normal_boss_points = {
+NORMAL_BOSS_POINTS = {
     15: 5000,
     20: 7000,
     25: 10000,
 }
 
-normal_boss_hp_map = {
+NORMAL_BOSS_HP_MAP = {
     10: 50,
     15: 75,
     20: 95,
     25: 100,
 }
 
-normal_image_map = {
+NORMAL_IMAGE_MAP = {
     15: 'scorpion',
     20: 'mothership',
     25: 'xyranth',
@@ -277,7 +285,6 @@ normal_image_map = {
 SHIPS = {
     'thunderbird': 'images/ships/ship1.png',
     'phoenix': 'images/ships/ship4.png',
-
     }
 
 
@@ -323,7 +330,7 @@ ENDLESS_SOUNDTRACK = {
     range(1, 3): "sounds/endless/endless.mp3"
 }
 
-# Dict used to map levels to alien images
+# Dict used to map alien images to game level.
 LEVEL_PREFIX = {
         1: "Alien1",
         2: "Alien1",
@@ -335,7 +342,7 @@ LEVEL_PREFIX = {
         8: "Alien4",
     }
 
-
+# Various game constants.
 GAME_CONSTANTS = {
     'ENDLESS_MAX_ALIENS': 50,
     'MAX_ALIEN_SPEED': 4.0,
@@ -352,7 +359,7 @@ DIFFICULTIES = {
     'MEDIUM': 0.5,
     'HARD': 0.7
 }
-
+# used to map each key with the game mode, for saving the high scores
 GAME_MODE_SCORE_KEYS = {
                 'boss_rush': 'boss_rush_scores',
                 'endless_onslaught': 'endless_scores',

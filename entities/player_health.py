@@ -1,4 +1,7 @@
-"""The player_health module contains the class that creates the health for the player(s)"""
+"""
+The 'player_health' module contains the Heart class, which manages the health
+of the player(s) in the game by displaying a heart image on the screen.
+"""
 
 import pygame
 from pygame.sprite import Sprite
@@ -6,8 +9,7 @@ from utils.constants import OTHER
 
 
 class Heart(Sprite):
-    """This class manages the health of the player(s)
-    in the game by displaying a heart image on the screen."""
+    """Draws a heart image on the screen to represent player health."""
     def __init__(self, game):
         super().__init__()
         self.screen = game.screen
@@ -18,5 +20,5 @@ class Heart(Sprite):
         self.rect = self.image.get_rect(topleft = (0, 0))
 
     def blitme(self):
-        """Draw image"""
+        """Draw the heart image on screen."""
         self.screen.blit(self.image, self.rect)

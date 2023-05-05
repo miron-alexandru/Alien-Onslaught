@@ -3,6 +3,32 @@
 
 - The game offers a range of game modes (e.g.: Boss Rush, Endless Onslaught), including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased speed, bullet speed, and bullets allowed, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, Boss Fights, and more other features.
 
+### Requirements:
+- Python 3.7 or later
+- Pygame 2.0 or later
+
+## Controls:
+### Gameplay:
+#### Player 1:
+* Move: W, A, S, D
+* Fire: Space
+* Change Ship: 1, 2, 3
+* Launch Missiles: Z
+* Pause: P
+
+#### Player 2:
+* Move: Arrow Keys
+* Fire: Enter
+* Change Ship: Numpad 1, 2, 3
+* Launch Missiles: R-Ctrl
+* Pause: P
+
+### While the game is paused:
+* R: Restart
+* ESC: Return to game menu
+* M: Return to main menu
+* Q: Quit
+
 ## Game Images:
 ![Menu](images/game_images/menu.PNG)
 ![Menu](images/game_images/menu2.PNG)
@@ -13,7 +39,8 @@
 ![HighScores](images/game_images/high_scores.PNG)
 ### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/images/game_images)
 
-## Alien-Onslaught Changelog
+<details>
+<summary>## Alien-Onslaught Changelog</summary>
 
 ### Version 1.7:
 * Added the option to choose Singleplayer or Multiplayer mode from the Start Menu.
@@ -126,3 +153,4 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Refactored the game modes display functionality to improve user experience. Instead of displaying the description for the game modes when the game modes button is clicked, the description for each game mode now appears when the user hovers the mouse over the corresponding button.
 * Implemented a custom mouse cursor that is now displayed while navigating through both the main and game menus.
 * Players now have the ability to go back to the game menu when the game is paused.
+</details>

@@ -1,12 +1,16 @@
-"""The scoreboards module contains the class that reports the scoring information such as:
-highscore, players score, health, level."""
+"""
+The 'scoreboards' module contains the ScoreBoard and SingleScoreboard
+class for managing the score and other UI aspects of the game such as:
+scoring, player health, available missiles.
+It also manages the saving of the highscores.
+"""
 
 import json
 import pygame.font
 
 from pygame.sprite import Group
 from entities.player_health import Heart
-from utils.constants import boss_rush_image_map
+from utils.constants import BOSS_RUSH_IMAGE_MAP
 from utils.game_utils import get_player_name, display_message
 
 
@@ -38,7 +42,9 @@ class ScoreBoard:
         self.render_bullets_num()
 
     def render_scores(self):
-        """Render the scores and missiles number for the ships and display them on the screen."""
+        """Render the scores and missiles number for the ships
+        and display them on the screen.
+        """
         screen_rect = self.screen.get_rect()
         ship_scores = [("Thunderbird", self.stats.thunderbird_score),
                        ("Phoenix", self.second_stats.phoenix_score)]
@@ -87,7 +93,9 @@ class ScoreBoard:
                 self.phoenix_missiles_img_rect.right = screen_rect.right
 
     def render_high_score(self):
-        """Render the high score and display it at the center of the top of the screen."""
+        """Render the high score and display it at
+        the center of the top of the screen.
+        """
         # Calculate the rounded high score.
         high_score = round(self.stats.high_score)
 
@@ -110,15 +118,16 @@ class ScoreBoard:
             self.render_high_score()
 
     def prep_level(self):
-        """Render the current level as an image and position it at the center of the screen
-        based on the game mode."""
+        """Render the current level as an image and position it
+        at the center of the screen based on the game mode.
+        """
         level_map = {
             "endless_onslaught": "Endless Onslaught",
             "slow_burn": f"Slow Burn Level {str(self.stats.level)}",
             "meteor_madness": f"Meteor Madness Level {str(self.stats.level)}",
             "last_bullet": f"Last Bullet Level {str(self.stats.level)}",
             "boss_rush": "Boss Rush: " + \
-                boss_rush_image_map.get(self.stats.level, f'Level {str(self.stats.level)}').title()
+                BOSS_RUSH_IMAGE_MAP.get(self.stats.level, f'Level {str(self.stats.level)}').title()
         }
 
         level_str = level_map.get(self.settings.game_modes.game_mode, f"Level {str(self.stats.level)}")
@@ -133,7 +142,8 @@ class ScoreBoard:
 
     def render_bullets_num(self):
         """Renders the remaining bullets number for Thunderbird and Pheonix
-        and if they are out of bullets, displays an appropriate message."""
+        and if they are out of bullets, displays an appropriate message.
+        """
         screen_rect = self.screen.get_rect()
         bullets_num = {}
         ships = [("Thunderbird", self.game.thunderbird_ship),
@@ -178,6 +188,8 @@ class ScoreBoard:
     def save_high_score(self, score_key):
         """Save the high score to a JSON file."""
         filename = self.high_scores_file
+        if self.stats.thunderbird_score + self.second_stats.phoenix_score <= 0:
+            return
         try:
             with open(filename, 'r', encoding='utf-8') as score_file:
                 high_scores = json.load(score_file)
@@ -235,9 +247,12 @@ class ScoreBoard:
         with open(filename, 'w', encoding='utf-8') as score_file:
             json.dump(high_scores, score_file)
 
-
     def show_score(self):
-        """Draw scores, level and health to the screen."""
+        """Draw various score-related elements to the screen,
+        including player scores, the number of missiles remaining 
+        for each player, the high score, the current
+        level, and the remaining health of each player's ship.
+        """
         if not any([self.settings.game_modes.meteor_madness, self.settings.game_modes.boss_rush]):
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
             self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
@@ -257,7 +272,7 @@ class ScoreBoard:
 
 
 
-class SecondScoreBoard(ScoreBoard):
+class SingleScoreBoard(ScoreBoard):
     """A class to report scoring information for the single player mode."""
     def __init__(self, game):
         super().__init__(game)
@@ -270,7 +285,9 @@ class SecondScoreBoard(ScoreBoard):
         self.render_bullets_num()
 
     def render_scores(self):
-        """Turn the score into a rendered image."""
+        """Render the scores and missiles number for the Thunderbird
+        and display them on the screen.
+        """
         screen_rect = self.screen.get_rect()
         rounded_thunderbird_score = round(self.stats.thunderbird_score)
         thunderbird_score_str = f"Score: {rounded_thunderbird_score:,}"
@@ -296,7 +313,8 @@ class SecondScoreBoard(ScoreBoard):
 
     def update_high_score(self):
         """Updates the high score if the current score is higher and,
-        renders the new high score on screen."""
+        renders the new high score on screen.
+        """
         if self.stats.thunderbird_score  > self.stats.high_score:
             self.stats.high_score = self.stats.thunderbird_score
             self.render_high_score()
@@ -320,7 +338,9 @@ class SecondScoreBoard(ScoreBoard):
         self.thunder_bullets_num_rect.left = self.screen_rect.left + 10
 
     def show_score(self):
-        """Draw scores, level and health to the screen."""
+        """Draw scores, level number of remaining missiles 
+        and health to the screen.
+        """
         if not self.settings.game_modes.meteor_madness:
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
         if self.settings.game_modes.last_bullet:

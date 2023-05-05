@@ -1,5 +1,9 @@
-"""The game_collisions module handles the collisions in the game"""
+"""
+The 'game_collisions' module contains the CollisionManager class
+that handles the collisions in the game.
+"""
 
+import random
 import pygame
 from entities.aliens import BossAlien
 from utils.constants import ALIENS_HP_MAP
@@ -7,8 +11,8 @@ from utils.game_utils import play_sound
 
 
 class CollisionManager:
-    """The Collision Manager class manages collisions between game entities like
-    ships, aliens, bullets, and asteroids."""
+    """The Collision Manager class manages collisions
+    between game entities like ships, aliens, bullets."""
     def __init__(self, game):
         self.game = game
         self.stats = game.stats
@@ -39,7 +43,7 @@ class CollisionManager:
                     ship.state.shielded = False
 
     def check_asteroids_collisions(self, thunder_hit_method, phoenix_hit_method):
-        """Check for collisions between the ships, missiles and asteroids"""
+        """Check for collisions between the ships, missiles and asteroids."""
         # loop through each player and check if it's alive,
         # then check for collisions with asteroids and which player collided
         # and activate the corresponding method
@@ -100,7 +104,7 @@ class CollisionManager:
                 info["ship"].empower()
 
     def check_bullet_alien_collisions(self):
-        """Respond to bullet-alien collisions."""
+        """Respond to player bullet-alien collisions."""
         thunderbird_ship_collisions = pygame.sprite.groupcollide(
             self.game.thunderbird_bullets, self.game.aliens, True, False)
         phoenix_ship_collisions = pygame.sprite.groupcollide(
@@ -108,25 +112,44 @@ class CollisionManager:
 
         # Thunderbird collisions
         if thunderbird_ship_collisions:
-            self._handle_player_collisions(thunderbird_ship_collisions, 'thunderbird')
+            self._handle_alien_hits(thunderbird_ship_collisions, 'thunderbird')
 
         if (
             not self.game.singleplayer
             and phoenix_ship_collisions
         ):
-            self._handle_player_collisions(phoenix_ship_collisions, 'phoenix')
+            self._handle_alien_hits(phoenix_ship_collisions, 'phoenix')
 
     def check_alien_ship_collisions(self, thunderbird_hit, phoenix_hit):
-        """Respond to collisions between aliens and ships."""
+        """Respond to collisions between aliens and ships and also check if
+        any aliens have reached the bottom of the screen.
+        """
         for ship in self.game.ships:
             if pygame.sprite.spritecollideany(ship, self.game.aliens) and not ship.state.immune:
                 if ship is self.thunderbird_ship:
                     thunderbird_hit()
                 else:
                     phoenix_hit()
+        self._check_aliens_bottom(thunderbird_hit, phoenix_hit)
+
+    def _check_aliens_bottom(self, thunderbird_hit, phoenix_hit):
+        """Check if any aliens have reached the bottom of the screen"""
+        screen_rect = self.game.screen.get_rect()
+        for alien in self.game.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                alien.kill()
+                if self.game.singleplayer:
+                    thunderbird_hit()
+                elif self.stats.thunderbird_hp > self.stats.phoenix_hp:
+                    thunderbird_hit()
+                elif self.stats.thunderbird_hp < self.stats.phoenix_hp:
+                    phoenix_hit()
+                else:
+                    random.choice([thunderbird_hit, phoenix_hit])()
+                break
 
     def check_missile_alien_collisions(self):
-        """Respond to missile-alien collisions."""
+        """Respond to player missiles-alien collisions."""
         # Collisions with Thunderbird missiles
         thunderbird_missile_collisions = pygame.sprite.groupcollide(
             self.game.thunderbird_missiles, self.game.aliens, False, False)
@@ -145,9 +168,10 @@ class CollisionManager:
             self._handle_player_missile_collisions(phoenix_missile_collisions, 'phoenix')
             self._play_missile_sound(phoenix_missile_collisions.values())
 
-
     def _play_missile_sound(self, aliens):
-        """Helper method that plays the missile sound when colliding with normal aliens."""
+        """Helper method that plays the missile sound when
+        colliding with normal aliens.
+        """
         for alien_list in aliens:
             for alien in alien_list:
                 if not isinstance(alien, BossAlien):
@@ -155,15 +179,14 @@ class CollisionManager:
 
     def _handle_player_missile_collisions(self, player_missile_collisions, player):
         """This method handles what happens with the score and the aliens
-        after they have been hit by a player missile. It also increases the
-        hit_count of the aliens, making them stronger as the game progresses."""
+        after they have been hit by a player missile.
+        """
         for missile in player_missile_collisions.keys():
             missile.explode()
             self._check_missile_ex_collision(self.game.aliens, player, missile)
 
-
     def check_alien_bullets_collisions(self, thunder_hit_method, phoenix_hit_method):
-        """Manages collisions between the alien bullets and the players"""
+        """Manages collisions between the alien bullets and the players."""
         if not self.game.singleplayer:
             player_ships = [self.thunderbird_ship, self.phoenix_ship]
             player_methods = [thunder_hit_method, phoenix_hit_method]
@@ -180,7 +203,7 @@ class CollisionManager:
                 collision.kill()
 
     def _handle_boss_alien_collision(self, alien, player):
-        """Handles the collision between the player and the boss alien."""
+        """Handles the collision between the player and the bosses"""
         if alien.hit_count >= self.settings.boss_hp and alien.is_alive:
             self.game.sound_manager.game_sounds['boss_exploding'].set_volume(0.3)
             play_sound(self.game.sound_manager.game_sounds, 'boss_exploding')
@@ -193,7 +216,7 @@ class CollisionManager:
             self.score_board.render_scores()
             self.score_board.update_high_score()
 
-    def _handle_player_collisions(self, player_ship_collisions, player):
+    def _handle_alien_hits(self, player_ship_collisions, player):
         """This method handles what happens with the score and the aliens
         after they have been hit.It also increases the hit_count of the aliens
         making them stronger as the game progresses."""
@@ -208,10 +231,10 @@ class CollisionManager:
                     self._update_stats(alien, player)
 
     def _update_stats(self, alien, player):
-        """Update player score and remove alien"""
+        """Update player score and remove alien."""
         # when collision happen, update the stats and remove the alien that
         # collided with the bullet
-        # method used in _handle_player_collisions
+        # method used in _handle_alien_hits
         match player:
             case 'thunderbird':
                 self.stats.thunderbird_score += self.settings.alien_points

@@ -1,20 +1,32 @@
-"""This module contains a class that updates the position of different objects
-in the game"""
+"""
+The 'screen_manager' module provides classes for managing the game screen.
+
+Classes:
+    - 'ScreenManager': Manages the screen after resizing, the game controls
+    and the custom cursor.
+    - 'LoadingScreen': Manages the loading screen for the game.
+"""
 
 import pygame
+from utils.game_utils import display_controls
 
 
 class ScreenManager:
-    """This class updates the position of objects after resizing the screen."""
+    """Updates the position of game objects after resizing the screen,
+    manages the custom cursor and creates the images and positions
+    for the controls displayed on the game menu.
+    """
     def __init__(self, settings, score_board, buttons, screen):
         self.settings = settings
         self.score_board = score_board
         self.buttons = buttons
         self.screen = screen
+        self.player_controls = pygame.image.load('images/buttons/player_controls.png')
         self._initialize_cursor()
+        self._create_controls()
 
     def update_buttons(self):
-        """Update the position of objects after resize"""
+        """Updates the position of game objects after resizing the screen."""
         self.buttons.play.update_pos(self.screen.get_rect().center, y=-50)
         self.buttons.difficulty.update_pos(self.buttons.play.rect.centerx - 74,
                                            self.buttons.play.rect.bottom)
@@ -54,21 +66,33 @@ class ScreenManager:
         self.score_board.render_bullets_num()
 
     def _initialize_cursor(self):
-        """Set the normal cursor invisible and initialize the custom cursor"""
+        """Set the normal cursor invisible and initialize the custom cursor."""
         pygame.mouse.set_visible(False)
         cursor_width, cursor_height = self.screen.get_size()
         self.cursor_surface = pygame.Surface((cursor_width, cursor_height), pygame.SRCALPHA)
 
     def draw_cursor(self):
-        """Draw the custom in the location of the mouse cursor."""
+        """Draw the custom in the location of the normal cursor."""
         self.settings.cursor_rect.center = pygame.mouse.get_pos()
         self.cursor_surface.blit(self.settings.cursor_img, (0, 0))
         self.screen.blit(self.cursor_surface, self.settings.cursor_rect)
 
+    def _create_controls(self):
+        """This method creates the images and positions
+        for the controls that will be displayed on the game menu.
+        """
+        (self.p1_controls, self.p1_controls_rect,
+         self.p2_controls, self.p2_controls_rect,
+         self.t1_surfaces, self.t1_rects,
+         self.t2_surfaces, self.t2_rects) = display_controls(self.player_controls, self.screen)
+
 
 
 class LoadingScreen:
-    """The LoadingScreen class manages the loading screen for the game."""
+    """Manages the loading screen for the game, 
+    including updating the progress of the loading
+    bar and drawing it on the screen.
+    """
     def __init__(self, screen, width, height):
         self.screen = screen
         self.width = width
@@ -87,8 +111,8 @@ class LoadingScreen:
         self.draw()
 
     def draw(self):
-        """Draw the loading screen on the screen"""
-        self.screen.fill((2,24,49,255))
+        """Draw the loading screen on the screen."""
+        self.screen.fill((2, 24, 49, 255))
         pygame.draw.rect(self.screen, (255, 255, 255),
                         (self.load_bar_x, self.load_bar_y, self.load_bar_width,
                           self.load_bar_height), 2)

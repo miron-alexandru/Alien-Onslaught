@@ -1,5 +1,7 @@
-"""This is a module that defines the PlayerInput class, which is responsible for
-handling player input events in a game."""
+"""
+This is a module that defines the PlayerInput class, which is responsible for
+handling player input events in a game.
+"""
 
 import sys
 import pygame
@@ -170,7 +172,7 @@ class PlayerInput:
                         missile_class=Missile)
 
     def reset_ship_movement_flags(self):
-        """Stop movement of both Thunderbird and Phoenix ships."""
+        """Reset movement flags for the ships."""
         self.thunderbird.moving_flags['right'] = False
         self.thunderbird.moving_flags['left'] = False
         self.thunderbird.moving_flags['up'] = False
