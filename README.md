@@ -40,7 +40,7 @@
 ### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/images/game_images)
 
 <details>
-<summary>## Alien-Onslaught Changelog</summary>
+<summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 1.7:
 * Added the option to choose Singleplayer or Multiplayer mode from the Start Menu.
