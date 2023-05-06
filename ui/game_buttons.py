@@ -10,7 +10,7 @@ from utils.constants import (
     BUTTON_NAMES, GAME_MODE_SCORE_KEYS,
     DIFFICULTIES, GAME_MODES_DESCRIPTIONS
 )
-from utils.game_utils import load_button_imgs, display_controls, display_game_modes_description
+from utils.game_utils import load_button_imgs, display_game_modes_description
 
 
 class Button:
@@ -245,11 +245,12 @@ class GameButtons:
         self.gm_options.game_mode = 'last_bullet'
         self.ui_options.show_game_modes = False
 
-    def handle_difficulty_button(self, speedup_scale):
+    def handle_difficulty_button(self, speedup_scale, max_alien_speed):
         """Set the game difficulty (speed-up scale)."""
         def handle():
             """Set the speedup scale and hide the difficulty options UI."""
             self.game.settings.speedup_scale = speedup_scale
+            self.game.settings.max_alien_speed = max_alien_speed
             self.ui_options.show_difficulty = False
         return handle
 
@@ -278,9 +279,12 @@ class GameButtons:
             self.last_bullet: self.handle_last_bullet_button,
             self.slow_burn: self.handle_slow_burn_button,
             self.normal: self.handle_normal_button,
-            self.easy: self.handle_difficulty_button(DIFFICULTIES['EASY']),
-            self.medium: self.handle_difficulty_button(DIFFICULTIES['MEDIUM']),
-            self.hard: self.handle_difficulty_button(DIFFICULTIES['HARD']),
+            self.easy: self.handle_difficulty_button(DIFFICULTIES['EASY'],
+                                                        DIFFICULTIES['MAX_EASY']),
+            self.medium: self.handle_difficulty_button(DIFFICULTIES['MEDIUM'],
+                                                        DIFFICULTIES['MAX_MEDIUM']),
+            self.hard: self.handle_difficulty_button(DIFFICULTIES['HARD'],
+                                                        DIFFICULTIES['MAX_HARD']),
             self.difficulty: self.handle_difficulty_toggle,
             self.delete_scores: self.handle_delete_button,
         }

@@ -246,19 +246,19 @@ BOSS_RUSH_POINTS_MAP = {
 # used to map the hp of bosses in boss rush
 BOSS_RUSH_HP_MAP = {
             1: 25,
-            2: 50,
-            3: 75,
-            4: 85,
-            5: 99,
-            6: 110,
-            7: 130,
-            8: 150,
-            9: 175,
-            10: 195,
-            11: 220,
-            13: 250,
-            14: 280,
-            15: 300,
+            2: 41,
+            3: 58,
+            4: 77,
+            5: 96,
+            6: 105,
+            7: 117,
+            8: 132,
+            9: 155,
+            10: 169,
+            11: 189,
+            13: 220,
+            14: 249,
+            15: 270,
 
 }
 
@@ -290,63 +290,61 @@ SHIPS = {
 
 # Sounds for the game.
 MENU_SOUNDS = {
-    'menu': 'sounds/ui/menu.wav',
-    'click_menu': 'sounds/ui/click_menu.wav',
-    'quit_effect': 'sounds/ui/quit_effect.wav'
+    'menu': 'audio/sounds/ui/menu.wav',
+    'click_menu': 'audio/sounds/ui/click_menu.wav',
+    'quit_effect': 'audio/sounds/ui/quit_effect.wav'
 }
 
 GAME_SOUNDS = {
-    'bullet': 'sounds/gameplay/fire.wav',
-    'explode': 'sounds/gameplay/explode.wav',
-    'game_over': 'sounds/ui/game_over.wav',
-    'power_up': 'sounds/gameplay/power_up.mp3',
-    'penalty': 'sounds/gameplay/penalty.wav',
-    'health': 'sounds/gameplay/health.wav',
-    'weapon': 'sounds/gameplay/weapon.wav',
-    'missile': 'sounds/gameplay/missile.wav',
-    'missile_launch': 'sounds/gameplay/missile_launch.wav',
-    'click': 'sounds/ui/click_button.wav',
-    'quit_effect': 'sounds/ui/quit_effect.wav',
-    'keypress': 'sounds/ui/keypress.wav',
-    'warp': 'sounds/gameplay/warp_sound.mp3',
-    'alien_exploding': 'sounds/gameplay/alien_exploding.wav',
-    'boss_exploding': 'sounds/gameplay/boss_exploding.wav',
+    'bullet': 'audio/sounds/gameplay/fire.wav',
+    'explode': 'audio/sounds/gameplay/explode.wav',
+    'game_over': 'audio/sounds/ui/game_over.wav',
+    'power_up': 'audio/sounds/gameplay/power_up.mp3',
+    'penalty': 'audio/sounds/gameplay/penalty.wav',
+    'health': 'audio/sounds/gameplay/health.wav',
+    'weapon': 'audio/sounds/gameplay/weapon.wav',
+    'missile': 'audio/sounds/gameplay/missile.wav',
+    'missile_launch': 'audio/sounds/gameplay/missile_launch.wav',
+    'click': 'audio/sounds/ui/click_button.wav',
+    'quit_effect': 'audio/sounds/ui/quit_effect.wav',
+    'keypress': 'audio/sounds/ui/keypress.wav',
+    'warp': 'audio/sounds/gameplay/warp_sound.mp3',
+    'alien_exploding': 'audio/sounds/gameplay/alien_exploding.wav',
+    'boss_exploding': 'audio/sounds/gameplay/boss_exploding.wav',
 }
 
 LEVEL_SOUNDS = {
-    range(1, 8): "sounds/level/battle_one.wav",
-    range(9, 16): "sounds/level/battle_two.wav",
-    range(17, 24): "sounds/level/battle_three.wav",
-    range(25, 27): "sounds/level/battle_four.wav",
+    range(1, 8): "audio/sounds/level/battle_one.wav",
+    range(9, 16): "audio/sounds/level/battle_two.wav",
+    range(17, 24): "audio/sounds/level/battle_three.wav",
+    range(25, 27): "audio/sounds/level/battle_four.wav",
 }
 
 BOSS_RUSH_MUSIC = {
-    range(1, 5): "sounds/boss_rush/first_phase.wav",
-    range(6, 9): "sounds/boss_rush/second_phase.wav",
-    range(10, 15): "sounds/boss_rush/third_phase.wav",
+    range(1, 5): "audio/sounds/boss_rush/first_phase.wav",
+    range(6, 9): "audio/sounds/boss_rush/second_phase.wav",
+    range(10, 15): "audio/sounds/boss_rush/third_phase.mp3",
 }
 
 ENDLESS_SOUNDTRACK = {
-    range(1, 3): "sounds/endless/endless.mp3"
+    range(1, 3): "audio/sounds/endless/endless.mp3"
 }
 
 # Dict used to map alien images to game level.
 LEVEL_PREFIX = {
         1: "Alien1",
-        2: "Alien1",
-        3: "Alien2",
-        4: "Alien2",
-        5: "Alien3",
-        6: "Alien3",
-        7: "Alien4",
-        8: "Alien4",
+        2: "Alien2",
+        3: "Alien3",
+        4: "Alien4",
+        5: "Alien5",
+        6: "Alien6",
+        7: "Alien7",
     }
 
 # Various game constants.
 GAME_CONSTANTS = {
     'ENDLESS_MAX_ALIENS': 50,
-    'MAX_ALIEN_SPEED': 4.0,
-    'MAX_ALIEN_NUM': 35,
+    'MAX_ALIEN_NUM': 15,
     'POWER_SPEED': 1.5,
     'SCORE_SCALE': 4,
     'MAX_AS_SPEED': 3.0,
@@ -355,9 +353,12 @@ GAME_CONSTANTS = {
 
 
 DIFFICULTIES = {
-    'EASY': 0.3,
-    'MEDIUM': 0.5,
-    'HARD': 0.7
+    'EASY': 0.2,
+    'MEDIUM': 0.4,
+    'HARD': 0.6,
+    'MAX_EASY': 3.4,
+    'MAX_MEDIUM': 3.6,
+    'MAX_HARD': 3.8,
 }
 # used to map each key with the game mode, for saving the high scores
 GAME_MODE_SCORE_KEYS = {

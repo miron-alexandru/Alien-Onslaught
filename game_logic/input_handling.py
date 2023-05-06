@@ -41,7 +41,6 @@ class PlayerInput:
                 play_sound(self.game.sound_manager.game_sounds, 'keypress')
                 play_sound(self.game.sound_manager.menu_sounds, 'menu', loop=True)
                 self.game.sound_manager.current_sound = 'menu'
-                self.game.return_to_menu = True
                 game_menu()
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_m if self.ui_options.paused:

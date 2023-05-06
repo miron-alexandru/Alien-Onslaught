@@ -113,9 +113,8 @@ class ScoreBoard:
     def update_high_score(self):
         """Updates the high score if the current score is higher and,
         renders the new high score on screen."""
-        if self.stats.thunderbird_score + self.second_stats.phoenix_score > self.stats.high_score:
-            self.stats.high_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
-            self.render_high_score()
+        self.stats.high_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
+        self.render_high_score()
 
     def prep_level(self):
         """Render the current level as an image and position it
@@ -200,11 +199,10 @@ class ScoreBoard:
         new_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
 
         while True:
-            if self.game.return_to_menu:
-                player_name = get_player_name(self.screen, self.game.bg_img)
-            else:
-                player_name = get_player_name(self.screen, self.game.bg_img, self.settings.game_over,
-                                          self.game.game_over_rect)
+            player_name = get_player_name(self.screen, self.game.bg_img,
+                                            self.game.screen_manager.draw_cursor,
+                                            self.settings.game_over,
+                                            self.game.game_over_rect)
 
             for i, score in enumerate(scores):
                 if score['name'] == player_name:
@@ -315,9 +313,8 @@ class SingleScoreBoard(ScoreBoard):
         """Updates the high score if the current score is higher and,
         renders the new high score on screen.
         """
-        if self.stats.thunderbird_score  > self.stats.high_score:
-            self.stats.high_score = self.stats.thunderbird_score
-            self.render_high_score()
+        self.stats.high_score = self.stats.thunderbird_score
+        self.render_high_score()
 
     def render_bullets_num(self):
         """Renders the remaining bullets number for Thunderbird and

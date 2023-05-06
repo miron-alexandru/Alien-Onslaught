@@ -34,7 +34,7 @@ class GameModesManager:
             self.settings.boss_hp += 25
 
         if self.stats.level in BOSS_LEVELS and self.settings.speedup_scale == DIFFICULTIES['HARD']:
-            self.settings.boss_hp += 50
+            self.settings.boss_hp += 45
 
     def update_boss_rush_info(self):
         """Updates the points and hp of bosses in Boss Rush."""
@@ -43,30 +43,30 @@ class GameModesManager:
         self.settings.boss_hp = BOSS_RUSH_HP_MAP.get(self.stats.level, self.settings.boss_hp)
 
         if self.settings.speedup_scale == DIFFICULTIES['MEDIUM']:
-            self.settings.boss_hp += 25
+            self.settings.boss_hp += 15
         elif self.settings.speedup_scale == DIFFICULTIES['HARD']:
-            self.settings.boss_hp += 50
+            self.settings.boss_hp += 25
 
     def _create_boss_rush_bullets(self, bullets_manager):
         """Creates bullets for bosses in Boss Rush."""
         if self.stats.level < 10:
-            bullets_manager(1, 500, 500)
+            bullets_manager(1, 450, 400)
         else:
-            bullets_manager(1, 75, 350)
+            bullets_manager(1, 200, 350)
 
     def create_normal_level_bullets(self, bullets_manager):
         """Create bullets for the normal game."""
         if self.stats.level in BOSS_LEVELS:
-            bullets_manager(1, 500, 500)
+            bullets_manager(1, 550, 550)
         else:
-            bullets_manager(self.settings.alien_bullets_num, 700, 7000)
+            bullets_manager(self.settings.alien_bullets_num, 800, 7000)
 
     def set_max_alien_bullets(self, difficulty):
         """Set the maximum number of alien bullets based on difficulty."""
         if difficulty == DIFFICULTIES['MEDIUM']:
-            self.settings.max_alien_bullets = 10
+            self.settings.max_alien_bullets = 9
         elif difficulty == DIFFICULTIES['HARD']:
-            self.settings.max_alien_bullets = 11
+            self.settings.max_alien_bullets = 10
 
     def check_alien_bullets_num(self):
         """Increase alien bullets number every 3 levels, up to a maximum limit."""

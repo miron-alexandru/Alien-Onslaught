@@ -285,7 +285,7 @@ class AlienAnimation:
         self.frame_counter = 0
         self.current_frame = 0
 
-        level_prefix = LEVEL_PREFIX.get(game.stats.level // 4 + 1, "Alien4")
+        level_prefix = LEVEL_PREFIX.get(game.stats.level // 4 + 1, "Alien7")
         if level_prefix not in AlienAnimation.frames:
             AlienAnimation.frames[level_prefix] = load_alien_images(level_prefix)
 

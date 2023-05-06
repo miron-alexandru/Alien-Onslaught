@@ -55,38 +55,39 @@ class Settings:
         """
         self.game_modes = GameModes()
         self.ui_options = UIOptions()
-        self.speedup_scale = 0.3
+        self.speedup_scale = 0.2
         self.missiles_speed = 5.0
         self.immune_time = 5000
         self.scaled_time = 120000
         self.alien_immune_time = 12000
+        self.max_alien_speed = 3.8
 
     def dynamic_settings(self):
         """Settings that can change during the game."""
         # Thunderbird settings
         self.thunderbird_ship_speed = 3.5
         self.thunderbird_bullet_speed = 5.0
-        self.thunderbird_bullets_allowed = 1
+        self.thunderbird_bullets_allowed = 3
         self.thunderbird_bullet_count = 1
         self.thunderbird_missiles_num = 3
 
         # Phoenix settings
         self.phoenix_ship_speed = 3.5
         self.phoenix_bullet_speed = 5.0
-        self.phoenix_bullets_allowed = 1
+        self.phoenix_bullets_allowed = 3
         self.phoenix_bullet_count = 1
         self.phoenix_missiles_num = 3
 
         # Alien Settings
-        self.alien_speed = 1.0
+        self.alien_speed = 0.8
         self.alien_bullet_speed = 1.5
         self.alien_points = 1
-        self.fleet_rows = 3
+        self.fleet_rows = 2
         self.last_bullet_rows = 2
         self.aliens_num = 8
         self.alien_direction = 1
         self.alien_bullets_num = 2
-        self.max_alien_bullets = 9
+        self.max_alien_bullets = 8
 
         # Bosses Settings
         self.boss_hp = 25 if self.game_modes.boss_rush else 50
@@ -98,12 +99,12 @@ class Settings:
 
     def increase_speed(self):
         """Increase speed settings and alien point values."""
-        if self.alien_speed < GAME_CONSTANTS['MAX_ALIEN_SPEED']:
+        if self.alien_speed < self.max_alien_speed:
             self.alien_speed += self.speedup_scale
             self.alien_bullet_speed += self.speedup_scale
         self.alien_points = int(self.alien_points + GAME_CONSTANTS['SCORE_SCALE'])
 
-        if not self.game_modes.last_bullet and self.aliens_num < GAME_CONSTANTS['MAX_ALIEN_NUM']:
+        if not self.game_modes.last_bullet and self.aliens_num <= GAME_CONSTANTS['MAX_ALIEN_NUM']:
             self.aliens_num += 2
 
 

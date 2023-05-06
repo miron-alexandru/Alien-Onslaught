@@ -41,7 +41,7 @@ from entities.aliens import AliensManager
 from entities.powers import PowerEffectsManager
 from entities.asteroid import AsteroidsManager
 from entities.projectiles import BulletsManager
-from sounds.sounds_manager import SoundManager
+from audio.sounds_manager import SoundManager
 
 
 class AlienOnslaught:
@@ -66,7 +66,6 @@ class AlienOnslaught:
         self._initialize_game_objects()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
-        self.return_to_menu = False
 
         pygame.display.set_caption("Alien Onslaught")
 
@@ -476,14 +475,16 @@ class AlienOnslaught:
         ship.state.shielded = False
 
         if ship == self.thunderbird_ship:
-            self.settings.thunderbird_bullet_count = 1
-            if self.settings.thunderbird_bullets_allowed > 1:
-                self.settings.thunderbird_bullets_allowed -= 2
+            if self.settings.thunderbird_bullet_count >= 3:
+                self.settings.thunderbird_bullet_count -= 2
+            if self.settings.thunderbird_bullets_allowed > 3:
+                self.settings.thunderbird_bullets_allowed -= 1
             self.stats.thunderbird_hp -= 1
         elif ship == self.phoenix_ship:
-            self.settings.phoenix_bullet_count = 1
-            if self.settings.phoenix_bullets_allowed > 1:
-                self.settings.phoenix_bullets_allowed -= 2
+            if self.settings.phoenix_bullet_count >= 3:
+                self.settings.phoenix_bullet_count -= 2
+            if self.settings.phoenix_bullets_allowed > 3:
+                self.settings.phoenix_bullets_allowed -= 1
             self.stats.phoenix_hp -= 1
 
         ship.center_ship()
@@ -520,8 +521,6 @@ class AlienOnslaught:
         """End the current game, save the current high score and return to game menu."""
         self.stats.game_active = False
         self._reset_game_objects()
-        self.return_to_menu = False
-
 
     def _set_game_over(self):
         """Set the location of the game over image on the screen"""
@@ -574,7 +573,8 @@ class AlienOnslaught:
     def _reset_game_objects(self, *exclude_groups):
         """Clear the screen of game objects, excluding specified groups."""
         all_groups = [self.thunderbird_bullets, self.phoenix_bullets, self.alien_bullet,
-                      self.powers, self.aliens, self.asteroids]
+                      self.powers, self.aliens, self.asteroids, self.thunderbird_missiles,
+                      self.phoenix_missiles]
         for group in all_groups:
             if group not in exclude_groups:
                 group.empty()

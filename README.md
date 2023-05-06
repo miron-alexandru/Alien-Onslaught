@@ -153,4 +153,7 @@ the player's speed will decrease, adding an extra layer of challenge to the game
 * Refactored the game modes display functionality to improve user experience. Instead of displaying the description for the game modes when the game modes button is clicked, the description for each game mode now appears when the user hovers the mouse over the corresponding button.
 * Implemented a custom mouse cursor that is now displayed while navigating through both the main and game menus.
 * Players now have the ability to go back to the game menu when the game is paused.
+* Implemented three new aliens.
+* Modified the game speed-up scale and alien speed on all difficulties because the game was too hard even on the easiest mode.
+* Updated the game mechanics so that when aliens hit the bottom of the screen, players now lose 100 points from their score instead of losing one life. This change was made because losing a life felt like too severe of a punishment.
 </details>

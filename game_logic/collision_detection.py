@@ -3,7 +3,6 @@ The 'game_collisions' module contains the CollisionManager class
 that handles the collisions in the game.
 """
 
-import random
 import pygame
 from entities.aliens import BossAlien
 from utils.constants import ALIENS_HP_MAP
@@ -130,23 +129,21 @@ class CollisionManager:
                     thunderbird_hit()
                 else:
                     phoenix_hit()
-        self._check_aliens_bottom(thunderbird_hit, phoenix_hit)
+        self._check_aliens_bottom()
 
-    def _check_aliens_bottom(self, thunderbird_hit, phoenix_hit):
+    def _check_aliens_bottom(self):
         """Check if any aliens have reached the bottom of the screen"""
         screen_rect = self.game.screen.get_rect()
         for alien in self.game.aliens.sprites():
             if alien.rect.bottom >= screen_rect.bottom:
                 alien.kill()
-                if self.game.singleplayer:
-                    thunderbird_hit()
-                elif self.stats.thunderbird_hp > self.stats.phoenix_hp:
-                    thunderbird_hit()
-                elif self.stats.thunderbird_hp < self.stats.phoenix_hp:
-                    phoenix_hit()
-                else:
-                    random.choice([thunderbird_hit, phoenix_hit])()
+                if not self.game.singleplayer:
+                    self.stats.phoenix_score = max(self.stats.phoenix_score - 100, 0)
+                self.stats.thunderbird_score = max(self.stats.thunderbird_score - 100, 0)
+                self.game.score_board.render_scores()
+                self.score_board.update_high_score()
                 break
+
 
     def check_missile_alien_collisions(self):
         """Respond to player missiles-alien collisions."""
