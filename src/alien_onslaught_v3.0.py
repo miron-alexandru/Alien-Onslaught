@@ -697,7 +697,7 @@ class AlienOnslaught:
         available_bullets = (
             AVAILABLE_BULLETS_MAP_SINGLE.get(level, 50)
             if self.singleplayer
-            else AVAILABLE_BULLETS_MAP.get(level, 50)
+            else AVAILABLE_BULLETS_MAP.get(level, 25)
         )
         for ship in self.ships:
             ship.remaining_bullets = available_bullets

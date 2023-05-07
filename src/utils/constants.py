@@ -69,9 +69,7 @@ GAME_MODES_DESCRIPTIONS = (
     # Last Bullet
     "You must use your limited supply of bullets to fight off waves of aliens.\n"
     "If you run out of bullets, you'll become inactive and the game will be over."
-)
-
-GAME_MODES_DESCRIPTIONS = GAME_MODES_DESCRIPTIONS.split("\n\n")
+).split("\n\n")
 
 
 # Images for different parts of the game.

@@ -47,16 +47,13 @@ class SoundManager:
                 self.loading_screen.update(75)
                 self.game_sounds = load_sound_files(GAME_SOUNDS)
                 self.loading_screen.update(100)
-            set_sounds_volume(self.level_music, 0.04)
-            set_sounds_volume(self.boss_rush_levels, 0.04)
-            set_sounds_volume(self.game_sounds, 0.1)
-            set_sounds_volume(self.endless_music, 0.04)
+            self._prepare_gameplay_sounds_volume()
         elif sounds_to_load == "menu_sounds":
             while not self.menu_sounds:
                 self.loading_screen.update(50)
                 self.menu_sounds = load_sound_files(MENU_SOUNDS)
                 self.loading_screen.update(100)
-            set_sounds_volume(self.menu_sounds, 0.2)
+            set_sounds_volume(self.menu_sounds, 0.7)
 
     def prepare_level_music(self):
         """This method determines the appropriate background music
@@ -76,3 +73,10 @@ class SoundManager:
                     play_sound(music_to_play, key, loop=True)
                     self.current_sound = sound_name
                 return
+
+    def _prepare_gameplay_sounds_volume(self):
+        set_sounds_volume(self.level_music, 0.3)
+        set_sounds_volume(self.boss_rush_levels, 0.3)
+        self.game_sounds["bullet"].set_volume(0.1)
+        self.game_sounds["alien_exploding"].set_volume(0.5)
+        set_sounds_volume(self.endless_music, 0.3)

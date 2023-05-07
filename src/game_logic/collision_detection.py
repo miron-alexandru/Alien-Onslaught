@@ -229,7 +229,6 @@ class CollisionManager:
     def _handle_boss_alien_collision(self, alien, player):
         """Handles the collision between the player and the bosses"""
         if alien.hit_count >= self.settings.boss_hp and alien.is_alive:
-            self.game.sound_manager.game_sounds["boss_exploding"].set_volume(0.3)
             play_sound(self.game.sound_manager.game_sounds, "boss_exploding")
             alien.destroy_alien()
             self.game.aliens.remove(alien)
@@ -265,7 +264,6 @@ class CollisionManager:
             case "phoenix":
                 self.stats.phoenix_score += self.settings.alien_points
         alien.destroy_alien()
-        self.game.sound_manager.game_sounds["alien_exploding"].set_volume(0.1)
         play_sound(self.game.sound_manager.game_sounds, "alien_exploding")
         self.game.aliens.remove(alien)
         self.score_board.render_scores()
