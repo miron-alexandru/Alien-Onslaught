@@ -246,10 +246,6 @@ class AlienOnslaught:
 
     def _handle_level_progression(self):
         """Handles the progression of levels in the game for different game modes."""
-        if self.settings.game_modes.boss_rush and self.stats.level == 16:
-            self.stats.game_active = False
-            return
-
         if not self.aliens:
             if self.settings.game_modes.last_bullet:
                 self._prepare_last_bullet_level()
@@ -317,7 +313,7 @@ class AlienOnslaught:
         self.fourth_bg = resize_image(self.settings.fourth_bg)
         self.reset_bg = resize_image(self.settings.bg_img)
 
-        self._set_game_over()
+        self._set_game_end_position()
         self.thunderbird_ship.screen_rect = self.screen.get_rect()
         self.phoenix_ship.screen_rect = self.screen.get_rect()
 
@@ -522,21 +518,21 @@ class AlienOnslaught:
         ship.set_immune()
 
     def _check_game_over(self):
-        """Check if the game is over and if so, display the game over image"""
-        if self.settings.game_modes.boss_rush and self.stats.level == 16:
-            self._display_game_over()
+        """Check if the game is over and act accordingly."""
+        if self.settings.game_modes.boss_rush and self.stats.level == 15 and not self.aliens:
+            self._display_endgame("victory")
             self.score_board.render_high_score()
         elif not any(
             [self.thunderbird_ship.state.alive, self.phoenix_ship.state.alive]
         ):
-            self.stats.game_active = False
-            self._display_game_over()
+            self._display_endgame("gameover")
 
     def _display_game_over(self):
-        """Display the game over on screen play the game over sound
-        and save the high score for the active game mode"""
-        self._set_game_over()
-        self.screen.blit(self.settings.game_over, self.game_over_rect)
+        """Display the end game image on screen play the game over sound
+        and save the high score for the active game mode."""
+        self.bg_img = self.reset_bg
+        self._set_game_end_position()
+        self.screen.blit(self.settings.game_end_img, self.settings.game_end_rect)
         self._reset_game_objects()
         self.score_board.update_high_score()
 
@@ -555,14 +551,15 @@ class AlienOnslaught:
         self.stats.game_active = False
         self._reset_game_objects()
 
-    def _set_game_over(self):
-        """Set the location of the game over image on the screen"""
-        game_over_rect = self.settings.game_over.get_rect()
-        game_over_x = (self.settings.screen_width - game_over_rect.width) / 2
-        game_over_y = (self.settings.screen_height - game_over_rect.height) / 2 - 200
-        self.game_over_rect = pygame.Rect(
-            game_over_x, game_over_y, game_over_rect.width, game_over_rect.height
-        )
+    def _set_game_end_position(self):
+        """Set the location of the end game image on the screen"""
+        self.settings.game_end_rect.centerx = self.settings.screen_width // 2
+        self.settings.game_end_rect.centery = self.settings.screen_height // 2 - 200
+
+    def _display_endgame(self, image_name):
+        self.stats.game_active = False
+        self.settings.game_end_img = self.settings.misc_images[image_name]
+        self._display_game_over()
 
     def _prepare_level(self):
         """Common level progression handler"""

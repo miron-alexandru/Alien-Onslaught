@@ -126,6 +126,7 @@ AVAILABLE_BULLETS_MAP_SINGLE = {
 # Other images used in the game.
 OTHER = {
     "gameover": "../game_assets/images/other/gameover.png",
+    "victory": "../game_assets/images/other/victory.png",
     "pause": "../game_assets/images/other/pause.png",
     "heart": "../game_assets/images/other/heart.png",
     "game_title": "../game_assets/images/other/alien_onslaught.bmp",
@@ -387,3 +388,4 @@ MAX_HP = 5
 STARTING_HP = 3
 
 BOSS_LEVELS = [10, 15, 20, 25]
+

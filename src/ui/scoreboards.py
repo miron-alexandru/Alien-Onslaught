@@ -228,8 +228,8 @@ class ScoreBoard:
                 self.screen,
                 self.game.bg_img,
                 self.game.screen_manager.draw_cursor,
-                self.settings.game_over,
-                self.game.game_over_rect,
+                self.settings.game_end_img,
+                self.game.game_end_img_rect,
             )
 
             for i, score in enumerate(scores):

@@ -33,20 +33,22 @@ class Settings:
     def _init_images(self):
         """Initialize images for the game."""
         self.bg_images = load_images(BACKGROUNDS)
-        self.other_images = load_images(OTHER)
+        self.misc_images = load_images(OTHER)
         # Background Images
         self.bg_img = self.bg_images["space"]
         self.second_bg = self.bg_images["space2"]
         self.third_bg = self.bg_images["space3"]
         self.fourth_bg = self.bg_images["space4"]
         # Game over and pause images
-        self.game_over = self.other_images["gameover"]
-        self.pause = self.other_images["pause"]
+        self.game_end_img = self.misc_images["gameover"]
+        self.game_end_rect = self.game_end_img.get_rect()
+        self.victory = self.misc_images["victory"]
+        self.pause = self.misc_images["pause"]
         # Game title and cursor images
-        self.game_title = self.other_images["game_title"]
+        self.game_title = self.misc_images["game_title"]
         self.game_title_rect = self.game_title.get_rect()
         self.game_title_rect.y = -270
-        self.cursor_img = self.other_images["cursor"]
+        self.cursor_img = self.misc_images["cursor"]
         self.cursor_rect = self.cursor_img.get_rect()
 
     def _init_game_settings(self):
