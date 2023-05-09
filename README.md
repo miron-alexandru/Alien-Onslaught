@@ -43,6 +43,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.0:
+* High score saving improved.
 * Improved sound balance.
 * Implemented a Victroy screen that appears in the Boss Rush when the players are defeating the last boss.
 * Refactored the game code to improve its overall structure, readability, and maintainability by creating two base classes: Ship and Bullet, making it easier to create player ships and bullets and reducing code duplication.

@@ -98,7 +98,7 @@ class ScreenManager:
     def draw_cursor(self):
         """Draw the custom in the location of the normal cursor."""
         self.settings.cursor_rect.center = pygame.mouse.get_pos()
-        self.cursor_surface.blit(self.settings.cursor_img, (0, 0))
+        self.cursor_surface.blit(self.settings.cursor_img, (5, 10))
         self.screen.blit(self.cursor_surface, self.settings.cursor_rect)
 
     def _create_controls(self):

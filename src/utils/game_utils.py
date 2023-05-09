@@ -261,14 +261,14 @@ def display_message(screen, message, duration):
     """Display a message on the screen for a specified amount of time."""
     font = pygame.font.SysFont("verdana", 14)
     text = font.render(message, True, (255, 255, 255))
-    rect = text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 25))
+    rect = text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 50))
     screen.blit(text, rect)
     pygame.display.flip()
     pygame.time.wait(int(duration * 1000))
 
 
 def get_player_name(
-    screen, background_image, cursor, game_end_img=None, game_end_rect=None
+    screen, background_image, cursor, high_score, game_end_img=None, game_end_rect=None
 ):
     """Get the player name for the high score."""
 
@@ -282,7 +282,41 @@ def get_player_name(
     input_box.center = (screen.get_width() / 2 + 100, screen.get_height() / 2)
     player_name = "Player"
 
-    # Loop until player name is confirmed
+    # Set up buttons
+    button_info = [
+        {
+            "label": "Close",
+            "rect": pygame.Rect(
+                (input_box.centerx + 20, input_box.centery + 20), (65, 24)
+            ),
+        },
+        {
+            "label": "Save",
+            "rect": pygame.Rect(
+                (input_box.centerx - 75, input_box.centery + 20), (50, 24)
+            ),
+        },
+    ]
+
+    # Draw buttons function
+    def draw_buttons():
+        for button in button_info:
+            pygame.draw.rect(
+                screen, (0, 0, 0, 0), button["rect"]
+            )  # Set background color to transparent
+            text_surface = font.render(button["label"], True, text_color)
+            text_x = button["rect"].centerx - text_surface.get_width() / 2
+            text_y = button["rect"].centery - 13
+            screen.blit(text_surface, (text_x, text_y))
+
+    # Draw text label fuction
+    def draw_label(text, pos):
+        text_surface = text_font.render(text, True, text_color)
+        text_x = pos[0] - text_surface.get_width() / 2
+        text_y = pos[1] - 18
+        screen.blit(text_surface, (text_x, text_y))
+
+    # Loop until player name is confirmed or canceled
     while True:
         # Handle events
         for event in pygame.event.get():
@@ -300,18 +334,34 @@ def get_player_name(
                         :12
                     ]  # limit length of player name to 12 characters
 
-        # Draw the input box and player name
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for button in button_info:
+                    if button["rect"].collidepoint(event.pos):
+                        if button["label"] == "Close":
+                            return None  # exit loop without saving the name
+                        elif button["label"] == "Save":
+                            return player_name  # exit loop and return player name
+
         screen.blit(background_image, (0, 0))
         if game_end_img is not None and game_end_rect is not None:
             screen.blit(game_end_img, game_end_rect)
+
+        # Draw the input box and player name
         pygame.draw.rect(screen, text_color, input_box, 1)
         text_surface = font.render(player_name, True, pygame.Color(90, 90, 90))
         screen.blit(text_surface, (input_box.x + 5, input_box.y))
 
-        # Draw the text label
-        text_surface = text_font.render("High score name:", True, text_color)
-        text_x = input_box.centerx - text_surface.get_width() / 2 - 205
-        text_y = input_box.centery - 18
-        screen.blit(text_surface, (text_x, text_y))
+        # Draw the high score
+        high_score_text = f"High Score: {high_score}"
+        high_score_surface = text_font.render(high_score_text, True, text_color)
+        high_score_rect = high_score_surface.get_rect(
+            center=(screen.get_width() / 2, screen.get_height() / 2 - 100)
+        )
+        screen.blit(high_score_surface, high_score_rect)
+
+        # Draw label, buttons and cursor
+        draw_label("High score name:", (input_box.centerx - 205, input_box.centery))
+        draw_buttons()
         cursor()
+
         pygame.display.flip()

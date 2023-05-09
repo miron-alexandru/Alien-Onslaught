@@ -228,9 +228,14 @@ class ScoreBoard:
                 self.screen,
                 self.game.bg_img,
                 self.game.screen_manager.draw_cursor,
+                self.stats.high_score,
                 self.settings.game_end_img,
-                self.game.game_end_img_rect,
+                self.settings.game_end_rect,
             )
+            if player_name == None:
+                return
+            elif player_name == "":
+                player_name = "Player"
 
             for i, score in enumerate(scores):
                 if score["name"] == player_name:

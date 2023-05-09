@@ -519,7 +519,11 @@ class AlienOnslaught:
 
     def _check_game_over(self):
         """Check if the game is over and act accordingly."""
-        if self.settings.game_modes.boss_rush and self.stats.level == 15 and not self.aliens:
+        if (
+            self.settings.game_modes.boss_rush
+            and self.stats.level == 15
+            and not self.aliens
+        ):
             self._display_endgame("victory")
             self.score_board.render_high_score()
         elif not any(

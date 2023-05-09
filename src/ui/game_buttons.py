@@ -191,7 +191,7 @@ class GameButtons:
         for button in self.game_mode_buttons:
             # Create a smaller rectangle for collision detection
             # to avoid triggering for adjacent buttons
-            collision_rect = button.rect.inflate(-10, -10)
+            collision_rect = button.rect.inflate(-5, 0)
             if collision_rect.collidepoint(pygame.mouse.get_pos()):
                 button.show_button_info()
 
