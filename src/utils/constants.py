@@ -22,6 +22,7 @@ BUTTON_NAMES = [
     "menu_quit_button",
     "boss_rush",
     "last_bullet",
+    "cosmic_conflict",
 ]
 
 # PLAYER_CONTROL
@@ -68,7 +69,10 @@ GAME_MODES_DESCRIPTIONS = (
     "a new challenge.\n\n"
     # Last Bullet
     "You must use your limited supply of bullets to fight off waves of aliens.\n"
-    "If you run out of bullets, you'll become inactive and the game will be over."
+    "If you run out of bullets, you'll become inactive and the game will be over.\n\n"
+    # Cosmic Conflict
+    "Prepare for an intense PVP space battle as you go head-to-head\n"
+    "in a 1v1 showdown."
 ).split("\n\n")
 
 
@@ -127,6 +131,8 @@ AVAILABLE_BULLETS_MAP_SINGLE = {
 OTHER = {
     "gameover": "../game_assets/images/other/gameover.png",
     "victory": "../game_assets/images/other/victory.png",
+    "thunder_win": "../game_assets/images/other/thunder_victory.png",
+    "phoenix_win": "../game_assets/images/other/phoenix_victory.png",
     "pause": "../game_assets/images/other/pause.png",
     "heart": "../game_assets/images/other/heart.png",
     "game_title": "../game_assets/images/other/alien_onslaught.bmp",
@@ -380,6 +386,7 @@ GAME_MODE_SCORE_KEYS = {
     "meteor_madness": "meteor_madness_scores",
     "slow_burn": "slow_burn_scores",
     "last_bullet": "last_bullet_scores",
+    "cosmic_conflict": "cosmic_conflict_scores",
     "normal": "high_scores",
 }
 

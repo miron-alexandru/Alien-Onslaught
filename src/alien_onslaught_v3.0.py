@@ -249,7 +249,10 @@ class AlienOnslaught:
         if not self.aliens:
             if self.settings.game_modes.last_bullet:
                 self._prepare_last_bullet_level()
-            elif not self.settings.game_modes.meteor_madness:
+            elif (
+                not self.settings.game_modes.meteor_madness
+                and not self.settings.game_modes.cosmic_conflict
+            ):
                 self._prepare_next_level()
 
     def check_events(self):
@@ -398,6 +401,12 @@ class AlienOnslaught:
             self.gm_manager.last_bullet(
                 self.thunderbird_ship, self.phoenix_ship, self._handle_asteroids
             )
+        elif self.settings.game_modes.cosmic_conflict:
+            self.gm_manager.cosmic_conflict(
+                self.collision_handler.check_cosmic_conflict_collisions,
+                self._thunderbird_ship_hit,
+                self._phoenix_ship_hit,
+            )
         else:
             self._handle_asteroids(
                 start_at_level_7=True
@@ -406,6 +415,8 @@ class AlienOnslaught:
     def _handle_alien_creation(self):
         """Choose what aliens to create for every game mode."""
         match self.settings.game_modes.game_mode:
+            case "cosmic_conflict":
+                return
             case "meteor_madness":
                 return
             case "boss_rush":
@@ -519,6 +530,8 @@ class AlienOnslaught:
 
     def _check_game_over(self):
         """Check if the game is over and act accordingly."""
+        if self.settings.game_modes.cosmic_conflict:
+            self._check_cosmic_conflict_endgame()
         if (
             self.settings.game_modes.boss_rush
             and self.stats.level == 15
@@ -547,7 +560,8 @@ class AlienOnslaught:
             self.sound_manager.current_sound = self.sound_manager.game_sounds[
                 "game_over"
             ]
-
+        if self.settings.game_modes.cosmic_conflict:
+            self._set_winner_score()
         self._check_high_score_saved()
 
     def _return_to_game_menu(self):
@@ -564,6 +578,23 @@ class AlienOnslaught:
         self.stats.game_active = False
         self.settings.game_end_img = self.settings.misc_images[image_name]
         self._display_game_over()
+
+    def _check_cosmic_conflict_endgame(self):
+        """Check which player won in Cosmic Conflict
+        and display the appropriate end game.
+        """
+        if not self.thunderbird_ship.state.alive:
+            self._display_endgame("phoenix_win")
+        elif not self.phoenix_ship.state.alive:
+            self._display_endgame("thunder_win")
+
+    def _set_winner_score(self):
+        """Set the high score for the player that remains alive.
+        Method used for the Cosmic Conflict game mode."""
+        if not self.phoenix_ship.state.alive:
+            self.stats.high_score = self.stats.thunderbird_score
+        elif not self.thunderbird_ship.state.alive:
+            self.stats.high_score = self.stats.phoenix_score
 
     def _prepare_level(self):
         """Common level progression handler"""
@@ -631,6 +662,8 @@ class AlienOnslaught:
             ship.center_ship()
             ship.start_warp()
             ship.update_missiles_number()
+            if self.settings.game_modes.cosmic_conflict:
+                ship.set_cosmic_conflict_pos()
         # reset player weapons
         self.bullets_manager.reset_weapons()
 

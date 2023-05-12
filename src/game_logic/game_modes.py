@@ -201,3 +201,7 @@ class GameModesManager:
                 2.0, self.settings.phoenix_bullet_speed - 0.2
             )
             self.game.last_increase_time = current_time
+
+    def cosmic_conflict(self, bullet_collisions, thunderbird_hit, phoenix_hit):
+        """Play the Cosmic Conflict game mode where players are fighting against each other."""
+        bullet_collisions(thunderbird_hit, phoenix_hit)

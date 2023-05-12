@@ -6,7 +6,7 @@ that handles the collisions in the game.
 import pygame
 from entities.aliens import BossAlien
 from utils.constants import ALIENS_HP_MAP
-from utils.game_utils import play_sound
+from utils.game_utils import play_sound, get_colliding_sprites
 
 
 class CollisionManager:
@@ -128,6 +128,40 @@ class CollisionManager:
 
         if not self.game.singleplayer and phoenix_ship_collisions:
             self._handle_alien_hits(phoenix_ship_collisions, "phoenix")
+
+    def check_cosmic_conflict_collisions(self, thunderbird_hit, phoenix_hit):
+        """Respond to PVP projectile collisions."""
+        thunderbird_bullet_hits = get_colliding_sprites(
+            self.game.phoenix_ship, self.game.thunderbird_bullets
+        )
+        phoenix_bullet_hits = get_colliding_sprites(
+            self.game.thunderbird_ship, self.game.phoenix_bullets
+        )
+
+        if thunderbird_bullet_hits and not self.game.phoenix_ship.state.immune:
+            phoenix_hit()
+            self.stats.thunderbird_score += 1000
+            self.score_board.render_scores()
+            self.score_board.update_high_score()
+
+        if phoenix_bullet_hits and not self.game.thunderbird_ship.state.immune:
+            thunderbird_hit()
+            self.stats.phoenix_score += 1000
+            self.score_board.render_scores()
+            self.score_board.update_high_score()
+
+        thunderbird_missile_hits = get_colliding_sprites(
+            self.game.phoenix_ship, self.game.thunderbird_missiles
+        )
+        phoenix_missile_hits = get_colliding_sprites(
+            self.game.thunderbird_ship, self.game.phoenix_missiles
+        )
+
+        if thunderbird_missile_hits and not self.game.phoenix_ship.state.immune:
+            phoenix_hit()
+
+        if phoenix_missile_hits and not self.game.thunderbird_ship.state.immune:
+            thunderbird_hit()
 
     def check_alien_ship_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to collisions between aliens and ships and also check if

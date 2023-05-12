@@ -43,6 +43,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.0:
+* Added a new PVP game mode called Cosmic Conflict, where two players battle against each other in a 1v1 match.
 * High score saving improved.
 * Improved sound balance.
 * Implemented a Victroy screen that appears in the Boss Rush when the players are defeating the last boss.

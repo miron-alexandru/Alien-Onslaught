@@ -139,6 +139,7 @@ class ScoreBoard:
             "slow_burn": f"Slow Burn Level {str(self.stats.level)}",
             "meteor_madness": f"Meteor Madness Level {str(self.stats.level)}",
             "last_bullet": f"Last Bullet Level {str(self.stats.level)}",
+            "cosmic_conflict": "Cosmic Conflict",
             "boss_rush": "Boss Rush: "
             + BOSS_RUSH_IMAGE_MAP.get(
                 self.stats.level, f"Level {str(self.stats.level)}"
@@ -155,7 +156,11 @@ class ScoreBoard:
         _, level_height = self.level_image.get_size()
         self.level_rect = self.level_image.get_rect()
         self.level_rect.centerx = screen_width // 2
-        self.level_rect.top = 25 + level_height
+        self.level_rect.top = (
+            level_height
+            if self.settings.game_modes.cosmic_conflict
+            else level_height + 25
+        )
 
     def render_bullets_num(self):
         """Renders the remaining bullets number for Thunderbird and Pheonix
@@ -221,7 +226,7 @@ class ScoreBoard:
             high_scores = {"high_scores": []}
 
         scores = high_scores.get(score_key, [])
-        new_score = self.stats.thunderbird_score + self.second_stats.phoenix_score
+        new_score = self.stats.high_score
 
         while True:
             player_name = get_player_name(
@@ -232,7 +237,7 @@ class ScoreBoard:
                 self.settings.game_end_img,
                 self.settings.game_end_rect,
             )
-            if player_name == None:
+            if player_name is None:
                 return
             elif player_name == "":
                 player_name = "Player"
@@ -282,32 +287,34 @@ class ScoreBoard:
     def show_score(self):
         """Draw various score-related elements to the screen,
         including player scores, the number of missiles remaining
-        for each player, the high score, the current
-        level, and the remaining health of each player's ship.
+        for each player, the high score, the current level, and the
+        remaining health of each player's ship.
         """
-        if not any(
-            [
-                self.settings.game_modes.meteor_madness,
-                self.settings.game_modes.boss_rush,
-            ]
-        ):
+        # Draw player scores if not in certain game modes
+        if not any([
+            self.settings.game_modes.meteor_madness,
+            self.settings.game_modes.boss_rush,
+        ]):
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
             self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
+
+        # Draw remaining bullets if in "last bullet" game mode
         if self.settings.game_modes.last_bullet:
-            self.screen.blit(
-                self.thunder_bullets_num_img, self.thunder_bullets_num_rect
-            )
-            self.screen.blit(
-                self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect
-            )
-        self.screen.blit(
-            self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect
-        )
+            self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
+            self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
+
+        # Draw remaining missiles for each player
+        self.screen.blit(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
         self.screen.blit(self.missiles_icon, self.thunderbird_missiles_img_rect)
         self.screen.blit(self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
         self.screen.blit(self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
-        self.screen.blit(self.high_score_image, self.high_score_rect)
+
+        # Draw current level and high score (if not in "cosmic conflict" mode)
         self.screen.blit(self.level_image, self.level_rect)
+        if not self.settings.game_modes.cosmic_conflict:
+            self.screen.blit(self.high_score_image, self.high_score_rect)
+
+        # Draw remaining health for each player's ship
         if self.game.thunderbird_ship.state.alive:
             self.thunderbird_health.draw(self.screen)
         if self.game.phoenix_ship.state.alive:

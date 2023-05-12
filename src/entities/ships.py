@@ -17,7 +17,7 @@ from utils.constants import SHIPS
 class Ship(Sprite):
     """Base class used to create ships in the game."""
 
-    def __init__(self, game, image_path, missiles=0):
+    def __init__(self, game, image_path, conflict_pos, missiles=0):
         """Initialize the ship and set its starting position."""
         super().__init__()
         self.screen = game.screen
@@ -32,13 +32,8 @@ class Ship(Sprite):
         self.image = pygame.image.load(self.image_path)
 
         self.rect = self.image.get_rect()
-        self.rect.x = (
-            self.screen_rect.centerx
-            if self.game.singleplayer
-            else self.screen_rect.centerx + self.offset
-        )
+        self.cosmic_conflict_pos = conflict_pos
 
-        self.rect.y = self.screen_rect.bottom - self.rect.height
         self.anims = Animations(self)
         self.state = ShipStates()
 
@@ -158,11 +153,18 @@ class Ship(Sprite):
 
     def center_ship(self):
         """Center the ship on the screen."""
-        self.rect.bottom = self.screen_rect.bottom
+        if self.settings.game_modes.cosmic_conflict:
+            self.rect.bottom = self.screen_rect.centery
+        else:
+            self.rect.bottom = self.screen_rect.bottom
         self.x_pos = (
-            self.screen_rect.centerx
-            if self.game.singleplayer
-            else self.screen_rect.centerx + self.offset
+            (
+                self.screen_rect.centerx
+                if self.game.singleplayer
+                else self.screen_rect.centerx + self.offset
+            )
+            if not self.settings.game_modes.cosmic_conflict
+            else self.cosmic_conflict_pos
         )
         self.y_pos = float(self.rect.y - 10)
 
@@ -230,20 +232,36 @@ class Thunderbird(Ship):
     """Class that represents the Thunderbird ship in the game."""
 
     def __init__(self, game):
-        super().__init__(game, SHIPS["thunderbird"])
+        self.screen_rect = game.screen.get_rect()
+        super().__init__(game, SHIPS["thunderbird"], self.screen_rect.left + 10)
         self.missiles_num = game.settings.thunderbird_missiles_num
         self.ship_type = "thunderbird"
         self.offset = -300
+        self.set_cosmic_conflict_pos()
+
+    def set_cosmic_conflict_pos(self):
+        """The the ship position for the Cosmic Conflict game mode."""
+        if self.game.settings.game_modes.cosmic_conflict:
+            self.cosmic_conflict_pos = self.screen_rect.left + 10
+            self.image = pygame.transform.rotate(self.image, -90)
 
 
 class Phoenix(Ship):
     """Class that represents the Phoenix ship in the game."""
 
     def __init__(self, game):
-        super().__init__(game, SHIPS["phoenix"])
+        self.screen_rect = game.screen.get_rect()
+        super().__init__(game, SHIPS["phoenix"], self.screen_rect.right - 50)
         self.missiles_num = game.settings.phoenix_missiles_num
         self.ship_type = "phoenix"
         self.offset = 200
+        self.set_cosmic_conflict_pos()
+
+    def set_cosmic_conflict_pos(self):
+        """Set the ship position for the Cosmic Conflict game Mode"""
+        if self.game.settings.game_modes.cosmic_conflict:
+            self.cosmic_conflict_pos = self.screen_rect.right - 50
+            self.image = pygame.transform.rotate(self.image, 90)
 
 
 @dataclass

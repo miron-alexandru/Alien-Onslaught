@@ -124,62 +124,80 @@ class PlayerInput:
     def handle_thunderbird_controls(self, event, fire_missile_method):
         """Handle Thunderbird controls."""
         if (
-            self.thunderbird.state.alive
-            and not self.thunderbird.state.warping
-            and not self.thunderbird.state.exploding
+            not self.thunderbird.state.alive
+            or self.thunderbird.state.warping
+            or self.thunderbird.state.exploding
         ):
-            match event.key:
-                case pygame.K_SPACE:
-                    self.thunderbird.state.firing = True
-                case pygame.K_d:
-                    self.thunderbird.moving_flags["right"] = True
-                case pygame.K_a:
-                    self.thunderbird.moving_flags["left"] = True
-                case pygame.K_w:
-                    self.thunderbird.moving_flags["up"] = True
-                case pygame.K_s:
-                    self.thunderbird.moving_flags["down"] = True
-                case pygame.K_1:
-                    self.thunderbird.image = self.thunderbird.anims.ship_images[0]
-                case pygame.K_2:
-                    self.thunderbird.image = self.thunderbird.anims.ship_images[1]
-                case pygame.K_3:
-                    self.thunderbird.image = self.thunderbird.anims.ship_images[2]
-                case pygame.K_z:
-                    fire_missile_method(
-                        self.game.thunderbird_missiles,
-                        self.thunderbird,
-                        missile_class=Missile,
+            return
+        match event.key:
+            case pygame.K_SPACE:
+                self.thunderbird.state.firing = True
+            case pygame.K_d:
+                self.thunderbird.moving_flags["right"] = True
+            case pygame.K_a:
+                self.thunderbird.moving_flags["left"] = True
+            case pygame.K_w:
+                self.thunderbird.moving_flags["up"] = True
+            case pygame.K_s:
+                self.thunderbird.moving_flags["down"] = True
+            case pygame.K_1:
+                self.thunderbird.image = self.thunderbird.anims.ship_images[0]
+                if self.settings.game_modes.cosmic_conflict:
+                    self.thunderbird.image = pygame.transform.rotate(
+                        self.thunderbird.image, -90
                     )
+            case pygame.K_2:
+                self.thunderbird.image = self.thunderbird.anims.ship_images[1]
+                if self.settings.game_modes.cosmic_conflict:
+                    self.thunderbird.image = pygame.transform.rotate(
+                        self.thunderbird.image, -90)
+            case pygame.K_3:
+                self.thunderbird.image = self.thunderbird.anims.ship_images[2]
+                if self.settings.game_modes.cosmic_conflict:
+                    self.thunderbird.image = pygame.transform.rotate(
+                        self.thunderbird.image, -90)
+            case pygame.K_z:
+                fire_missile_method(
+                    self.game.thunderbird_missiles,
+                    self.thunderbird,
+                    missile_class=Missile,
+                )
 
     def _handle_phoenix_controls(self, event, fire_missile_method):
         """Handle Phoenix controls."""
         if (
-            self.phoenix.state.alive
-            and not self.phoenix.state.warping
-            and not self.phoenix.state.exploding
+            not self.phoenix.state.alive
+            or self.phoenix.state.warping
+            or self.phoenix.state.exploding
         ):
-            match event.key:
-                case pygame.K_RETURN:
-                    self.phoenix.state.firing = True
-                case pygame.K_LEFT:
-                    self.phoenix.moving_flags["left"] = True
-                case pygame.K_RIGHT:
-                    self.phoenix.moving_flags["right"] = True
-                case pygame.K_UP:
-                    self.phoenix.moving_flags["up"] = True
-                case pygame.K_DOWN:
-                    self.phoenix.moving_flags["down"] = True
-                case pygame.K_KP1:
-                    self.phoenix.image = self.phoenix.anims.ship_images[3]
-                case pygame.K_KP2:
-                    self.phoenix.image = self.phoenix.anims.ship_images[4]
-                case pygame.K_KP3:
-                    self.phoenix.image = self.phoenix.anims.ship_images[5]
-                case pygame.K_RCTRL:
-                    fire_missile_method(
-                        self.game.phoenix_missiles, self.phoenix, missile_class=Missile
-                    )
+            return
+        match event.key:
+            case pygame.K_RETURN:
+                self.phoenix.state.firing = True
+            case pygame.K_LEFT:
+                self.phoenix.moving_flags["left"] = True
+            case pygame.K_RIGHT:
+                self.phoenix.moving_flags["right"] = True
+            case pygame.K_UP:
+                self.phoenix.moving_flags["up"] = True
+            case pygame.K_DOWN:
+                self.phoenix.moving_flags["down"] = True
+            case pygame.K_KP1:
+                self.phoenix.image = self.phoenix.anims.ship_images[3]
+                if self.settings.game_modes.cosmic_conflict:
+                    self.phoenix.image = pygame.transform.rotate(self.phoenix.image, 90)
+            case pygame.K_KP2:
+                self.phoenix.image = self.phoenix.anims.ship_images[4]
+                if self.settings.game_modes.cosmic_conflict:
+                    self.phoenix.image = pygame.transform.rotate(self.phoenix.image, 90)
+            case pygame.K_KP3:
+                self.phoenix.image = self.phoenix.anims.ship_images[5]
+                if self.settings.game_modes.cosmic_conflict:
+                    self.phoenix.image = pygame.transform.rotate(self.phoenix.image, 90)
+            case pygame.K_RCTRL:
+                fire_missile_method(
+                    self.game.phoenix_missiles, self.phoenix, missile_class=Missile
+                )
 
     def reset_ship_movement_flags(self):
         """Reset movement flags for the ships."""

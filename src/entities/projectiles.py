@@ -25,16 +25,24 @@ class Bullet(Sprite):
         self.game = game
         self.screen = game.screen
         self.settings = game.settings
+        self.ship = ship
         self.image = image_path
         self.rect = self.image.get_rect()
         self.rect.midtop = (ship.rect.centerx, ship.rect.top)
         self.y_pos = float(self.rect.y)
+        self.x_pos = float(self.rect.x)
         self.speed = speed
 
     def update(self):
         """Update the bullet location on screen."""
-        self.y_pos -= self.speed
-        self.rect.y = self.y_pos
+        if self.settings.game_modes.cosmic_conflict:
+            self.x_pos += (
+                self.speed if self.ship == self.game.thunderbird_ship else -self.speed
+            )
+            self.rect.x = self.x_pos
+        else:
+            self.y_pos -= self.speed
+            self.rect.y = self.y_pos
 
     def draw(self):
         """Draw the bullet to the screen."""
@@ -51,6 +59,8 @@ class Thunderbolt(Bullet):
             ship,
             game.settings.thunderbird_bullet_speed,
         )
+        if game.settings.game_modes.cosmic_conflict:
+            self.image = pygame.transform.rotate(self.image, -90)
 
 
 class Firebird(Bullet):
@@ -63,6 +73,8 @@ class Firebird(Bullet):
             ship,
             game.settings.phoenix_bullet_speed,
         )
+        if game.settings.game_modes.cosmic_conflict:
+            self.image = pygame.transform.rotate(self.image, 90)
 
 
 class Missile(Sprite):
@@ -81,11 +93,12 @@ class Missile(Sprite):
 
         self.frames = missile_frames
         self.current_frame = 0
-        self.image = self.frames[self.current_frame]
+        self.set_missile_frames()
         self.rect = self.frames[0].get_rect()
         self.rect.midtop = (self.ship.rect.centerx, self.ship.rect.top)
 
         self.y_pos = float(self.rect.y)
+        self.x_pos = float(self.rect.x)
 
         self.frame_update_rate = 5
         self.frame_counter = 0
@@ -105,11 +118,19 @@ class Missile(Sprite):
             self.frame_counter += 1
             if self.frame_counter % self.frame_update_rate == 0:
                 self.current_frame = (self.current_frame + 1) % len(self.frames)
-                self.image = self.frames[self.current_frame]
+                self.set_missile_frames()
                 self.frame_counter = 0
 
-            self.y_pos -= self.settings.missiles_speed
-            self.rect.y = self.y_pos
+            if self.settings.game_modes.cosmic_conflict:
+                self.x_pos += (
+                    self.settings.missiles_speed
+                    if self.ship == self.game.thunderbird_ship
+                    else -self.settings.missiles_speed
+                )
+                self.rect.x = self.x_pos
+            else:
+                self.y_pos -= self.settings.missiles_speed
+                self.rect.y = self.y_pos
 
     def draw(self):
         """Draw the missile or explosion effect,
@@ -123,6 +144,22 @@ class Missile(Sprite):
         """Trigger the explosion effect."""
         self.is_destroyed = True
 
+    def set_missile_frames(self):
+        """Set the missile's image frame based
+        on its current state and game mode.
+        """
+        if self.settings.game_modes.cosmic_conflict:
+            if self.ship == self.game.thunderbird_ship:
+                self.image = pygame.transform.rotate(
+                    self.frames[self.current_frame], -90
+                )
+            else:
+                self.image = pygame.transform.rotate(
+                    self.frames[self.current_frame], 90
+                )
+        else:
+            self.image = self.frames[self.current_frame]
+
 
 class BulletsManager:
     """The BulletsManager class manages the changing and update
@@ -132,6 +169,7 @@ class BulletsManager:
     def __init__(self, game):
         self.game = game
         self.game_modes = self.game.settings.game_modes
+        self.screen = game.screen
         self.weapons = {
             "thunderbird": {
                 "weapon": pygame.image.load(WEAPONS["thunderbolt"]),
@@ -171,7 +209,7 @@ class BulletsManager:
             projectiles.update()
 
             for projectile in projectiles.copy():
-                if projectile.rect.bottom <= 0:
+                if not self.screen.get_rect().colliderect(projectile.rect):
                     projectiles.remove(projectile)
 
     def reset_weapons(self):

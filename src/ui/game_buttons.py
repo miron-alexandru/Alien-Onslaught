@@ -109,7 +109,7 @@ class GameButtons:
         self.normal = Button(
             self,
             self.button_imgs["normal"],
-            (self.game_modes.rect.right - 10, self.game_modes.rect.y),
+            (self.game_modes.rect.right - 8, self.game_modes.rect.y),
             GAME_MODES_DESCRIPTIONS[0],
         )
         self.endless = Button(
@@ -124,10 +124,16 @@ class GameButtons:
             (self.endless.rect.right - 5, self.endless.rect.y),
             GAME_MODES_DESCRIPTIONS[2],
         )
+        self.cosmic_conflict = Button(
+            self,
+            self.button_imgs["cosmic_conflict"],
+            (self.slow_burn.rect.right - 5, self.slow_burn.rect.y),
+            GAME_MODES_DESCRIPTIONS[6],
+        )
         self.meteor_madness = Button(
             self,
             self.button_imgs["meteor_madness"],
-            (self.slow_burn.rect.right - 5, self.slow_burn.rect.y),
+            (self.normal.rect.left, self.slow_burn.rect.bottom),
             GAME_MODES_DESCRIPTIONS[3],
         )
         self.boss_rush = Button(
@@ -182,6 +188,7 @@ class GameButtons:
             self.meteor_madness,
             self.boss_rush,
             self.last_bullet,
+            self.cosmic_conflict,
         ]
 
     def display_description(self):
@@ -264,6 +271,7 @@ class GameButtons:
         self.gm_options.meteor_madness = False
         self.gm_options.boss_rush = False
         self.gm_options.last_bullet = False
+        self.gm_options.cosmic_conflict = False
         if game_mode_setting is not None:
             setattr(self.gm_options, game_mode_setting, True)
 
@@ -308,6 +316,15 @@ class GameButtons:
         self.gm_options.game_mode = "last_bullet"
         self.ui_options.show_game_modes = False
 
+    def handle_cosmic_conflict_button(self):
+        """Toggle the Cosmic Conflict game mode and hide all game mode buttons."""
+        if self.game.singleplayer:
+            return
+        self.gm_options.cosmic_conflict = not self.gm_options.cosmic_conflict
+        self._set_game_mode_settings("cosmic_conflict")
+        self.gm_options.game_mode = "cosmic_conflict"
+        self.ui_options.show_game_modes = False
+
     def handle_difficulty_button(self, speedup_scale, max_alien_speed):
         """Set the game difficulty (speed-up scale)."""
 
@@ -343,6 +360,7 @@ class GameButtons:
             self.boss_rush: self.handle_boss_rush_button,
             self.last_bullet: self.handle_last_bullet_button,
             self.slow_burn: self.handle_slow_burn_button,
+            self.cosmic_conflict: self.handle_cosmic_conflict_button,
             self.normal: self.handle_normal_button,
             self.easy: self.handle_difficulty_button(
                 DIFFICULTIES["EASY"], DIFFICULTIES["MAX_EASY"]

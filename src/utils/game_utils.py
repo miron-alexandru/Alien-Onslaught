@@ -13,6 +13,11 @@ from .constants import (
 )
 
 
+def get_colliding_sprites(ship, bullets_or_missiles):
+    """Returns the sprites that collide with the given ship."""
+    return pygame.sprite.spritecollide(ship, bullets_or_missiles, True)
+
+
 def load_images(image_dict):
     """A function that loads multiple images from a dict of the form:
     key: image name
@@ -210,7 +215,7 @@ def display_game_modes_description(screen, description):
     screen_width, screen_height = screen.get_size()
     font = pygame.font.SysFont("verdana", int(screen_height * 0.021))
     text_x = int(screen_width * 0.56)
-    text_y = 430
+    text_y = 470
     text_surfaces, text_rects = render_text(
         description, font, "white", (text_x, text_y), int(screen_height * 0.03)
     )

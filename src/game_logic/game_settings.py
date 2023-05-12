@@ -42,7 +42,6 @@ class Settings:
         # Game over and pause images
         self.game_end_img = self.misc_images["gameover"]
         self.game_end_rect = self.game_end_img.get_rect()
-        self.victory = self.misc_images["victory"]
         self.pause = self.misc_images["pause"]
         # Game title and cursor images
         self.game_title = self.misc_images["game_title"]
@@ -136,4 +135,5 @@ class GameModes:
     meteor_madness: bool = False
     boss_rush: bool = False
     last_bullet: bool = False
+    cosmic_conflict: bool = False
     game_mode: str = "normal"
