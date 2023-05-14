@@ -26,7 +26,6 @@ from game_logic.game_modes import GameModesManager
 
 from utils.game_utils import display_high_scores, resize_image, play_sound
 from utils.constants import (
-    GAME_CONSTANTS,
     BOSS_LEVELS,
     AVAILABLE_BULLETS_MAP,
     AVAILABLE_BULLETS_MAP_SINGLE,
@@ -34,7 +33,7 @@ from utils.constants import (
 )
 
 from ui.screen_manager import ScreenManager, LoadingScreen
-from ui.scoreboards import ScoreBoard, SingleScoreBoard
+from ui.scoreboards import ScoreBoard
 from ui.game_buttons import GameButtons
 
 from entities.ships import Thunderbird, Phoenix
@@ -114,7 +113,6 @@ class AlienOnslaught:
 
     def run_menu(self):
         """Run the main menu screen"""
-        self.screen = pygame.display.set_mode(self.screen.get_size(), pygame.DOUBLEBUF)
         self.sound_manager.load_sounds("menu_sounds")
         pygame.mixer.stop()
         play_sound(self.sound_manager.menu_sounds, "menu", loop=True)
@@ -143,6 +141,10 @@ class AlienOnslaught:
                     pygame.time.delay(800)
                     pygame.quit()
                     sys.exit()
+            elif event.type == pygame.VIDEORESIZE:
+                self._resize_screen(event.size)
+                self.screen_manager.update_buttons()
+                self.screen_manager.create_controls()
 
     def draw_menu_objects(self):
         """Draw the buttons, game title and controls on the menu screen"""
@@ -165,16 +167,38 @@ class AlienOnslaught:
             self.screen.blit(surface, self.screen_manager.t2_rects[i])
 
     def start_single_player_game(self):
-        """Creates and starts a new single player game instance"""
-        single_player_game = SingleplayerAlienOnslaught()
-        single_player_game.sound_manager.load_sounds("level_sounds")
-        single_player_game.run_game()
+        """Switches the game to singleplayer."""
+        self.singleplayer = True
+        self._set_singleplayer_variables()
+        self._start_game()
 
     def start_multiplayer_game(self):
-        """Creates and starts a new multiplayer game instance"""
-        multiplayer_game = AlienOnslaught()
-        multiplayer_game.sound_manager.load_sounds("level_sounds")
-        multiplayer_game.run_game()
+        """Switches the game to multiplayer."""
+        self.singleplayer = False
+        self._set_multiplayer_variables()
+        self._start_game()
+
+    def _start_game(self):
+        """Initialize the game."""
+        self.sound_manager.load_sounds("level_sounds")
+        self.ui_options.paused = False
+        self.sound_manager.current_sound = None
+        self.run_game()
+
+    def _set_singleplayer_variables(self):
+        """Set variables for the singleplayer game mode."""
+        self.thunderbird_ship.state.single_player = True
+        self.ships = [self.thunderbird_ship]
+        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+        self.score_board.update_high_score_filename()
+        self.gm_manager.reset_cosmic_conflict()
+
+    def _set_multiplayer_variables(self):
+        """Set variables for the multiplayer game mode."""
+        self.thunderbird_ship.state.single_player = False
+        self.ships = [self.thunderbird_ship, self.phoenix_ship]
+        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+        self.score_board.update_high_score_filename()
 
     def _update_background(self, i):
         """Updates the background image of the game and scrolls it downwards
@@ -249,10 +273,7 @@ class AlienOnslaught:
         if not self.aliens:
             if self.settings.game_modes.last_bullet:
                 self._prepare_last_bullet_level()
-            elif (
-                not self.settings.game_modes.meteor_madness
-                and not self.settings.game_modes.cosmic_conflict
-            ):
+            elif not self.settings.game_modes.meteor_madness and not self.settings.game_modes.cosmic_conflict:
                 self._prepare_next_level()
 
     def check_events(self):
@@ -284,7 +305,7 @@ class AlienOnslaught:
         """Check for buttons being clicked and act accordingly."""
         self.buttons.handle_buttons_visibility()
         button_actions = self.buttons.create_button_actions_dict(
-            self.run_menu, self._reset_game
+            self.run_menu, self._reset_game, self._reset_game_single
         )
         for button, action in button_actions.items():
             if (
@@ -317,8 +338,9 @@ class AlienOnslaught:
         self.reset_bg = resize_image(self.settings.bg_img)
 
         self._set_game_end_position()
-        self.thunderbird_ship.screen_rect = self.screen.get_rect()
-        self.phoenix_ship.screen_rect = self.screen.get_rect()
+        for ship in self.ships:
+            ship.screen_rect = self.screen.get_rect()
+            ship.set_cosmic_conflict_pos()
 
     def _check_for_resize(self):
         """Choose when the window is resizable."""
@@ -393,7 +415,6 @@ class AlienOnslaught:
                 self.asteroids_manager.create_asteroids,
                 self.asteroids_manager.update_asteroids,
                 self.collision_handler.check_asteroids_collisions,
-                self._prepare_asteroids_level,
                 self._thunderbird_ship_hit,
                 self._phoenix_ship_hit,
             )
@@ -404,8 +425,8 @@ class AlienOnslaught:
         elif self.settings.game_modes.cosmic_conflict:
             self.gm_manager.cosmic_conflict(
                 self.collision_handler.check_cosmic_conflict_collisions,
-                self._thunderbird_ship_hit,
-                self._phoenix_ship_hit,
+                 self._thunderbird_ship_hit,
+                 self._phoenix_ship_hit
             )
         else:
             self._handle_asteroids(
@@ -532,11 +553,7 @@ class AlienOnslaught:
         """Check if the game is over and act accordingly."""
         if self.settings.game_modes.cosmic_conflict:
             self._check_cosmic_conflict_endgame()
-        if (
-            self.settings.game_modes.boss_rush
-            and self.stats.level == 15
-            and not self.aliens
-        ):
+        if self.settings.game_modes.boss_rush and self.stats.level == 15 and not self.aliens:
             self._display_endgame("victory")
             self.score_board.render_high_score()
         elif not any(
@@ -560,8 +577,10 @@ class AlienOnslaught:
             self.sound_manager.current_sound = self.sound_manager.game_sounds[
                 "game_over"
             ]
+
         if self.settings.game_modes.cosmic_conflict:
-            self._set_winner_score()
+            self.gm_manager.set_cosmic_conflict_high_score()
+
         self._check_high_score_saved()
 
     def _return_to_game_menu(self):
@@ -588,14 +607,6 @@ class AlienOnslaught:
         elif not self.phoenix_ship.state.alive:
             self._display_endgame("thunder_win")
 
-    def _set_winner_score(self):
-        """Set the high score for the player that remains alive.
-        Method used for the Cosmic Conflict game mode."""
-        if not self.phoenix_ship.state.alive:
-            self.stats.high_score = self.stats.thunderbird_score
-        elif not self.thunderbird_ship.state.alive:
-            self.stats.high_score = self.stats.phoenix_score
-
     def _prepare_level(self):
         """Common level progression handler"""
         self._reset_game_objects()
@@ -617,26 +628,6 @@ class AlienOnslaught:
         self._prepare_level()
         self._prepare_last_bullet_bullets()
 
-    def _prepare_asteroids_level(self):
-        """Level progression handler for the Meteor Madness game mode."""
-        self.asteroids.empty()
-
-        if self.settings.asteroid_speed < GAME_CONSTANTS["MAX_AS_SPEED"]:
-            self.settings.asteroid_speed += 0.3
-        if self.settings.asteroid_freq > GAME_CONSTANTS["MAX_AS_FREQ"]:
-            self.settings.asteroid_freq -= 100
-        self.settings.thunderbird_ship_speed = max(
-            2.0, self.settings.thunderbird_ship_speed - 0.2
-        )
-        self.settings.phoenix_ship_speed = max(
-            2.0, self.settings.phoenix_ship_speed - 0.2
-        )
-        self.stats.thunderbird_score += 2000
-        self.score_board.update_high_score()
-
-        self.stats.increase_level()
-        self.score_board.prep_level()
-        self.score_board.render_high_score()
 
     def _reset_game_objects(self, *exclude_groups):
         """Clear the screen of game objects, excluding specified groups."""
@@ -662,8 +653,7 @@ class AlienOnslaught:
             ship.center_ship()
             ship.start_warp()
             ship.update_missiles_number()
-            if self.settings.game_modes.cosmic_conflict:
-                ship.set_cosmic_conflict_pos()
+            ship.set_cosmic_conflict_pos()
         # reset player weapons
         self.bullets_manager.reset_weapons()
 
@@ -721,6 +711,38 @@ class AlienOnslaught:
         self.score_board.prep_level()
         self.score_board.create_health()
         # Prepare sounds
+        self.sound_manager.prepare_level_music()
+        play_sound(self.sound_manager.game_sounds, "warp")
+
+    def _reset_game_single(self):
+        """Start a new game in singleplayer."""
+        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+        self.phoenix_ship.state.alive = False
+        self.settings.dynamic_settings()
+        self.stats.game_active = True
+        self.ui_options.high_score_saved = False
+        self.ui_options.game_over_sound_played = False
+
+        # Clear the screen of remaining aliens, bullets, asteroids and powers
+        self._reset_game_objects(self.phoenix_bullets)
+
+        # Reset ships
+        self._reset_ships()
+        self.player_input.reset_ship_movement_flags()
+        # Handle alien creation.
+        self._handle_alien_creation()
+        self._prepare_last_bullet_bullets()
+        self._handle_boss_stats()
+
+        # This resets self.last_level_time when a new game starts.
+        self.last_level_time = pygame.time.get_ticks()
+        # Prepare scoreboard
+        self.score_board.render_scores()
+        self.score_board.render_high_score()
+        self.score_board.prep_level()
+        self.score_board.render_bullets_num()
+        self.score_board.create_health()
+        # Prepare sound
         self.sound_manager.prepare_level_music()
         play_sound(self.sound_manager.game_sounds, "warp")
 
@@ -805,53 +827,6 @@ class AlienOnslaught:
             self.screen_manager.draw_cursor()
 
         pygame.display.flip()
-
-
-class SingleplayerAlienOnslaught(AlienOnslaught):
-    """A class that manages the Singleplayer version of the game"""
-
-    def __init__(self):
-        super().__init__(singleplayer=True)
-        self.score_board = SingleScoreBoard(self)
-        self.thunderbird_ship.state.single_player = True
-        self.ships = [self.thunderbird_ship]
-
-        self.player_input = PlayerInput(self, self.ui_options)
-        self.collision_handler = CollisionManager(self)
-        self.screen_manager = ScreenManager(
-            self.settings, self.score_board, self.buttons, self.screen
-        )
-
-    def _reset_game(self):
-        """Start a new game."""
-        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
-        self.phoenix_ship.state.alive = False
-        self.settings.dynamic_settings()
-        self.stats.game_active = True
-        self.ui_options.high_score_saved = False
-
-        # Clear the screen of remaining aliens, bullets, asteroids and powers
-        self._reset_game_objects(self.phoenix_bullets)
-
-        # Reset ships
-        self._reset_ships()
-        self.player_input.reset_ship_movement_flags()
-        # Handle alien creation.
-        self._handle_alien_creation()
-        self._prepare_last_bullet_bullets()
-        self._handle_boss_stats()
-
-        # This resets self.last_level_time when a new game starts.
-        self.last_level_time = pygame.time.get_ticks()
-        # Prepare scoreboard
-        self.score_board.render_scores()
-        self.score_board.render_high_score()
-        self.score_board.prep_level()
-        self.score_board.render_bullets_num()
-        self.score_board.create_health()
-        # Prepare sound
-        self.sound_manager.prepare_level_music()
-        play_sound(self.sound_manager.game_sounds, "warp")
 
 
 if __name__ == "__main__":

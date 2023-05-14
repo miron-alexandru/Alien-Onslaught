@@ -26,7 +26,7 @@ class ScreenManager:
             "../game_assets/images/buttons/player_controls.png"
         )
         self._initialize_cursor()
-        self._create_controls()
+        self.create_controls()
 
     def update_buttons(self):
         """Updates the position of game objects after resizing the screen."""
@@ -83,7 +83,12 @@ class ScreenManager:
         self.buttons.last_bullet.update_pos(
             self.buttons.boss_rush.rect.right - 5, self.buttons.boss_rush.rect.y
         )
-
+        # Update Menu Buttons
+        self.buttons.single.update_pos(self.screen.get_rect().center, y=-55)
+        self.buttons.multi.update_pos(self.buttons.single.rect.centerx - 100, self.buttons.single.rect.bottom)
+        self.buttons.menu_quit.update_pos(self.buttons.multi.rect.centerx - 100, self.buttons.multi.rect.bottom)
+        self.settings.game_title_rect.centerx =  self.screen.get_rect().centerx
+        # Update scoreboard
         self.score_board.prep_level()
         self.score_board.render_scores()
         self.score_board.render_high_score()
@@ -104,7 +109,7 @@ class ScreenManager:
         self.cursor_surface.blit(self.settings.cursor_img, (5, 10))
         self.screen.blit(self.cursor_surface, self.settings.cursor_rect)
 
-    def _create_controls(self):
+    def create_controls(self):
         """This method creates the images and positions
         for the controls that will be displayed on the game menu.
         """
@@ -118,7 +123,6 @@ class ScreenManager:
             self.t2_surfaces,
             self.t2_rects,
         ) = display_controls(self.player_controls, self.screen)
-
 
 class LoadingScreen:
     """Manages the loading screen for the game,

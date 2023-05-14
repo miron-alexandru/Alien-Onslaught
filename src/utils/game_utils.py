@@ -15,7 +15,7 @@ from .constants import (
 
 def get_colliding_sprites(ship, bullets_or_missiles):
     """Returns the sprites that collide with the given ship."""
-    return pygame.sprite.spritecollide(ship, bullets_or_missiles, True)
+    return pygame.sprite.spritecollide(ship, bullets_or_missiles, False)
 
 
 def load_images(image_dict):
@@ -223,7 +223,6 @@ def display_game_modes_description(screen, description):
     for i, surface in enumerate(text_surfaces):
         screen.blit(surface, text_rects[i])
 
-
 def display_controls(controls_frame, settings):
     """Display controls on screen."""
     p1_controls, p1_controls_rect = load_controls_image(
@@ -232,6 +231,18 @@ def display_controls(controls_frame, settings):
     p2_controls, p2_controls_rect = load_controls_image(
         controls_frame, {"topright": (settings.get_width() - 50, 220)}
     )
+
+    # Calculate the x offset from the center of the screen
+    x_offset = p1_controls_rect.width // 2 + 400
+
+    # Get the center of the screen
+    center = settings.get_rect().center
+
+    # Set the position of player 1 controls
+    p1_controls_rect.topleft = (center[0] - x_offset, 250)
+
+    # Set the position of player 2 controls
+    p2_controls_rect.topright = (center[0] + x_offset, 250)
 
     font = pygame.font.SysFont("arialbold", 35)
     color = "white"
@@ -260,6 +271,7 @@ def display_controls(controls_frame, settings):
         t2_surfaces,
         t2_rects,
     )
+
 
 
 def display_message(screen, message, duration):

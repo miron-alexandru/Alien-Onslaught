@@ -97,7 +97,7 @@ class Settings:
 
         # Asteroid settings
         self.asteroid_speed = 1.5
-        self.asteroid_freq = 1000
+        self.asteroid_freq = 700
 
     def increase_speed(self):
         """Increase speed settings and alien point values."""

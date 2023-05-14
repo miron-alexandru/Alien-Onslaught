@@ -26,6 +26,7 @@ class GameModesManager:
         self.game = game
         self.settings = settings
         self.stats = stats
+        self.score_board = game.score_board
 
     def update_normal_boss_info(self):
         """Updates the points and hp of bosses in the normal game mode."""
@@ -96,7 +97,6 @@ class GameModesManager:
         create_asteroids,
         update_asteroids,
         collision_handler,
-        prepare_level,
         thunderbird_hit,
         phoenix_hit,
     ):
@@ -114,7 +114,30 @@ class GameModesManager:
             current_time = pygame.time.get_ticks() - self.game.pause_time
             if current_time > self.game.last_level_time + level_time:
                 self.game.last_level_time = current_time
-                prepare_level()
+                self._prepare_asteroids_level()
+
+    def _prepare_asteroids_level(self):
+        """Level progression handler for the Meteor Madness game mode."""
+        self.game.asteroids.empty()
+
+        if self.settings.asteroid_speed < GAME_CONSTANTS["MAX_AS_SPEED"]:
+            self.settings.asteroid_speed += 0.3
+        if self.settings.asteroid_freq > GAME_CONSTANTS["MAX_AS_FREQ"]:
+            self.settings.asteroid_freq -= 100
+        self.settings.thunderbird_ship_speed = max(
+            2.0, self.settings.thunderbird_ship_speed - 0.2
+        )
+        self.settings.phoenix_ship_speed = max(
+            2.0, self.settings.phoenix_ship_speed - 0.2
+        )
+        self.stats.thunderbird_score += 2000
+        self.score_board.update_high_score()
+
+        self.stats.increase_level()
+        self.score_board.prep_level()
+        self.score_board.render_high_score()
+        print(self.settings.asteroid_speed)
+        print(self.settings.asteroid_freq)
 
     def last_bullet(self, thunderbird, phoenix, asteroid_handler):
         """Play the Last Bullet game mode in which the players must fight aliens
@@ -205,3 +228,21 @@ class GameModesManager:
     def cosmic_conflict(self, bullet_collisions, thunderbird_hit, phoenix_hit):
         """Play the Cosmic Conflict game mode where players are fighting against each other."""
         bullet_collisions(thunderbird_hit, phoenix_hit)
+
+    def set_cosmic_conflict_high_score(self):
+        """Method used in the Cosmic Conflict game mode which
+        sets the high score as the score of the remaining player."""
+        if not self.game.phoenix_ship.state.alive:
+            self.stats.high_score = self.stats.thunderbird_score
+        elif not self.game.thunderbird_ship.state.alive:
+            self.stats.high_score = self.stats.phoenix_score
+
+    def reset_cosmic_conflict(self):
+        """This method is used when changing the game to
+        singleplayer from multiplayer and the game mode is Cosmic Conflict
+        to set the Cosmic Conflict setting to False because it is not
+        available in singleplayer.
+        """
+        if self.settings.game_modes.cosmic_conflict:
+            self.settings.game_modes.cosmic_conflict = False
+            self.settings.game_modes.game_mode = 'normal'

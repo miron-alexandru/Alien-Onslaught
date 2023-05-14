@@ -237,13 +237,12 @@ class Thunderbird(Ship):
         self.missiles_num = game.settings.thunderbird_missiles_num
         self.ship_type = "thunderbird"
         self.offset = -300
-        self.set_cosmic_conflict_pos()
 
     def set_cosmic_conflict_pos(self):
         """The the ship position for the Cosmic Conflict game mode."""
         if self.game.settings.game_modes.cosmic_conflict:
-            self.cosmic_conflict_pos = self.screen_rect.left + 10
             self.image = pygame.transform.rotate(self.image, -90)
+        self.cosmic_conflict_pos = self.screen_rect.left + 10
 
 
 class Phoenix(Ship):
@@ -255,13 +254,12 @@ class Phoenix(Ship):
         self.missiles_num = game.settings.phoenix_missiles_num
         self.ship_type = "phoenix"
         self.offset = 200
-        self.set_cosmic_conflict_pos()
 
     def set_cosmic_conflict_pos(self):
         """Set the ship position for the Cosmic Conflict game Mode"""
         if self.game.settings.game_modes.cosmic_conflict:
-            self.cosmic_conflict_pos = self.screen_rect.right - 50
             self.image = pygame.transform.rotate(self.image, 90)
+        self.cosmic_conflict_pos = self.screen_rect.right - 50
 
 
 @dataclass

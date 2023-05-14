@@ -43,6 +43,8 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.0:
+* Code refactored to enhance the functionality of the main game class, allowing it to work for both singleplayer and multiplayer modes. This eliminates the need to create a separate class for singleplayer.
+* Implemented winning screen for Cosmic Conflict.
 * Added a new PVP game mode called Cosmic Conflict, where two players battle against each other in a 1v1 match.
 * High score saving improved.
 * Improved sound balance.

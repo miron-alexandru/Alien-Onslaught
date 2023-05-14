@@ -157,11 +157,19 @@ class CollisionManager:
             self.game.thunderbird_ship, self.game.phoenix_missiles
         )
 
-        if thunderbird_missile_hits and not self.game.phoenix_ship.state.immune:
-            phoenix_hit()
+        for missile in thunderbird_missile_hits:
+            if not self.game.phoenix_ship.state.immune:
+                phoenix_hit()
+                missile.explode()
+                print('asd')
+                play_sound(self.game.sound_manager.game_sounds, "missile")
 
-        if phoenix_missile_hits and not self.game.thunderbird_ship.state.immune:
-            thunderbird_hit()
+        for missile in phoenix_missile_hits:
+            if not self.game.thunderbird_ship.state.immune:
+                thunderbird_hit()
+                missile.explode()
+                play_sound(self.game.sound_manager.game_sounds, "missile")
+
 
     def check_alien_ship_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to collisions between aliens and ships and also check if

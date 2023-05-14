@@ -25,7 +25,11 @@ class ScoreBoard:
         self.settings = game.settings
         self.stats = game.stats
         self.second_stats = game.stats
-        self.high_scores_file = "high_score.json"
+        self.high_scores_file = (
+            "single_high_score.json"
+            if self.game.singleplayer
+            else "high_score.json"
+        )
 
         # Font settings
         self.text_color = (238, 75, 43)
@@ -217,7 +221,7 @@ class ScoreBoard:
     def save_high_score(self, score_key):
         """Save the high score to a JSON file."""
         filename = self.high_scores_file
-        if self.stats.thunderbird_score + self.second_stats.phoenix_score <= 0:
+        if self.stats.high_score <= 0:
             return
         try:
             with open(filename, "r", encoding="utf-8") as score_file:
@@ -296,18 +300,21 @@ class ScoreBoard:
             self.settings.game_modes.boss_rush,
         ]):
             self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
-            self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
+            if not self.game.singleplayer:
+                self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
 
         # Draw remaining bullets if in "last bullet" game mode
         if self.settings.game_modes.last_bullet:
             self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
-            self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
+            if not self.game.singleplayer:
+                self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
 
         # Draw remaining missiles for each player
         self.screen.blit(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
         self.screen.blit(self.missiles_icon, self.thunderbird_missiles_img_rect)
-        self.screen.blit(self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
-        self.screen.blit(self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
+        if not self.game.singleplayer:
+            self.screen.blit(self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
+            self.screen.blit(self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
 
         # Draw current level and high score (if not in "cosmic conflict" mode)
         self.screen.blit(self.level_image, self.level_rect)
@@ -317,98 +324,12 @@ class ScoreBoard:
         # Draw remaining health for each player's ship
         if self.game.thunderbird_ship.state.alive:
             self.thunderbird_health.draw(self.screen)
-        if self.game.phoenix_ship.state.alive:
+        if self.game.phoenix_ship.state.alive and not self.game.singleplayer:
             self.phoenix_health.draw(self.screen)
 
-
-class SingleScoreBoard(ScoreBoard):
-    """A class to report scoring information for the single player mode."""
-
-    def __init__(self, game):
-        super().__init__(game)
-        self.high_scores_file = "single_high_score.json"
-
-        self.prep_level()
-        self.render_scores()
-        self.render_high_score()
-        self.create_health()
-        self.render_bullets_num()
-
-    def render_scores(self):
-        """Render the scores and missiles number for the Thunderbird
-        and display them on the screen.
-        """
-        screen_rect = self.screen.get_rect()
-        rounded_thunderbird_score = round(self.stats.thunderbird_score)
-        thunderbird_score_str = f"Score: {rounded_thunderbird_score:,}"
-        thunderbird_missiles = f"{self.game.thunderbird_ship.missiles_num}"
-        missiles_img_rect = self.missiles_icon.get_rect()
-        missiles_img_rect.bottom = screen_rect.bottom - 5
-        self.thunderbird_missiles_img_rect = missiles_img_rect
-
-        self.thunderbird_score_image = self.font.render(
-            thunderbird_score_str, True, self.text_color, None
-        )
-        self.thunderbird_rend_missiles_num = self.font.render(
-            thunderbird_missiles, True, (71, 71, 71, 255), None
-        )
-
-        # Display the score at the stop right of the screen.
-        self.thunderbird_score_rect = self.thunderbird_score_image.get_rect()
-        self.thunderbird_score_rect.right = self.level_rect.centerx + 250
-        self.thunderbird_score_rect.top = 20
-
-        self.thunderbird_missiles_rect = self.thunderbird_rend_missiles_num.get_rect()
-        self.thunderbird_missiles_rect.left = screen_rect.left + 28
-        self.thunderbird_missiles_rect.bottom = screen_rect.bottom - 10
-        self.thunderbird_missiles_img_rect.left = screen_rect.left
-
-    def update_high_score(self):
-        """Updates the high score if the current score is higher and,
-        renders the new high score on screen.
-        """
-        self.stats.high_score = self.stats.thunderbird_score
-        self.render_high_score()
-
-    def render_bullets_num(self):
-        """Renders the remaining bullets number for Thunderbird and
-        if they are out of bullets, displays an appropriate message."""
-        thunder_alive = self.game.thunderbird_ship.state.alive
-
-        thunder_bullets = (
-            self.game.thunderbird_ship.remaining_bullets if thunder_alive else 0
-        )
-
-        thunder_bullets_str = (
-            f"Remaining bullets: {thunder_bullets}"
-            if thunder_bullets
-            else "Out of bullets!"
-        )
-
-        self.thunder_bullets_num_img = self.bullets_num_font.render(
-            thunder_bullets_str, True, self.text_color, None
-        )
-
-        self.thunder_bullets_num_rect = self.thunder_bullets_num_img.get_rect()
-
-        self.thunder_bullets_num_rect.top = 55
-        self.thunder_bullets_num_rect.left = self.screen_rect.left + 10
-
-    def show_score(self):
-        """Draw scores, level number of remaining missiles
-        and health to the screen.
-        """
-        if not self.settings.game_modes.meteor_madness:
-            self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
-        if self.settings.game_modes.last_bullet:
-            self.screen.blit(
-                self.thunder_bullets_num_img, self.thunder_bullets_num_rect
-            )
-        self.screen.blit(
-            self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect
-        )
-        self.screen.blit(self.missiles_icon, self.thunderbird_missiles_img_rect)
-        self.screen.blit(self.high_score_image, self.high_score_rect)
-        self.screen.blit(self.level_image, self.level_rect)
-        if self.game.thunderbird_ship.state.alive:
-            self.thunderbird_health.draw(self.screen)
+    def update_high_score_filename(self):
+        """Update highscore filename based on the game."""
+        if self.game.singleplayer:
+            self.high_scores_file = "single_high_score.json"
+        else:
+            self.high_scores_file = "high_score.json"
