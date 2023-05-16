@@ -241,9 +241,10 @@ class ScoreBoard:
                 self.settings.game_end_img,
                 self.settings.game_end_rect,
             )
+
             if player_name is None:
                 return
-            elif player_name == "":
+            if player_name == "":
                 player_name = "Player"
 
             for i, score in enumerate(scores):
@@ -290,38 +291,39 @@ class ScoreBoard:
 
     def show_score(self):
         """Draw various score-related elements to the screen,
-        including player scores, the number of missiles remaining
-        for each player, the high score, the current level, and the
-        remaining health of each player's ship.
+        including player scores, remaining missiles and bullets,
+        high score, current level, and remaining health of each player's ship.
         """
-        # Draw player scores if not in certain game modes
-        if not any([
-            self.settings.game_modes.meteor_madness,
-            self.settings.game_modes.boss_rush,
-        ]):
-            self.screen.blit(self.thunderbird_score_image, self.thunderbird_score_rect)
-            if not self.game.singleplayer:
-                self.screen.blit(self.phoenix_score_image, self.phoenix_score_rect)
 
-        # Draw remaining bullets if in "last bullet" game mode
-        if self.settings.game_modes.last_bullet:
-            self.screen.blit(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
-            if not self.game.singleplayer:
-                self.screen.blit(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
+        def draw_score(image, rect):
+            self.screen.blit(image, rect)
 
-        # Draw remaining missiles for each player
-        self.screen.blit(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
-        self.screen.blit(self.missiles_icon, self.thunderbird_missiles_img_rect)
+        def draw_missiles(image, rect):
+            self.screen.blit(image, rect)
+
+        draw_score(self.thunderbird_score_image, self.thunderbird_score_rect)
+
         if not self.game.singleplayer:
-            self.screen.blit(self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
-            self.screen.blit(self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
+            draw_score(self.phoenix_score_image, self.phoenix_score_rect)
 
-        # Draw current level and high score (if not in "cosmic conflict" mode)
-        self.screen.blit(self.level_image, self.level_rect)
+        if self.settings.game_modes.last_bullet:
+            draw_score(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
+
+            if not self.game.singleplayer:
+                draw_score(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
+
+        draw_missiles(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
+        draw_missiles(self.missiles_icon, self.thunderbird_missiles_img_rect)
+
+        if not self.game.singleplayer:
+            draw_missiles(self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
+            draw_missiles(self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
+
+        draw_score(self.level_image, self.level_rect)
+
         if not self.settings.game_modes.cosmic_conflict:
-            self.screen.blit(self.high_score_image, self.high_score_rect)
+            draw_score(self.high_score_image, self.high_score_rect)
 
-        # Draw remaining health for each player's ship
         if self.game.thunderbird_ship.state.alive:
             self.thunderbird_health.draw(self.screen)
         if self.game.phoenix_ship.state.alive and not self.game.singleplayer:

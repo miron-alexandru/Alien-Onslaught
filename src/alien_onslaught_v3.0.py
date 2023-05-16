@@ -273,7 +273,10 @@ class AlienOnslaught:
         if not self.aliens:
             if self.settings.game_modes.last_bullet:
                 self._prepare_last_bullet_level()
-            elif not self.settings.game_modes.meteor_madness and not self.settings.game_modes.cosmic_conflict:
+            elif (
+                not self.settings.game_modes.meteor_madness
+                and not self.settings.game_modes.cosmic_conflict
+            ):
                 self._prepare_next_level()
 
     def check_events(self):
@@ -305,7 +308,7 @@ class AlienOnslaught:
         """Check for buttons being clicked and act accordingly."""
         self.buttons.handle_buttons_visibility()
         button_actions = self.buttons.create_button_actions_dict(
-            self.run_menu, self._reset_game, self._reset_game_single
+            self.run_menu, self._reset_game
         )
         for button, action in button_actions.items():
             if (
@@ -688,7 +691,7 @@ class AlienOnslaught:
         self.ui_options.high_score_saved = False
         self.ui_options.game_over_sound_played = False
 
-        # Clear the screen of remaining aliens, bullets, asteroids and powers.
+        # Clear the screen of remaining aliens, bullets, asteroids, and powers.
         self._reset_game_objects()
 
         # Play the warp animation and center the ships.
@@ -696,12 +699,12 @@ class AlienOnslaught:
 
         self.player_input.reset_ship_movement_flags()
 
-        # Create aliens
+        # Handle Alien Creation
         self._handle_alien_creation()
         self._prepare_last_bullet_bullets()
         self._handle_boss_stats()
 
-        # for resetting self.last_level_time when a new game starts.
+        # Reset self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
 
         # Prepare the scoreboard
@@ -714,37 +717,8 @@ class AlienOnslaught:
         self.sound_manager.prepare_level_music()
         play_sound(self.sound_manager.game_sounds, "warp")
 
-    def _reset_game_single(self):
-        """Start a new game in singleplayer."""
-        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
-        self.phoenix_ship.state.alive = False
-        self.settings.dynamic_settings()
-        self.stats.game_active = True
-        self.ui_options.high_score_saved = False
-        self.ui_options.game_over_sound_played = False
-
-        # Clear the screen of remaining aliens, bullets, asteroids and powers
-        self._reset_game_objects(self.phoenix_bullets)
-
-        # Reset ships
-        self._reset_ships()
-        self.player_input.reset_ship_movement_flags()
-        # Handle alien creation.
-        self._handle_alien_creation()
-        self._prepare_last_bullet_bullets()
-        self._handle_boss_stats()
-
-        # This resets self.last_level_time when a new game starts.
-        self.last_level_time = pygame.time.get_ticks()
-        # Prepare scoreboard
-        self.score_board.render_scores()
-        self.score_board.render_high_score()
-        self.score_board.prep_level()
-        self.score_board.render_bullets_num()
-        self.score_board.create_health()
-        # Prepare sound
-        self.sound_manager.prepare_level_music()
-        play_sound(self.sound_manager.game_sounds, "warp")
+        if self.singleplayer:
+            self.phoenix_ship.state.alive = False
 
     def _prepare_last_bullet_bullets(self):
         """Prepare the number of bullets in the Last Bullet game mode

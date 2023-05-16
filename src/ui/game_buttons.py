@@ -347,18 +347,10 @@ class GameButtons:
         self.game.score_board.delete_high_scores(high_score_key)
         self.ui_options.show_high_scores = not self.ui_options.show_high_scores
 
-    def create_button_actions_dict(self, menu_method, reset_method, single_reset_method):
+    def create_button_actions_dict(self, menu_method, reset_game):
         """Create a dictionary mapping buttons to their corresponding actions."""
-        def play_singleplayer():
-            self.handle_play_button(single_reset_method)
-
-        def play_multiplayer():
-            self.handle_play_button(reset_method)
-
-        play_action = play_singleplayer if self.game.singleplayer else play_multiplayer
-
         return {
-            self.play: play_action,
+            self.play: lambda: self.handle_play_button(reset_game),
             self.menu: menu_method,
             self.quit: self.handle_quit_button,
             self.high_scores: self.handle_high_scores_button,

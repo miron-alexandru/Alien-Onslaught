@@ -335,29 +335,27 @@ def get_player_name(
 
     # Loop until player name is confirmed or canceled
     while True:
-        # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    return player_name  # exit loop and return player name
+                    return player_name  # Exit loop and return player name
                 if event.key == pygame.K_BACKSPACE:
                     player_name = player_name[:-1]
                 elif event.unicode.isalnum():
                     player_name += event.unicode
-                    player_name = player_name[
-                        :12
-                    ]  # limit length of player name to 12 characters
+                    player_name = player_name[:12]  # Limit length of player name to 12 characters
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for button in button_info:
                     if button["rect"].collidepoint(event.pos):
                         if button["label"] == "Close":
-                            return None  # exit loop without saving the name
-                        elif button["label"] == "Save":
-                            return player_name  # exit loop and return player name
+                            return None  # Exit loop without saving the name
+                        if button["label"] == "Save":
+                            return player_name  # Exit loop and return player name
 
         screen.blit(background_image, (0, 0))
         if game_end_img is not None and game_end_rect is not None:
