@@ -43,6 +43,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.0:
+* Implemented a unique set of alien bullets for each type of alien present in the game.
 * Code refactored to enhance the functionality of the main game class, allowing it to work for both singleplayer and multiplayer modes. This eliminates the need to create a separate class for singleplayer.
 * Implemented winning screen for Cosmic Conflict.
 * Added a new PVP game mode called Cosmic Conflict, where two players battle against each other in a 1v1 match.
@@ -189,3 +190,4 @@ This is a list of assets used in the project that were not created by me, along 
 * Aliens — by [Gamedevtuts](https://opengameart.org/users/gamedevtuts)
 * Powers and some bullets — by [JanaChumi](https://opengameart.org/users/janachumi)
 * Most of the bullets — by [Wenrexa](https://opengameart.org/users/wenrexa)
+* Alien Bullet — by [GameSupplyGuy] (https://gamesupply.itch.io/)
