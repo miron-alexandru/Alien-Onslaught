@@ -166,7 +166,13 @@ WEAPONS = {
 }
 
 ALIEN_BULLETS_IMG = {
-    "alien_bullet": "../game_assets/images/alien_bullets/alien_bullet.png",
+    "alien_bullet1": "../game_assets/images/alien_bullets/alien_bullet1.png",
+    "alien_bullet2": "../game_assets/images/alien_bullets/alien_bullet2.png",
+    "alien_bullet3": "../game_assets/images/alien_bullets/alien_bullet3.png",
+    "alien_bullet4": "../game_assets/images/alien_bullets/alien_bullet4.png",
+    "alien_bullet5": "../game_assets/images/alien_bullets/alien_bullet5.png",
+    "alien_bullet6": "../game_assets/images/alien_bullets/alien_bullet6.png",
+    "alien_bullet7": "../game_assets/images/alien_bullets/alien_bullet7.png",
     "xanathar_bullet": "../game_assets/images/alien_bullets/xanathar_bullet.png",
     "scorpion_bullet": "../game_assets/images/alien_bullets/scorpion_bullet.png",
     "mothership_bullet": "../game_assets/images/alien_bullets/mothership_bullet.png",
