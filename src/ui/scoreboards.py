@@ -10,7 +10,7 @@ import pygame.font
 
 from pygame.sprite import Group
 from entities.player_health import Heart
-from utils.constants import BOSS_RUSH_IMAGE_MAP
+from utils.constants import BOSS_RUSH
 from utils.game_utils import get_player_name, display_message
 
 
@@ -145,15 +145,17 @@ class ScoreBoard:
             "last_bullet": f"Last Bullet Level {str(self.stats.level)}",
             "cosmic_conflict": "Cosmic Conflict",
             "boss_rush": "Boss Rush: "
-            + BOSS_RUSH_IMAGE_MAP.get(
-                self.stats.level, f"Level {str(self.stats.level)}"
-            ).title(),
+                         + BOSS_RUSH.get(
+                             f"boss{str(self.stats.level)}",
+                             f"Level {str(self.stats.level)}"
+                         ).split("/")[-1].split(".png")[0].title()
         }
 
         level_str = level_map.get(
             self.settings.game_modes.game_mode, f"Level {str(self.stats.level)}"
         )
         self.level_image = self.font.render(level_str, True, self.level_color, None)
+
 
         # Position the level image in the center of the screen.
         screen_width, _ = self.screen.get_size()

@@ -12,8 +12,8 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import BOSS_RUSH_BULLET_MAP, NORMAL_BULLET_MAP, LEVEL_PREFIX, ALIEN_BULLETS_IMG
-from utils.game_utils import load_alien_bullets
+from utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
+from utils.game_utils import load_alien_bullets, load_boss_bullets
 from entities.aliens import BossAlien
 
 
@@ -52,7 +52,7 @@ class AlienBullet(Sprite):
 class BossBullet(Sprite):
     """A class that manages bullets for the boss alien."""
 
-    bullet_images = load_alien_bullets()
+    bullet_images = load_boss_bullets()
 
     def __init__(self, game, alien):
         """Initializes a new bullet for an alien."""
@@ -60,7 +60,7 @@ class BossBullet(Sprite):
         self.screen = game.screen
         self.settings = game.settings
         self.alien = alien
-        self.image = self.bullet_images["xanathar_bullet"]
+        self.image = self.bullet_images["boss_bullet2"]
         self.rect = self.image.get_rect()
         self._init_variables(alien)
         self._update_image(game)
@@ -74,14 +74,13 @@ class BossBullet(Sprite):
         self.x_vel = random.uniform(-4, 4)
 
     def _update_image(self, game):
-        """Change bullet image for specific boss fights."""
+        """Change the bullet image for specific boss fights."""
         if self.settings.game_modes.boss_rush:
-            level_image_map = BOSS_RUSH_BULLET_MAP
+            image_name = f"boss_bullet{game.stats.level}"
         else:
-            level_image_map = NORMAL_BULLET_MAP
-        level = game.stats.level
-        image_name = level_image_map.get(level)
-        if image_name is not None:
+            image_name = f"normal_bullet{game.stats.level}"
+
+        if image_name in self.bullet_images:
             self.image = self.bullet_images[image_name]
 
     def update(self):

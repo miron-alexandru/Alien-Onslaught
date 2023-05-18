@@ -10,6 +10,7 @@ from .constants import (
     P2_CONTROLS,
     BOSS_RUSH,
     ALIEN_BULLETS_IMG,
+    BOSS_BULLETS_IMG,
 )
 
 
@@ -108,7 +109,12 @@ def load_alien_bullets():
         for bullet_name, bullet_image_path in ALIEN_BULLETS_IMG.items()
     }
 
-
+def load_boss_bullets():
+    """Loads and returns a dict of boss bullet images."""
+    return {
+        bullet_name : pygame.image.load(bullet_image_path)
+        for bullet_name, bullet_image_path in BOSS_BULLETS_IMG.items()
+    }
 def render_text(text, font, color, start_pos, line_spacing, second_color=None):
     """Render text with new_lines and tabs."""
     lines = text.split("\n")

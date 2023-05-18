@@ -15,7 +15,7 @@ import pygame
 
 from pygame.sprite import Sprite
 from animations.other_animations import DestroyAnim, Immune
-from utils.constants import LEVEL_PREFIX, BOSS_RUSH_IMAGE_MAP, NORMAL_IMAGE_MAP
+from utils.constants import LEVEL_PREFIX
 from utils.game_utils import load_alien_images, load_boss_images
 
 
@@ -109,7 +109,7 @@ class BossAlien(Sprite):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.image = self.boss_images["xanathar"]
+        self.image = self.boss_images["boss2"]
         self._update_image(game)
 
         self.last_bullet_time = 0
@@ -129,12 +129,11 @@ class BossAlien(Sprite):
     def _update_image(self, game):
         """Change the image for specific boss fights."""
         if self.settings.game_modes.boss_rush:
-            level_image_map = BOSS_RUSH_IMAGE_MAP
+            image_name = f"boss{game.stats.level}"
         else:
-            level_image_map = NORMAL_IMAGE_MAP
-        level = game.stats.level
-        image_name = level_image_map.get(level)
-        if image_name is not None:
+            image_name = f"normal{game.stats.level}"
+
+        if image_name in self.boss_images:
             self.image = self.boss_images[image_name]
 
     def update(self):

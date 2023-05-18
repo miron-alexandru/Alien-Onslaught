@@ -25,7 +25,7 @@ BUTTON_NAMES = [
     "cosmic_conflict",
 ]
 
-# PLAYER_CONTROL
+# PLAYER_CONTROLS
 
 # Player2 controls
 P2_CONTROLS = (
@@ -84,19 +84,17 @@ BACKGROUNDS = {
     "space4": "../game_assets/images/background/space4.jpg",
 }
 
-# Bullets map dict, used to map available bullets to each level
-# in the Last Bullet game mode.
+# Bullets map dicts, used to map available bullets to each level
+# in the Last Bullet game mode both singleplayer and multiplayer.
+
 AVAILABLE_BULLETS_MAP = {
-    1: 9,
-    2: 9,
-    3: 9,
-    4: 9,
-    5: 17,
-    6: 17,
-    7: 17,
-    8: 17,
-    9: 17,
-    10: 25,
+    range(1, 5): 9,
+    range(5, 10): 17,
+}
+
+AVAILABLE_BULLETS_MAP_SINGLE = {
+    range(1, 5): 17,
+    range(5, 10): 34,
 }
 
 
@@ -113,19 +111,6 @@ ALIENS_HP_MAP = {
     10: 3,
 }
 
-# Map available bullets to game level for Last Bullet, singleplayer.
-AVAILABLE_BULLETS_MAP_SINGLE = {
-    1: 17,
-    2: 17,
-    3: 17,
-    4: 17,
-    5: 34,
-    6: 34,
-    7: 34,
-    8: 34,
-    9: 34,
-    10: 50,
-}
 
 # Other images used in the game.
 OTHER = {
@@ -173,85 +158,52 @@ ALIEN_BULLETS_IMG = {
     "alien_bullet5": "../game_assets/images/alien_bullets/alien_bullet5.png",
     "alien_bullet6": "../game_assets/images/alien_bullets/alien_bullet6.png",
     "alien_bullet7": "../game_assets/images/alien_bullets/alien_bullet7.png",
-    "xanathar_bullet": "../game_assets/images/alien_bullets/xanathar_bullet.png",
-    "scorpion_bullet": "../game_assets/images/alien_bullets/scorpion_bullet.png",
-    "mothership_bullet": "../game_assets/images/alien_bullets/mothership_bullet.png",
-    "xyranth_bullet": "../game_assets/images/alien_bullets/xyranth_bullet.png",
-    "nephilim_bullet": "../game_assets/images/alien_bullets/nephilim_bullet.png",
-    "nebulon_bullet": "../game_assets/images/alien_bullets/nebulon_bullet.png",
-    "astaroth_bullet": "../game_assets/images/alien_bullets/astaroth_bullet.png",
-    "krynnax_bullet": "../game_assets/images/alien_bullets/krynnax_bullet.png",
-    "arcturus_bullet": "../game_assets/images/alien_bullets/arcturus_bullet.png",
-    "xydonix_bullet": "../game_assets/images/alien_bullets/xydonix_bullet.png",
-    "valtor_bullet": "../game_assets/images/alien_bullets/valtor_bullet.png",
-    "xalaxar_bullet": "../game_assets/images/alien_bullets/xalaxar_bullet.png",
-    "zorgoth_bullet": "../game_assets/images/alien_bullets/zorgoth_bullet.png",
-    "typhon_bullet": "../game_assets/images/alien_bullets/typhon_bullet.png",
-    "xixo_bullet": "../game_assets/images/alien_bullets/xixo_bullet.png",
 }
+
+BOSS_BULLETS_IMG = {
+    "boss_bullet1": "../game_assets/images/alien_bullets/nephilim_bullet.png",
+    "boss_bullet2": "../game_assets/images/alien_bullets/xanathar_bullet.png",
+    "boss_bullet3": "../game_assets/images/alien_bullets/scorpion_bullet.png",
+    "boss_bullet4": "../game_assets/images/alien_bullets/nebulon_bullet.png",
+    "boss_bullet5": "../game_assets/images/alien_bullets/astaroth_bullet.png",
+    "boss_bullet6": "../game_assets/images/alien_bullets/krynnax_bullet.png",
+    "boss_bullet7": "../game_assets/images/alien_bullets/xyranth_bullet.png",
+    "boss_bullet8": "../game_assets/images/alien_bullets/arcturus_bullet.png",
+    "boss_bullet9": "../game_assets/images/alien_bullets/xydonix_bullet.png",
+    "boss_bullet10": "../game_assets/images/alien_bullets/mothership_bullet.png",
+    "boss_bullet11": "../game_assets/images/alien_bullets/valtor_bullet.png",
+    "boss_bullet12": "../game_assets/images/alien_bullets/xalaxar_bullet.png",
+    "boss_bullet13": "../game_assets/images/alien_bullets/zorgoth_bullet.png",
+    "boss_bullet14": "../game_assets/images/alien_bullets/typhon_bullet.png",
+    "boss_bullet15": "../game_assets/images/alien_bullets/xixo_bullet.png",
+    "normal_bullet15": "../game_assets/images/alien_bullets/scorpion_bullet.png",
+    "normal_bullet20": "../game_assets/images/alien_bullets/mothership_bullet.png",
+    "normal_bullet25": "../game_assets/images/alien_bullets/xyranth_bullet.png",
+}
+
 
 
 BOSS_RUSH = {
-    "arcturus": "../game_assets/images/boss_rush/arcturus.png",
-    "astaroth": "../game_assets/images/boss_rush/astaroth.png",
-    "krynnax": "../game_assets/images/boss_rush/krynnax.png",
-    "nebulon": "../game_assets/images/boss_rush/nebulon.png",
-    "nephilim": "../game_assets/images/boss_rush/nephilim.png",
-    "xydonix": "../game_assets/images/boss_rush/xydonis.png",
-    "typhon": "../game_assets/images/boss_rush/typhon.png",
-    "valtor": "../game_assets/images/boss_rush/valtor.png",
-    "xalaxar": "../game_assets/images/boss_rush/xalaxar.png",
-    "zorgoth": "../game_assets/images/boss_rush/zorgoth.png",
-    "xanathar": "../game_assets/images/aliens/xanathar.png",
-    "scorpion": "../game_assets/images/aliens/scorpion.png",
-    "mothership": "../game_assets/images/aliens/mothership.png",
-    "xyranth": "../game_assets/images/aliens/xyranth.png",
-    "xixo": "../game_assets/images/boss_rush/xixo.png",
+    "boss1": "../game_assets/images/boss_rush/nephilim.png",
+    "boss2": "../game_assets/images/aliens/xanathar.png",
+    "boss3": "../game_assets/images/aliens/scorpion.png",
+    "boss4": "../game_assets/images/boss_rush/nebulon.png",
+    "boss5": "../game_assets/images/boss_rush/astaroth.png",
+    "boss6": "../game_assets/images/boss_rush/krynnax.png",
+    "boss7": "../game_assets/images/aliens/xyranth.png",
+    "boss8": "../game_assets/images/boss_rush/arcturus.png",
+    "boss9": "../game_assets/images/boss_rush/xydonis.png",
+    "boss10": "../game_assets/images/aliens/mothership.png",
+    "boss11": "../game_assets/images/boss_rush/valtor.png",
+    "boss12": "../game_assets/images/boss_rush/xalaxar.png",
+    "boss13": "../game_assets/images/boss_rush/zorgoth.png",
+    "boss14": "../game_assets/images/boss_rush/typhon.png",
+    "boss15": "../game_assets/images/boss_rush/xixo.png",
+    "normal15": "../game_assets/images/aliens/scorpion.png",
+    "normal20": "../game_assets/images/aliens/mothership.png",
+    "normal25": "../game_assets/images/aliens/xyranth.png",
 }
 
-# Used to map boss images to game level for the boss rush
-BOSS_RUSH_IMAGE_MAP = {
-    1: "nephilim",
-    2: "xanathar",
-    3: "scorpion",
-    4: "nebulon",
-    5: "astaroth",
-    6: "krynnax",
-    7: "xyranth",
-    8: "arcturus",
-    9: "xydonix",
-    10: "mothership",
-    11: "valtor",
-    12: "xalaxar",
-    13: "zorgoth",
-    14: "typhon",
-    15: "xixo",
-}
-# Used to map boss bullets to game level for the boss rush
-BOSS_RUSH_BULLET_MAP = {
-    1: "nephilim_bullet",
-    2: "xanathar_bullet",
-    3: "scorpion_bullet",
-    4: "nebulon_bullet",
-    5: "astaroth_bullet",
-    6: "krynnax_bullet",
-    7: "xyranth_bullet",
-    8: "arcturus_bullet",
-    9: "xydonix_bullet",
-    10: "mothership_bullet",
-    11: "valtor_bullet",
-    12: "xalaxar_bullet",
-    13: "zorgoth_bullet",
-    14: "typhon_bullet",
-    15: "xixo_bullet",
-}
-
-
-NORMAL_BULLET_MAP = {
-    15: "scorpion_bullet",
-    20: "mothership_bullet",
-    25: "xyranth_bullet",
-}
 
 # used to map points given by bosses in boss rush
 BOSS_RUSH_POINTS_MAP = {
@@ -300,12 +252,6 @@ NORMAL_BOSS_HP_MAP = {
     15: 75,
     20: 95,
     25: 100,
-}
-
-NORMAL_IMAGE_MAP = {
-    15: "scorpion",
-    20: "mothership",
-    25: "xyranth",
 }
 
 

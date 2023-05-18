@@ -536,21 +536,29 @@ class AlienOnslaught:
         ship.state.shielded = False
 
         if ship == self.thunderbird_ship:
-            if self.settings.thunderbird_bullet_count >= 3:
-                self.settings.thunderbird_bullet_count -= 2
-            if self.settings.thunderbird_bullets_allowed > 3:
-                self.settings.thunderbird_bullets_allowed -= 1
-            self.stats.thunderbird_hp -= 1
+            self._update_thunderbird_stats()
         elif ship == self.phoenix_ship:
-            if self.settings.phoenix_bullet_count >= 3:
-                self.settings.phoenix_bullet_count -= 2
-            if self.settings.phoenix_bullets_allowed > 3:
-                self.settings.phoenix_bullets_allowed -= 1
-            self.stats.phoenix_hp -= 1
+            self._update_phoenix_stats()
 
         ship.center_ship()
         self.score_board.create_health()
         ship.set_immune()
+
+    def _update_thunderbird_stats(self):
+        """Update Thunderbird ship stats after destruction."""
+        if self.settings.thunderbird_bullet_count >= 3:
+            self.settings.thunderbird_bullet_count -= 2
+        if self.settings.thunderbird_bullets_allowed > 3:
+            self.settings.thunderbird_bullets_allowed -= 1
+        self.stats.thunderbird_hp -= 1
+
+    def _update_phoenix_stats(self):
+        """Update Phoenix ship stats after destruction."""
+        if self.settings.phoenix_bullet_count >= 3:
+            self.settings.phoenix_bullet_count -= 2
+        if self.settings.phoenix_bullets_allowed > 3:
+            self.settings.phoenix_bullets_allowed -= 1
+        self.stats.phoenix_hp -= 1
 
     def _check_game_over(self):
         """Check if the game is over and act accordingly."""
@@ -723,12 +731,20 @@ class AlienOnslaught:
     def _prepare_last_bullet_bullets(self):
         """Prepare the number of bullets in the Last Bullet game mode
         based on the level"""
-        level = self.stats.level
-        available_bullets = (
-            AVAILABLE_BULLETS_MAP_SINGLE.get(level, 50)
+
+        available_bullets_map = (
+            AVAILABLE_BULLETS_MAP_SINGLE
             if self.singleplayer
-            else AVAILABLE_BULLETS_MAP.get(level, 25)
+            else AVAILABLE_BULLETS_MAP
         )
+
+        for bullet_range, bullets in available_bullets_map.items():
+            if self.stats.level in bullet_range:
+                available_bullets = bullets
+                break
+        else:
+            available_bullets = 50 if self.singleplayer else 25
+
         for ship in self.ships:
             ship.remaining_bullets = available_bullets
 
