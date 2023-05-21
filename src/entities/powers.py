@@ -181,11 +181,6 @@ class PowerEffectsManager:
             f"{player}_ship_speed",
             getattr(self.settings, f"{player}_ship_speed") + 0.3,
         )
-        # for ship in self.game.ships:
-        #   if isinstance(ship, type(self.game.thunderbird_ship)) and player == "thunderbird":
-        #      ship.update_speed_from_settings("thunderbird")
-        # elif isinstance(ship, type(self.game.phoenix_ship)) and player == "phoenix":
-        #    ship.update_speed_from_settings("phoenix")
 
     def increase_bullet_speed(self, player):
         """Increases the bullet speed of the specified player."""

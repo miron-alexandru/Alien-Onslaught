@@ -182,7 +182,6 @@ BOSS_BULLETS_IMG = {
 }
 
 
-
 BOSS_RUSH = {
     "boss1": "../game_assets/images/boss_rush/nephilim.png",
     "boss2": "../game_assets/images/aliens/xanathar.png",
@@ -204,42 +203,6 @@ BOSS_RUSH = {
     "normal25": "../game_assets/images/aliens/xyranth.png",
 }
 
-
-# used to map points given by bosses in boss rush
-BOSS_RUSH_POINTS_MAP = {
-    1: 1000,
-    2: 1250,
-    3: 1700,
-    4: 2000,
-    5: 2250,
-    6: 2650,
-    7: 3100,
-    8: 3500,
-    9: 3900,
-    10: 4200,
-    11: 4500,
-    13: 5500,
-    14: 8000,
-    15: 10000,
-}
-
-# used to map the hp of bosses in boss rush
-BOSS_RUSH_HP_MAP = {
-    1: 25,
-    2: 41,
-    3: 58,
-    4: 77,
-    5: 96,
-    6: 105,
-    7: 117,
-    8: 132,
-    9: 155,
-    10: 169,
-    11: 189,
-    13: 220,
-    14: 249,
-    15: 270,
-}
 
 NORMAL_BOSS_POINTS = {
     15: 5000,

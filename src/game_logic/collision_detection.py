@@ -161,7 +161,7 @@ class CollisionManager:
             if not self.game.phoenix_ship.state.immune:
                 phoenix_hit()
                 missile.explode()
-                print('asd')
+                print("asd")
                 play_sound(self.game.sound_manager.game_sounds, "missile")
 
         for missile in phoenix_missile_hits:
@@ -169,7 +169,6 @@ class CollisionManager:
                 thunderbird_hit()
                 missile.explode()
                 play_sound(self.game.sound_manager.game_sounds, "missile")
-
 
     def check_alien_ship_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to collisions between aliens and ships and also check if
@@ -247,15 +246,16 @@ class CollisionManager:
     def check_alien_bullets_collisions(self, thunder_hit_method, phoenix_hit_method):
         """Manages collisions between the alien bullets and the players."""
         if not self.game.singleplayer:
-            player_ships = [self.thunderbird_ship, self.phoenix_ship]
-            player_methods = [thunder_hit_method, phoenix_hit_method]
+            player_ships = {
+                self.thunderbird_ship: thunder_hit_method,
+                self.phoenix_ship: phoenix_hit_method
+            }
         else:
-            player_ships = [self.thunderbird_ship]
-            player_methods = [thunder_hit_method]
+            player_ships = {
+                self.thunderbird_ship: thunder_hit_method
+            }
 
-        player_methods = [thunder_hit_method, phoenix_hit_method]
-
-        for ship, hit_method in zip(player_ships, player_methods):
+        for ship, hit_method in player_ships.items():
             if (
                 ship.state.alive
                 and not ship.state.immune

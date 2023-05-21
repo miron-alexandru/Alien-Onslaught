@@ -85,11 +85,13 @@ class ScreenManager:
         )
         # Update Menu Buttons
         self.buttons.single.update_pos(self.screen.get_rect().center, y=-55)
-        self.buttons.multi.update_pos(self.buttons.single.rect.centerx - 100,
-                                      self.buttons.single.rect.bottom)
-        self.buttons.menu_quit.update_pos(self.buttons.multi.rect.centerx - 100,
-                                          self.buttons.multi.rect.bottom)
-        self.settings.game_title_rect.centerx =  self.screen.get_rect().centerx
+        self.buttons.multi.update_pos(
+            self.buttons.single.rect.centerx - 100, self.buttons.single.rect.bottom
+        )
+        self.buttons.menu_quit.update_pos(
+            self.buttons.multi.rect.centerx - 100, self.buttons.multi.rect.bottom
+        )
+        self.settings.game_title_rect.centerx = self.screen.get_rect().centerx
         # Update scoreboard
         self.score_board.prep_level()
         self.score_board.render_scores()
@@ -125,6 +127,7 @@ class ScreenManager:
             self.t2_surfaces,
             self.t2_rects,
         ) = display_controls(self.player_controls, self.screen)
+
 
 class LoadingScreen:
     """Manages the loading screen for the game,

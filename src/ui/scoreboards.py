@@ -26,9 +26,7 @@ class ScoreBoard:
         self.stats = game.stats
         self.second_stats = game.stats
         self.high_scores_file = (
-            "single_high_score.json"
-            if self.game.singleplayer
-            else "high_score.json"
+            "single_high_score.json" if self.game.singleplayer else "high_score.json"
         )
 
         # Font settings
@@ -145,17 +143,15 @@ class ScoreBoard:
             "last_bullet": f"Last Bullet Level {str(self.stats.level)}",
             "cosmic_conflict": "Cosmic Conflict",
             "boss_rush": "Boss Rush: "
-                         + BOSS_RUSH.get(
-                             f"boss{str(self.stats.level)}",
-                             f"Level {str(self.stats.level)}"
-                         ).split("/")[-1].split(".png")[0].title()
+            + BOSS_RUSH.get(
+                f"boss{str(self.stats.level)}", f"Level {str(self.stats.level)}"
+            ).split("/")[-1].split(".png")[0].title(),
         }
 
         level_str = level_map.get(
             self.settings.game_modes.game_mode, f"Level {str(self.stats.level)}"
         )
         self.level_image = self.font.render(level_str, True, self.level_color, None)
-
 
         # Position the level image in the center of the screen.
         screen_width, _ = self.screen.get_size()

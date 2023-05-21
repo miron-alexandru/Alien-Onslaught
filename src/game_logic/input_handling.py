@@ -151,12 +151,14 @@ class PlayerInput:
                 self.thunderbird.image = self.thunderbird.anims.ship_images[1]
                 if self.settings.game_modes.cosmic_conflict:
                     self.thunderbird.image = pygame.transform.rotate(
-                        self.thunderbird.image, -90)
+                        self.thunderbird.image, -90
+                    )
             case pygame.K_3:
                 self.thunderbird.image = self.thunderbird.anims.ship_images[2]
                 if self.settings.game_modes.cosmic_conflict:
                     self.thunderbird.image = pygame.transform.rotate(
-                        self.thunderbird.image, -90)
+                        self.thunderbird.image, -90
+                    )
             case pygame.K_z:
                 fire_missile_method(
                     self.game.thunderbird_missiles,

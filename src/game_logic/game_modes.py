@@ -10,9 +10,7 @@ from utils.constants import (
     DIFFICULTIES,
     GAME_CONSTANTS,
     BOSS_LEVELS,
-    BOSS_RUSH_POINTS_MAP,
     NORMAL_BOSS_POINTS,
-    BOSS_RUSH_HP_MAP,
     NORMAL_BOSS_HP_MAP,
 )
 
@@ -37,31 +35,26 @@ class GameModesManager:
             self.stats.level, self.settings.boss_hp
         )
 
-        if (
-            self.stats.level in BOSS_LEVELS
-            and self.settings.speedup_scale == DIFFICULTIES["MEDIUM"]
-        ):
-            self.settings.boss_hp += 25
-
-        if (
-            self.stats.level in BOSS_LEVELS
-            and self.settings.speedup_scale == DIFFICULTIES["HARD"]
-        ):
-            self.settings.boss_hp += 45
+        if self.stats.level in BOSS_LEVELS:
+            if self.settings.speedup_scale == DIFFICULTIES["MEDIUM"]:
+                self.settings.boss_hp += 25
+            elif self.settings.speedup_scale == DIFFICULTIES["HARD"]:
+                self.settings.boss_hp += 45
 
     def update_boss_rush_info(self):
         """Updates the points and hp of bosses in Boss Rush."""
-        self.settings.boss_points = BOSS_RUSH_POINTS_MAP.get(
-            self.stats.level, self.settings.boss_points
-        )
-        self.settings.boss_hp = BOSS_RUSH_HP_MAP.get(
-            self.stats.level, self.settings.boss_hp
-        )
+        hp_increment = 17
+        points_increment = 575
 
         if self.settings.speedup_scale == DIFFICULTIES["MEDIUM"]:
-            self.settings.boss_hp += 15
+            hp_increment += 2
         elif self.settings.speedup_scale == DIFFICULTIES["HARD"]:
-            self.settings.boss_hp += 25
+            hp_increment += 3
+
+        self.settings.boss_points = 1000 + (self.stats.level - 1) * points_increment
+
+        self.settings.boss_hp = 25 + (self.stats.level - 1) * hp_increment
+
 
     def _create_boss_rush_bullets(self, bullets_manager):
         """Creates bullets for bosses in Boss Rush."""
@@ -75,7 +68,7 @@ class GameModesManager:
         if self.stats.level in BOSS_LEVELS:
             bullets_manager(1, 550, 550)
         else:
-            bullets_manager(self.settings.alien_bullets_num, 800, 7000)
+            bullets_manager(self.settings.alien_bullets_num, 850, 7000)
 
     def set_max_alien_bullets(self, difficulty):
         """Set the maximum number of alien bullets based on difficulty."""
@@ -136,8 +129,6 @@ class GameModesManager:
         self.stats.increase_level()
         self.score_board.prep_level()
         self.score_board.render_high_score()
-        print(self.settings.asteroid_speed)
-        print(self.settings.asteroid_freq)
 
     def last_bullet(self, thunderbird, phoenix, asteroid_handler):
         """Play the Last Bullet game mode in which the players must fight aliens
@@ -245,4 +236,4 @@ class GameModesManager:
         """
         if self.settings.game_modes.cosmic_conflict:
             self.settings.game_modes.cosmic_conflict = False
-            self.settings.game_modes.game_mode = 'normal'
+            self.settings.game_modes.game_mode = "normal"

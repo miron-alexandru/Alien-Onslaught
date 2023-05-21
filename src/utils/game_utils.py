@@ -109,12 +109,15 @@ def load_alien_bullets():
         for bullet_name, bullet_image_path in ALIEN_BULLETS_IMG.items()
     }
 
+
 def load_boss_bullets():
     """Loads and returns a dict of boss bullet images."""
     return {
-        bullet_name : pygame.image.load(bullet_image_path)
+        bullet_name: pygame.image.load(bullet_image_path)
         for bullet_name, bullet_image_path in BOSS_BULLETS_IMG.items()
     }
+
+
 def render_text(text, font, color, start_pos, line_spacing, second_color=None):
     """Render text with new_lines and tabs."""
     lines = text.split("\n")
@@ -229,6 +232,7 @@ def display_game_modes_description(screen, description):
     for i, surface in enumerate(text_surfaces):
         screen.blit(surface, text_rects[i])
 
+
 def display_controls(controls_frame, settings):
     """Display controls on screen."""
     p1_controls, p1_controls_rect = load_controls_image(
@@ -277,7 +281,6 @@ def display_controls(controls_frame, settings):
         t2_surfaces,
         t2_rects,
     )
-
 
 
 def display_message(screen, message, duration):
@@ -353,7 +356,9 @@ def get_player_name(
                     player_name = player_name[:-1]
                 elif event.unicode.isalnum():
                     player_name += event.unicode
-                    player_name = player_name[:12]  # Limit length of player name to 12 characters
+                    player_name = player_name[
+                        :12
+                    ]  # Limit length of player name to 12 characters
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for button in button_info:

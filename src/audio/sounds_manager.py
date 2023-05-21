@@ -25,13 +25,9 @@ class SoundManager:
         self.loading_screen = game.loading_screen
         self.stats = game.stats
 
-        (
-            self.level_music,
-            self.menu_sounds,
-            self.game_sounds,
-            self.boss_rush_levels,
-            self.endless_music,
-        ) = ({}, {}, {}, {}, {})
+        self.level_music, self.menu_sounds, self.game_sounds,\
+        self.boss_rush_levels, self.endless_music \
+        = {}, {}, {}, {}, {}
 
         self.current_sound = None
 
