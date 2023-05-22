@@ -83,6 +83,9 @@ class ScreenManager:
         self.buttons.last_bullet.update_pos(
             self.buttons.boss_rush.rect.right - 5, self.buttons.boss_rush.rect.y
         )
+        self.buttons.one_life_reign.update_pos(
+            self.buttons.last_bullet.rect.right - 5, self.buttons.last_bullet.rect.y
+        )
         # Update Menu Buttons
         self.buttons.single.update_pos(self.screen.get_rect().center, y=-55)
         self.buttons.multi.update_pos(

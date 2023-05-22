@@ -88,7 +88,7 @@ class PowerEffectsManager:
         current_time = pygame.time.get_ticks()
         # Determines how often powers and penalties are appearing.
         if current_time - self.last_power_up_time >= random.randint(
-            10000, 20000
+            15000, 20000
         ):  # milliseconds
             self.last_power_up_time = current_time
             # Determine the chance for a power to be health power up, weapon power up or

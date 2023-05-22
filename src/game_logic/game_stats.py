@@ -23,8 +23,8 @@ class GameStats:
         """Resets the statistics to their initial values."""
         phoenix_ship.state.alive = True
         thunderbird_ship.state.alive = True
-        self.phoenix_hp = self.thunderbird_hp = STARTING_HP
-        self.max_hp = MAX_HP
+        self.phoenix_hp = self.thunderbird_hp = 0 if self.settings.game_modes.one_life_reign else STARTING_HP
+        self.max_hp = 1 if self.settings.game_modes.one_life_reign else MAX_HP
         self.thunder_bullets = self.settings.thunderbird_bullet_count
         self.fire_bullets = self.settings.phoenix_bullet_count
         self.thunderbird_score = 0

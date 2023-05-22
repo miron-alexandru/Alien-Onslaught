@@ -99,6 +99,21 @@ class Settings:
         self.asteroid_speed = 1.5
         self.asteroid_freq = 700
 
+        if self.game_modes.one_life_reign:
+            self._set_one_life_reign_settings()
+
+    def _set_one_life_reign_settings(self):
+        """Buff the player's ship for the One Life Reign game mode."""
+        self.thunderbird_ship_speed += 3.5
+        self.thunderbird_bullet_speed += 5.0
+        self.thunderbird_bullets_allowed += 3
+        self.thunderbird_bullet_count += 1
+
+        self.phoenix_ship_speed += 3.5
+        self.phoenix_bullet_speed += 5.0
+        self.phoenix_bullets_allowed += 3
+        self.phoenix_bullet_count += 1
+
     def increase_speed(self):
         """Increase speed settings and alien point values."""
         if self.alien_speed < self.max_alien_speed:
@@ -136,4 +151,5 @@ class GameModes:
     boss_rush: bool = False
     last_bullet: bool = False
     cosmic_conflict: bool = False
+    one_life_reign: bool = False
     game_mode: str = "normal"

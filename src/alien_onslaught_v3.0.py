@@ -188,7 +188,6 @@ class AlienOnslaught:
         """Set variables for the singleplayer game mode."""
         self.thunderbird_ship.state.single_player = True
         self.ships = [self.thunderbird_ship]
-        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
         self.score_board.update_high_score_filename()
         self.gm_manager.reset_cosmic_conflict()
 
@@ -196,7 +195,6 @@ class AlienOnslaught:
         """Set variables for the multiplayer game mode."""
         self.thunderbird_ship.state.single_player = False
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
-        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
         self.score_board.update_high_score_filename()
 
     def _update_background(self, i):

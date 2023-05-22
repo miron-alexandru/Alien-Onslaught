@@ -23,6 +23,7 @@ BUTTON_NAMES = [
     "boss_rush",
     "last_bullet",
     "cosmic_conflict",
+    "one_life_reign",
 ]
 
 # PLAYER_CONTROLS
@@ -72,7 +73,11 @@ GAME_MODES_DESCRIPTIONS = (
     "If you run out of bullets, you'll become inactive and the game will be over.\n\n"
     # Cosmic Conflict
     "Prepare for an intense PVP space battle as you go head-to-head\n"
-    "in a 1v1 showdown."
+    "in a 1v1 showdown.\n\n"
+    # One Life Reign
+    "Embrace unstoppable strength, but remember, a single life is all you have.\n"
+    "Battle against relentless alien forces, navigate deadly challenges,\n"
+    "and face epic bosses."
 ).split("\n\n")
 
 
@@ -302,6 +307,7 @@ GAME_MODE_SCORE_KEYS = {
     "slow_burn": "slow_burn_scores",
     "last_bullet": "last_bullet_scores",
     "cosmic_conflict": "cosmic_conflict_scores",
+    "one_life_reign": "one_life_reign_scores",
     "normal": "high_scores",
 }
 

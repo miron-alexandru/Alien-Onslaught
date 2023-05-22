@@ -66,6 +66,7 @@ class GameButtons:
     def __init__(self, game, screen, ui_options, gm_options):
         self.screen = screen
         self.game = game
+        self.settings = game.settings
         self.ui_options = ui_options
         self.gm_options = gm_options
         self.screen_rect = self.screen.get_rect()
@@ -124,12 +125,6 @@ class GameButtons:
             (self.endless.rect.right - 5, self.endless.rect.y),
             GAME_MODES_DESCRIPTIONS[2],
         )
-        self.cosmic_conflict = Button(
-            self,
-            self.button_imgs["cosmic_conflict"],
-            (self.slow_burn.rect.right - 5, self.slow_burn.rect.y),
-            GAME_MODES_DESCRIPTIONS[6],
-        )
         self.meteor_madness = Button(
             self,
             self.button_imgs["meteor_madness"],
@@ -147,6 +142,18 @@ class GameButtons:
             self.button_imgs["last_bullet"],
             (self.boss_rush.rect.right - 5, self.boss_rush.rect.y),
             GAME_MODES_DESCRIPTIONS[5],
+        )
+        self.cosmic_conflict = Button(
+            self,
+            self.button_imgs["cosmic_conflict"],
+            (self.slow_burn.rect.right - 5, self.slow_burn.rect.y),
+            GAME_MODES_DESCRIPTIONS[6],
+        )
+        self.one_life_reign = Button(
+            self,
+            self.button_imgs["one_life_reign"],
+            (self.last_bullet.rect.right -5, self.last_bullet.rect.y),
+            GAME_MODES_DESCRIPTIONS[7],
         )
 
         # High scores and other game menu buttons
@@ -189,6 +196,7 @@ class GameButtons:
             self.boss_rush,
             self.last_bullet,
             self.cosmic_conflict,
+            self.one_life_reign,
         ]
 
     def display_description(self):
@@ -272,6 +280,7 @@ class GameButtons:
         self.gm_options.boss_rush = False
         self.gm_options.last_bullet = False
         self.gm_options.cosmic_conflict = False
+        self.gm_options.one_life_reign = False
         if game_mode_setting is not None:
             setattr(self.gm_options, game_mode_setting, True)
 
@@ -325,6 +334,13 @@ class GameButtons:
         self.gm_options.game_mode = "cosmic_conflict"
         self.ui_options.show_game_modes = False
 
+    def handle_one_life_reign_button(self):
+        """Toggle the One Life Reign game mode and hide all game mode buttons."""
+        self.gm_options.one_life_reign = not self.gm_options.one_life_reign
+        self._set_game_mode_settings("one_life_reign")
+        self.gm_options.game_mode = "one_life_reign"
+        self.ui_options.show_game_modes = False
+
     def handle_difficulty_button(self, speedup_scale, max_alien_speed):
         """Set the game difficulty (speed-up scale)."""
 
@@ -361,6 +377,7 @@ class GameButtons:
             self.last_bullet: self.handle_last_bullet_button,
             self.slow_burn: self.handle_slow_burn_button,
             self.cosmic_conflict: self.handle_cosmic_conflict_button,
+            self.one_life_reign: self.handle_one_life_reign_button,
             self.normal: self.handle_normal_button,
             self.easy: self.handle_difficulty_button(
                 DIFFICULTIES["EASY"], DIFFICULTIES["MAX_EASY"]
