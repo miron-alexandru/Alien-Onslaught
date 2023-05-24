@@ -4,6 +4,7 @@ that manages the statistics that change during the game.
 """
 
 from utils.constants import STARTING_HP, MAX_HP
+from utils.game_utils import play_sound
 
 
 class GameStats:
@@ -14,7 +15,9 @@ class GameStats:
     """
 
     def __init__(self, game, phoenix_ship, thunderbird_ship):
+        self.game = game
         self.settings = game.settings
+        self.phoenix_hp, self.thunderbird_hp, self.max_hp = 0, 0, 0
         self.reset_stats(phoenix_ship, thunderbird_ship)
         self.game_active = False
         self.high_score = 0
@@ -23,8 +26,8 @@ class GameStats:
         """Resets the statistics to their initial values."""
         phoenix_ship.state.alive = True
         thunderbird_ship.state.alive = True
-        self.phoenix_hp = self.thunderbird_hp = 0 if self.settings.game_modes.one_life_reign else STARTING_HP
-        self.max_hp = 1 if self.settings.game_modes.one_life_reign else MAX_HP
+        self.phoenix_hp = self.thunderbird_hp = STARTING_HP
+        self.max_hp = MAX_HP
         self.thunder_bullets = self.settings.thunderbird_bullet_count
         self.fire_bullets = self.settings.phoenix_bullet_count
         self.thunderbird_score = 0
@@ -32,6 +35,35 @@ class GameStats:
         self.level = 1
         self.high_score = 0
 
+        if self.settings.game_modes.one_life_reign:
+            self._set_one_life_reign_stats()
+
     def increase_level(self):
         """Increases the level by one."""
         self.level += 1
+
+    def _set_one_life_reign_stats(self):
+        """Set ship hp and max hp for the One Life Reign game mode"""
+        self.phoenix_hp = self.thunderbird_hp = 0
+        self.max_hp = 1
+
+    def revive_thunderbird(self, ship):
+        """Revive Thunderbird"""
+        self.thunderbird_hp = 1
+        self._revive_ship(ship)
+
+    def revive_phoenix(self, ship):
+        """Revive Phoenix"""
+        self.phoenix_hp = 1
+        self._revive_ship(ship)
+
+    def _revive_ship(self, ship):
+        """Revive the ship"""
+        ship.state.alive = True
+        ship.reset_ship_state()
+        ship.center_ship()
+        ship.start_warp()
+        play_sound(self.game.sound_manager.game_sounds, "warp")
+
+        if self.settings.game_modes.last_bullet:
+            self.game.score_board.render_bullets_num()

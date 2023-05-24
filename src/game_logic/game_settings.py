@@ -114,6 +114,7 @@ class Settings:
         self.phoenix_bullets_allowed += 3
         self.phoenix_bullet_count += 1
 
+
     def increase_speed(self):
         """Increase speed settings and alien point values."""
         if self.alien_speed < self.max_alien_speed:

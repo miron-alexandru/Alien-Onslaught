@@ -276,6 +276,9 @@ class AlienOnslaught:
             ):
                 self._prepare_next_level()
 
+            if not self.singleplayer:
+                self.check_for_player_revive()
+
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
         for event in pygame.event.get():
@@ -497,19 +500,29 @@ class AlienOnslaught:
             play_sound(self.sound_manager.game_sounds, "penalty")
 
     def _health_power_up(self, player):
-        """Increases the health of the specified player"""
-        player_health_attr = {
+        player_health_attrs = {
             "thunderbird": "thunderbird_hp",
             "phoenix": "phoenix_hp",
         }
-        if getattr(self.stats, player_health_attr[player]) < self.stats.max_hp:
-            setattr(
-                self.stats,
-                player_health_attr[player],
-                getattr(self.stats, player_health_attr[player]) + 1,
-            )
+        health_attr = player_health_attrs.get(player)
+        if health_attr is not None:
+            current_hp = getattr(self.stats, health_attr)
+            if current_hp < self.stats.max_hp:
+                setattr(self.stats, health_attr, current_hp + 1)
         self.score_board.create_health()
         play_sound(self.sound_manager.game_sounds, "health")
+
+
+    def check_for_player_revive(self):
+        """Revive the other player after the third Boss Fight.
+        Method used only for multiplayer.
+        """
+        if self.stats.level == 21:
+            if not self.phoenix_ship.state.alive:
+                self.stats.revive_phoenix(self.phoenix_ship)
+            if not self.thunderbird_ship.state.alive:
+                self.stats.revive_thunderbird(self.thunderbird_ship)
+            self.score_board.create_health()
 
     def _weapon_power_up(self, player, weapon_name):
         """Changes the given player's weapon."""
@@ -637,7 +650,7 @@ class AlienOnslaught:
         self._prepare_last_bullet_bullets()
 
 
-    def _reset_game_objects(self, *exclude_groups):
+    def _reset_game_objects(self):
         """Clear the screen of game objects, excluding specified groups."""
         all_groups = [
             self.thunderbird_bullets,
@@ -650,8 +663,7 @@ class AlienOnslaught:
             self.phoenix_missiles,
         ]
         for group in all_groups:
-            if group not in exclude_groups:
-                group.empty()
+            group.empty()
 
     def _reset_ships(self):
         """Resets ships to their initial state, updates missiles number,
@@ -749,16 +761,9 @@ class AlienOnslaught:
 
     def _draw_game_objects(self):
         """Draw game objects and the score on screen."""
+        self._update_ship_alive_states()
+
         for ship in self.ships:
-            # Check the state of the Thunderbird and Phoenix ships and update their "alive" state.
-            if ship == self.thunderbird_ship:
-                health = self.stats.thunderbird_hp
-            else:
-                health = self.stats.phoenix_hp
-            # The ship waits for the explosion anim to finish before changing it's alive state
-            if health < 0 and not ship.state.exploding:
-                ship.state.alive = False
-            # Draw the ships on screen only when alive.
             if ship.state.alive:
                 ship.blitme()
 
@@ -782,6 +787,14 @@ class AlienOnslaught:
 
         self.aliens.draw(self.screen)
         self.score_board.show_score()
+
+    def _update_ship_alive_states(self):
+        """Updates the alive states of the ships based on their current health."""
+        if self.stats.thunderbird_hp < 0 and not self.thunderbird_ship.state.exploding:
+            self.thunderbird_ship.state.alive = False
+
+        if self.stats.phoenix_hp < 0 and not self.phoenix_ship.state.exploding:
+            self.phoenix_ship.state.alive = False
 
     def update_ship_state(self):
         """Update the state for the ships."""

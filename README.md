@@ -43,6 +43,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.0:
+* Added a new mechanic in the game (exclusively for the multiplayer): After defeating the third Boss, if one of the players is not alive, he is revived with two lifes available.
 * Implemented a new game mode: One Life Reign in which the players are really strong from the start of the game but they have only one life.
 * Implemented a unique set of alien bullets for each type of alien present in the game.
 * Code refactored to enhance the functionality of the main game class, allowing it to work for both singleplayer and multiplayer modes. This eliminates the need to create a separate class for singleplayer.

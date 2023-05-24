@@ -194,7 +194,8 @@ class Ship(Sprite):
 
     def update_missiles_number(self):
         """Update the number of missiles."""
-        self.missiles_num = self.starting_missiles
+        self.missiles_num = (6 if self.settings.game_modes.one_life_reign
+            else self.starting_missiles)
 
     def reverse_keys(self):
         """Toggles the reverse state."""
