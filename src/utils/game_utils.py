@@ -11,6 +11,10 @@ from .constants import (
     BOSS_RUSH,
     ALIEN_BULLETS_IMG,
     BOSS_BULLETS_IMG,
+    SINGLE_PLAYER_FILE,
+    MULTI_PLAYER_FILE,
+    DEFAULT_HIGH_SCORES,
+    RANK_POSITIONS,
 )
 
 
@@ -144,72 +148,70 @@ def render_text(text, font, color, start_pos, line_spacing, second_color=None):
 
     return text_surfaces, text_rects
 
-
-def display_high_scores(game, screen, score_key):
-    """Display the high scores on the screen."""
-    # Load the high score data from the JSON file,
-    # or create a new high score list if there is an error
-    filename = "single_high_score.json" if game.singleplayer else "high_score.json"
+def load_high_scores(game):
+    """Load the high score data from the JSON file or create a new high score list."""
+    filename = SINGLE_PLAYER_FILE if game.singleplayer else MULTI_PLAYER_FILE
     try:
         with open(filename, "r", encoding="utf-8") as score_file:
             high_scores = json.load(score_file)
-    except json.JSONDecodeError:
-        high_scores = {"high_scores": [0] * 10}
+    except (FileNotFoundError, json.JSONDecodeError):
+        high_scores = DEFAULT_HIGH_SCORES
+    return high_scores
 
-    # Get the scores from the high score list and create a new list of tuples
-    # containing the score and its rank
+def display_high_scores(game, screen, score_key):
+    """Display the high scores on the screen."""
+    high_scores = load_high_scores(game)
+
     try:
         scores = high_scores[score_key]
     except KeyError:
         scores = []
 
-    ranked_scores = [
+    ranked_entries = [
         (i + 1, entry["name"], entry["score"])
         for i, entry in enumerate(scores)
         if isinstance(entry, dict)
     ]
 
     rank_strings = [
-        f"{('1st' if rank == 1 else '2nd' if rank == 2 else '3rd' if rank == 3 else rank)} {name}"
-        for rank, name, score in ranked_scores
+        f"{RANK_POSITIONS.get(rank, str(rank))} {name}"
+        for rank, name, score in ranked_entries
     ]
-    score_strings = [f"{score}" for rank, name, score in ranked_scores]
+    score_strings = [f"{score}" for _, _, score in ranked_entries]
 
     score_text = "\n".join(score_strings)
     rank_text = "\n".join(rank_strings)
 
-    # Calculate the relative position of the text based on the screen size
     screen_width, screen_height = screen.get_size()
-    centerx = int(screen_width / 2)
-    centery = int(screen_height / 2)
-    title_x = int(centerx - 520)
-    title_y = int(centery - 150)
-    rank_x = int(centerx - 550)
-    rank_y = int(centery - 50)
-    score_x = int(centerx - 270)
+    center_x = int(screen_width / 2)
+    center_y = int(screen_height / 2)
+
+    title_x = int(center_x - 520)
+    title_y = int(center_y - 150)
+    rank_x = int(center_x - 550)
+    rank_y = int(center_y - 50)
+    score_x = int(center_x - 270)
     score_y = rank_y
 
-    # Render the score text and rank text as surfaces with new lines using different fonts
-    font = pygame.font.SysFont("impact", int(screen_height * 0.07))
+    title_font = pygame.font.SysFont("impact", int(screen_height * 0.07))
+    scores_font = pygame.font.SysFont("impact", int(screen_height * 0.05))
+
     text_surfaces, text_rects = render_text(
         "HIGH SCORES",
-        font,
+        title_font,
         (255, 215, 0),
         (title_x, title_y),
         int(screen_height * 0.06),
     )
 
-    font = pygame.font.SysFont("impact", int(screen_height * 0.05))
     rank_surfaces, rank_rects = render_text(
-        rank_text, font, "red", (rank_x, rank_y), int(screen_height * 0.05)
+        rank_text, scores_font, "red", (rank_x, rank_y), int(screen_height * 0.05)
     )
 
-    font = pygame.font.SysFont("impact", int(screen_height * 0.05))
     scores_surfaces, scores_rects = render_text(
-        score_text, font, "red", (score_x, score_y), int(screen_height * 0.05)
+        score_text, scores_font, "red", (score_x, score_y), int(screen_height * 0.05)
     )
 
-    # Blit the score text surfaces onto the screen using a loop to avoid repetitive code
     for surfaces, rects in [
         (text_surfaces, text_rects),
         (rank_surfaces, rank_rects),
@@ -233,29 +235,39 @@ def display_game_modes_description(screen, description):
         screen.blit(surface, text_rects[i])
 
 
+def calculate_control_positions(center, x_offset):
+    """Calculate the positions of player 1 and player 2 controls."""
+    p1_controls_x = center[0] - x_offset
+    p2_controls_x = center[0] + x_offset
+    y_pos = 250
+    return (p1_controls_x, y_pos), (p2_controls_x, y_pos)
+
 def display_controls(controls_frame, settings):
     """Display controls on screen."""
-    p1_controls, p1_controls_rect = load_controls_image(
-        controls_frame, {"topleft": (50, 220)}
-    )
-    p2_controls, p2_controls_rect = load_controls_image(
-        controls_frame, {"topright": (settings.get_width() - 50, 220)}
-    )
-
-    # Calculate the x offset from the center of the screen
-    x_offset = p1_controls_rect.width // 2 + 400
-
-    # Get the center of the screen
+    surface_width, _ = settings.get_size()
     center = settings.get_rect().center
 
-    # Set the position of player 1 controls
-    p1_controls_rect.topleft = (center[0] - x_offset, 250)
+    # Constants for positions
+    top_left = (50, 220)
+    p2_top_right = (surface_width - 50, 220)
+    x_offset = 600
 
-    # Set the position of player 2 controls
-    p2_controls_rect.topright = (center[0] + x_offset, 250)
+    # Load player 1 and player 2 controls
+    p1_controls, p1_controls_rect = load_controls_image(
+        controls_frame, {"topleft": top_left}
+    )
+    p2_controls, p2_controls_rect = load_controls_image(
+        controls_frame, {"topright": p2_top_right}
+    )
+
+    # Calculate the positions of player 1 and player 2 controls
+    p1_pos, p2_pos = calculate_control_positions(center, x_offset)
+    p1_controls_rect.topleft = p1_pos
+    p2_controls_rect.topright = p2_pos
 
     font = pygame.font.SysFont("arialbold", 35)
     color = "white"
+
     t1_surfaces, t1_rects = render_text(
         P1_CONTROLS,
         font,
@@ -354,11 +366,8 @@ def get_player_name(
                     return player_name  # Exit loop and return player name
                 if event.key == pygame.K_BACKSPACE:
                     player_name = player_name[:-1]
-                elif event.unicode.isalnum():
+                elif event.unicode.isalnum() and len(player_name) < 10:
                     player_name += event.unicode
-                    player_name = player_name[
-                        :12
-                    ]  # Limit length of player name to 12 characters
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for button in button_info:

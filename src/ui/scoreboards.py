@@ -10,7 +10,7 @@ import pygame.font
 
 from pygame.sprite import Group
 from entities.player_health import Heart
-from utils.constants import BOSS_RUSH
+from utils.constants import BOSS_RUSH, SINGLE_PLAYER_FILE, MULTI_PLAYER_FILE
 from utils.game_utils import get_player_name, display_message
 
 
@@ -26,7 +26,7 @@ class ScoreBoard:
         self.stats = game.stats
         self.second_stats = game.stats
         self.high_scores_file = (
-            "single_high_score.json" if self.game.singleplayer else "high_score.json"
+            SINGLE_PLAYER_FILE if self.game.singleplayer else MULTI_PLAYER_FILE
         )
 
         # Font settings
@@ -330,6 +330,6 @@ class ScoreBoard:
     def update_high_score_filename(self):
         """Update highscore filename based on the game."""
         if self.game.singleplayer:
-            self.high_scores_file = "single_high_score.json"
+            self.high_scores_file = SINGLE_PLAYER_FILE
         else:
-            self.high_scores_file = "high_score.json"
+            self.high_scores_file = MULTI_PLAYER_FILE

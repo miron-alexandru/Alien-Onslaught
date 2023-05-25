@@ -182,6 +182,7 @@ class AlienOnslaught:
         self.sound_manager.load_sounds("level_sounds")
         self.ui_options.paused = False
         self.sound_manager.current_sound = None
+        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
         self.run_game()
 
     def _set_singleplayer_variables(self):

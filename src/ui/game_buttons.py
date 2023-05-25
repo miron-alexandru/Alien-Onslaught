@@ -165,7 +165,7 @@ class GameButtons:
         self.delete_scores = Button(
             self,
             self.button_imgs["delete_scores"],
-            (self.high_scores.rect.right - 10, self.high_scores.rect.y),
+            (self.high_scores.rect.left - 85, self.high_scores.rect.y),
         )
         self.menu = Button(
             self,

@@ -311,6 +311,11 @@ GAME_MODE_SCORE_KEYS = {
     "normal": "high_scores",
 }
 
+SINGLE_PLAYER_FILE = "single_high_score.json"
+MULTI_PLAYER_FILE = "high_score.json"
+DEFAULT_HIGH_SCORES = {"high_scores": [0] * 10}
+RANK_POSITIONS = {1: "1st", 2: "2nd", 3: "3rd"}
+
 # Ships settings
 MAX_HP = 5
 STARTING_HP = 3

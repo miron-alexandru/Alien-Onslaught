@@ -43,7 +43,7 @@ class ScreenManager:
             self.buttons.game_modes.rect.bottom,
         )
         self.buttons.delete_scores.update_pos(
-            self.buttons.high_scores.rect.right - 10, self.buttons.high_scores.rect.y
+            self.buttons.high_scores.rect.left - 85, self.buttons.high_scores.rect.y
         )
         self.buttons.menu.update_pos(
             self.buttons.high_scores.rect.centerx - 74,
