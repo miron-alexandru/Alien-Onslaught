@@ -292,6 +292,8 @@ class CollisionManager:
                 alien.hit_count += 1
                 if isinstance(alien, BossAlien):
                     self._handle_boss_alien_collision(alien, player)
+                elif not alien.immune_state and alien.is_baby:
+                    self._update_stats(alien, player)
                 elif not alien.immune_state and alien.hit_count >= max_hit_count:
                     self._update_stats(alien, player)
 

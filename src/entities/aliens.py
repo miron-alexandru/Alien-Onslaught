@@ -28,14 +28,17 @@ class Alien(Sprite):
         alien's movement, animation, destruction animation and immune state.
         """
         super().__init__()
+        self.aliens = game.aliens
         self.screen = game.screen
         self.settings = game.settings
+        self.game_modes = game.settings.game_modes
         self.stats = game.stats
 
         self.hit_count = 0
         self.last_bullet_time = 0
         self.immune_state = False
         self.immune_start_time = 0
+        self.is_baby = False
 
         self.motion = AlienMovement(self, game)
         self.animation = AlienAnimation(self, game)
@@ -86,9 +89,22 @@ class Alien(Sprite):
             self.immune_state = False
 
     def destroy_alien(self):
-        """Start the alien's destruction animation and draw it on the screen."""
+        """Start the alien's destruction animation and draw it on the screen,
+        and split the alien."""
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
+
+        if not self.game_modes.last_bullet and (not self.is_baby and random.random() <= 0.1):
+            self.split_alien()
+
+    def split_alien(self):
+        """Splits the alien into multiple smaller aliens."""
+        num_splits = random.randint(1, 4)
+        for _ in range(num_splits):
+            new_alien = Alien(self)
+            new_alien.animation.change_scale(0.5)
+            new_alien.is_baby = True
+            self.aliens.add(new_alien)
 
     def upgrade(self):
         """Set the alien's immune state to True."""
@@ -239,7 +255,7 @@ class AlienMovement:
         self.sins = {
             "time_offset": random.uniform(0, 2 * math.pi),
             "amplitude": random.randint(1, 2),
-            "frequency": random.uniform(0.001, 0.02),
+            "frequency": random.uniform(0.001, 0.005),
         }
 
     def update_horizontal_position(self):
@@ -264,9 +280,8 @@ class AlienMovement:
         self.alien.rect.y = round(
             self.alien.rect.y
             + self.sins["amplitude"] * math.sin(self.sins["frequency"] * time)
-            + 0.3
+            + 0.1
         )
-
 
 class AlienAnimation:
     """This class manages the animation of an alien,
@@ -274,22 +289,31 @@ class AlienAnimation:
     based on the current level in the game.
     """
 
-    frames = {}
-
-    def __init__(self, game, alien):
+    def __init__(self, game, alien, scale=1.0):
         self.alien = alien
         self.game = game
+        self.scale = scale
 
         self.frame_update_rate = 6
         self.frame_counter = 0
         self.current_frame = 0
 
-        level_prefix = LEVEL_PREFIX.get(game.stats.level // 4 + 1, "Alien7")
-        if level_prefix not in AlienAnimation.frames:
-            AlienAnimation.frames[level_prefix] = load_alien_images(level_prefix)
+        self.frames = {}
 
-        self.frames = AlienAnimation.frames[level_prefix]
+        level_prefix = LEVEL_PREFIX.get(game.stats.level // 4 + 1, "Alien7")
+        if level_prefix not in self.frames:
+            self.frames[level_prefix] = load_alien_images(level_prefix)
+
+        self.frames = self.frames[level_prefix]
         self.image = self.frames[self.current_frame]
+
+    def _update_scale(self):
+        """Scale the alien frames."""
+        scaled_w = int(self.image.get_width() * self.scale)
+        scaled_h = int(self.image.get_height() * self.scale)
+        self.image = pygame.transform.scale(self.image, (scaled_w, scaled_h))
+        self.frames = [pygame.transform.scale(frame,
+                                              (scaled_w, scaled_h)) for frame in self.frames]
 
     def update_animation(self):
         """Update alien animation."""
@@ -298,6 +322,11 @@ class AlienAnimation:
             self.current_frame = (self.current_frame + 1) % len(self.frames)
             self.image = self.frames[self.current_frame]
             self.frame_counter = 0
+
+    def change_scale(self, scale):
+        """Update scale of Alien."""
+        self.scale = scale
+        self._update_scale()
 
     def get_current_image(self):
         """Return the current alien image."""

@@ -39,6 +39,17 @@ class AlienBullet(Sprite):
         self.rect.bottom = random_alien.rect.bottom
         self.y_pos = float(self.rect.y)
 
+        if random_alien.is_baby:
+            self.scale_bullet(0.7)
+
+    def scale_bullet(self, scale):
+        """Scale the bullet image and rect."""
+        self.image = pygame.transform.scale(self.image, (
+            int(self.image.get_width() * scale),
+            int(self.image.get_height() * scale)
+        ))
+        self.rect = self.image.get_rect(center=self.rect.center)
+
     def update(self):
         """Update bullet position."""
         self.y_pos += self.settings.alien_bullet_speed

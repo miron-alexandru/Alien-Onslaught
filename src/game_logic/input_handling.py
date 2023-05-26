@@ -202,8 +202,8 @@ class PlayerInput:
                     self.game.phoenix_missiles, self.phoenix, missile_class=Missile
                 )
 
-    def reset_ship_movement_flags(self):
-        """Reset movement flags for the ships."""
+    def reset_ship_flags(self):
+        """Reset movement flags and firing state for the ships."""
         self.thunderbird.moving_flags["right"] = False
         self.thunderbird.moving_flags["left"] = False
         self.thunderbird.moving_flags["up"] = False
@@ -212,3 +212,5 @@ class PlayerInput:
         self.phoenix.moving_flags["left"] = False
         self.phoenix.moving_flags["up"] = False
         self.phoenix.moving_flags["down"] = False
+        self.phoenix.state.firing = False
+        self.thunderbird.state.firing = False
