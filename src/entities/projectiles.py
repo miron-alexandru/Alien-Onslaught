@@ -39,20 +39,28 @@ class Bullet(Sprite):
             self.x_pos += (
                 self.speed if self.ship == self.game.thunderbird_ship else -self.speed
             )
-            self.rect.x = self.x_pos
+            self.rect.x = int(self.x_pos)
         else:
             self.y_pos -= self.speed
-            self.rect.y = self.y_pos
+            self.rect.y = int(self.y_pos)
 
     def draw(self):
         """Draw the bullet to the screen."""
         self.screen.blit(self.image, self.rect)
 
+    def scale_bullet(self, scale):
+        """Scale the bullet image and rect."""
+        self.image = pygame.transform.scale(self.image, (
+            int(self.image.get_width() * scale),
+            int(self.image.get_height() * scale)
+        ))
+        self.rect = self.image.get_rect(center=self.rect.center)
+
 
 class Thunderbolt(Bullet):
     """A class to manage bullets for Thunderbird ship."""
 
-    def __init__(self, game, ship):
+    def __init__(self, game, ship, scaled=False):
         super().__init__(
             game,
             game.bullets_manager.weapons["thunderbird"]["weapon"],
@@ -61,12 +69,15 @@ class Thunderbolt(Bullet):
         )
         if game.settings.game_modes.cosmic_conflict:
             self.image = pygame.transform.rotate(self.image, -90)
+        if scaled:
+            self.scale_bullet(0.5)
+
 
 
 class Firebird(Bullet):
     """A class to manage bullets for Phoenix ship."""
 
-    def __init__(self, game, ship):
+    def __init__(self, game, ship, scaled=False):
         super().__init__(
             game,
             game.bullets_manager.weapons["phoenix"]["weapon"],
@@ -75,6 +86,8 @@ class Firebird(Bullet):
         )
         if game.settings.game_modes.cosmic_conflict:
             self.image = pygame.transform.rotate(self.image, 90)
+        if scaled:
+            self.scale_bullet(0.5)
 
 
 class Missile(Sprite):

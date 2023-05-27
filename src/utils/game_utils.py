@@ -43,13 +43,28 @@ def set_sounds_volume(sounds, volume):
     for sound in sounds.values():
         sound.set_volume(volume)
 
+def get_available_channels():
+    """Returns a list of available sound channels."""
+    num_channels = pygame.mixer.get_num_channels()
+    available_channels = []
+    for channel_num in range(num_channels):
+        channel = pygame.mixer.Channel(channel_num)
+        if not channel.get_busy():
+            available_channels.append(channel)
+    return available_channels
 
 def play_sound(sounds_list, sound_name, loop=False):
-    """Plays a certain sound located in the 'sounds_list'."""
-    if loop:
-        sounds_list[sound_name].play(-1)
+    """Plays a certain sound located in the 'sounds_list' on an available sound channel."""
+    if sound_name == "bullet":
+        channel = pygame.mixer.Channel(7)
+    elif sound_name == "alien_exploding":
+        channel = pygame.mixer.Channel(6)
+    elif available_channels := get_available_channels():
+        channel = available_channels[0]
     else:
-        sounds_list[sound_name].play()
+        channel = pygame.mixer.Channel(1)
+
+    channel.play(sounds_list[sound_name], -1 if loop else 0)
 
 
 def load_frames(filename_pattern, num_frames, start=0):

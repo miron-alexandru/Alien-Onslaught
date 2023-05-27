@@ -43,6 +43,8 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.0:
+* Solved a bug that was causing intermittent issues with sound playback by enhancing the play_sound function. The function now plays sounds on available channels, and if a sound is repetitive (such as the player shooting), it is played only on a specific channel to prevent unnecessary channel congestion.
+* New penalty implemented: Player bullets are smaller for a period of time making it harder to hit enemies.
 * Implemented a new feature: Now when defeating an alien there is a chance that it will split into a small number of smaller, baby aliens.
 * Added a new mechanic in the game (exclusively for the multiplayer): After defeating the third Boss, if one of the players is not alive, he is revived with two lifes available.
 * Implemented a new game mode: One Life Reign in which the players are really strong from the start of the game but they have only one life.

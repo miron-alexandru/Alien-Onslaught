@@ -22,7 +22,7 @@ from utils.game_utils import load_alien_images, load_boss_images
 class Alien(Sprite):
     """A class that represents an alien."""
 
-    def __init__(self, game):
+    def __init__(self, game, baby_location=0, is_baby=False):
         """Initializes the Alien object and also creates instances of the
         AlienMovement, AlienAnimation, DestroyAnim, and Immune classes which manage the
         alien's movement, animation, destruction animation and immune state.
@@ -38,19 +38,25 @@ class Alien(Sprite):
         self.last_bullet_time = 0
         self.immune_state = False
         self.immune_start_time = 0
-        self.is_baby = False
+        self.is_baby = is_baby
+        self.baby_location = baby_location
 
         self.motion = AlienMovement(self, game)
         self.animation = AlienAnimation(self, game)
+        self._init_position()
         self.destroy = DestroyAnim(self)
         self.immune = Immune(self)
         self.image = self.animation.get_current_image()
-        self._init_position()
+        # self._init_position()
 
     def _init_position(self):
         """Set the initial position of the alien."""
         self.rect = self.animation.image.get_rect()
-        self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
+        self.rect.x = (
+            self.baby_location
+            if self.is_baby
+            else random.randint(0, self.settings.screen_width - self.rect.width)
+        )
         self.rect.y = self.rect.height
         self.x_pos = float(self.rect.x)
 
@@ -94,17 +100,19 @@ class Alien(Sprite):
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
 
-        if not self.game_modes.last_bullet and (not self.is_baby and random.random() <= 0.1):
+        if not self.game_modes.last_bullet and (
+            not self.is_baby and random.random() <= 0.1
+        ):
             self.split_alien()
 
     def split_alien(self):
-        """Splits the alien into multiple smaller aliens."""
+        """Splits the alien into multiple smaller (baby) aliens."""
         num_splits = random.randint(1, 4)
         for _ in range(num_splits):
-            new_alien = Alien(self)
-            new_alien.animation.change_scale(0.5)
-            new_alien.is_baby = True
-            self.aliens.add(new_alien)
+            baby_alien = Alien(self, baby_location=self.rect.x, is_baby=True)
+            baby_alien.rect.y = self.rect.y
+            baby_alien.animation.change_scale(0.5)
+            self.aliens.add(baby_alien)
 
     def upgrade(self):
         """Set the alien's immune state to True."""
@@ -283,6 +291,7 @@ class AlienMovement:
             + 0.1
         )
 
+
 class AlienAnimation:
     """This class manages the animation of an alien,
     based on its level prefix. The alien frames are chosen
@@ -312,8 +321,9 @@ class AlienAnimation:
         scaled_w = int(self.image.get_width() * self.scale)
         scaled_h = int(self.image.get_height() * self.scale)
         self.image = pygame.transform.scale(self.image, (scaled_w, scaled_h))
-        self.frames = [pygame.transform.scale(frame,
-                                              (scaled_w, scaled_h)) for frame in self.frames]
+        self.frames = [
+            pygame.transform.scale(frame, (scaled_w, scaled_h)) for frame in self.frames
+        ]
 
     def update_animation(self):
         """Update alien animation."""

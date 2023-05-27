@@ -40,6 +40,9 @@ class Ship(Sprite):
         self.immune_start_time = 0
         self.small_ship_time = 0
         self.last_bullet_time = 0
+        self.last_reverse_power_down_time = 0
+        self.last_disarmed_power_down_time = 0
+        self.last_scaled_weapon_power_down_time = 0
         self.remaining_bullets = 17 if self.game.singleplayer else 9
 
         self.moving_flags = {
@@ -277,4 +280,5 @@ class ShipStates:
     reverse: bool = False
     disarmed: bool = False
     scaled: bool = False
+    scaled_weapon: bool = False
     firing: bool = False

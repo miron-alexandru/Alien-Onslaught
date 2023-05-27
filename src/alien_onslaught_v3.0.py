@@ -463,7 +463,10 @@ class AlienOnslaught:
 
         bullet_fired = False
         if len(bullets) < bullets_allowed:
-            new_bullets = [bullet_class(self, ship) for _ in range(num_bullets)]
+            new_bullets = [
+                bullet_class(self, ship, scaled=True) if ship.state.scaled_weapon else bullet_class(self, ship)
+                for _ in range(num_bullets)
+            ]
             bullets.add(new_bullets)
             for i, new_bullet in enumerate(new_bullets):
                 offset = 30 * (i - (num_bullets - 1) / 2)
@@ -506,10 +509,9 @@ class AlienOnslaught:
             "phoenix": "phoenix_hp",
         }
         health_attr = player_health_attrs.get(player)
-        if health_attr is not None:
-            current_hp = getattr(self.stats, health_attr)
-            if current_hp < self.stats.max_hp:
-                setattr(self.stats, health_attr, current_hp + 1)
+        current_hp = getattr(self.stats, health_attr)
+        if current_hp < self.stats.max_hp:
+            setattr(self.stats, health_attr, current_hp + 1)
         self.score_board.create_health()
         play_sound(self.sound_manager.game_sounds, "health")
 
@@ -715,7 +717,7 @@ class AlienOnslaught:
         # Play the warp animation and center the ships.
         self._reset_ships()
 
-        self.player_input.reset_ship_movement_flags()
+        self.player_input.reset_ship_flags()
 
         # Handle Alien Creation
         self._handle_alien_creation()
@@ -763,7 +765,7 @@ class AlienOnslaught:
     def _draw_game_objects(self):
         """Draw game objects and the score on screen."""
         self._update_ship_alive_states()
-
+        
         for ship in self.ships:
             if ship.state.alive:
                 ship.blitme()
@@ -790,7 +792,6 @@ class AlienOnslaught:
         self.score_board.show_score()
 
     def _update_ship_alive_states(self):
-        """Updates the alive states of the ships based on their current health."""
         if self.stats.thunderbird_hp < 0 and not self.thunderbird_ship.state.exploding:
             self.thunderbird_ship.state.alive = False
 
