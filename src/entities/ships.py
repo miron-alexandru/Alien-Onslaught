@@ -40,9 +40,9 @@ class Ship(Sprite):
         self.immune_start_time = 0
         self.small_ship_time = 0
         self.last_bullet_time = 0
-        self.last_reverse_power_down_time = 0
-        self.last_disarmed_power_down_time = 0
-        self.last_scaled_weapon_power_down_time = 0
+        self.last_reverse_power_down_time = None
+        self.last_disarmed_power_down_time = None
+        self.last_scaled_weapon_power_down_time = None
         self.remaining_bullets = 17 if self.game.singleplayer else 9
 
         self.moving_flags = {
@@ -200,14 +200,6 @@ class Ship(Sprite):
         self.missiles_num = (6 if self.settings.game_modes.one_life_reign
             else self.starting_missiles)
 
-    def reverse_keys(self):
-        """Toggles the reverse state."""
-        self.state.reverse = not self.state.reverse
-
-    def disarm(self):
-        """Toggles the disarmed state."""
-        self.state.disarmed = not self.state.disarmed
-
     def scale_ship(self, scale_factor):
         """Change the ship's size and set the scaled
         state to True."""
@@ -224,6 +216,7 @@ class Ship(Sprite):
         self.small_ship_time = pygame.time.get_ticks()
         self.state.disarmed = False
         self.state.reverse = False
+        self.state.scaled_weapon = False
 
     def update_speed_from_settings(self, player):
         """Updates the ship speed attribute based on the current value

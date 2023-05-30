@@ -7,12 +7,12 @@ Classes:
     - 'PowerEffectsManager': A class that manages creation and update
     for both powers and penalties in the game.
 """
-
+import time
 import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import POWERS, GAME_CONSTANTS, WEAPON_BOXES
+from utils.constants import POWERS, GAME_CONSTANTS, WEAPON_BOXES, POWER_DOWN_ATTRIBUTES
 
 
 class Power(Sprite):
@@ -81,7 +81,7 @@ class PowerEffectsManager:
         self.stats = stats
 
         self.last_power_up_time = 0
-        self.power_down_time = 60000
+        self.power_down_time = 60
 
     def create_powers(self):
         """Creates power-ups or penalties at random intervals and locations."""
@@ -118,10 +118,6 @@ class PowerEffectsManager:
                 self.game.powers.remove(power)
 
     # Penalties
-    def reverse_keys(self, player):
-        """Trigger the reverse key state on the specified player."""
-        getattr(self, f"{player}_ship").reverse_keys()
-
     def decrease_ship_speed(self, player):
         """Decreases the ship speed of the specified player."""
         setattr(
@@ -130,15 +126,23 @@ class PowerEffectsManager:
             getattr(self.settings, f"{player}_ship_speed") - 0.4,
         )
 
+    def reverse_keys(self, player):
+        """Trigger the reverse key state on the specified player."""
+        ship = getattr(self, f"{player}_ship")
+        ship.state.reverse = True
+        ship.last_reverse_power_down_time = time.time()
+
     def decrease_bullet_size(self, player):
         """Trigger the scaled_weapon state on the specified player."""
         ship = getattr(self, f"{player}_ship")
         ship.state.scaled_weapon = True
+        ship.last_scaled_weapon_power_down_time = time.time()
 
     def disarm_ship(self, player):
         """Trigger the disarm state on the specified player."""
         ship = getattr(self, f"{player}_ship")
         ship.state.disarmed = True
+        ship.last_disarmed_power_down_time = time.time()
 
     def alien_upgrade(self, _=None):
         """Select a random sample of aliens from the game's
@@ -242,25 +246,16 @@ class PowerEffectsManager:
 
     def manage_power_downs(self):
         """Set the power down states of the ship to False after a period of time."""
+        current_time = time.time()
+
         for ship in self.game.ships:
-            if ship.state.reverse:
-                current_time = pygame.time.get_ticks()
-                if current_time > ship.last_reverse_power_down_time + self.power_down_time:
-                    ship.state.reverse = False
-                    ship.last_reverse_power_down_time = current_time
-
-            if ship.state.disarmed:
-                current_time = pygame.time.get_ticks()
-                if current_time > ship.last_disarmed_power_down_time + self.power_down_time:
-                    ship.state.disarmed = False
-                    ship.last_disarmed_power_down_time = current_time
-
-            if ship.state.scaled_weapon:
-                current_time = pygame.time.get_ticks()
-                if current_time > ship.last_scaled_weapon_power_down_time + self.power_down_time:
-                    ship.state.scaled_weapon = False
-                    ship.last_scaled_weapon_power_down_time = current_time
-
+            for attribute, last_power_down_time_attr in POWER_DOWN_ATTRIBUTES.items():
+                last_power_down_time = getattr(ship, last_power_down_time_attr)
+                if getattr(ship.state, attribute) and current_time > (
+                    last_power_down_time + self.power_down_time
+                ):
+                    setattr(ship.state, attribute, False)
+                    setattr(ship, last_power_down_time_attr, None)
 
     def get_powerup_choices(self):
         """Returns a list of power-up functions available in the game.
