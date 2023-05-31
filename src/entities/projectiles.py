@@ -9,10 +9,12 @@ Classes:
     - 'BulletsManager': A class that manages player bullets.
 """
 
+import time
 import pygame
 from pygame.sprite import Sprite
-from utils.animation_constants import missile_frames
+from utils.animation_constants import missile_frames, laser_frames
 from utils.constants import WEAPONS
+from utils.game_utils import load_single_image
 from animations.other_animations import MissileEx
 
 
@@ -174,6 +176,70 @@ class Missile(Sprite):
             self.image = self.frames[self.current_frame]
 
 
+
+class Laser(Sprite):
+    """The Laser class represents a laser object in the game."""
+
+    def __init__(self, game, ship):
+        super().__init__()
+        self.screen = game.screen
+        self.settings = game.settings
+        self.game = game
+        self.ship = ship
+
+        self.frames = laser_frames
+        self.current_frame = 0
+        self.rect = self.frames[0].get_rect()
+        self.set_laser_frames()
+        self.rect.midbottom = ship.rect.midtop
+
+        self.frame_update_rate = 5
+        self.frame_counter = 0
+
+        self.duration = 1
+        self.start_time = time.time()
+
+    def update(self):
+        self.frame_counter += 1
+        if self.frame_counter % self.frame_update_rate == 0:
+            self.current_frame = (self.current_frame + 1) % len(self.frames)
+            self.set_laser_frames()
+            self.frame_counter = 0
+
+        if time.time() - self.start_time >= self.duration or self.ship.state.exploding:
+            self.kill()
+
+        if self.settings.game_modes.cosmic_conflict:
+            if self.ship == self.game.thunderbird_ship:
+                self.rect.midleft = self.ship.rect.midright
+            else:
+                self.rect.midright = self.ship.rect.midleft
+        else:
+            self.rect.midbottom = self.ship.rect.midtop
+
+    def draw(self):
+        """Draw laser on screen."""
+        self.screen.blit(self.image, self.rect)
+
+    def set_laser_frames(self):
+        """Set the image of the laser based
+        on its current state and game mode.
+        """
+        if self.settings.game_modes.cosmic_conflict:
+            if self.ship == self.game.thunderbird_ship:
+                self.image = pygame.transform.rotate(
+                    self.frames[self.current_frame], -90
+                )
+            else:
+                self.image = pygame.transform.rotate(
+                    self.frames[self.current_frame], 90
+                )
+            self.rect = self.image.get_rect()
+        else:
+            self.image = self.frames[self.current_frame]
+
+
+
 class BulletsManager:
     """The BulletsManager class manages the changing and update
     of the player bullets.
@@ -185,11 +251,11 @@ class BulletsManager:
         self.screen = game.screen
         self.weapons = {
             "thunderbird": {
-                "weapon": pygame.image.load(WEAPONS["thunderbolt"]),
+                "weapon": load_single_image(WEAPONS["thunderbolt"]),
                 "current": "thunderbolt",
             },
             "phoenix": {
-                "weapon": pygame.image.load(WEAPONS["firebird"]),
+                "weapon": load_single_image(WEAPONS["firebird"]),
                 "current": "firebird",
             },
         }
@@ -200,7 +266,7 @@ class BulletsManager:
             if weapon_name == weapon["current"] and not self.game_modes.last_bullet:
                 self.game.powers_manager.increase_bullet_count(player)
             else:
-                weapon["weapon"] = pygame.image.load(WEAPONS[weapon_name])
+                weapon["weapon"] = load_single_image(WEAPONS[weapon_name])
                 weapon["current"] = weapon_name
 
     def update_projectiles(self):
@@ -209,13 +275,16 @@ class BulletsManager:
             all_projectiles = [
                 self.game.thunderbird_bullets,
                 self.game.thunderbird_missiles,
+                self.game.thunderbird_laser,
             ]
         else:
             all_projectiles = [
                 self.game.thunderbird_bullets,
                 self.game.thunderbird_missiles,
+                self.game.thunderbird_laser,
                 self.game.phoenix_bullets,
                 self.game.phoenix_missiles,
+                self.game.phoenix_laser,
             ]
 
         for projectiles in all_projectiles:
@@ -230,4 +299,4 @@ class BulletsManager:
         for player, weapon_info in self.weapons.items():
             default_weapon = "thunderbolt" if player == "thunderbird" else "firebird"
             weapon_info["current"] = default_weapon
-            weapon_info["weapon"] = pygame.image.load(WEAPONS[default_weapon])
+            weapon_info["weapon"] = load_single_image(WEAPONS[default_weapon])

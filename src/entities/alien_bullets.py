@@ -13,7 +13,7 @@ import pygame
 
 from pygame.sprite import Sprite
 from utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
-from utils.game_utils import load_alien_bullets, load_boss_bullets
+from utils.game_utils import load_alien_bullets, load_boss_bullets, load_single_image
 from entities.aliens import BossAlien
 
 
@@ -28,7 +28,7 @@ class AlienBullet(Sprite):
         self.settings = game.settings
         level_prefix = LEVEL_PREFIX.get(game.stats.level // 4 + 1, "Alien7")
         bullet_name = f"alien_bullet{level_prefix[-1]}"
-        self.image = pygame.image.load(ALIEN_BULLETS_IMG[bullet_name])
+        self.image = load_single_image(ALIEN_BULLETS_IMG[bullet_name])
         self.rect = self.image.get_rect()
         self._choose_random_alien(game)
 

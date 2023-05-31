@@ -4,6 +4,7 @@ that handles the collisions in the game.
 """
 
 import pygame
+from entities.projectiles import Missile
 from entities.aliens import BossAlien
 from utils.constants import ALIENS_HP_MAP
 from utils.game_utils import play_sound, get_colliding_sprites
@@ -24,9 +25,9 @@ class CollisionManager:
         self.handled_collisions = {}
 
     def shield_collisions(self, ships, aliens, bullets, asteroids):
-        """Destroy any aliens that collide with the shield of any of the given ships."""
-        # Loop through each player and check if the shield is on, if it is, kill the
-        # alien, alien bullet or asteroid that collided with it and turn the shield off.
+        """Destroy any asteroids or bullets aliens that collide with the
+        shield of any of the given ships.
+        """
         for ship in ships:
             for alien in aliens:
                 if ship.state.shielded and ship.anims.shield_rect.colliderect(
@@ -34,20 +35,25 @@ class CollisionManager:
                 ):
                     if not isinstance(alien, BossAlien):
                         alien.kill()
+                        play_sound(self.game.sound_manager.game_sounds, "alien_exploding")
                     ship.state.shielded = False
             for bullet in bullets:
                 if ship.state.shielded and ship.anims.shield_rect.colliderect(
                     bullet.rect
                 ):
-                    bullet.kill()
-                    ship.state.shielded = False
+                    self._handle_collision_with_shielded_ship(bullet, "alien_exploding", ship)
             for asteroid in asteroids:
                 if ship.state.shielded and ship.anims.shield_rect.colliderect(asteroid):
-                    asteroid.kill()
-                    ship.state.shielded = False
+                    self._handle_collision_with_shielded_ship(asteroid, "asteroid_exploding", ship)
+
+    def _handle_collision_with_shielded_ship(self, sprite, sound_name, ship):
+        """Handle collision between the sprite and the shielded ship."""
+        sprite.kill()
+        play_sound(self.game.sound_manager.game_sounds, sound_name)
+        ship.state.shielded = False
 
     def check_asteroids_collisions(self, thunder_hit_method, phoenix_hit_method):
-        """Check for collisions between the ships, missiles and asteroids."""
+        """Check for collisions between the ships, missiles, lasers and asteroids."""
         # loop through each player and check if it's alive,
         # then check for collisions with asteroids and which player collided
         # and activate the corresponding method
@@ -62,17 +68,23 @@ class CollisionManager:
                     if ship is self.phoenix_ship and not ship.state.immune:
                         phoenix_hit_method()
                         collision.kill()
+                    play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
 
         missiles = pygame.sprite.Group(
             self.game.thunderbird_missiles, self.game.phoenix_missiles
         )
-        # Check for collisions between missiles and asteroids
-        for missile in missiles:
-            if collision := pygame.sprite.spritecollideany(
-                missile, self.game.asteroids
-            ):
-                missile.explode()
-                collision.kill()
+        lasers = pygame.sprite.Group(
+            self.game.thunderbird_laser, self.game.phoenix_laser
+        )
+
+        # Check for collisions between missiles, lasers and asteroids
+        for sprite_group in [missiles, lasers]:
+            for sprite in sprite_group:
+                if collision := pygame.sprite.spritecollideany(sprite, self.game.asteroids):
+                    collision.kill()
+                    play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
+                    if isinstance(sprite, Missile):
+                        sprite.explode()
 
     def check_powers_collisions(
         self, power_method, health_power_method, weapon_power_method
@@ -161,7 +173,6 @@ class CollisionManager:
             if not self.game.phoenix_ship.state.immune:
                 phoenix_hit()
                 missile.explode()
-                print("asd")
                 play_sound(self.game.sound_manager.game_sounds, "missile")
 
         for missile in phoenix_missile_hits:
@@ -225,6 +236,26 @@ class CollisionManager:
                 phoenix_missile_collisions, "phoenix"
             )
             self._play_missile_sound(phoenix_missile_collisions.values())
+
+    def check_laser_alien_collisions(self):
+        """Respond to player laser-alien collisions."""
+        laser_collisions = {
+            self.game.thunderbird_laser: "thunderbird",
+            self.game.phoenix_laser: "phoenix"
+        }
+
+        for laser, player in laser_collisions.items():
+            collided_aliens = pygame.sprite.groupcollide(
+                laser, self.game.aliens, False, False
+            )
+
+            for aliens in collided_aliens.values():
+                for alien in aliens:
+                    if isinstance(alien, BossAlien):
+                        alien.hit_count += 1
+                        self._handle_boss_alien_collision(alien, player)
+                    elif not alien.immune_state:
+                        self._update_stats(alien, player)
 
     def _play_missile_sound(self, aliens):
         """Helper method that plays the missile sound when

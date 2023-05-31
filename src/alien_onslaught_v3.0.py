@@ -51,6 +51,7 @@ class AlienOnslaught:
     def __init__(self, singleplayer=False):
         """Initialize the game, and create game resources."""
         pygame.init()
+        self.start_time = pygame.time.get_ticks()
         self.singleplayer = singleplayer
         self.clock = pygame.time.Clock()
         self.settings = Settings()
@@ -86,6 +87,8 @@ class AlienOnslaught:
         self.phoenix_bullets = pygame.sprite.Group()
         self.thunderbird_missiles = pygame.sprite.Group()
         self.phoenix_missiles = pygame.sprite.Group()
+        self.thunderbird_laser = pygame.sprite.Group()
+        self.phoenix_laser = pygame.sprite.Group()
         self.alien_bullet = pygame.sprite.Group()
         self.powers = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -236,8 +239,8 @@ class AlienOnslaught:
         """Handle the game logic for each game iteration."""
         self.apply_game_behaviors()
         self._handle_level_progression()
-
-        self.powers_manager.manage_power_downs()
+        if not self.ui_options.paused:
+            self.powers_manager.manage_power_downs()
         self.powers_manager.create_powers()
         self.powers_manager.update_powers()
         self.collision_handler.check_powers_collisions(
@@ -255,6 +258,7 @@ class AlienOnslaught:
         self.bullets_manager.update_projectiles()
         self.collision_handler.check_bullet_alien_collisions()
         self.collision_handler.check_missile_alien_collisions()
+        self.collision_handler.check_laser_alien_collisions()
         self.aliens_manager.update_aliens()
         self.collision_handler.check_alien_ship_collisions(
             self._thunderbird_ship_hit, self._phoenix_ship_hit
@@ -294,6 +298,7 @@ class AlienOnslaught:
                         self.run_menu,
                         self._return_to_game_menu,
                         self._fire_missile,
+                        self._fire_laser,
                     )
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
@@ -489,6 +494,11 @@ class AlienOnslaught:
             ship.missiles_num -= 1
             self.score_board.render_scores()
 
+    def _fire_laser(self, lasers, ship, laser_class):
+        """Fire a laser from the ship."""
+        new_laser = laser_class(self, ship)
+        lasers.add(new_laser)
+
     def _apply_powerup_or_penalty(self, player):
         """Powers up or applies a penalty on the specified player"""
         powerup_choices = self.powers_manager.get_powerup_choices()
@@ -664,6 +674,8 @@ class AlienOnslaught:
             self.asteroids,
             self.thunderbird_missiles,
             self.phoenix_missiles,
+            self.phoenix_laser,
+            self.thunderbird_laser,
         ]
         for group in all_groups:
             group.empty()
@@ -773,8 +785,10 @@ class AlienOnslaught:
         sprite_groups = [
             self.thunderbird_bullets,
             self.thunderbird_missiles,
+            self.thunderbird_laser,
             self.phoenix_bullets,
             self.phoenix_missiles,
+            self.phoenix_laser,
             self.alien_bullet,
             self.powers,
             self.asteroids,
@@ -782,7 +796,7 @@ class AlienOnslaught:
 
         if self.singleplayer:
             # delete phoenix related sprite groups from the list in the singleplayer mode
-            del sprite_groups[2:4]
+            del sprite_groups[3:6]
 
         for group in sprite_groups:
             for sprite in group.sprites():

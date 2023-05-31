@@ -7,12 +7,14 @@ Classes:
     - 'PowerEffectsManager': A class that manages creation and update
     for both powers and penalties in the game.
 """
+
 import time
 import random
 import pygame
 
 from pygame.sprite import Sprite
 from utils.constants import POWERS, GAME_CONSTANTS, WEAPON_BOXES, POWER_DOWN_ATTRIBUTES
+from utils.game_utils import load_single_image
 
 
 class Power(Sprite):
@@ -26,7 +28,8 @@ class Power(Sprite):
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
-        self.image = pygame.image.load(POWERS["power"])
+        self.image = load_single_image(POWERS["power"])
+        self.health_image = load_single_image(POWERS["health"])
         self.speed = GAME_CONSTANTS["POWER_SPEED"]
         self.last_power_time = 0
         self._initialize_position()
@@ -45,13 +48,13 @@ class Power(Sprite):
     def make_health_power_up(self):
         """Change the power up to a health power up."""
         self.health = True
-        self.image = pygame.image.load(POWERS["health"])
+        self.image = self.health_image
 
     def make_weapon_power_up(self):
         """Change the power up to a random weapon power up."""
         self.weapon = True
         random_box = random.choice(list(WEAPON_BOXES.keys()))
-        self.image = pygame.image.load(WEAPON_BOXES[random_box])
+        self.image = load_single_image(WEAPON_BOXES[random_box])
         self.weapon_name = random_box
 
     def update(self):
@@ -90,7 +93,7 @@ class PowerEffectsManager:
         current_time = pygame.time.get_ticks()
         # Determines how often powers and penalties are appearing.
         if current_time - self.last_power_up_time >= random.randint(
-            15000, 20000
+            1000, 1000
         ):  # milliseconds
             self.last_power_up_time = current_time
             # Determine the chance for a power to be health power up, weapon power up or

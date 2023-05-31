@@ -5,7 +5,7 @@ handling player input events in a game.
 
 import sys
 import pygame
-from entities.projectiles import Missile, Firebird, Thunderbolt
+from entities.projectiles import Missile, Firebird, Thunderbolt, Laser
 from utils.game_utils import play_sound
 
 
@@ -20,7 +20,7 @@ class PlayerInput:
         self.phoenix = self.game.phoenix_ship
 
     def check_keydown_events(
-        self, event, reset_game, run_menu, game_menu, fire_missile_method
+        self, event, reset_game, run_menu, game_menu, fire_missile_method, fire_laser_method
     ):
         """Respond to keys being pressed."""
         match event.key:
@@ -53,11 +53,11 @@ class PlayerInput:
 
             # If the game is not paused, check for player keypresses
             case _ if not self.ui_options.paused:
-                self.handle_thunderbird_controls(event, fire_missile_method)
+                self.handle_thunderbird_controls(event, fire_missile_method, fire_laser_method)
 
                 # Phoenix controls
                 if not self.game.singleplayer:
-                    self._handle_phoenix_controls(event, fire_missile_method)
+                    self._handle_phoenix_controls(event, fire_missile_method, fire_laser_method)
 
     def check_keyup_events(self, event):
         """Respond to keys being released."""
@@ -122,7 +122,7 @@ class PlayerInput:
                 )
                 ship.last_bullet_time = current_time
 
-    def handle_thunderbird_controls(self, event, fire_missile_method):
+    def handle_thunderbird_controls(self, event, fire_missile_method, fire_laser_method):
         """Handle Thunderbird controls."""
         if (
             not self.thunderbird.state.alive
@@ -165,8 +165,14 @@ class PlayerInput:
                     self.thunderbird,
                     missile_class=Missile,
                 )
+            case pygame.K_c:
+                fire_laser_method(
+                    self.game.thunderbird_laser,
+                    self.thunderbird,
+                    laser_class=Laser
+                )
 
-    def _handle_phoenix_controls(self, event, fire_missile_method):
+    def _handle_phoenix_controls(self, event, fire_missile_method, fire_laser_method):
         """Handle Phoenix controls."""
         if (
             not self.phoenix.state.alive
@@ -201,6 +207,13 @@ class PlayerInput:
                 fire_missile_method(
                     self.game.phoenix_missiles, self.phoenix, missile_class=Missile
                 )
+            case pygame.K_RSHIFT:
+                fire_laser_method(
+                    self.game.phoenix_laser,
+                    self.phoenix,
+                    laser_class=Laser
+                )
+
 
     def reset_ship_flags(self):
         """Reset movement flags and firing state for the ships."""

@@ -1,6 +1,6 @@
 """The 'game_utils' module contains various utility functions."""
 
-from pathlib import Path
+import os
 import sys
 import json
 import pygame
@@ -17,6 +17,31 @@ from .constants import (
     RANK_POSITIONS,
 )
 
+if hasattr(sys, "_MEIPASS"):
+    # Running as a PyInstaller bundle
+    BASE_PATH = os.path.join(sys._MEIPASS, "game_assets", "images") # type: ignore
+else:
+    # Running as a regular script
+    BASE_PATH = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "game_assets", "images")
+    )
+
+if hasattr(sys, "_MEIPASS"):
+    # Running as a PyInstaller bundle
+    SOUND_PATH = os.path.join(sys._MEIPASS, "game_assets", "sounds") # type: ignore
+else:
+    # Running as a regular script
+    SOUND_PATH = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "game_assets", "sounds")
+    )
+
+
+def load_single_image(relative_path):
+    """Loads an image based on the BASED_PATH."""
+    base_path = BASE_PATH
+    image_path = os.path.join(base_path, relative_path)
+    return pygame.image.load(image_path)
+
 
 def get_colliding_sprites(ship, bullets_or_missiles):
     """Returns the sprites that collide with the given ship."""
@@ -27,7 +52,10 @@ def load_images(image_dict):
     """A function that loads multiple images from a dict of the form:
     key: image name
     value: path to image location"""
-    return {key: pygame.image.load(value) for key, value in image_dict.items()}
+    return {
+        key: pygame.image.load(os.path.join(BASE_PATH, value))
+        for key, value in image_dict.items()
+    }
 
 
 def load_sound_files(sounds_dict):
@@ -35,13 +63,17 @@ def load_sound_files(sounds_dict):
     key: sound name:
     value: path to sound location."""
     pygame.mixer.init()
-    return {key: pygame.mixer.Sound(value) for key, value in sounds_dict.items()}
+    return {
+        key: pygame.mixer.Sound(os.path.join(SOUND_PATH, value))
+        for key, value in sounds_dict.items()
+    }
 
 
 def set_sounds_volume(sounds, volume):
     """Set the volume for all sounds in the passed sounds dict."""
     for sound in sounds.values():
         sound.set_volume(volume)
+
 
 def get_available_channels():
     """Returns a list of available sound channels."""
@@ -52,6 +84,7 @@ def get_available_channels():
         if not channel.get_busy():
             available_channels.append(channel)
     return available_channels
+
 
 def play_sound(sounds_list, sound_name, loop=False):
     """Plays a certain sound located in the 'sounds_list' on an available sound channel."""
@@ -69,12 +102,11 @@ def play_sound(sounds_list, sound_name, loop=False):
 
 def load_frames(filename_pattern, num_frames, start=0):
     """Loads a sequence of image frames into a list"""
-    data_path = Path(__file__).resolve().parent.parent.parent / "game_assets" / "images"
     frame_list = []
     for i in range(start, start + num_frames):
         filename = filename_pattern.format(i)
-        path = data_path / filename
-        image = pygame.image.load(str(path))
+        path = os.path.join(BASE_PATH, filename)
+        image = pygame.image.load(path)
         frame_list.append(image)
     return frame_list
 
@@ -83,7 +115,7 @@ def load_alien_images(alien_prefix):
     """Load the images for the given alien prefix."""
     frames = []
     for i in range(6):
-        filename = f"../game_assets/images/aliens/{alien_prefix}_{i}.png"
+        filename = os.path.join(BASE_PATH, f"aliens/{alien_prefix}_{i}.png")
         frame = pygame.image.load(filename)
         frames.append(frame)
 
@@ -101,7 +133,7 @@ def load_button_imgs(button_names):
     """Load button images."""
     button_images = {}
     for name in button_names:
-        filename = f"../game_assets/images/buttons/{name}.png"
+        filename = os.path.join(BASE_PATH, "buttons", f"{name}.png")
         button_images[name] = filename
     return button_images
 
@@ -116,7 +148,7 @@ def load_controls_image(image_surface, position):
 def load_boss_images():
     """Loads and returns a dict of boss images."""
     return {
-        alien_name: pygame.image.load(alien_image_path)
+        alien_name: pygame.image.load(os.path.join(BASE_PATH, alien_image_path))
         for alien_name, alien_image_path in BOSS_RUSH.items()
     }
 
@@ -124,7 +156,7 @@ def load_boss_images():
 def load_alien_bullets():
     """Loads and returns a dict of alien bullet images."""
     return {
-        bullet_name: pygame.image.load(bullet_image_path)
+        bullet_name: pygame.image.load(os.path.join(BASE_PATH, bullet_image_path))
         for bullet_name, bullet_image_path in ALIEN_BULLETS_IMG.items()
     }
 
@@ -132,7 +164,7 @@ def load_alien_bullets():
 def load_boss_bullets():
     """Loads and returns a dict of boss bullet images."""
     return {
-        bullet_name: pygame.image.load(bullet_image_path)
+        bullet_name: pygame.image.load(os.path.join(BASE_PATH, bullet_image_path))
         for bullet_name, bullet_image_path in BOSS_BULLETS_IMG.items()
     }
 
@@ -163,6 +195,7 @@ def render_text(text, font, color, start_pos, line_spacing, second_color=None):
 
     return text_surfaces, text_rects
 
+
 def load_high_scores(game):
     """Load the high score data from the JSON file or create a new high score list."""
     filename = SINGLE_PLAYER_FILE if game.singleplayer else MULTI_PLAYER_FILE
@@ -172,6 +205,7 @@ def load_high_scores(game):
     except (FileNotFoundError, json.JSONDecodeError):
         high_scores = DEFAULT_HIGH_SCORES
     return high_scores
+
 
 def display_high_scores(game, screen, score_key):
     """Display the high scores on the screen."""
@@ -256,6 +290,7 @@ def calculate_control_positions(center, x_offset):
     p2_controls_x = center[0] + x_offset
     y_pos = 250
     return (p1_controls_x, y_pos), (p2_controls_x, y_pos)
+
 
 def display_controls(controls_frame, settings):
     """Display controls on screen."""

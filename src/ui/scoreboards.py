@@ -11,7 +11,7 @@ import pygame.font
 from pygame.sprite import Group
 from entities.player_health import Heart
 from utils.constants import BOSS_RUSH, SINGLE_PLAYER_FILE, MULTI_PLAYER_FILE
-from utils.game_utils import get_player_name, display_message
+from utils.game_utils import get_player_name, display_message, load_single_image
 
 
 class ScoreBoard:
@@ -34,12 +34,8 @@ class ScoreBoard:
         self.level_color = "blue"
         self.font = pygame.font.SysFont("", 27)
         self.bullets_num_font = pygame.font.SysFont("", 25)
-        self.missiles_icon = pygame.image.load(
-            "../game_assets/images/other/missile_icon.png"
-        )
-        self.phoenix_missiles_icon = pygame.image.load(
-            "../game_assets/images/other/phoenix_missile_icon.png"
-        )
+        self.missiles_icon = load_single_image("other/missile_icon.png")
+        self.phoenix_missiles_icon = load_single_image("other/phoenix_missile_icon.png")
 
         # Prepare the initial score and player health images.
         self.prep_level()

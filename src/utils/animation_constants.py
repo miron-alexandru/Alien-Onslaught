@@ -36,3 +36,5 @@ missile_frames = load_frames("projectiles/missiles/missile-0{}.png", 9, start=1)
 missile_ex_frames = load_frames("missile_explosion/missile_ex-0{}.png", 9, start=1)
 
 alien_immune_frames = load_frames("alien_immune/immune-0{}.png", 20, start=1)
+
+laser_frames = load_frames("projectiles/laser/laser-0{}.png", 9, start=1)

@@ -83,10 +83,10 @@ GAME_MODES_DESCRIPTIONS = (
 
 # Images for different parts of the game.
 BACKGROUNDS = {
-    "space": "../game_assets/images/background/space.jpg",
-    "space2": "../game_assets/images/background/space2.png",
-    "space3": "../game_assets/images/background/space3.jpg",
-    "space4": "../game_assets/images/background/space4.jpg",
+    "space": "background/space.jpg",
+    "space2": "background/space2.png",
+    "space3": "background/space3.jpg",
+    "space4": "background/space4.jpg",
 }
 
 # Bullets map dicts, used to map available bullets to each level
@@ -119,93 +119,93 @@ ALIENS_HP_MAP = {
 
 # Other images used in the game.
 OTHER = {
-    "gameover": "../game_assets/images/other/gameover.png",
-    "victory": "../game_assets/images/other/victory.png",
-    "thunder_win": "../game_assets/images/other/thunder_victory.png",
-    "phoenix_win": "../game_assets/images/other/phoenix_victory.png",
-    "pause": "../game_assets/images/other/pause.png",
-    "heart": "../game_assets/images/other/heart.png",
-    "game_title": "../game_assets/images/other/alien_onslaught.bmp",
-    "cursor": "../game_assets/images/other/cursor.bmp",
+    "gameover": "other/gameover.png",
+    "victory": "other/victory.png",
+    "thunder_win": "other/thunder_victory.png",
+    "phoenix_win": "other/phoenix_victory.png",
+    "pause": "other/pause.png",
+    "heart": "other/heart.png",
+    "game_title": "other/alien_onslaught.bmp",
+    "cursor": "other/cursor.bmp",
 }
 
 
 POWERS = {
-    "power": "../game_assets/images/power_ups/power_up.png",
-    "health": "../game_assets/images/power_ups/health.png",
+    "power": "power_ups/power_up.png",
+    "health": "power_ups/health.png",
 }
 
 WEAPON_BOXES = {
-    "thunderbolt": "../game_assets/images/weapon_boxes/thunder_box.png",
-    "firebird": "../game_assets/images/weapon_boxes/fire_box.png",
-    "blaster": "../game_assets/images/weapon_boxes/blaster_box.png",
-    "discharger": "../game_assets/images/weapon_boxes/discharger_box.png",
-    "distorter": "../game_assets/images/weapon_boxes/distorter_box.png",
-    "entangler": "../game_assets/images/weapon_boxes/entangler_box.png",
-    "disruptor": "../game_assets/images/weapon_boxes/disruptor_box.png",
+    "thunderbolt": "weapon_boxes/thunder_box.png",
+    "firebird": "weapon_boxes/fire_box.png",
+    "blaster": "weapon_boxes/blaster_box.png",
+    "discharger": "weapon_boxes/discharger_box.png",
+    "distorter": "weapon_boxes/distorter_box.png",
+    "entangler": "weapon_boxes/entangler_box.png",
+    "disruptor": "weapon_boxes/disruptor_box.png",
 }
 
 WEAPONS = {
-    "thunderbolt": "../game_assets/images/projectiles/bullets/thunder_bullet.png",
-    "firebird": "../game_assets/images/projectiles/bullets/fire_bullet.png",
-    "blaster": "../game_assets/images/projectiles/bullets/blaster.png",
-    "discharger": "../game_assets/images/projectiles/bullets/discharger.png",
-    "distorter": "../game_assets/images/projectiles/bullets/distorter.png",
-    "entangler": "../game_assets/images/projectiles/bullets/entangler.png",
-    "disruptor": "../game_assets/images/projectiles/bullets/disruptor.png",
+    "thunderbolt": "projectiles/bullets/thunder_bullet.png",
+    "firebird": "projectiles/bullets/fire_bullet.png",
+    "blaster": "projectiles/bullets/blaster.png",
+    "discharger": "projectiles/bullets/discharger.png",
+    "distorter": "projectiles/bullets/distorter.png",
+    "entangler": "projectiles/bullets/entangler.png",
+    "disruptor": "projectiles/bullets/disruptor.png",
 }
 
 ALIEN_BULLETS_IMG = {
-    "alien_bullet1": "../game_assets/images/alien_bullets/alien_bullet1.png",
-    "alien_bullet2": "../game_assets/images/alien_bullets/alien_bullet2.png",
-    "alien_bullet3": "../game_assets/images/alien_bullets/alien_bullet3.png",
-    "alien_bullet4": "../game_assets/images/alien_bullets/alien_bullet4.png",
-    "alien_bullet5": "../game_assets/images/alien_bullets/alien_bullet5.png",
-    "alien_bullet6": "../game_assets/images/alien_bullets/alien_bullet6.png",
-    "alien_bullet7": "../game_assets/images/alien_bullets/alien_bullet7.png",
+    "alien_bullet1": "alien_bullets/alien_bullet1.png",
+    "alien_bullet2": "alien_bullets/alien_bullet2.png",
+    "alien_bullet3": "alien_bullets/alien_bullet3.png",
+    "alien_bullet4": "alien_bullets/alien_bullet4.png",
+    "alien_bullet5": "alien_bullets/alien_bullet5.png",
+    "alien_bullet6": "alien_bullets/alien_bullet6.png",
+    "alien_bullet7": "alien_bullets/alien_bullet7.png",
 }
 
 BOSS_BULLETS_IMG = {
-    "boss_bullet1": "../game_assets/images/alien_bullets/nephilim_bullet.png",
-    "boss_bullet2": "../game_assets/images/alien_bullets/xanathar_bullet.png",
-    "boss_bullet3": "../game_assets/images/alien_bullets/scorpion_bullet.png",
-    "boss_bullet4": "../game_assets/images/alien_bullets/nebulon_bullet.png",
-    "boss_bullet5": "../game_assets/images/alien_bullets/astaroth_bullet.png",
-    "boss_bullet6": "../game_assets/images/alien_bullets/krynnax_bullet.png",
-    "boss_bullet7": "../game_assets/images/alien_bullets/xyranth_bullet.png",
-    "boss_bullet8": "../game_assets/images/alien_bullets/arcturus_bullet.png",
-    "boss_bullet9": "../game_assets/images/alien_bullets/xydonix_bullet.png",
-    "boss_bullet10": "../game_assets/images/alien_bullets/mothership_bullet.png",
-    "boss_bullet11": "../game_assets/images/alien_bullets/valtor_bullet.png",
-    "boss_bullet12": "../game_assets/images/alien_bullets/xalaxar_bullet.png",
-    "boss_bullet13": "../game_assets/images/alien_bullets/zorgoth_bullet.png",
-    "boss_bullet14": "../game_assets/images/alien_bullets/typhon_bullet.png",
-    "boss_bullet15": "../game_assets/images/alien_bullets/xixo_bullet.png",
-    "normal_bullet15": "../game_assets/images/alien_bullets/scorpion_bullet.png",
-    "normal_bullet20": "../game_assets/images/alien_bullets/mothership_bullet.png",
-    "normal_bullet25": "../game_assets/images/alien_bullets/xyranth_bullet.png",
+    "boss_bullet1": "alien_bullets/nephilim_bullet.png",
+    "boss_bullet2": "alien_bullets/xanathar_bullet.png",
+    "boss_bullet3": "alien_bullets/scorpion_bullet.png",
+    "boss_bullet4": "alien_bullets/nebulon_bullet.png",
+    "boss_bullet5": "alien_bullets/astaroth_bullet.png",
+    "boss_bullet6": "alien_bullets/krynnax_bullet.png",
+    "boss_bullet7": "alien_bullets/xyranth_bullet.png",
+    "boss_bullet8": "alien_bullets/arcturus_bullet.png",
+    "boss_bullet9": "alien_bullets/xydonix_bullet.png",
+    "boss_bullet10": "alien_bullets/mothership_bullet.png",
+    "boss_bullet11": "alien_bullets/valtor_bullet.png",
+    "boss_bullet12": "alien_bullets/xalaxar_bullet.png",
+    "boss_bullet13": "alien_bullets/zorgoth_bullet.png",
+    "boss_bullet14": "alien_bullets/typhon_bullet.png",
+    "boss_bullet15": "alien_bullets/xixo_bullet.png",
+    "normal_bullet15": "alien_bullets/scorpion_bullet.png",
+    "normal_bullet20": "alien_bullets/mothership_bullet.png",
+    "normal_bullet25": "alien_bullets/xyranth_bullet.png",
 }
 
 
 BOSS_RUSH = {
-    "boss1": "../game_assets/images/boss_rush/nephilim.png",
-    "boss2": "../game_assets/images/aliens/xanathar.png",
-    "boss3": "../game_assets/images/aliens/scorpion.png",
-    "boss4": "../game_assets/images/boss_rush/nebulon.png",
-    "boss5": "../game_assets/images/boss_rush/astaroth.png",
-    "boss6": "../game_assets/images/boss_rush/krynnax.png",
-    "boss7": "../game_assets/images/aliens/xyranth.png",
-    "boss8": "../game_assets/images/boss_rush/arcturus.png",
-    "boss9": "../game_assets/images/boss_rush/xydonis.png",
-    "boss10": "../game_assets/images/aliens/mothership.png",
-    "boss11": "../game_assets/images/boss_rush/valtor.png",
-    "boss12": "../game_assets/images/boss_rush/xalaxar.png",
-    "boss13": "../game_assets/images/boss_rush/zorgoth.png",
-    "boss14": "../game_assets/images/boss_rush/typhon.png",
-    "boss15": "../game_assets/images/boss_rush/xixo.png",
-    "normal15": "../game_assets/images/aliens/scorpion.png",
-    "normal20": "../game_assets/images/aliens/mothership.png",
-    "normal25": "../game_assets/images/aliens/xyranth.png",
+    "boss1": "boss_rush/nephilim.png",
+    "boss2": "aliens/xanathar.png",
+    "boss3": "aliens/scorpion.png",
+    "boss4": "boss_rush/nebulon.png",
+    "boss5": "boss_rush/astaroth.png",
+    "boss6": "boss_rush/krynnax.png",
+    "boss7": "aliens/xyranth.png",
+    "boss8": "boss_rush/arcturus.png",
+    "boss9": "boss_rush/xydonis.png",
+    "boss10": "aliens/mothership.png",
+    "boss11": "boss_rush/valtor.png",
+    "boss12": "boss_rush/xalaxar.png",
+    "boss13": "boss_rush/zorgoth.png",
+    "boss14": "boss_rush/typhon.png",
+    "boss15": "boss_rush/xixo.png",
+    "normal15": "aliens/scorpion.png",
+    "normal20": "aliens/mothership.png",
+    "normal25": "aliens/xyranth.png",
 }
 
 
@@ -224,50 +224,51 @@ NORMAL_BOSS_HP_MAP = {
 
 
 SHIPS = {
-    "thunderbird": "../game_assets/images/ships/ship1.png",
-    "phoenix": "../game_assets/images/ships/ship4.png",
+    "thunderbird": "ships/ship1.png",
+    "phoenix": "ships/ship4.png",
 }
 
 
 # Sounds for the game.
 MENU_SOUNDS = {
-    "menu": "../game_assets/sounds/ui/menu.wav",
-    "click_menu": "../game_assets/sounds/ui/click_menu.wav",
-    "quit_effect": "../game_assets/sounds/ui/quit_effect.wav",
+    "menu": "ui/menu.wav",
+    "click_menu": "ui/click_menu.wav",
+    "quit_effect": "ui/quit_effect.wav",
 }
 
 GAME_SOUNDS = {
-    "bullet": "../game_assets/sounds/gameplay/fire.wav",
-    "explode": "../game_assets/sounds/gameplay/explode.wav",
-    "game_over": "../game_assets/sounds/ui/game_over.wav",
-    "power_up": "../game_assets/sounds/gameplay/power_up.mp3",
-    "penalty": "../game_assets/sounds/gameplay/penalty.wav",
-    "health": "../game_assets/sounds/gameplay/health.wav",
-    "weapon": "../game_assets/sounds/gameplay/weapon.wav",
-    "missile": "../game_assets/sounds/gameplay/missile.wav",
-    "missile_launch": "../game_assets/sounds/gameplay/missile_launch.wav",
-    "click": "../game_assets/sounds/ui/click_button.wav",
-    "quit_effect": "../game_assets/sounds/ui/quit_effect.wav",
-    "keypress": "../game_assets/sounds/ui/keypress.wav",
-    "warp": "../game_assets/sounds/gameplay/warp_sound.mp3",
-    "alien_exploding": "../game_assets/sounds/gameplay/alien_exploding.wav",
-    "boss_exploding": "../game_assets/sounds/gameplay/boss_exploding.wav",
+    "bullet": "gameplay/fire.wav",
+    "explode": "gameplay/explode.wav",
+    "game_over": "ui/game_over.wav",
+    "power_up": "gameplay/power_up.mp3",
+    "penalty": "gameplay/penalty.wav",
+    "health": "gameplay/health.wav",
+    "weapon": "gameplay/weapon.wav",
+    "missile": "gameplay/missile.wav",
+    "missile_launch": "gameplay/missile_launch.wav",
+    "click": "ui/click_button.wav",
+    "quit_effect": "ui/quit_effect.wav",
+    "keypress": "ui/keypress.wav",
+    "warp": "gameplay/warp_sound.mp3",
+    "alien_exploding": "gameplay/alien_exploding.wav",
+    "asteroid_exploding": "gameplay/asteroid_exploding.wav",
+    "boss_exploding": "gameplay/boss_exploding.wav",
 }
 
 LEVEL_SOUNDS = {
-    range(1, 8): "../game_assets/sounds/level/battle_one.wav",
-    range(9, 16): "../game_assets/sounds/level/battle_two.wav",
-    range(17, 24): "../game_assets/sounds/level/battle_three.wav",
-    range(25, 27): "../game_assets/sounds/level/battle_four.wav",
+    range(1, 8): "level/battle_one.wav",
+    range(9, 16): "level/battle_two.wav",
+    range(17, 24): "level/battle_three.wav",
+    range(25, 27): "level/battle_four.wav",
 }
 
 BOSS_RUSH_MUSIC = {
-    range(1, 5): "../game_assets/sounds/boss_rush/first_phase.wav",
-    range(6, 9): "../game_assets/sounds/boss_rush/second_phase.wav",
-    range(10, 16): "../game_assets/sounds/boss_rush/third_phase.wav",
+    range(1, 5): "boss_rush/first_phase.wav",
+    range(6, 9): "boss_rush/second_phase.wav",
+    range(10, 16): "boss_rush/third_phase.wav",
 }
 
-ENDLESS_SOUNDTRACK = {range(1, 3): "../game_assets/sounds/endless/endless.mp3"}
+ENDLESS_SOUNDTRACK = {range(1, 3): "endless/endless.mp3"}
 
 # Dict used to map alien images to game level.
 LEVEL_PREFIX = {

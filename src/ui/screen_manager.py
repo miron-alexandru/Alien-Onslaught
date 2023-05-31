@@ -8,7 +8,7 @@ Classes:
 """
 
 import pygame
-from utils.game_utils import display_controls
+from utils.game_utils import display_controls, load_single_image
 
 
 class ScreenManager:
@@ -22,9 +22,7 @@ class ScreenManager:
         self.score_board = score_board
         self.buttons = buttons
         self.screen = screen
-        self.player_controls = pygame.image.load(
-            "../game_assets/images/buttons/player_controls.png"
-        )
+        self.player_controls = load_single_image("buttons/player_controls.png")
         self._initialize_cursor()
         self.create_controls()
 

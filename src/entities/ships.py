@@ -7,11 +7,13 @@ Classes:
     - 'ShipStates': A dataclass that manages the state of the ships.
 """
 
+import os
 from dataclasses import dataclass
 import pygame
 from pygame.sprite import Sprite
 from animations.ship_animations import Animations
 from utils.constants import SHIPS
+from utils.game_utils import BASE_PATH
 
 
 class Ship(Sprite):
@@ -197,8 +199,9 @@ class Ship(Sprite):
 
     def update_missiles_number(self):
         """Update the number of missiles."""
-        self.missiles_num = (6 if self.settings.game_modes.one_life_reign
-            else self.starting_missiles)
+        self.missiles_num = (
+            6 if self.settings.game_modes.one_life_reign else self.starting_missiles
+        )
 
     def scale_ship(self, scale_factor):
         """Change the ship's size and set the scaled
@@ -230,7 +233,11 @@ class Thunderbird(Ship):
 
     def __init__(self, game):
         self.screen_rect = game.screen.get_rect()
-        super().__init__(game, SHIPS["thunderbird"], self.screen_rect.left + 10)
+        super().__init__(
+            game,
+            os.path.join(BASE_PATH, SHIPS["thunderbird"]),
+            self.screen_rect.left + 10,
+        )
         self.missiles_num = game.settings.thunderbird_missiles_num
         self.ship_type = "thunderbird"
         self.offset = -300
@@ -247,7 +254,9 @@ class Phoenix(Ship):
 
     def __init__(self, game):
         self.screen_rect = game.screen.get_rect()
-        super().__init__(game, SHIPS["phoenix"], self.screen_rect.right - 50)
+        super().__init__(
+            game, os.path.join(BASE_PATH, SHIPS["phoenix"]), self.screen_rect.right - 50
+        )
         self.missiles_num = game.settings.phoenix_missiles_num
         self.ship_type = "phoenix"
         self.offset = 200
