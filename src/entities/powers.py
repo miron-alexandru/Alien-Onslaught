@@ -93,7 +93,7 @@ class PowerEffectsManager:
         current_time = pygame.time.get_ticks()
         # Determines how often powers and penalties are appearing.
         if current_time - self.last_power_up_time >= random.randint(
-            1000, 1000
+            15000, 20000
         ):  # milliseconds
             self.last_power_up_time = current_time
             # Determine the chance for a power to be health power up, weapon power up or
@@ -183,7 +183,10 @@ class PowerEffectsManager:
 
     def change_ship_size(self, player):
         """Make the specified player smaller (for a period of time)."""
-        getattr(self, f"{player}_ship").scale_ship(0.5)
+        ship = getattr(self, f"{player}_ship")
+        if ship.scale_counter < 2:
+            ship.scale_counter += 1
+            ship.scale_ship(0.5)
 
     def invincibility(self, player):
         """Trigger the invincibility state on the specified player."""

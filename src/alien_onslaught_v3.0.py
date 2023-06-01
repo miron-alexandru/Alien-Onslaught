@@ -81,8 +81,14 @@ class AlienOnslaught:
         )
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
+        self.loading_screen = LoadingScreen(
+            self.screen, self.settings.screen_width, self.settings.screen_height
+        )
 
-        # Sprite Groups
+        self._initialize_sprite_groups()
+        self.initialize_managers()
+
+    def _initialize_sprite_groups(self):
         self.thunderbird_bullets = pygame.sprite.Group()
         self.phoenix_bullets = pygame.sprite.Group()
         self.thunderbird_missiles = pygame.sprite.Group()
@@ -94,7 +100,27 @@ class AlienOnslaught:
         self.aliens = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
 
-        # Managers and handlers
+        self.sprite_groups = [
+            self.powers,
+            self.thunderbird_bullets,
+            self.thunderbird_missiles,
+            self.thunderbird_laser,
+            self.phoenix_bullets,
+            self.phoenix_missiles,
+            self.phoenix_laser,
+            self.asteroids,
+            self.alien_bullet,
+        ]
+        self.single_sprite_groups = [
+            self.powers,
+            self.thunderbird_bullets,
+            self.thunderbird_missiles,
+            self.thunderbird_laser,
+            self.asteroids,
+            self.alien_bullet,
+        ]
+
+    def initialize_managers(self):
         self.screen_manager = ScreenManager(
             self.settings, self.score_board, self.buttons, self.screen
         )
@@ -108,10 +134,8 @@ class AlienOnslaught:
             self, self.aliens, self.settings, self.screen
         )
         self.gm_manager = GameModesManager(self, self.settings, self.stats)
-        self.loading_screen = LoadingScreen(
-            self.screen, self.settings.screen_width, self.settings.screen_height
-        )
         self.sound_manager = SoundManager(self)
+
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -239,13 +263,13 @@ class AlienOnslaught:
         """Handle the game logic for each game iteration."""
         self.apply_game_behaviors()
         self._handle_level_progression()
-        if not self.ui_options.paused:
-            self.powers_manager.manage_power_downs()
+
         self.powers_manager.create_powers()
         self.powers_manager.update_powers()
         self.collision_handler.check_powers_collisions(
             self._apply_powerup_or_penalty, self._health_power_up, self._weapon_power_up
         )
+        self.powers_manager.manage_power_downs()
 
         self.gm_manager.create_normal_level_bullets(
             self.alien_bullets_manager.create_alien_bullets
@@ -505,6 +529,7 @@ class AlienOnslaught:
         penalty_choices = self.powers_manager.get_penalty_choices()
         # randomly select one of the powers and activate it.
         effect_choice = random.choice(powerup_choices + penalty_choices)
+        effect_choice = self.powers_manager.decrease_bullet_size
         effect_choice(player)
 
         # Play sound effect
@@ -685,6 +710,7 @@ class AlienOnslaught:
         resets the player weapon and plays the warp sound effect."""
         for ship in self.ships:
             ship.reset_ship_state()
+            ship.reset_ship_size()
             ship.center_ship()
             ship.start_warp()
             ship.update_missiles_number()
@@ -782,21 +808,10 @@ class AlienOnslaught:
             if ship.state.alive:
                 ship.blitme()
 
-        sprite_groups = [
-            self.thunderbird_bullets,
-            self.thunderbird_missiles,
-            self.thunderbird_laser,
-            self.phoenix_bullets,
-            self.phoenix_missiles,
-            self.phoenix_laser,
-            self.alien_bullet,
-            self.powers,
-            self.asteroids,
-        ]
-
         if self.singleplayer:
-            # delete phoenix related sprite groups from the list in the singleplayer mode
-            del sprite_groups[3:6]
+            sprite_groups = self.single_sprite_groups
+        else:
+            sprite_groups = self.sprite_groups
 
         for group in sprite_groups:
             for sprite in group.sprites():

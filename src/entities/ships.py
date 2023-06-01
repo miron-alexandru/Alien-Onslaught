@@ -6,7 +6,7 @@ Classes:
     - 'Phoenix': Represents the Phoenix ship in the game.
     - 'ShipStates': A dataclass that manages the state of the ships.
 """
-
+import time
 import os
 from dataclasses import dataclass
 import pygame
@@ -42,6 +42,7 @@ class Ship(Sprite):
         self.immune_start_time = 0
         self.small_ship_time = 0
         self.last_bullet_time = 0
+        self.scale_counter = 0
         self.last_reverse_power_down_time = None
         self.last_disarmed_power_down_time = None
         self.last_scaled_weapon_power_down_time = None
@@ -78,10 +79,10 @@ class Ship(Sprite):
 
         if (
             self.state.scaled
-            and pygame.time.get_ticks() - self.small_ship_time
+            and time.time() - self.small_ship_time
             > self.settings.scaled_time
         ):
-            self.reset_ship_state()
+            self.reset_ship_size()
 
         if self.state.exploding:
             self.anims.update_explosion_animation()
@@ -209,17 +210,23 @@ class Ship(Sprite):
         self.anims.change_ship_size(scale_factor)
         self.state.scaled = True
 
-    def reset_ship_state(self):
+    def reset_ship_size(self):
         """Reset the ship to the original state and size."""
         self.image = pygame.image.load(self.image_path)
         self.rect = self.image.get_rect()
         self.anims.reset_size()
 
         self.state.scaled = False
-        self.small_ship_time = pygame.time.get_ticks()
+        self.small_ship_time = time.time()
+        self.scale_counter = 0
+
+    def reset_ship_state(self):
+        """Reset ship states."""
         self.state.disarmed = False
         self.state.reverse = False
         self.state.scaled_weapon = False
+        self.state.shielded = False
+        self.state.immune = False
 
     def update_speed_from_settings(self, player):
         """Updates the ship speed attribute based on the current value

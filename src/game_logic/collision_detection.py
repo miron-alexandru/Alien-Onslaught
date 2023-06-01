@@ -2,7 +2,7 @@
 The 'game_collisions' module contains the CollisionManager class
 that handles the collisions in the game.
 """
-
+import time
 import pygame
 from entities.projectiles import Missile
 from entities.aliens import BossAlien
@@ -141,45 +141,33 @@ class CollisionManager:
         if not self.game.singleplayer and phoenix_ship_collisions:
             self._handle_alien_hits(phoenix_ship_collisions, "phoenix")
 
+    def _update_cosmic_conflict_scores(self, ship, hit_function, score_increment):
+        if ship == self.thunderbird_ship:
+            self.stats.phoenix_score += score_increment
+        else:
+            self.stats.thunderbird_score += score_increment
+        hit_function()
+        self.score_board.render_scores()
+        self.score_board.update_high_score()
+
     def check_cosmic_conflict_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to PVP projectile collisions."""
-        thunderbird_bullet_hits = get_colliding_sprites(
-            self.game.phoenix_ship, self.game.thunderbird_bullets
-        )
-        phoenix_bullet_hits = get_colliding_sprites(
-            self.game.thunderbird_ship, self.game.phoenix_bullets
-        )
 
-        if thunderbird_bullet_hits and not self.game.phoenix_ship.state.immune:
-            phoenix_hit()
-            self.stats.thunderbird_score += 1000
-            self.score_board.render_scores()
-            self.score_board.update_high_score()
+        def handle_collision(ship, hit_function, sprite_group, score_increment):
+            hits = get_colliding_sprites(ship, sprite_group)
+            for sprite in hits:
+                if not ship.state.immune or not ship.state.shielded:
+                    if isinstance(sprite, Missile):
+                        sprite.explode()
+                        play_sound(self.game.sound_manager.game_sounds, "missile")
+                    self._update_cosmic_conflict_scores(ship, hit_function, score_increment)
 
-        if phoenix_bullet_hits and not self.game.thunderbird_ship.state.immune:
-            thunderbird_hit()
-            self.stats.phoenix_score += 1000
-            self.score_board.render_scores()
-            self.score_board.update_high_score()
-
-        thunderbird_missile_hits = get_colliding_sprites(
-            self.game.phoenix_ship, self.game.thunderbird_missiles
-        )
-        phoenix_missile_hits = get_colliding_sprites(
-            self.game.thunderbird_ship, self.game.phoenix_missiles
-        )
-
-        for missile in thunderbird_missile_hits:
-            if not self.game.phoenix_ship.state.immune:
-                phoenix_hit()
-                missile.explode()
-                play_sound(self.game.sound_manager.game_sounds, "missile")
-
-        for missile in phoenix_missile_hits:
-            if not self.game.thunderbird_ship.state.immune:
-                thunderbird_hit()
-                missile.explode()
-                play_sound(self.game.sound_manager.game_sounds, "missile")
+        handle_collision(self.phoenix_ship, phoenix_hit, self.game.thunderbird_bullets, 1000)
+        handle_collision(self.thunderbird_ship, thunderbird_hit, self.game.phoenix_bullets, 1000)
+        handle_collision(self.phoenix_ship, phoenix_hit, self.game.thunderbird_missiles, 1000)
+        handle_collision(self.thunderbird_ship, thunderbird_hit, self.game.phoenix_missiles, 1000)
+        handle_collision(self.phoenix_ship, phoenix_hit, self.game.thunderbird_laser, 1000)
+        handle_collision(self.thunderbird_ship, thunderbird_hit, self.game.phoenix_laser, 1000)
 
     def check_alien_ship_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to collisions between aliens and ships and also check if
@@ -252,8 +240,12 @@ class CollisionManager:
             for aliens in collided_aliens.values():
                 for alien in aliens:
                     if isinstance(alien, BossAlien):
-                        alien.hit_count += 1
-                        self._handle_boss_alien_collision(alien, player)
+                        current_time = time.time()
+                        if current_time - alien.last_hit_time >= 0.3:
+                            alien.hit_count += 1
+                            alien.last_hit_time = current_time
+                            print(alien.hit_count)
+                            self._handle_boss_alien_collision(alien, player)
                     elif not alien.immune_state:
                         self._update_stats(alien, player)
 

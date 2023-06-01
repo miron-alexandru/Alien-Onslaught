@@ -60,7 +60,7 @@ class Settings:
         self.speedup_scale = 0.2
         self.missiles_speed = 5.0
         self.immune_time = 5000
-        self.scaled_time = 80000
+        self.scaled_time = 60
         self.alien_immune_time = 12000
         self.max_alien_speed = 3.8
 

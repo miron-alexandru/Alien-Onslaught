@@ -47,7 +47,6 @@ class Alien(Sprite):
         self.destroy = DestroyAnim(self)
         self.immune = Immune(self)
         self.image = self.animation.get_current_image()
-        # self._init_position()
 
     def _init_position(self):
         """Set the initial position of the alien."""
@@ -140,6 +139,7 @@ class BossAlien(Sprite):
         self.hit_count = 0
         self.is_alive = True
         self.immune_state = False
+        self.last_hit_time = 0.0
 
         self.rect = self.image.get_rect()
         self.rect = self.rect.inflate(-30, 0)

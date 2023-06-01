@@ -43,6 +43,11 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.0:
+* Code refactored in main class and collision detection module, and implemented new collisions for the Laser weapon.
+* Improved the timing of the power downs.
+* Implemented a new very strong weapon for the player (Laser).
+* Implemented a new sound effect for asteroids getting destroyed.
+* Modified several modules to ensure compatibility with PyInstaller and enable easy creation of an executable using tools like Auto-py-to-exe.
 * Solved a bug that was causing intermittent issues with sound playback by enhancing the play_sound function. The function now plays sounds on available channels, and if a sound is repetitive (such as the player shooting), it is played only on a specific channel to prevent unnecessary channel congestion.
 * New penalty implemented: Player bullets are smaller for a period of time making it harder to hit enemies.
 * Implemented a new feature: Now when defeating an alien there is a chance that it will split into a small number of smaller, baby aliens.
