@@ -156,7 +156,7 @@ class CollisionManager:
         def handle_collision(ship, hit_function, sprite_group, score_increment):
             hits = get_colliding_sprites(ship, sprite_group)
             for sprite in hits:
-                if not ship.state.immune or not ship.state.shielded:
+                if not ship.state.immune and not ship.state.shielded:
                     if isinstance(sprite, Missile):
                         sprite.explode()
                         play_sound(self.game.sound_manager.game_sounds, "missile")
@@ -244,7 +244,6 @@ class CollisionManager:
                         if current_time - alien.last_hit_time >= 0.3:
                             alien.hit_count += 1
                             alien.last_hit_time = current_time
-                            print(alien.hit_count)
                             self._handle_boss_alien_collision(alien, player)
                     elif not alien.immune_state:
                         self._update_stats(alien, player)
@@ -328,8 +327,10 @@ class CollisionManager:
         match player:
             case "thunderbird":
                 self.stats.thunderbird_score += self.settings.alien_points
+                self.thunderbird_ship.aliens_killed += 1
             case "phoenix":
                 self.stats.phoenix_score += self.settings.alien_points
+                self.phoenix_ship.aliens_killed += 1
         alien.destroy_alien()
         play_sound(self.game.sound_manager.game_sounds, "alien_exploding")
         self.game.aliens.remove(alien)

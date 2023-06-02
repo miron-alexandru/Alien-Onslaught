@@ -93,7 +93,7 @@ class PowerEffectsManager:
         current_time = pygame.time.get_ticks()
         # Determines how often powers and penalties are appearing.
         if current_time - self.last_power_up_time >= random.randint(
-            15000, 20000
+            15000, 25000
         ):  # milliseconds
             self.last_power_up_time = current_time
             # Determine the chance for a power to be health power up, weapon power up or
@@ -252,7 +252,7 @@ class PowerEffectsManager:
 
     def manage_power_downs(self):
         """Set the power down states of the ship to False after a period of time."""
-        current_time = time.time()
+        current_time = time.time() - (self.game.pause_time / 1000)
 
         for ship in self.game.ships:
             for attribute, last_power_down_time_attr in POWER_DOWN_ATTRIBUTES.items():
@@ -262,6 +262,7 @@ class PowerEffectsManager:
                 ):
                     setattr(ship.state, attribute, False)
                     setattr(ship, last_power_down_time_attr, None)
+                    self.game.pause_time = 0
 
     def get_powerup_choices(self):
         """Returns a list of power-up functions available in the game.

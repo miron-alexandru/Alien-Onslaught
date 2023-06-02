@@ -30,21 +30,23 @@ BUTTON_NAMES = [
 
 # Player2 controls
 P2_CONTROLS = (
-    "Phoenix controls:\n"
+    "Phoenix Controls:\n"
     "Move: Arrow Keys\n"
     "Fire: Enter\n"
-    "Change Ship: Numpad 1, 2, 3\n"
+    "Laser: R-Shift\n"
     "Launch Missiles: R-Ctrl\n"
+    "Change Ship: Numpad 1, 2, 3\n"
     "Pause: P"
 )
 
 # Player1 controls
 P1_CONTROLS = (
-    "Thunderbird controls:\n"
+    "Thunderbird Controls:\n"
     "Move: W, A, S, D\n"
     "Fire: Space\n"
-    "Change Ship: 1, 2, 3\n"
+    "Laser: C\n"
     "Launch Missiles: Z\n"
+    "Change Ship: 1, 2, 3\n"
     "Pause: P"
 )
 

@@ -322,14 +322,14 @@ def display_controls(controls_frame, settings):
         P1_CONTROLS,
         font,
         color,
-        (p1_controls_rect.left + 30, p1_controls_rect.top + 30),
+        (p1_controls_rect.left + 30, p1_controls_rect.top + 20),
         25,
     )
     t2_surfaces, t2_rects = render_text(
         P2_CONTROLS,
         font,
         color,
-        (p2_controls_rect.left + 30, p2_controls_rect.top + 30),
+        (p2_controls_rect.left + 30, p2_controls_rect.top + 20),
         25,
     )
 
@@ -354,6 +354,13 @@ def display_message(screen, message, duration):
     pygame.display.flip()
     pygame.time.wait(int(duration * 1000))
 
+def display_laser_message(screen, message, ship):
+    """Display a message to the right of the ship."""
+    font = pygame.font.SysFont("verdana", 10)
+    text = font.render(message, True, (255, 0, 0))
+    ship_rect = ship.rect
+    text_rect = text.get_rect(center=(ship_rect.right + 18, ship_rect.centery - 30))
+    screen.blit(text, text_rect)
 
 def get_player_name(
     screen, background_image, cursor, high_score, game_end_img=None, game_end_rect=None

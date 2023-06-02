@@ -15,6 +15,7 @@ Contact: quality_xqs@yahoo.com
 """
 
 import sys
+import time
 import random
 import pygame
 
@@ -24,7 +25,12 @@ from game_logic.collision_detection import CollisionManager
 from game_logic.input_handling import PlayerInput
 from game_logic.game_modes import GameModesManager
 
-from utils.game_utils import display_high_scores, resize_image, play_sound
+from utils.game_utils import (
+    display_high_scores,
+    resize_image,
+    play_sound,
+    display_laser_message,
+)
 from utils.constants import (
     BOSS_LEVELS,
     AVAILABLE_BULLETS_MAP,
@@ -56,7 +62,8 @@ class AlienOnslaught:
         self.clock = pygame.time.Clock()
         self.settings = Settings()
         self.screen = pygame.display.set_mode(
-            (self.settings.screen_width, self.settings.screen_height), pygame.RESIZABLE)
+            (self.settings.screen_width, self.settings.screen_height), pygame.RESIZABLE
+        )
         self.bg_img = resize_image(self.settings.bg_img, self.screen.get_size())
         self.bg_img_rect = self.bg_img.get_rect()
         self.reset_bg = self.bg_img.copy()
@@ -67,13 +74,18 @@ class AlienOnslaught:
 
         self.ui_options = self.settings.ui_options
         self._initialize_game_objects()
+        self._initialize_sprite_groups()
+        self.initialize_managers()
+
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
+        self.draw_laser_message = False
+        self.game_start_time = 0
 
         pygame.display.set_caption("Alien Onslaught")
 
     def _initialize_game_objects(self):
-        """Initializes all game objects and managers/handlers required for the game."""
+        """Initializes all game objects required in the game."""
         self.thunderbird_ship = Thunderbird(self)
         self.phoenix_ship = Phoenix(self)
         self.buttons = GameButtons(
@@ -85,10 +97,8 @@ class AlienOnslaught:
             self.screen, self.settings.screen_width, self.settings.screen_height
         )
 
-        self._initialize_sprite_groups()
-        self.initialize_managers()
-
     def _initialize_sprite_groups(self):
+        """Create sprite groups for the game."""
         self.thunderbird_bullets = pygame.sprite.Group()
         self.phoenix_bullets = pygame.sprite.Group()
         self.thunderbird_missiles = pygame.sprite.Group()
@@ -121,6 +131,7 @@ class AlienOnslaught:
         ]
 
     def initialize_managers(self):
+        """Initialize managers/handlers for the game."""
         self.screen_manager = ScreenManager(
             self.settings, self.score_board, self.buttons, self.screen
         )
@@ -135,7 +146,6 @@ class AlienOnslaught:
         )
         self.gm_manager = GameModesManager(self, self.settings, self.stats)
         self.sound_manager = SoundManager(self)
-
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -289,6 +299,7 @@ class AlienOnslaught:
         )
 
         self.update_ship_state()
+        self._check_laser_availability()
 
         self.collision_handler.shield_collisions(
             self.ships, self.aliens, self.alien_bullet, self.asteroids
@@ -458,8 +469,8 @@ class AlienOnslaught:
         elif self.settings.game_modes.cosmic_conflict:
             self.gm_manager.cosmic_conflict(
                 self.collision_handler.check_cosmic_conflict_collisions,
-                 self._thunderbird_ship_hit,
-                 self._phoenix_ship_hit
+                self._thunderbird_ship_hit,
+                self._phoenix_ship_hit,
             )
         else:
             self._handle_asteroids(
@@ -493,7 +504,9 @@ class AlienOnslaught:
         bullet_fired = False
         if len(bullets) < bullets_allowed:
             new_bullets = [
-                bullet_class(self, ship, scaled=True) if ship.state.scaled_weapon else bullet_class(self, ship)
+                bullet_class(self, ship, scaled=True)
+                if ship.state.scaled_weapon
+                else bullet_class(self, ship)
                 for _ in range(num_bullets)
             ]
             bullets.add(new_bullets)
@@ -520,8 +533,51 @@ class AlienOnslaught:
 
     def _fire_laser(self, lasers, ship, laser_class):
         """Fire a laser from the ship."""
-        new_laser = laser_class(self, ship)
-        lasers.add(new_laser)
+        if any(
+            mode in self.settings.game_modes.game_mode
+            for mode in self.settings.timed_laser_modes
+        ):
+            self._timed_laser(lasers, ship, laser_class)
+        else:
+            self._normal_laser(lasers, ship, laser_class)
+
+    def _timed_laser(self, lasers, ship, laser_class):
+        """Fire a laser from the ship based on a timed interval."""
+        if (
+            time.time() - (self.pause_time / 1000) - ship.last_laser_time
+            >= self.settings.laser_time
+        ):
+            new_laser = laser_class(self, ship)
+            lasers.add(new_laser)
+            ship.last_laser_time = time.time()
+            self.pause_time = 0
+        else:
+            self.draw_laser_message = True
+
+    def _normal_laser(self, lasers, ship, laser_class):
+        """Fire a laser from the ship based
+        on the required kill count.
+        """
+        if ship.aliens_killed >= self.settings.required_kill_count:
+            new_laser = laser_class(self, ship)
+            lasers.add(new_laser)
+            ship.aliens_killed = 0
+        else:
+            self.draw_laser_message = True
+
+    def _check_laser_availability(self):
+        """Check the laser availability for each ship and
+        display a message if not ready.
+        """
+        if self.draw_laser_message:
+            for ship in self.ships:
+                if ship.fire_laser:
+                    display_laser_message(self.screen, "Not Ready!", ship)
+
+        current_time = pygame.time.get_ticks()
+        if self.draw_laser_message and current_time > self.game_start_time + 1500:
+            self.draw_laser_message = False
+            self.game_start_time = current_time
 
     def _apply_powerup_or_penalty(self, player):
         """Powers up or applies a penalty on the specified player"""
@@ -529,7 +585,6 @@ class AlienOnslaught:
         penalty_choices = self.powers_manager.get_penalty_choices()
         # randomly select one of the powers and activate it.
         effect_choice = random.choice(powerup_choices + penalty_choices)
-        effect_choice = self.powers_manager.decrease_bullet_size
         effect_choice(player)
 
         # Play sound effect
@@ -543,12 +598,13 @@ class AlienOnslaught:
             "thunderbird": "thunderbird_hp",
             "phoenix": "phoenix_hp",
         }
-        health_attr = player_health_attrs.get(player)
-        current_hp = getattr(self.stats, health_attr)
-        if current_hp < self.stats.max_hp:
-            setattr(self.stats, health_attr, current_hp + 1)
-        self.score_board.create_health()
-        play_sound(self.sound_manager.game_sounds, "health")
+        health_attr = player_health_attrs.get(player)  # Add default value None
+        if health_attr is not None:
+            current_hp = getattr(self.stats, health_attr)
+            if current_hp < self.stats.max_hp:
+                setattr(self.stats, health_attr, current_hp + 1)
+            self.score_board.create_health()
+            play_sound(self.sound_manager.game_sounds, "health")
 
 
     def check_for_player_revive(self):
@@ -612,7 +668,11 @@ class AlienOnslaught:
         """Check if the game is over and act accordingly."""
         if self.settings.game_modes.cosmic_conflict:
             self._check_cosmic_conflict_endgame()
-        if self.settings.game_modes.boss_rush and self.stats.level == 15 and not self.aliens:
+        if (
+            self.settings.game_modes.boss_rush
+            and self.stats.level == 15
+            and not self.aliens
+        ):
             self._display_endgame("victory")
             self.score_board.render_high_score()
         elif not any(
@@ -686,7 +746,6 @@ class AlienOnslaught:
         """Level progression handler for the Last Bullet game mode"""
         self._prepare_level()
         self._prepare_last_bullet_bullets()
-
 
     def _reset_game_objects(self):
         """Clear the screen of game objects, excluding specified groups."""
@@ -783,9 +842,7 @@ class AlienOnslaught:
         based on the level"""
 
         available_bullets_map = (
-            AVAILABLE_BULLETS_MAP_SINGLE
-            if self.singleplayer
-            else AVAILABLE_BULLETS_MAP
+            AVAILABLE_BULLETS_MAP_SINGLE if self.singleplayer else AVAILABLE_BULLETS_MAP
         )
 
         for bullet_range, bullets in available_bullets_map.items():
@@ -803,7 +860,7 @@ class AlienOnslaught:
     def _draw_game_objects(self):
         """Draw game objects and the score on screen."""
         self._update_ship_alive_states()
-        
+
         for ship in self.ships:
             if ship.state.alive:
                 ship.blitme()

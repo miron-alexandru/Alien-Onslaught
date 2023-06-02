@@ -42,7 +42,10 @@ class Ship(Sprite):
         self.immune_start_time = 0
         self.small_ship_time = 0
         self.last_bullet_time = 0
+        self.last_laser_time = 0
+        self.aliens_killed = 0
         self.scale_counter = 0
+        self.fire_laser = False
         self.last_reverse_power_down_time = None
         self.last_disarmed_power_down_time = None
         self.last_scaled_weapon_power_down_time = None
@@ -221,12 +224,14 @@ class Ship(Sprite):
         self.scale_counter = 0
 
     def reset_ship_state(self):
-        """Reset ship states."""
+        """Reset ship states and other variables."""
         self.state.disarmed = False
         self.state.reverse = False
         self.state.scaled_weapon = False
         self.state.shielded = False
         self.state.immune = False
+        self.aliens_killed = 0
+        self.last_laser_time = 0
 
     def update_speed_from_settings(self, player):
         """Updates the ship speed attribute based on the current value

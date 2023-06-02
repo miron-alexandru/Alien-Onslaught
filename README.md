@@ -42,6 +42,10 @@
 <details>
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
+### Version 3.1:
+* A message is now displayed to the player when they attempt to fire the laser but it is not yet ready or available.
+* Laser functionality: The behavior of the laser differs depending on the game mode. In certain game modes, there is a cooldown for the laser. In other game modes, the laser becomes available every time the player successfully eliminates a certain number of aliens.
+
 ### Version 3.0:
 * Code refactored in main class and collision detection module, and implemented new collisions for the Laser weapon.
 * Improved the timing of the power downs.

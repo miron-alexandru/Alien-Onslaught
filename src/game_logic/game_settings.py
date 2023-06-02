@@ -56,11 +56,15 @@ class Settings:
         as well as other game-related settings.
         """
         self.game_modes = GameModes()
+        self.timed_laser_modes = ['boss_rush', 'cosmic_conflict',
+        'meteor_madness', 'endless_onslaught']
         self.ui_options = UIOptions()
         self.speedup_scale = 0.2
         self.missiles_speed = 5.0
         self.immune_time = 5000
         self.scaled_time = 60
+        self.laser_time = 90
+        self.required_kill_count = 45
         self.alien_immune_time = 12000
         self.max_alien_speed = 3.8
 
