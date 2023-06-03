@@ -299,6 +299,8 @@ class AlienOnslaught:
         )
 
         self.update_ship_state()
+        self._update_normal_laser_status()
+        self._update_timed_laser_status()
         self._check_laser_availability()
 
         self.collision_handler.shield_collisions(
@@ -545,14 +547,16 @@ class AlienOnslaught:
         """Fire a laser from the ship based on a timed interval."""
         if (
             time.time() - (self.pause_time / 1000) - ship.last_laser_time
-            >= self.settings.laser_time
+            >= self.settings.laser_cooldown
         ):
             new_laser = laser_class(self, ship)
             lasers.add(new_laser)
             ship.last_laser_time = time.time()
             self.pause_time = 0
+            play_sound(self.sound_manager.game_sounds, "fire_laser")
         else:
             self.draw_laser_message = True
+            play_sound(self.sound_manager.game_sounds, "laser_not_ready")
 
     def _normal_laser(self, lasers, ship, laser_class):
         """Fire a laser from the ship based
@@ -562,17 +566,58 @@ class AlienOnslaught:
             new_laser = laser_class(self, ship)
             lasers.add(new_laser)
             ship.aliens_killed = 0
+            play_sound(self.sound_manager.game_sounds, "fire_laser")
         else:
             self.draw_laser_message = True
+            play_sound(self.sound_manager.game_sounds, "laser_not_ready")
+
+    def _update_normal_laser_status(self):
+        """Check the status of the normal laser."""
+        current_time = time.time()
+
+        for ship in self.ships:
+            if ship.aliens_killed >= self.settings.required_kill_count:
+                if not ship.laser_ready and not ship.laser_ready_msg:
+                    ship.laser_ready = True
+                    ship.laser_ready_msg = True
+                    ship.laser_ready_start_time = current_time
+                    play_sound(self.sound_manager.game_sounds, "laser_ready")
+
+                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
+                    ship.laser_ready = False
+            else:
+                ship.laser_ready_msg = False
+
+    def _update_timed_laser_status(self):
+        """Check the status of the timed laser."""
+        if all(
+            mode not in self.settings.game_modes.game_mode
+            for mode in self.settings.timed_laser_modes
+        ):
+            return
+        current_time = time.time()
+        for ship in self.ships:
+            time_since_last_ready = current_time - ship.last_laser_usage
+            if time_since_last_ready >= self.settings.laser_cooldown:
+                if not ship.laser_ready:
+                    ship.laser_ready = True
+                    ship.laser_ready_start_time = current_time
+                    play_sound(self.sound_manager.game_sounds, "laser_ready")
+
+                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
+                    ship.laser_ready = False
+                    ship.last_laser_usage = current_time
 
     def _check_laser_availability(self):
         """Check the laser availability for each ship and
-        display a message if not ready.
+        display a message if the laser is ready or not.
         """
-        if self.draw_laser_message:
-            for ship in self.ships:
-                if ship.fire_laser:
-                    display_laser_message(self.screen, "Not Ready!", ship)
+        for ship in self.ships:
+            if ship.laser_ready:
+                display_laser_message(self.screen, "Ready!", ship)
+
+            if self.draw_laser_message and ship.laser_fired:
+                display_laser_message(self.screen, "Not Ready!", ship)
 
         current_time = pygame.time.get_ticks()
         if self.draw_laser_message and current_time > self.game_start_time + 1500:
@@ -605,7 +650,6 @@ class AlienOnslaught:
                 setattr(self.stats, health_attr, current_hp + 1)
             self.score_board.create_health()
             play_sound(self.sound_manager.game_sounds, "health")
-
 
     def check_for_player_revive(self):
         """Revive the other player after the third Boss Fight.

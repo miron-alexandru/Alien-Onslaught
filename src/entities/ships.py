@@ -45,7 +45,13 @@ class Ship(Sprite):
         self.last_laser_time = 0
         self.aliens_killed = 0
         self.scale_counter = 0
-        self.fire_laser = False
+
+        self.laser_fired = False
+        self.laser_ready = False
+        self.laser_ready_start_time = 0.0
+        self.last_laser_usage = 0.0
+        self.laser_ready_msg = False
+
         self.last_reverse_power_down_time = None
         self.last_disarmed_power_down_time = None
         self.last_scaled_weapon_power_down_time = None

@@ -255,6 +255,9 @@ GAME_SOUNDS = {
     "alien_exploding": "gameplay/alien_exploding.wav",
     "asteroid_exploding": "gameplay/asteroid_exploding.wav",
     "boss_exploding": "gameplay/boss_exploding.wav",
+    "laser_ready": "gameplay/laser_ready.mp3",
+    "fire_laser": "gameplay/fire_laser.mp3",
+    "laser_not_ready": "gameplay/laser_not_ready.mp3",
 }
 
 LEVEL_SOUNDS = {

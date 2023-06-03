@@ -43,7 +43,8 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
-* A message is now displayed to the player when they attempt to fire the laser but it is not yet ready or available.
+* Sound effect for the laser implemented.
+* When the player's laser is ready, a message is displayed, accompanied by a corresponding sound effect. Similarly, when the player attempts to fire the laser before it is ready or available, another message is displayed along with an appropriate sound effect.
 * Laser functionality: The behavior of the laser differs depending on the game mode. In certain game modes, there is a cooldown for the laser. In other game modes, the laser becomes available every time the player successfully eliminates a certain number of aliens.
 
 ### Version 3.0:
@@ -195,8 +196,10 @@ This is a list of assets used in the project that were not created by me, along 
 
 ### Sound Effects (SFx):
 * UI Sound effects (click sound, quit sound) — by [Circlerun](https://opengameart.org/users/circlerun)
-* Explosion SFx — by [Michael Kurinnoy](https://opengameart.org/content/space-battle-game-sounds-astromenace)
-* Power-up, penalty, health SFx — by [phoenix1291](https://opengameart.org/users/phoenix1291)
+* Explosion , Laser ready — by [Michael Kurinnoy](https://opengameart.org/content/space-battle-game-sounds-astromenace)
+* Power-up, penalty, health — by [phoenix1291](https://opengameart.org/users/phoenix1291)
+* Laser sound effect — by [celestialghost8] (https://opengameart.org/users/celestialghost8)
+* Laser not ready — by [ViRiX](https://soundcloud.com/virix)
 
 ### Images/Sprites:
 * Ships/missiles — by [MillionthVector](http://millionthvector.blogspot.com/)
@@ -204,4 +207,4 @@ This is a list of assets used in the project that were not created by me, along 
 * Aliens — by [Gamedevtuts](https://opengameart.org/users/gamedevtuts)
 * Powers and some bullets — by [JanaChumi](https://opengameart.org/users/janachumi)
 * Most of the bullets — by [Wenrexa](https://opengameart.org/users/wenrexa)
-* Alien Bullet — by [GameSupplyGuy] (https://gamesupply.itch.io/)
+* Alien Bullet — by [GameSupplyGuy](https://gamesupply.itch.io/)

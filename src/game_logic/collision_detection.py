@@ -65,10 +65,11 @@ class CollisionManager:
                     if ship is self.thunderbird_ship and not ship.state.immune:
                         thunder_hit_method()
                         collision.kill()
+                        play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
                     if ship is self.phoenix_ship and not ship.state.immune:
                         phoenix_hit_method()
                         collision.kill()
-                    play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
+                        play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
 
         missiles = pygame.sprite.Group(
             self.game.thunderbird_missiles, self.game.phoenix_missiles

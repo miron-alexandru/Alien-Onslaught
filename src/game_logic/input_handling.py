@@ -76,7 +76,7 @@ class PlayerInput:
                 case pygame.K_SPACE:
                     self.thunderbird.state.firing = False
                 case pygame.K_c:
-                    self.thunderbird.fire_laser = False
+                    self.thunderbird.laser_fired = False
 
 
         # Phoenix controls
@@ -93,7 +93,7 @@ class PlayerInput:
                 case pygame.K_RETURN:
                     self.phoenix.state.firing = False
                 case pygame.K_RSHIFT:
-                    self.phoenix.fire_laser = False
+                    self.phoenix.laser_fired = False
 
     def handle_ship_firing(self, fire_bullet_method):
         """Handles the ship firing."""
@@ -176,7 +176,7 @@ class PlayerInput:
                     self.thunderbird,
                     laser_class=Laser
                 )
-                self.thunderbird.fire_laser = True
+                self.thunderbird.laser_fired = True
 
     def _handle_phoenix_controls(self, event, fire_missile_method, fire_laser_method):
         """Handle Phoenix controls."""
@@ -219,7 +219,7 @@ class PlayerInput:
                     self.phoenix,
                     laser_class=Laser
                 )
-                self.phoenix.fire_laser = True
+                self.phoenix.laser_fired = True
 
     def reset_ship_flags(self):
         """Reset movement flags and firing state for the ships."""
