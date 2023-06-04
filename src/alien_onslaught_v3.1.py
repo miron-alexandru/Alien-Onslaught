@@ -15,7 +15,6 @@ Contact: quality_xqs@yahoo.com
 """
 
 import sys
-import time
 import random
 import pygame
 
@@ -29,7 +28,6 @@ from utils.game_utils import (
     display_high_scores,
     resize_image,
     play_sound,
-    display_laser_message,
 )
 from utils.constants import (
     BOSS_LEVELS,
@@ -47,7 +45,7 @@ from entities.alien_bullets import AlienBulletsManager
 from entities.aliens import AliensManager
 from entities.powers import PowerEffectsManager
 from entities.asteroid import AsteroidsManager
-from entities.projectiles import BulletsManager
+from entities.projectiles import WeaponsManager
 from audio.sounds_manager import SoundManager
 
 
@@ -79,8 +77,6 @@ class AlienOnslaught:
 
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
-        self.draw_laser_message = False
-        self.game_start_time = 0
 
         pygame.display.set_caption("Alien Onslaught")
 
@@ -132,6 +128,7 @@ class AlienOnslaught:
 
     def initialize_managers(self):
         """Initialize managers/handlers for the game."""
+        self.sound_manager = SoundManager(self)
         self.screen_manager = ScreenManager(
             self.settings, self.score_board, self.buttons, self.screen
         )
@@ -140,12 +137,11 @@ class AlienOnslaught:
         self.powers_manager = PowerEffectsManager(self, self.score_board, self.stats)
         self.asteroids_manager = AsteroidsManager(self)
         self.alien_bullets_manager = AlienBulletsManager(self)
-        self.bullets_manager = BulletsManager(self)
+        self.weapons_manager = WeaponsManager(self)
         self.aliens_manager = AliensManager(
             self, self.aliens, self.settings, self.screen
         )
         self.gm_manager = GameModesManager(self, self.settings, self.stats)
-        self.sound_manager = SoundManager(self)
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -288,8 +284,8 @@ class AlienOnslaught:
         self.collision_handler.check_alien_bullets_collisions(
             self._thunderbird_ship_hit, self._phoenix_ship_hit
         )
-        self.player_input.handle_ship_firing(self._fire_bullet)
-        self.bullets_manager.update_projectiles()
+        self.player_input.handle_ship_firing(self.weapons_manager.fire_bullet)
+        self.weapons_manager.update_projectiles()
         self.collision_handler.check_bullet_alien_collisions()
         self.collision_handler.check_missile_alien_collisions()
         self.collision_handler.check_laser_alien_collisions()
@@ -299,9 +295,9 @@ class AlienOnslaught:
         )
 
         self.update_ship_state()
-        self._update_normal_laser_status()
-        self._update_timed_laser_status()
-        self._check_laser_availability()
+        self.weapons_manager.update_normal_laser_status()
+        self.weapons_manager.update_timed_laser_status()
+        self.weapons_manager.check_laser_availability()
 
         self.collision_handler.shield_collisions(
             self.ships, self.aliens, self.alien_bullet, self.asteroids
@@ -334,8 +330,8 @@ class AlienOnslaught:
                         self._reset_game,
                         self.run_menu,
                         self._return_to_game_menu,
-                        self._fire_missile,
-                        self._fire_laser,
+                        self.weapons_manager.fire_missile,
+                        self.weapons_manager.fire_laser,
                     )
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
@@ -497,133 +493,6 @@ class AlienOnslaught:
             case _:
                 self.aliens_manager.create_fleet(self.settings.fleet_rows)
 
-    def _fire_bullet(self, bullets, bullets_allowed, bullet_class, num_bullets, ship):
-        """Create new player bullets."""
-        # Create the bullets at and position them correctly as the number of bullets increases
-        if ship.remaining_bullets <= 0 or ship.state.disarmed:
-            return
-
-        bullet_fired = False
-        if len(bullets) < bullets_allowed:
-            new_bullets = [
-                bullet_class(self, ship, scaled=True)
-                if ship.state.scaled_weapon
-                else bullet_class(self, ship)
-                for _ in range(num_bullets)
-            ]
-            bullets.add(new_bullets)
-            for i, new_bullet in enumerate(new_bullets):
-                offset = 30 * (i - (num_bullets - 1) / 2)
-                new_bullet.rect.centerx = ship.rect.centerx + offset
-                new_bullet.rect.centery = ship.rect.centery + offset
-                if self.settings.game_modes.last_bullet:
-                    ship.remaining_bullets -= 1
-                    self.score_board.render_bullets_num()
-                bullet_fired = True
-
-        if bullet_fired:
-            play_sound(self.sound_manager.game_sounds, "bullet")
-
-    def _fire_missile(self, missiles, ship, missile_class):
-        """Fire a missile from the given ship and update the missiles number."""
-        if ship.missiles_num > 0:
-            new_missile = missile_class(self, ship)
-            play_sound(self.sound_manager.game_sounds, "missile_launch")
-            missiles.add(new_missile)
-            ship.missiles_num -= 1
-            self.score_board.render_scores()
-
-    def _fire_laser(self, lasers, ship, laser_class):
-        """Fire a laser from the ship."""
-        if any(
-            mode in self.settings.game_modes.game_mode
-            for mode in self.settings.timed_laser_modes
-        ):
-            self._timed_laser(lasers, ship, laser_class)
-        else:
-            self._normal_laser(lasers, ship, laser_class)
-
-    def _timed_laser(self, lasers, ship, laser_class):
-        """Fire a laser from the ship based on a timed interval."""
-        if (
-            time.time() - (self.pause_time / 1000) - ship.last_laser_time
-            >= self.settings.laser_cooldown
-        ):
-            new_laser = laser_class(self, ship)
-            lasers.add(new_laser)
-            ship.last_laser_time = time.time()
-            self.pause_time = 0
-            play_sound(self.sound_manager.game_sounds, "fire_laser")
-        else:
-            self.draw_laser_message = True
-            play_sound(self.sound_manager.game_sounds, "laser_not_ready")
-
-    def _normal_laser(self, lasers, ship, laser_class):
-        """Fire a laser from the ship based
-        on the required kill count.
-        """
-        if ship.aliens_killed >= self.settings.required_kill_count:
-            new_laser = laser_class(self, ship)
-            lasers.add(new_laser)
-            ship.aliens_killed = 0
-            play_sound(self.sound_manager.game_sounds, "fire_laser")
-        else:
-            self.draw_laser_message = True
-            play_sound(self.sound_manager.game_sounds, "laser_not_ready")
-
-    def _update_normal_laser_status(self):
-        """Check the status of the normal laser."""
-        current_time = time.time()
-
-        for ship in self.ships:
-            if ship.aliens_killed >= self.settings.required_kill_count:
-                if not ship.laser_ready and not ship.laser_ready_msg:
-                    ship.laser_ready = True
-                    ship.laser_ready_msg = True
-                    ship.laser_ready_start_time = current_time
-                    play_sound(self.sound_manager.game_sounds, "laser_ready")
-
-                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
-                    ship.laser_ready = False
-            else:
-                ship.laser_ready_msg = False
-
-    def _update_timed_laser_status(self):
-        """Check the status of the timed laser."""
-        if all(
-            mode not in self.settings.game_modes.game_mode
-            for mode in self.settings.timed_laser_modes
-        ):
-            return
-        current_time = time.time()
-        for ship in self.ships:
-            time_since_last_ready = current_time - ship.last_laser_usage
-            if time_since_last_ready >= self.settings.laser_cooldown:
-                if not ship.laser_ready:
-                    ship.laser_ready = True
-                    ship.laser_ready_start_time = current_time
-                    play_sound(self.sound_manager.game_sounds, "laser_ready")
-
-                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
-                    ship.laser_ready = False
-                    ship.last_laser_usage = current_time
-
-    def _check_laser_availability(self):
-        """Check the laser availability for each ship and
-        display a message if the laser is ready or not.
-        """
-        for ship in self.ships:
-            if ship.laser_ready:
-                display_laser_message(self.screen, "Ready!", ship)
-
-            if self.draw_laser_message and ship.laser_fired:
-                display_laser_message(self.screen, "Not Ready!", ship)
-
-        current_time = pygame.time.get_ticks()
-        if self.draw_laser_message and current_time > self.game_start_time + 1500:
-            self.draw_laser_message = False
-            self.game_start_time = current_time
-
     def _apply_powerup_or_penalty(self, player):
         """Powers up or applies a penalty on the specified player"""
         powerup_choices = self.powers_manager.get_powerup_choices()
@@ -643,7 +512,7 @@ class AlienOnslaught:
             "thunderbird": "thunderbird_hp",
             "phoenix": "phoenix_hp",
         }
-        health_attr = player_health_attrs.get(player)  # Add default value None
+        health_attr = player_health_attrs.get(player)
         if health_attr is not None:
             current_hp = getattr(self.stats, health_attr)
             if current_hp < self.stats.max_hp:
@@ -664,7 +533,7 @@ class AlienOnslaught:
 
     def _weapon_power_up(self, player, weapon_name):
         """Changes the given player's weapon."""
-        self.bullets_manager.set_weapon(player, weapon_name)
+        self.weapons_manager.set_weapon(player, weapon_name)
         play_sound(self.sound_manager.game_sounds, "weapon")
 
     def _thunderbird_ship_hit(self):
@@ -819,7 +688,7 @@ class AlienOnslaught:
             ship.update_missiles_number()
             ship.set_cosmic_conflict_pos()
         # reset player weapons
-        self.bullets_manager.reset_weapons()
+        self.weapons_manager.reset_weapons()
 
         play_sound(self.sound_manager.game_sounds, "warp")
 
