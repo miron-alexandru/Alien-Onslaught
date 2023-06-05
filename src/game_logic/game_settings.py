@@ -49,6 +49,7 @@ class Settings:
         self.game_title_rect.y = -270
         self.cursor_img = self.misc_images["cursor"]
         self.cursor_rect = self.cursor_img.get_rect()
+        self.game_icon = self.misc_images["game_icon"]
 
     def _init_game_settings(self):
         """This method initializes the settings

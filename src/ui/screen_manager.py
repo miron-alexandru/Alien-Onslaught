@@ -129,6 +129,26 @@ class ScreenManager:
             self.t2_rects,
         ) = display_controls(self.player_controls, self.screen)
 
+    def draw_menu_objects(self, bg_img, bg_img_rect):
+        """Draw the buttons, game title and controls on the menu screen"""
+        self.screen.blit(bg_img, bg_img_rect)
+        self.screen.blit(
+            self.p1_controls, self.p1_controls_rect
+        )
+        self.screen.blit(
+            self.p2_controls, self.p2_controls_rect
+        )
+        self.screen.blit(self.settings.game_title, self.settings.game_title_rect)
+        self.buttons.single.draw_button()
+        self.buttons.multi.draw_button()
+        self.buttons.menu_quit.draw_button()
+
+        for i, surface in enumerate(self.t1_surfaces):
+            self.screen.blit(surface, self.t1_rects[i])
+
+        for i, surface in enumerate(self.t2_surfaces):
+            self.screen.blit(surface, self.t2_rects[i])
+
 
 class LoadingScreen:
     """Manages the loading screen for the game,

@@ -129,6 +129,7 @@ OTHER = {
     "heart": "other/heart.png",
     "game_title": "other/alien_onslaught.bmp",
     "cursor": "other/cursor.bmp",
+    "game_icon": "other/game_icon.png",
 }
 
 
@@ -333,4 +334,9 @@ POWER_DOWN_ATTRIBUTES = {
             'reverse': 'last_reverse_power_down_time',
             'disarmed': 'last_disarmed_power_down_time',
             'scaled_weapon': 'last_scaled_weapon_power_down_time'
+        }
+
+PLAYER_HEALTH_ATTRS = {
+            "thunderbird": "thunderbird_hp",
+            "phoenix": "phoenix_hp",
         }

@@ -43,7 +43,8 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
-* Refactored the code : Moved weapons related code from the main class into the WeaponsManager.
+* Added application icon.
+* Refactored the code : Moved weapons related code from the main class into the WeaponsManager. Moved gameplay related code such as level progression and game modes into the gameplay_handler module (renamed from game_modes).
 * Sound effect for the laser implemented.
 * When the player's laser is ready, a message is displayed, accompanied by a corresponding sound effect. Similarly, when the player attempts to fire the laser before it is ready or available, another message is displayed along with an appropriate sound effect.
 * Laser functionality: The behavior of the laser differs depending on the game mode. In certain game modes, there is a cooldown for the laser. In other game modes, the laser becomes available every time the player successfully eliminates a certain number of aliens.

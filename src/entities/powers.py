@@ -13,8 +13,11 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import POWERS, GAME_CONSTANTS, WEAPON_BOXES, POWER_DOWN_ATTRIBUTES
-from utils.game_utils import load_single_image
+from utils.constants import (
+    POWERS, GAME_CONSTANTS, WEAPON_BOXES,
+    POWER_DOWN_ATTRIBUTES, PLAYER_HEALTH_ATTRS
+)
+from utils.game_utils import load_single_image, play_sound
 
 
 class Power(Sprite):
@@ -93,7 +96,7 @@ class PowerEffectsManager:
         current_time = pygame.time.get_ticks()
         # Determines how often powers and penalties are appearing.
         if current_time - self.last_power_up_time >= random.randint(
-            15000, 25000
+            15000, 20000
         ):  # milliseconds
             self.last_power_up_time = current_time
             # Determine the chance for a power to be health power up, weapon power up or
@@ -112,6 +115,35 @@ class PowerEffectsManager:
             )
             power.rect.y = random.randint(-100, -40)
             self.game.powers.add(power)
+
+    def apply_powerup_or_penalty(self, player):
+        """Powers up or applies a penalty on the specified player"""
+        powerup_choices = self.get_powerup_choices()
+        penalty_choices = self.get_penalty_choices()
+        # randomly select one of the powers and activate it.
+        effect_choice = random.choice(powerup_choices + penalty_choices)
+        effect_choice(player)
+
+        # Play sound effect
+        if effect_choice in powerup_choices:
+            play_sound(self.game.sound_manager.game_sounds, "power_up")
+        elif effect_choice in penalty_choices:
+            play_sound(self.game.sound_manager.game_sounds, "penalty")
+
+    def health_power_up(self, player):
+        """Increase the player's health by one."""
+        health_attr = PLAYER_HEALTH_ATTRS.get(player)
+        if health_attr is not None:
+            current_hp = getattr(self.stats, health_attr)
+            if current_hp < self.stats.max_hp:
+                setattr(self.stats, health_attr, current_hp + 1)
+            self.score_board.create_health()
+            play_sound(self.game.sound_manager.game_sounds, "health")
+
+    def weapon_power_up(self, player, weapon_name):
+        """Changes the given player's weapon."""
+        self.game.weapons_manager.set_weapon(player, weapon_name)
+        play_sound(self.game.sound_manager.game_sounds, "weapon")
 
     def update_powers(self):
         """Update powers and remove the ones that went off screen."""

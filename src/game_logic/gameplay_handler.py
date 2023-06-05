@@ -1,5 +1,5 @@
 """
-'The game_modes' module contains the GameModesManager class
+'The gameplay_handler' module contains the GameplayManager class
 which manages the game modes and behavior for every game mode in the game.
 """
 
@@ -12,12 +12,14 @@ from utils.constants import (
     BOSS_LEVELS,
     NORMAL_BOSS_POINTS,
     NORMAL_BOSS_HP_MAP,
+    AVAILABLE_BULLETS_MAP,
+    AVAILABLE_BULLETS_MAP_SINGLE,
 )
 
 
-class GameModesManager:
-    """The GameModesManager class manages game modes in the game.
-    It contains methods that update various game settings for different game modes.
+class GameplayManager:
+    """The GameplayManager class manages different gameplay
+    behaviors in the game based on the active game modes.
     """
 
     def __init__(self, game, settings, stats):
@@ -25,6 +27,126 @@ class GameModesManager:
         self.settings = settings
         self.stats = stats
         self.score_board = game.score_board
+        self.singleplayer = game.singleplayer
+        self.ships = game.ships
+
+    def create_normal_level_bullets(self, bullets_manager):
+        """Create bullets for the normal game."""
+        if self.stats.level in BOSS_LEVELS:
+            bullets_manager(1, 550, 550)
+        else:
+            bullets_manager(self.settings.alien_bullets_num, 900, 7500)
+
+    def handle_level_progression(self):
+        """Handles the progression of levels in the game for different game modes."""
+        if not self.game.aliens:
+            if self.settings.game_modes.last_bullet:
+                self._prepare_last_bullet_level()
+            elif (
+                not self.settings.game_modes.meteor_madness
+                and not self.settings.game_modes.cosmic_conflict
+            ):
+                self._prepare_next_level()
+
+            if not self.singleplayer:
+                self.check_for_player_revive()
+
+    def _prepare_last_bullet_level(self):
+        """Level progression handler for the Last Bullet game mode"""
+        self._prepare_level()
+        self.prepare_last_bullet_bullets()
+
+
+    def prepare_last_bullet_bullets(self):
+        """Prepare the number of bullets in the Last Bullet game mode
+        based on the level"""
+
+        available_bullets_map = (
+            AVAILABLE_BULLETS_MAP_SINGLE if self.singleplayer else AVAILABLE_BULLETS_MAP
+        )
+
+        for bullet_range, bullets in available_bullets_map.items():
+            if self.stats.level in bullet_range:
+                available_bullets = bullets
+                break
+        else:
+            available_bullets = 50 if self.singleplayer else 25
+
+        for ship in self.ships:
+            ship.remaining_bullets = available_bullets
+
+        self.score_board.render_bullets_num()
+
+    def _prepare_next_level(self):
+        """Level progression handler"""
+        self._prepare_level()
+        self.handle_boss_stats()
+
+    def _prepare_level(self):
+        """Common level progression handler"""
+        self.reset_game_objects()
+        self.settings.increase_speed()
+        self.stats.increase_level()
+        self.score_board.prep_level()
+        self.handle_alien_creation()
+        self.game.sound_manager.prepare_level_music()
+        self.set_max_alien_bullets(self.settings.speedup_scale)
+        self.check_alien_bullets_num()
+
+    def handle_boss_stats(self):
+        """Updates stats for bosses based on the game mode."""
+        if self.settings.game_modes.boss_rush:
+            self.update_boss_rush_info()
+            return
+
+        self.update_normal_boss_info()
+
+    def handle_alien_creation(self):
+        """Choose what aliens to create for every game mode."""
+        match self.settings.game_modes.game_mode:
+            case "cosmic_conflict":
+                return
+            case "meteor_madness":
+                return
+            case "boss_rush":
+                self.game.aliens_manager.create_boss_alien()
+                self.game.collision_handler.handled_collisions.clear()
+            case "last_bullet":
+                self.game.aliens_manager.create_fleet(self.settings.last_bullet_rows)
+            case _ if self.stats.level in BOSS_LEVELS:
+                self.game.aliens_manager.create_boss_alien()
+                self.game.collision_handler.handled_collisions.clear()
+            case _:
+                self.game.aliens_manager.create_fleet(self.settings.fleet_rows)
+
+    def check_for_player_revive(self):
+        """Revive the other player after the third Boss Fight.
+        Method used only for multiplayer.
+        """
+        if self.stats.level == 21:
+            if not self.game.phoenix_ship.state.alive:
+                self.stats.revive_phoenix(self.game.phoenix_ship)
+            if not self.game.thunderbird_ship.state.alive:
+                self.stats.revive_thunderbird(self.game.thunderbird_ship)
+            self.score_board.create_health()
+
+    def reset_game_objects(self):
+        """Clear the screen of game objects."""
+        all_groups = [
+            self.game.thunderbird_bullets,
+            self.game.phoenix_bullets,
+            self.game.alien_bullet,
+            self.game.powers,
+            self.game.aliens,
+            self.game.asteroids,
+            self.game.thunderbird_missiles,
+            self.game.phoenix_missiles,
+            self.game.phoenix_laser,
+            self.game.thunderbird_laser,
+        ]
+        for group in all_groups:
+            group.empty()
+
 
     def update_normal_boss_info(self):
         """Updates the points and hp of bosses in the normal game mode."""
@@ -63,12 +185,6 @@ class GameModesManager:
         else:
             bullets_manager(1, 200, 350)
 
-    def create_normal_level_bullets(self, bullets_manager):
-        """Create bullets for the normal game."""
-        if self.stats.level in BOSS_LEVELS:
-            bullets_manager(1, 550, 550)
-        else:
-            bullets_manager(self.settings.alien_bullets_num, 900, 7500)
 
     def set_max_alien_bullets(self, difficulty):
         """Set the maximum number of alien bullets based on difficulty."""

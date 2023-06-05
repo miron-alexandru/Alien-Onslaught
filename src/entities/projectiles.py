@@ -252,6 +252,8 @@ class WeaponsManager:
         self.sound_manager = game.sound_manager
         self.draw_laser_message = False
         self.display_time = 0
+        self.thunderbird_ship = self.game.thunderbird_ship
+        self.phoenix_ship = self.game.phoenix_ship
 
         self.weapons = {
             "thunderbird": {

@@ -15,14 +15,13 @@ Contact: quality_xqs@yahoo.com
 """
 
 import sys
-import random
 import pygame
 
 from game_logic.game_settings import Settings
 from game_logic.game_stats import GameStats
 from game_logic.collision_detection import CollisionManager
 from game_logic.input_handling import PlayerInput
-from game_logic.game_modes import GameModesManager
+from game_logic.gameplay_handler import GameplayManager
 
 from utils.game_utils import (
     display_high_scores,
@@ -30,9 +29,6 @@ from utils.game_utils import (
     play_sound,
 )
 from utils.constants import (
-    BOSS_LEVELS,
-    AVAILABLE_BULLETS_MAP,
-    AVAILABLE_BULLETS_MAP_SINGLE,
     GAME_MODE_SCORE_KEYS,
 )
 
@@ -72,12 +68,13 @@ class AlienOnslaught:
 
         self.ui_options = self.settings.ui_options
         self._initialize_game_objects()
+        self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self._initialize_sprite_groups()
         self.initialize_managers()
 
-        self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.last_increase_time = self.last_level_time = self.pause_time = 0
 
+        pygame.display.set_icon(self.settings.game_icon)
         pygame.display.set_caption("Alien Onslaught")
 
     def _initialize_game_objects(self):
@@ -90,8 +87,7 @@ class AlienOnslaught:
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
         self.loading_screen = LoadingScreen(
-            self.screen, self.settings.screen_width, self.settings.screen_height
-        )
+            self.screen, self.settings.screen_width, self.settings.screen_height)
 
     def _initialize_sprite_groups(self):
         """Create sprite groups for the game."""
@@ -141,7 +137,7 @@ class AlienOnslaught:
         self.aliens_manager = AliensManager(
             self, self.aliens, self.settings, self.screen
         )
-        self.gm_manager = GameModesManager(self, self.settings, self.stats)
+        self.gameplay_manager = GameplayManager(self, self.settings, self.stats)
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -150,7 +146,7 @@ class AlienOnslaught:
         play_sound(self.sound_manager.menu_sounds, "menu", loop=True)
         while True:
             self.handle_menu_events()
-            self.draw_menu_objects()
+            self.screen_manager.draw_menu_objects(self.bg_img, self.bg_img_rect)
             self.screen_manager.draw_cursor()
             pygame.display.flip()
 
@@ -178,26 +174,6 @@ class AlienOnslaught:
                 self.screen_manager.update_buttons()
                 self.screen_manager.create_controls()
 
-    def draw_menu_objects(self):
-        """Draw the buttons, game title and controls on the menu screen"""
-        self.screen.blit(self.bg_img, self.bg_img_rect)
-        self.screen.blit(
-            self.screen_manager.p1_controls, self.screen_manager.p1_controls_rect
-        )
-        self.screen.blit(
-            self.screen_manager.p2_controls, self.screen_manager.p2_controls_rect
-        )
-        self.screen.blit(self.settings.game_title, self.settings.game_title_rect)
-        self.buttons.single.draw_button()
-        self.buttons.multi.draw_button()
-        self.buttons.menu_quit.draw_button()
-
-        for i, surface in enumerate(self.screen_manager.t1_surfaces):
-            self.screen.blit(surface, self.screen_manager.t1_rects[i])
-
-        for i, surface in enumerate(self.screen_manager.t2_surfaces):
-            self.screen.blit(surface, self.screen_manager.t2_rects[i])
-
     def start_single_player_game(self):
         """Switches the game to singleplayer."""
         self.singleplayer = True
@@ -210,6 +186,19 @@ class AlienOnslaught:
         self._set_multiplayer_variables()
         self._start_game()
 
+    def _set_singleplayer_variables(self):
+        """Set variables for the singleplayer game mode."""
+        self.thunderbird_ship.state.single_player = True
+        self.ships = [self.thunderbird_ship]
+        self.score_board.update_high_score_filename()
+        self.gameplay_manager.reset_cosmic_conflict()
+
+    def _set_multiplayer_variables(self):
+        """Set variables for the multiplayer game mode."""
+        self.thunderbird_ship.state.single_player = False
+        self.ships = [self.thunderbird_ship, self.phoenix_ship]
+        self.score_board.update_high_score_filename()
+
     def _start_game(self):
         """Initialize the game."""
         self.sound_manager.load_sounds("level_sounds")
@@ -217,19 +206,6 @@ class AlienOnslaught:
         self.sound_manager.current_sound = None
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
         self.run_game()
-
-    def _set_singleplayer_variables(self):
-        """Set variables for the singleplayer game mode."""
-        self.thunderbird_ship.state.single_player = True
-        self.ships = [self.thunderbird_ship]
-        self.score_board.update_high_score_filename()
-        self.gm_manager.reset_cosmic_conflict()
-
-    def _set_multiplayer_variables(self):
-        """Set variables for the multiplayer game mode."""
-        self.thunderbird_ship.state.single_player = False
-        self.ships = [self.thunderbird_ship, self.phoenix_ship]
-        self.score_board.update_high_score_filename()
 
     def _update_background(self, i):
         """Updates the background image of the game and scrolls it downwards
@@ -253,7 +229,7 @@ class AlienOnslaught:
             self._check_for_resize()
 
             if self.stats.game_active:
-                if not self.ui_options.paused:  # check if the game is paused
+                if not self.ui_options.paused:
                     i = self._update_background(i)
                     self._handle_game_logic()
 
@@ -268,16 +244,18 @@ class AlienOnslaught:
     def _handle_game_logic(self):
         """Handle the game logic for each game iteration."""
         self.apply_game_behaviors()
-        self._handle_level_progression()
+        self.gameplay_manager.handle_level_progression()
 
         self.powers_manager.create_powers()
         self.powers_manager.update_powers()
         self.collision_handler.check_powers_collisions(
-            self._apply_powerup_or_penalty, self._health_power_up, self._weapon_power_up
+            self.powers_manager.apply_powerup_or_penalty,
+            self.powers_manager.health_power_up,
+            self.powers_manager.weapon_power_up,
         )
         self.powers_manager.manage_power_downs()
 
-        self.gm_manager.create_normal_level_bullets(
+        self.gameplay_manager.create_normal_level_bullets(
             self.alien_bullets_manager.create_alien_bullets
         )
         self.alien_bullets_manager.update_alien_bullets()
@@ -302,20 +280,6 @@ class AlienOnslaught:
         self.collision_handler.shield_collisions(
             self.ships, self.aliens, self.alien_bullet, self.asteroids
         )
-
-    def _handle_level_progression(self):
-        """Handles the progression of levels in the game for different game modes."""
-        if not self.aliens:
-            if self.settings.game_modes.last_bullet:
-                self._prepare_last_bullet_level()
-            elif (
-                not self.settings.game_modes.meteor_madness
-                and not self.settings.game_modes.cosmic_conflict
-            ):
-                self._prepare_next_level()
-
-            if not self.singleplayer:
-                self.check_for_player_revive()
 
     def check_events(self):
         """Respond to keypresses, mouse and videoresize events."""
@@ -432,28 +396,20 @@ class AlienOnslaught:
                 self._thunderbird_ship_hit, self._phoenix_ship_hit
             )
 
-    def _handle_boss_stats(self):
-        """Updates stats for bosses based on the game mode."""
-        if self.settings.game_modes.boss_rush:
-            self.gm_manager.update_boss_rush_info()
-            return
-
-        self.gm_manager.update_normal_boss_info()
-
     def apply_game_behaviors(self):
         """Applies the game behaviors for the currently selected game mode."""
         if self.settings.game_modes.endless_onslaught:
-            self.gm_manager.endless_onslaught(
+            self.gameplay_manager.endless_onslaught(
                 self.aliens_manager.create_fleet, self._handle_asteroids
             )
         elif self.settings.game_modes.slow_burn:
-            self.gm_manager.slow_burn(self._handle_asteroids)
+            self.gameplay_manager.slow_burn(self._handle_asteroids)
         elif self.settings.game_modes.boss_rush:
-            self.gm_manager.boss_rush(
+            self.gameplay_manager.boss_rush(
                 self._handle_asteroids, self.alien_bullets_manager.create_alien_bullets
             )
         elif self.settings.game_modes.meteor_madness:
-            self.gm_manager.meteor_madness(
+            self.gameplay_manager.meteor_madness(
                 self.asteroids_manager.create_asteroids,
                 self.asteroids_manager.update_asteroids,
                 self.collision_handler.check_asteroids_collisions,
@@ -461,11 +417,11 @@ class AlienOnslaught:
                 self._phoenix_ship_hit,
             )
         elif self.settings.game_modes.last_bullet:
-            self.gm_manager.last_bullet(
+            self.gameplay_manager.last_bullet(
                 self.thunderbird_ship, self.phoenix_ship, self._handle_asteroids
             )
         elif self.settings.game_modes.cosmic_conflict:
-            self.gm_manager.cosmic_conflict(
+            self.gameplay_manager.cosmic_conflict(
                 self.collision_handler.check_cosmic_conflict_collisions,
                 self._thunderbird_ship_hit,
                 self._phoenix_ship_hit,
@@ -474,67 +430,6 @@ class AlienOnslaught:
             self._handle_asteroids(
                 start_at_level_7=True
             )  # Handle asteroids for normal game
-
-    def _handle_alien_creation(self):
-        """Choose what aliens to create for every game mode."""
-        match self.settings.game_modes.game_mode:
-            case "cosmic_conflict":
-                return
-            case "meteor_madness":
-                return
-            case "boss_rush":
-                self.aliens_manager.create_boss_alien()
-                self.collision_handler.handled_collisions.clear()  # clear missile collisions dict
-            case "last_bullet":
-                self.aliens_manager.create_fleet(self.settings.last_bullet_rows)
-            case _ if self.stats.level in BOSS_LEVELS:
-                self.aliens_manager.create_boss_alien()
-                self.collision_handler.handled_collisions.clear()  # clear missile collisions dict
-            case _:
-                self.aliens_manager.create_fleet(self.settings.fleet_rows)
-
-    def _apply_powerup_or_penalty(self, player):
-        """Powers up or applies a penalty on the specified player"""
-        powerup_choices = self.powers_manager.get_powerup_choices()
-        penalty_choices = self.powers_manager.get_penalty_choices()
-        # randomly select one of the powers and activate it.
-        effect_choice = random.choice(powerup_choices + penalty_choices)
-        effect_choice(player)
-
-        # Play sound effect
-        if effect_choice in powerup_choices:
-            play_sound(self.sound_manager.game_sounds, "power_up")
-        elif effect_choice in penalty_choices:
-            play_sound(self.sound_manager.game_sounds, "penalty")
-
-    def _health_power_up(self, player):
-        player_health_attrs = {
-            "thunderbird": "thunderbird_hp",
-            "phoenix": "phoenix_hp",
-        }
-        health_attr = player_health_attrs.get(player)
-        if health_attr is not None:
-            current_hp = getattr(self.stats, health_attr)
-            if current_hp < self.stats.max_hp:
-                setattr(self.stats, health_attr, current_hp + 1)
-            self.score_board.create_health()
-            play_sound(self.sound_manager.game_sounds, "health")
-
-    def check_for_player_revive(self):
-        """Revive the other player after the third Boss Fight.
-        Method used only for multiplayer.
-        """
-        if self.stats.level == 21:
-            if not self.phoenix_ship.state.alive:
-                self.stats.revive_phoenix(self.phoenix_ship)
-            if not self.thunderbird_ship.state.alive:
-                self.stats.revive_thunderbird(self.thunderbird_ship)
-            self.score_board.create_health()
-
-    def _weapon_power_up(self, player, weapon_name):
-        """Changes the given player's weapon."""
-        self.weapons_manager.set_weapon(player, weapon_name)
-        play_sound(self.sound_manager.game_sounds, "weapon")
 
     def _thunderbird_ship_hit(self):
         """Respond to the Thunderbird ship being hit."""
@@ -599,7 +494,7 @@ class AlienOnslaught:
         self.bg_img = self.reset_bg
         self._set_game_end_position()
         self.screen.blit(self.settings.game_end_img, self.settings.game_end_rect)
-        self._reset_game_objects()
+        self.gameplay_manager.reset_game_objects()
         self.score_board.update_high_score()
 
         if not self.ui_options.game_over_sound_played:
@@ -611,14 +506,14 @@ class AlienOnslaught:
             ]
 
         if self.settings.game_modes.cosmic_conflict:
-            self.gm_manager.set_cosmic_conflict_high_score()
+            self.gameplay_manager.set_cosmic_conflict_high_score()
 
         self._check_high_score_saved()
 
     def _return_to_game_menu(self):
         """End the current game, save the current high score and return to game menu."""
         self.stats.game_active = False
-        self._reset_game_objects()
+        self.gameplay_manager.reset_game_objects()
 
     def _set_game_end_position(self):
         """Set the location of the end game image on the screen"""
@@ -638,44 +533,6 @@ class AlienOnslaught:
             self._display_endgame("phoenix_win")
         elif not self.phoenix_ship.state.alive:
             self._display_endgame("thunder_win")
-
-    def _prepare_level(self):
-        """Common level progression handler"""
-        self._reset_game_objects()
-        self.settings.increase_speed()
-        self.stats.increase_level()
-        self.score_board.prep_level()
-        self._handle_alien_creation()
-        self.sound_manager.prepare_level_music()
-        self.gm_manager.set_max_alien_bullets(self.settings.speedup_scale)
-        self.gm_manager.check_alien_bullets_num()
-
-    def _prepare_next_level(self):
-        """Level progression handler"""
-        self._prepare_level()
-        self._handle_boss_stats()
-
-    def _prepare_last_bullet_level(self):
-        """Level progression handler for the Last Bullet game mode"""
-        self._prepare_level()
-        self._prepare_last_bullet_bullets()
-
-    def _reset_game_objects(self):
-        """Clear the screen of game objects, excluding specified groups."""
-        all_groups = [
-            self.thunderbird_bullets,
-            self.phoenix_bullets,
-            self.alien_bullet,
-            self.powers,
-            self.aliens,
-            self.asteroids,
-            self.thunderbird_missiles,
-            self.phoenix_missiles,
-            self.phoenix_laser,
-            self.thunderbird_laser,
-        ]
-        for group in all_groups:
-            group.empty()
 
     def _reset_ships(self):
         """Resets ships to their initial state, updates missiles number,
@@ -722,7 +579,7 @@ class AlienOnslaught:
         self.ui_options.game_over_sound_played = False
 
         # Clear the screen of remaining aliens, bullets, asteroids, and powers.
-        self._reset_game_objects()
+        self.gameplay_manager.reset_game_objects()
 
         # Play the warp animation and center the ships.
         self._reset_ships()
@@ -730,9 +587,9 @@ class AlienOnslaught:
         self.player_input.reset_ship_flags()
 
         # Handle Alien Creation
-        self._handle_alien_creation()
-        self._prepare_last_bullet_bullets()
-        self._handle_boss_stats()
+        self.gameplay_manager.handle_alien_creation()
+        self.gameplay_manager.prepare_last_bullet_bullets()
+        self.gameplay_manager.handle_boss_stats()
 
         # Reset self.last_level_time when a new game starts.
         self.last_level_time = pygame.time.get_ticks()
@@ -749,26 +606,6 @@ class AlienOnslaught:
 
         if self.singleplayer:
             self.phoenix_ship.state.alive = False
-
-    def _prepare_last_bullet_bullets(self):
-        """Prepare the number of bullets in the Last Bullet game mode
-        based on the level"""
-
-        available_bullets_map = (
-            AVAILABLE_BULLETS_MAP_SINGLE if self.singleplayer else AVAILABLE_BULLETS_MAP
-        )
-
-        for bullet_range, bullets in available_bullets_map.items():
-            if self.stats.level in bullet_range:
-                available_bullets = bullets
-                break
-        else:
-            available_bullets = 50 if self.singleplayer else 25
-
-        for ship in self.ships:
-            ship.remaining_bullets = available_bullets
-
-        self.score_board.render_bullets_num()
 
     def _draw_game_objects(self):
         """Draw game objects and the score on screen."""
