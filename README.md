@@ -1,7 +1,7 @@
 ## Alien-Onslaught description:
 - Alien-Onslaught is an action-packed game that will test your shooting skills and reflexes. The game is set in outer space, where you must shoot fleets of aliens to reach higher levels and increase your high score. With each level, the game becomes more challenging as the aliens become stronger and faster bosses are starting to appear, and more asteroids rain down from above.
 
-- The game offers a range of game modes (e.g.: Boss Rush, Endless Onslaught), including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased speed, bullet speed, and bullets allowed, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, Boss Fights, and more other features.
+- The game offers a range of game modes (e.g.: Boss Rush, Endless Onslaught), including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased ship speed, bullet speed, and fire power, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, boss fights, different weapons and more other features.
 
 ### Requirements:
 - Python 3.7 or later
@@ -9,40 +9,47 @@
 
 ## Controls:
 #### Gameplay:
-#### Player 1:
+#### Player 1 (Thunderbird):
 * Move: W, A, S, D
 * Fire: Space
+* Laser: C
+* Launch Missiles: X
 * Change Ship: 1, 2, 3
-* Launch Missiles: Z
-* Pause: P
 
-#### Player 2:
+#### Player 2 (Phoenix):
 * Move: Arrow Keys
 * Fire: Enter
-* Change Ship: Numpad 1, 2, 3
+* Laser: R-Shift
 * Launch Missiles: R-Ctrl
-* Pause: P
+* Change Ship: Numpad 1, 2, 3
 
-#### While the game is paused:
-* R: Restart
-* ESC: Return to game menu
-* M: Return to main menu
-* Q: Quit
+#### UI Controls:
+* Toggle Fullscreen: F
+* Pause: P
+* - While Paused:
+*  Restart: R
+*  Return to Game Menu: ESC
+*  Return to Main Menu: M
+*  Quit: Q
 
 ## Game Images:
 ![Menu](game_assets/images/game_images/menu.PNG)
 ![Menu](game_assets/images/game_images/menu2.PNG)
 ![Gameplay](game_assets/images/game_images/game_modes.PNG)
-![Gameplay](game_assets/images/game_images/normal.PNG)
 ![Gameplay](game_assets/images/game_images/normal3.PNG)
+![Gameplay](game_assets/images/game_images/normal4.PNG)
+![Gameplay](game_assets/images/game_images/cosmic_conflict.PNG)
 ![Gameplay](game_assets/images/game_images/boss_fight.PNG)
 ![HighScores](game_assets/images/game_images/high_scores.PNG)
+![GameOver](game/assets/images/game_images/game_omver.PNG)
 ### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/game_assets/images/game_images)
 
 <details>
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* Implemented the option to toggle from Fullscreen to Resizable.
+* UI controls are displayed on the Main Menu.
 * Added application icon.
 * Refactored the code : Moved weapons related code from the main class into the WeaponsManager. Moved gameplay related code such as level progression and game modes into the gameplay_handler module (renamed from game_modes).
 * Sound effect for the laser implemented.

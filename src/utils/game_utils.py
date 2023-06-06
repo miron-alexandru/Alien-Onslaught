@@ -8,6 +8,7 @@ import pygame
 from .constants import (
     P1_CONTROLS,
     P2_CONTROLS,
+    GAME_CONTROLS,
     BOSS_RUSH,
     ALIEN_BULLETS_IMG,
     BOSS_BULLETS_IMG,
@@ -19,7 +20,7 @@ from .constants import (
 
 if hasattr(sys, "_MEIPASS"):
     # Running as a PyInstaller bundle
-    BASE_PATH = os.path.join(sys._MEIPASS, "game_assets", "images") # type: ignore
+    BASE_PATH = os.path.join(sys._MEIPASS, "game_assets", "images")  # type: ignore
 else:
     # Running as a regular script
     BASE_PATH = os.path.abspath(
@@ -28,7 +29,7 @@ else:
 
 if hasattr(sys, "_MEIPASS"):
     # Running as a PyInstaller bundle
-    SOUND_PATH = os.path.join(sys._MEIPASS, "game_assets", "sounds") # type: ignore
+    SOUND_PATH = os.path.join(sys._MEIPASS, "game_assets", "sounds")  # type: ignore
 else:
     # Running as a regular script
     SOUND_PATH = os.path.abspath(
@@ -275,7 +276,7 @@ def display_game_modes_description(screen, description):
     screen_width, screen_height = screen.get_size()
     font = pygame.font.SysFont("verdana", int(screen_height * 0.021))
     text_x = int(screen_width * 0.56)
-    text_y = 470
+    text_y = 480
     text_surfaces, text_rects = render_text(
         description, font, "white", (text_x, text_y), int(screen_height * 0.03)
     )
@@ -292,56 +293,70 @@ def calculate_control_positions(center, x_offset):
     return (p1_controls_x, y_pos), (p2_controls_x, y_pos)
 
 
-def display_controls(controls_frame, settings):
+def display_controls(controls_surface, surface):
     """Display controls on screen."""
-    surface_width, _ = settings.get_size()
-    center = settings.get_rect().center
-
-    # Constants for positions
-    top_left = (50, 220)
-    p2_top_right = (surface_width - 50, 220)
-    x_offset = 600
-
-    # Load player 1 and player 2 controls
-    p1_controls, p1_controls_rect = load_controls_image(
-        controls_frame, {"topleft": top_left}
-    )
-    p2_controls, p2_controls_rect = load_controls_image(
-        controls_frame, {"topright": p2_top_right}
-    )
-
-    # Calculate the positions of player 1 and player 2 controls
-    p1_pos, p2_pos = calculate_control_positions(center, x_offset)
-    p1_controls_rect.topleft = p1_pos
-    p2_controls_rect.topright = p2_pos
-
-    font = pygame.font.SysFont("arialbold", 35)
+    center = surface.get_rect().center
+    font = pygame.font.SysFont("verdana", 20)
     color = "white"
 
-    t1_surfaces, t1_rects = render_text(
+    p1_controls_img, p1_controls_img_rect = load_controls_image(
+        controls_surface, {"topleft": (0, 0)}
+    )
+    p2_controls_img, p2_controls_img_rect = load_controls_image(
+        controls_surface, {"topright": (0, 0)}
+    )
+
+    p1_pos, p2_pos = calculate_control_positions(center, 600)
+    p1_controls_img_rect.topleft = p1_pos
+    p2_controls_img_rect.topright = p2_pos
+
+    game_controls_img, game_controls_img_rect = load_controls_image(
+        controls_surface,
+        {
+            "midbottom": (
+                p1_controls_img_rect.centerx,
+                p1_controls_img_rect.bottom + 225,
+            )
+        },
+    )
+
+    p1_controls_text, p1_controls_text_rects = render_text(
         P1_CONTROLS,
         font,
         color,
-        (p1_controls_rect.left + 30, p1_controls_rect.top + 20),
+        (p1_controls_img_rect.left + 25, p1_controls_img_rect.top + 20),
         25,
     )
-    t2_surfaces, t2_rects = render_text(
+
+    p2_controls_text, p2_controls_text_rects = render_text(
         P2_CONTROLS,
         font,
         color,
-        (p2_controls_rect.left + 30, p2_controls_rect.top + 20),
+        (p2_controls_img_rect.left + 25, p2_controls_img_rect.top + 20),
+        25,
+    )
+
+    game_controls_text, game_controls_text_rects = render_text(
+        GAME_CONTROLS,
+        font,
+        color,
+        (game_controls_img_rect.left + 25, game_controls_img_rect.top + 20),
         25,
     )
 
     return (
-        p1_controls,
-        p1_controls_rect,
-        p2_controls,
-        p2_controls_rect,
-        t1_surfaces,
-        t1_rects,
-        t2_surfaces,
-        t2_rects,
+        p1_controls_img,
+        p1_controls_img_rect,
+        p2_controls_img,
+        p2_controls_img_rect,
+        p1_controls_text,
+        p1_controls_text_rects,
+        p2_controls_text,
+        p2_controls_text_rects,
+        game_controls_img,
+        game_controls_img_rect,
+        game_controls_text,
+        game_controls_text_rects,
     )
 
 
@@ -354,6 +369,7 @@ def display_message(screen, message, duration):
     pygame.display.flip()
     pygame.time.wait(int(duration * 1000))
 
+
 def display_laser_message(screen, message, ship):
     """Display a message to the right of the ship."""
     font = pygame.font.SysFont("verdana", 10)
@@ -361,6 +377,7 @@ def display_laser_message(screen, message, ship):
     ship_rect = ship.rect
     text_rect = text.get_rect(center=(ship_rect.right + 18, ship_rect.centery - 30))
     screen.blit(text, text_rect)
+
 
 def get_player_name(
     screen, background_image, cursor, high_score, game_end_img=None, game_end_rect=None

@@ -55,9 +55,9 @@ class AlienOnslaught:
         self.singleplayer = singleplayer
         self.clock = pygame.time.Clock()
         self.settings = Settings()
+        self.full_screen = False
         self.screen = pygame.display.set_mode(
-            (self.settings.screen_width, self.settings.screen_height), pygame.RESIZABLE
-        )
+            (self.settings.screen_width, self.settings.screen_height), pygame.RESIZABLE)
         self.bg_img = resize_image(self.settings.bg_img, self.screen.get_size())
         self.bg_img_rect = self.bg_img.get_rect()
         self.reset_bg = self.bg_img.copy()
@@ -86,8 +86,7 @@ class AlienOnslaught:
         )
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
-        self.loading_screen = LoadingScreen(
-            self.screen, self.settings.screen_width, self.settings.screen_height)
+        self.loading_screen = LoadingScreen(self.screen)
 
     def _initialize_sprite_groups(self):
         """Create sprite groups for the game."""
@@ -126,7 +125,7 @@ class AlienOnslaught:
         """Initialize managers/handlers for the game."""
         self.sound_manager = SoundManager(self)
         self.screen_manager = ScreenManager(
-            self.settings, self.score_board, self.buttons, self.screen
+            self, self.settings, self.score_board, self.buttons, self.screen
         )
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
@@ -146,6 +145,7 @@ class AlienOnslaught:
         play_sound(self.sound_manager.menu_sounds, "menu", loop=True)
         while True:
             self.handle_menu_events()
+            self.screen_manager.update_window_mode()
             self.screen_manager.draw_menu_objects(self.bg_img, self.bg_img_rect)
             self.screen_manager.draw_cursor()
             pygame.display.flip()
@@ -156,6 +156,9 @@ class AlienOnslaught:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_f:
+                    self.screen_manager.toggle_window_mode()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if self.buttons.single.rect.collidepoint(mouse_x, mouse_y):
@@ -226,7 +229,7 @@ class AlienOnslaught:
         while running:
             self.check_events()
             self._check_game_over()
-            self._check_for_resize()
+            self.screen_manager.update_window_mode()
 
             if self.stats.game_active:
                 if not self.ui_options.paused:
@@ -273,8 +276,7 @@ class AlienOnslaught:
         )
 
         self.update_ship_state()
-        self.weapons_manager.update_normal_laser_status()
-        self.weapons_manager.update_timed_laser_status()
+        self.weapons_manager.update_laser_status()
         self.weapons_manager.check_laser_availability()
 
         self.collision_handler.shield_collisions(
@@ -297,6 +299,8 @@ class AlienOnslaught:
                         self.weapons_manager.fire_missile,
                         self.weapons_manager.fire_laser,
                     )
+                if event.key == pygame.K_f:
+                    self.screen_manager.toggle_window_mode()
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
@@ -333,11 +337,12 @@ class AlienOnslaught:
         height = max(min(size[1], max_height), min_height)
         size = (width, height)
 
-        self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode(size, self.screen_manager.screen_flag)
+
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
 
-        self.bg_img = resize_image(self.settings.bg_img)
+        self.bg_img = resize_image(self.bg_img)
         self.second_bg = resize_image(self.settings.second_bg)
         self.third_bg = resize_image(self.settings.third_bg)
         self.fourth_bg = resize_image(self.settings.fourth_bg)
@@ -348,18 +353,6 @@ class AlienOnslaught:
             ship.screen_rect = self.screen.get_rect()
             ship.set_cosmic_conflict_pos()
 
-    def _check_for_resize(self):
-        """Choose when the window is resizable."""
-        # the game window is resizable before clicking the Play button
-        # players can't resize the window while the game is active.
-        info = pygame.display.Info()
-        if not self.stats.game_active and not self.ui_options.resizable:
-            pygame.display.set_mode((info.current_w, info.current_h), pygame.RESIZABLE)
-            self.ui_options.resizable = True
-        elif self.stats.game_active and self.ui_options.resizable:
-            pygame.display.set_mode((info.current_w, info.current_h))
-            self.ui_options.resizable = False
-
     def _handle_background_change(self):
         """Change the background image based on the current level."""
         bg_images = {
@@ -368,6 +361,7 @@ class AlienOnslaught:
             17: self.third_bg,
             25: self.fourth_bg,
         }
+
         self.bg_img = bg_images.get(self.stats.level, self.bg_img)
 
     def _check_for_pause(self):

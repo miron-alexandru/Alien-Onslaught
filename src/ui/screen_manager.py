@@ -17,12 +17,15 @@ class ScreenManager:
     for the controls displayed on the game menu.
     """
 
-    def __init__(self, settings, score_board, buttons, screen):
+    def __init__(self, game, settings, score_board, buttons, screen):
+        self.game = game
         self.settings = settings
         self.score_board = score_board
         self.buttons = buttons
         self.screen = screen
         self.player_controls = load_single_image("buttons/player_controls.png")
+        self.screen_flag = pygame.RESIZABLE
+        self.full_screen = False
         self._initialize_cursor()
         self.create_controls()
 
@@ -119,35 +122,58 @@ class ScreenManager:
         for the controls that will be displayed on the game menu.
         """
         (
-            self.p1_controls,
-            self.p1_controls_rect,
-            self.p2_controls,
-            self.p2_controls_rect,
-            self.t1_surfaces,
-            self.t1_rects,
-            self.t2_surfaces,
-            self.t2_rects,
+            self.p1_controls_img,
+            self.p1_controls_img_rect,
+            self.p2_controls_img,
+            self.p2_controls_img_rect,
+            self.p1_controls_text,
+            self.p1_controls_text_rects,
+            self.p2_controls_text,
+            self.p2_controls_text_rects,
+            self.game_controls_img,
+            self.game_controls_img_rect,
+            self.game_controls_text,
+            self.game_controls_text_rects,
         ) = display_controls(self.player_controls, self.screen)
 
     def draw_menu_objects(self, bg_img, bg_img_rect):
         """Draw the buttons, game title and controls on the menu screen"""
         self.screen.blit(bg_img, bg_img_rect)
         self.screen.blit(
-            self.p1_controls, self.p1_controls_rect
+            self.p1_controls_img, self.p1_controls_img_rect
         )
         self.screen.blit(
-            self.p2_controls, self.p2_controls_rect
+            self.p2_controls_img, self.p2_controls_img_rect
+        )
+        self.screen.blit(
+            self.game_controls_img, self.game_controls_img_rect
         )
         self.screen.blit(self.settings.game_title, self.settings.game_title_rect)
         self.buttons.single.draw_button()
         self.buttons.multi.draw_button()
         self.buttons.menu_quit.draw_button()
 
-        for i, surface in enumerate(self.t1_surfaces):
-            self.screen.blit(surface, self.t1_rects[i])
+        for i, surface in enumerate(self.p1_controls_text):
+            self.screen.blit(surface, self.p1_controls_text_rects[i])
 
-        for i, surface in enumerate(self.t2_surfaces):
-            self.screen.blit(surface, self.t2_rects[i])
+        for i, surface in enumerate(self.p2_controls_text):
+            self.screen.blit(surface, self.p2_controls_text_rects[i])
+
+        for i, surface in enumerate(self.game_controls_text):
+            self.screen.blit(surface, self.game_controls_text_rects[i])
+
+    def update_window_mode(self):
+        """Update window mode based on the screen flag"""
+        info = pygame.display.Info()
+        self.screen_flag = pygame.FULLSCREEN if self.full_screen else pygame.RESIZABLE
+        if self.game.ui_options.resizable:
+            pygame.display.set_mode((info.current_w, info.current_h), self.screen_flag)
+            self.game.ui_options.resizable = False
+
+    def toggle_window_mode(self):
+        """Toggle window mode from FULLSCREEN to RESIZABLE"""
+        self.full_screen = not self.full_screen
+        self.game.ui_options.resizable = not self.game.ui_options.resizable
 
 
 class LoadingScreen:
@@ -156,14 +182,10 @@ class LoadingScreen:
     bar and drawing it on the screen.
     """
 
-    def __init__(self, screen, width, height):
+    def __init__(self, screen):
         self.screen = screen
-        self.width = width
-        self.height = height
         self.load_bar_width = 400
         self.load_bar_height = 25
-        self.load_bar_x = (self.width - self.load_bar_width) // 2
-        self.load_bar_y = (self.height - self.load_bar_height) // 2
         self.load_percent = 0
         self.font = pygame.font.Font(None, 30)
         self.text = self.font.render("Loading...", True, (255, 255, 255))
@@ -175,29 +197,36 @@ class LoadingScreen:
 
     def draw(self):
         """Draw the loading screen on the screen."""
+        screen_width, screen_height = self.screen.get_size()
+        load_bar_x = (screen_width - self.load_bar_width) // 2
+        load_bar_y = (screen_height - self.load_bar_height) // 2
+        load_bar_fill = self.load_bar_width * self.load_percent // 100
+
         self.screen.fill((2, 24, 49, 255))
         pygame.draw.rect(
             self.screen,
             (255, 255, 255),
             (
-                self.load_bar_x,
-                self.load_bar_y,
+                load_bar_x,
+                load_bar_y,
                 self.load_bar_width,
                 self.load_bar_height,
             ),
             2,
         )
-        load_bar_fill = self.load_bar_width * self.load_percent // 100
+
         pygame.draw.rect(
             self.screen,
             (255, 255, 255),
-            (self.load_bar_x, self.load_bar_y, load_bar_fill, self.load_bar_height),
+            (load_bar_x, load_bar_y, load_bar_fill, self.load_bar_height),
         )
+
         self.screen.blit(
             self.text,
             (
-                (self.width - self.text.get_width()) // 2,
-                (self.height - self.text.get_height()) // 2 - 50,
+                (screen_width - self.text.get_width()) // 2,
+                (screen_height - self.text.get_height()) // 2 - 40,
             ),
         )
         pygame.display.update()
+

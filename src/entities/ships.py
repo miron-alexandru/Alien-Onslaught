@@ -30,7 +30,8 @@ class Ship(Sprite):
         self.offset = 0
         self.starting_missiles = 3
         self.missiles_num = missiles
-        self.ship_type = None
+        self.aliens_killed = self.settings.required_kill_count
+        self.remaining_bullets = 17 if self.game.singleplayer else 9
         self.image = pygame.image.load(self.image_path)
 
         self.rect = self.image.get_rect()
@@ -42,20 +43,20 @@ class Ship(Sprite):
         self.immune_start_time = 0
         self.small_ship_time = 0
         self.last_bullet_time = 0
-        self.last_laser_time = 0
-        self.aliens_killed = 0
         self.scale_counter = 0
 
         self.laser_fired = False
         self.laser_ready = False
-        self.laser_ready_start_time = 0.0
-        self.last_laser_usage = 0.0
         self.laser_ready_msg = False
 
+        self.last_laser_time = 0
+        self.laser_ready_start_time = 0.0
+        self.last_laser_usage = 0.0
+
+        self.ship_type = None
         self.last_reverse_power_down_time = None
         self.last_disarmed_power_down_time = None
         self.last_scaled_weapon_power_down_time = None
-        self.remaining_bullets = 17 if self.game.singleplayer else 9
 
         self.moving_flags = {
             "right": False,
@@ -236,8 +237,13 @@ class Ship(Sprite):
         self.state.scaled_weapon = False
         self.state.shielded = False
         self.state.immune = False
-        self.aliens_killed = 0
+        self.aliens_killed = self.settings.required_kill_count
         self.last_laser_time = 0
+        self.laser_fired = False
+        self.laser_ready = False
+        self.laser_ready_start_time = 0.0
+        self.last_laser_usage = 0.0
+        self.laser_ready_msg = False
 
     def update_speed_from_settings(self, player):
         """Updates the ship speed attribute based on the current value

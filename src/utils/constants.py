@@ -36,7 +36,6 @@ P2_CONTROLS = (
     "Laser: R-Shift\n"
     "Launch Missiles: R-Ctrl\n"
     "Change Ship: Numpad 1, 2, 3\n"
-    "Pause: P"
 )
 
 # Player1 controls
@@ -45,11 +44,19 @@ P1_CONTROLS = (
     "Move: W, A, S, D\n"
     "Fire: Space\n"
     "Laser: C\n"
-    "Launch Missiles: Z\n"
+    "Launch Missiles: X\n"
     "Change Ship: 1, 2, 3\n"
-    "Pause: P"
 )
 
+GAME_CONTROLS = (
+    "Toggle Fullscreen: F\n"
+    "Pause: P\n"
+    " - While Paused:\n"
+    " Restart: R\n"
+    " Game Menu: ESC\n"
+    " Main Menu: M\n"
+    " Quit: Q"
+)
 
 GAME_MODES_DESCRIPTIONS = (
     # Normal

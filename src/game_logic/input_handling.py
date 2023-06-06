@@ -164,7 +164,7 @@ class PlayerInput:
                     self.thunderbird.image = pygame.transform.rotate(
                         self.thunderbird.image, -90
                     )
-            case pygame.K_z:
+            case pygame.K_x:
                 fire_missile_method(
                     self.game.thunderbird_missiles,
                     self.thunderbird,

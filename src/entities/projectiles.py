@@ -364,6 +364,7 @@ class WeaponsManager:
             new_laser = laser_class(self, ship)
             lasers.add(new_laser)
             ship.aliens_killed = 0
+            ship.laser_ready = False
             play_sound(self.sound_manager.game_sounds, "fire_laser")
         else:
             self.draw_laser_message = True
@@ -381,7 +382,7 @@ class WeaponsManager:
                     ship.laser_ready_start_time = current_time
                     play_sound(self.sound_manager.game_sounds, "laser_ready")
 
-                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
+                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 1.5:
                     ship.laser_ready = False
             else:
                 ship.laser_ready_msg = False
@@ -396,6 +397,7 @@ class WeaponsManager:
             lasers.add(new_laser)
             ship.last_laser_time = time.time()
             self.game.pause_time = 0
+            ship.laser_ready = False
             play_sound(self.sound_manager.game_sounds, "fire_laser")
         else:
             self.draw_laser_message = True
@@ -403,12 +405,6 @@ class WeaponsManager:
 
     def update_timed_laser_status(self):
         """Check the status of the timed laser."""
-        if all(
-            mode not in self.settings.game_modes.game_mode
-            for mode in self.settings.timed_laser_modes
-        ):
-            return
-
         current_time = time.time()
         for ship in self.game.ships:
             time_since_last_ready = current_time - ship.last_laser_usage
@@ -437,3 +433,14 @@ class WeaponsManager:
         if self.draw_laser_message and current_time > self.display_time + 1500:
             self.draw_laser_message = False
             self.display_time = current_time
+
+    def update_laser_status(self):
+        """Update laser status for the one of the lasers, based
+        on the game mode."""
+        if any(
+            mode in self.settings.game_modes.game_mode
+            for mode in self.settings.timed_laser_modes
+        ):
+            self.update_timed_laser_status()
+        else:
+            self.update_normal_laser_status()
