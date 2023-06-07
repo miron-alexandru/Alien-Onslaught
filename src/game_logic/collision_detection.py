@@ -35,16 +35,22 @@ class CollisionManager:
                 ):
                     if not isinstance(alien, BossAlien):
                         alien.kill()
-                        play_sound(self.game.sound_manager.game_sounds, "alien_exploding")
+                        play_sound(
+                            self.game.sound_manager.game_sounds, "alien_exploding"
+                        )
                     ship.state.shielded = False
             for bullet in bullets:
                 if ship.state.shielded and ship.anims.shield_rect.colliderect(
                     bullet.rect
                 ):
-                    self._handle_collision_with_shielded_ship(bullet, "alien_exploding", ship)
+                    self._handle_collision_with_shielded_ship(
+                        bullet, "alien_exploding", ship
+                    )
             for asteroid in asteroids:
                 if ship.state.shielded and ship.anims.shield_rect.colliderect(asteroid):
-                    self._handle_collision_with_shielded_ship(asteroid, "asteroid_exploding", ship)
+                    self._handle_collision_with_shielded_ship(
+                        asteroid, "asteroid_exploding", ship
+                    )
 
     def _handle_collision_with_shielded_ship(self, sprite, sound_name, ship):
         """Handle collision between the sprite and the shielded ship."""
@@ -65,11 +71,15 @@ class CollisionManager:
                     if ship is self.thunderbird_ship and not ship.state.immune:
                         thunder_hit_method()
                         collision.kill()
-                        play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
+                        play_sound(
+                            self.game.sound_manager.game_sounds, "asteroid_exploding"
+                        )
                     if ship is self.phoenix_ship and not ship.state.immune:
                         phoenix_hit_method()
                         collision.kill()
-                        play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
+                        play_sound(
+                            self.game.sound_manager.game_sounds, "asteroid_exploding"
+                        )
 
         missiles = pygame.sprite.Group(
             self.game.thunderbird_missiles, self.game.phoenix_missiles
@@ -81,9 +91,13 @@ class CollisionManager:
         # Check for collisions between missiles, lasers and asteroids
         for sprite_group in [missiles, lasers]:
             for sprite in sprite_group:
-                if collision := pygame.sprite.spritecollideany(sprite, self.game.asteroids):
+                if collision := pygame.sprite.spritecollideany(
+                    sprite, self.game.asteroids
+                ):
                     collision.kill()
-                    play_sound(self.game.sound_manager.game_sounds, "asteroid_exploding")
+                    play_sound(
+                        self.game.sound_manager.game_sounds, "asteroid_exploding"
+                    )
                     if isinstance(sprite, Missile):
                         sprite.explode()
 
@@ -94,37 +108,36 @@ class CollisionManager:
         If a collision occurs, a random power is activated for the corresponding player
         and the power is removed.
         """
-        # Define a dict that maps each player to their corresponding ship,
-        # active status, and power functions
-        player_info = {
-            "thunderbird": {
-                "ship": self.thunderbird_ship,
-                "active": self.thunderbird_ship.state.alive,
-                "power": power_method,
-                "health_power_up": health_power_method,
-                "weapon": weapon_power_method,
-            },
-            "phoenix": {
-                "ship": self.phoenix_ship,
-                "active": self.phoenix_ship.state.alive,
-                "power": power_method,
-                "health_power_up": health_power_method,
-                "weapon": weapon_power_method,
-            },
-        }
+        player_info = [
+            (
+                "thunderbird",
+                self.thunderbird_ship,
+                power_method,
+                health_power_method,
+                weapon_power_method,
+            ),
+            (
+                "phoenix",
+                self.phoenix_ship,
+                power_method,
+                health_power_method,
+                weapon_power_method,
+            ),
+        ]
         # loop through each player and check for collisions
-        for player, info in player_info.items():
-            collision = pygame.sprite.spritecollideany(info["ship"], self.game.powers)
-            if info["active"] and collision:
+        for player, ship, power, health_power_up, weapon in player_info:
+            active = ship.state.alive
+            collision = pygame.sprite.spritecollideany(ship, self.game.powers)
+            if active and collision:
                 # play the empower effect, check the type of the power and activate the func
                 if collision.health:
-                    info["health_power_up"](player)
+                    health_power_up(player)
                 elif collision.weapon:
-                    info["weapon"](player, collision.weapon_name)
+                    weapon(player, collision.weapon_name)
                 else:
-                    info["power"](player)
+                    power(player)
                 collision.kill()
-                info["ship"].empower()
+                ship.empower()
 
     def check_bullet_alien_collisions(self):
         """Respond to player bullet-alien collisions."""
@@ -161,7 +174,9 @@ class CollisionManager:
                     if isinstance(sprite, Missile):
                         sprite.explode()
                         play_sound(self.game.sound_manager.game_sounds, "missile")
-                    self._update_cosmic_conflict_scores(ship, hit_function, score_increment)
+                    self._update_cosmic_conflict_scores(
+                        ship, hit_function, score_increment
+                    )
 
         handle_collision(self.phoenix_ship, phoenix_hit, self.game.thunderbird_bullets, 1000)
         handle_collision(self.thunderbird_ship, thunderbird_hit, self.game.phoenix_bullets, 1000)
@@ -196,7 +211,7 @@ class CollisionManager:
                 self.stats.thunderbird_score = max(
                     self.stats.thunderbird_score - 100, 0
                 )
-                self.game.score_board.render_scores()
+                self.score_board.render_scores()
                 self.score_board.update_high_score()
                 break
 
@@ -230,7 +245,7 @@ class CollisionManager:
         """Respond to player laser-alien collisions."""
         laser_collisions = {
             self.game.thunderbird_laser: "thunderbird",
-            self.game.phoenix_laser: "phoenix"
+            self.game.phoenix_laser: "phoenix",
         }
 
         for laser, player in laser_collisions.items():
@@ -271,12 +286,10 @@ class CollisionManager:
         if not self.game.singleplayer:
             player_ships = {
                 self.thunderbird_ship: thunder_hit_method,
-                self.phoenix_ship: phoenix_hit_method
+                self.phoenix_ship: phoenix_hit_method,
             }
         else:
-            player_ships = {
-                self.thunderbird_ship: thunder_hit_method
-            }
+            player_ships = {self.thunderbird_ship: thunder_hit_method}
 
         for ship, hit_method in player_ships.items():
             if (

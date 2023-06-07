@@ -274,9 +274,9 @@ def display_high_scores(game, screen, score_key):
 def display_game_modes_description(screen, description):
     """Render game modes description on screen."""
     screen_width, screen_height = screen.get_size()
-    font = pygame.font.SysFont("verdana", int(screen_height * 0.021))
-    text_x = int(screen_width * 0.56)
-    text_y = 480
+    font = pygame.font.SysFont("verdana", 15)
+    text_x = screen_width // 2 + 74
+    text_y = screen_height // 2 + 120
     text_surfaces, text_rects = render_text(
         description, font, "white", (text_x, text_y), int(screen_height * 0.03)
     )
@@ -289,7 +289,7 @@ def calculate_control_positions(center, x_offset):
     """Calculate the positions of player 1 and player 2 controls."""
     p1_controls_x = center[0] - x_offset
     p2_controls_x = center[0] + x_offset
-    y_pos = 250
+    y_pos = 260
     return (p1_controls_x, y_pos), (p2_controls_x, y_pos)
 
 

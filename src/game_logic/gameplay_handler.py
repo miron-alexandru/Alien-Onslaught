@@ -56,7 +56,6 @@ class GameplayManager:
         self._prepare_level()
         self.prepare_last_bullet_bullets()
 
-
     def prepare_last_bullet_bullets(self):
         """Prepare the number of bullets in the Last Bullet game mode
         based on the level"""
@@ -147,7 +146,6 @@ class GameplayManager:
         for group in all_groups:
             group.empty()
 
-
     def update_normal_boss_info(self):
         """Updates the points and hp of bosses in the normal game mode."""
         self.settings.boss_points = NORMAL_BOSS_POINTS.get(
@@ -177,14 +175,12 @@ class GameplayManager:
 
         self.settings.boss_hp = 25 + (self.stats.level - 1) * hp_increment
 
-
     def _create_boss_rush_bullets(self, bullets_manager):
         """Creates bullets for bosses in Boss Rush."""
         if self.stats.level < 10:
             bullets_manager(1, 450, 400)
         else:
             bullets_manager(1, 200, 350)
-
 
     def set_max_alien_bullets(self, difficulty):
         """Set the maximum number of alien bullets based on difficulty."""
@@ -251,7 +247,7 @@ class GameplayManager:
         but they have a limited number of bullets, when a player remains with no bullets
         he dies, when both players are out of bullets, the game is over.
         """
-        asteroid_handler(start_at_level_7=True)
+        asteroid_handler(create_at_high_levels=True)
 
         aliens_remaining = len(self.game.aliens.sprites())
 
@@ -290,7 +286,7 @@ class GameplayManager:
         """Play the Boss Rush game mode in which the players must battle
         a series of increasingly difficult bosses, with each level presenting a new challenge.
         """
-        asteroid_handler(always=True)
+        asteroid_handler(force_creation=True)
         self._create_boss_rush_bullets(bullets_manager)
 
     def endless_onslaught(self, aliens_manager, asteroid_handler):
@@ -301,7 +297,7 @@ class GameplayManager:
         if len(self.game.aliens) < GAME_CONSTANTS["ENDLESS_MAX_ALIENS"]:
             aliens_manager(self.settings.fleet_rows)
 
-        asteroid_handler(always=True)
+        asteroid_handler(force_creation=True)
 
         # Increase alien and bullet speed every 120 seconds
         current_time = time.time()
@@ -314,7 +310,7 @@ class GameplayManager:
         """Play the Slow Burn game mode, where players must navigate through increasingly
         challenging aliens as the speed of their ship and bullets gradually decreases over time.
         """
-        asteroid_handler(always=True)
+        asteroid_handler(force_creation=True)
 
         current_time = time.time()
         if current_time - self.game.last_increase_time >= 120:  # seconds

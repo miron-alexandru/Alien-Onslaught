@@ -14,8 +14,11 @@ import pygame
 
 from pygame.sprite import Sprite
 from utils.constants import (
-    POWERS, GAME_CONSTANTS, WEAPON_BOXES,
-    POWER_DOWN_ATTRIBUTES, PLAYER_HEALTH_ATTRS
+    POWERS,
+    GAME_CONSTANTS,
+    WEAPON_BOXES,
+    POWER_DOWN_ATTRIBUTES,
+    PLAYER_HEALTH_ATTRS,
 )
 from utils.game_utils import load_single_image, play_sound
 

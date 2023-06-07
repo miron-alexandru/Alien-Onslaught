@@ -89,8 +89,7 @@ class Ship(Sprite):
 
         if (
             self.state.scaled
-            and time.time() - self.small_ship_time
-            > self.settings.scaled_time
+            and time.time() - self.small_ship_time > self.settings.scaled_time
         ):
             self.reset_ship_size()
 

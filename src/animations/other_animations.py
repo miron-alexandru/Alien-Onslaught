@@ -22,9 +22,7 @@ class DestroyAnim:
         self.image = None
         self.screen = entity.screen
 
-        # Initialize frames
         self.destroy_frames = destroy_frames
-
         self.current_destroy_frame = 0
         self.destroy_image = self.destroy_frames[self.current_destroy_frame]
         self.destroy_rect = self.destroy_image.get_rect()

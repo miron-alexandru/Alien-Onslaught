@@ -53,8 +53,6 @@ class ScoreBoard:
             ("Thunderbird", self.stats.thunderbird_score),
             ("Phoenix", self.second_stats.phoenix_score),
         ]
-        y_pos = 20
-
         for i, (ship_name, score) in enumerate(ship_scores):
             # Calculate the rounded score and convert it into a string with proper formatting.
             rounded_score = round(score)
@@ -67,7 +65,7 @@ class ScoreBoard:
                 score_rect.right = self.level_rect.centerx - 200
             else:
                 score_rect.right = self.level_rect.centerx + 300
-            score_rect.top = y_pos
+            score_rect.top = 20
 
             if ship_name == "Thunderbird":
                 self.thunderbird_score_image = score_img
@@ -141,7 +139,10 @@ class ScoreBoard:
             "boss_rush": "Boss Rush: "
             + BOSS_RUSH.get(
                 f"boss{str(self.stats.level)}", f"Level {str(self.stats.level)}"
-            ).split("/")[-1].split(".png")[0].title(),
+            )
+            .split("/")[-1]
+            .split(".png")[0]
+            .title(),
         }
 
         level_str = level_map.get(
@@ -306,7 +307,9 @@ class ScoreBoard:
             if not self.game.singleplayer:
                 draw_score(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
 
-        draw_missiles(self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
+        draw_missiles(
+            self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect
+        )
         draw_missiles(self.missiles_icon, self.thunderbird_missiles_img_rect)
 
         if not self.game.singleplayer:

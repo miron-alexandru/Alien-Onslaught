@@ -57,7 +57,8 @@ class AlienOnslaught:
         self.settings = Settings()
         self.full_screen = False
         self.screen = pygame.display.set_mode(
-            (self.settings.screen_width, self.settings.screen_height), pygame.RESIZABLE)
+            (self.settings.screen_width, self.settings.screen_height), pygame.RESIZABLE
+        )
         self.bg_img = resize_image(self.settings.bg_img, self.screen.get_size())
         self.bg_img_rect = self.bg_img.get_rect()
         self.reset_bg = self.bg_img.copy()
@@ -375,15 +376,15 @@ class AlienOnslaught:
                     self.pause_time += pause_end_time - pause_start_time
                     break
 
-    def _handle_asteroids(self, start_at_level_7=True, always=False):
+    def _handle_asteroids(self, create_at_high_levels=True, force_creation=False):
         """Create, update, and check collisions for asteroids.
         Args:
-        start_at_level_7 (bool, optional): Whether to create asteroids when
-        the current level is 7 or above.
-        Defaults to True.
-        always (bool, optional): Whether to always create and update asteroids.
-        Defaults to False."""
-        if always or (start_at_level_7 and self.stats.level >= 7):
+            create_at_high_levels (bool, optional): Whether to create asteroids when
+                the current level is 7 or above. Defaults to True.
+            force_creation (bool, optional): Whether to always create and update asteroids.
+                Defaults to False.
+        """
+        if force_creation or (create_at_high_levels and self.stats.level >= 7):
             self.asteroids_manager.create_asteroids()
             self.asteroids_manager.update_asteroids()
             self.collision_handler.check_asteroids_collisions(
@@ -392,17 +393,18 @@ class AlienOnslaught:
 
     def apply_game_behaviors(self):
         """Applies the game behaviors for the currently selected game mode."""
-        if self.settings.game_modes.endless_onslaught:
+        game_modes = self.settings.game_modes
+        if game_modes.endless_onslaught:
             self.gameplay_manager.endless_onslaught(
                 self.aliens_manager.create_fleet, self._handle_asteroids
             )
-        elif self.settings.game_modes.slow_burn:
+        elif game_modes.slow_burn:
             self.gameplay_manager.slow_burn(self._handle_asteroids)
-        elif self.settings.game_modes.boss_rush:
+        elif game_modes.boss_rush:
             self.gameplay_manager.boss_rush(
                 self._handle_asteroids, self.alien_bullets_manager.create_alien_bullets
             )
-        elif self.settings.game_modes.meteor_madness:
+        elif game_modes.meteor_madness:
             self.gameplay_manager.meteor_madness(
                 self.asteroids_manager.create_asteroids,
                 self.asteroids_manager.update_asteroids,
@@ -410,20 +412,18 @@ class AlienOnslaught:
                 self._thunderbird_ship_hit,
                 self._phoenix_ship_hit,
             )
-        elif self.settings.game_modes.last_bullet:
+        elif game_modes.last_bullet:
             self.gameplay_manager.last_bullet(
                 self.thunderbird_ship, self.phoenix_ship, self._handle_asteroids
             )
-        elif self.settings.game_modes.cosmic_conflict:
+        elif game_modes.cosmic_conflict:
             self.gameplay_manager.cosmic_conflict(
                 self.collision_handler.check_cosmic_conflict_collisions,
                 self._thunderbird_ship_hit,
                 self._phoenix_ship_hit,
             )
         else:
-            self._handle_asteroids(
-                start_at_level_7=True
-            )  # Handle asteroids for normal game
+            self._handle_asteroids(create_at_high_levels=True)
 
     def _thunderbird_ship_hit(self):
         """Respond to the Thunderbird ship being hit."""
@@ -452,18 +452,22 @@ class AlienOnslaught:
 
     def _update_thunderbird_stats(self):
         """Update Thunderbird ship stats after destruction."""
-        if self.settings.thunderbird_bullet_count >= 3:
-            self.settings.thunderbird_bullet_count -= 2
-        if self.settings.thunderbird_bullets_allowed > 3:
-            self.settings.thunderbird_bullets_allowed -= 1
+        self.settings.thunderbird_bullet_count -= (
+            2 if self.settings.thunderbird_bullet_count >= 3 else 0
+        )
+        self.settings.thunderbird_bullets_allowed -= (
+            1 if self.settings.thunderbird_bullets_allowed > 3 else 0
+        )
         self.stats.thunderbird_hp -= 1
 
     def _update_phoenix_stats(self):
         """Update Phoenix ship stats after destruction."""
-        if self.settings.phoenix_bullet_count >= 3:
-            self.settings.phoenix_bullet_count -= 2
-        if self.settings.phoenix_bullets_allowed > 3:
-            self.settings.phoenix_bullets_allowed -= 1
+        self.settings.phoenix_bullet_count -= (
+            2 if self.settings.phoenix_bullet_count >= 3 else 0
+        )
+        self.settings.phoenix_bullets_allowed -= (
+            1 if self.settings.phoenix_bullets_allowed > 3 else 0
+        )
         self.stats.phoenix_hp -= 1
 
     def _check_game_over(self):

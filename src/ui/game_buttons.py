@@ -152,7 +152,7 @@ class GameButtons:
         self.one_life_reign = Button(
             self,
             self.button_imgs["one_life_reign"],
-            (self.last_bullet.rect.right -5, self.last_bullet.rect.y),
+            (self.last_bullet.rect.right - 5, self.last_bullet.rect.y),
             GAME_MODES_DESCRIPTIONS[7],
         )
 
@@ -329,6 +329,8 @@ class GameButtons:
         """Toggle the Cosmic Conflict game mode and hide all game mode buttons."""
         if self.game.singleplayer:
             return
+        for ship in self.game.ships:
+            ship.state.alive = True
         self.gm_options.cosmic_conflict = not self.gm_options.cosmic_conflict
         self._set_game_mode_settings("cosmic_conflict")
         self.gm_options.game_mode = "cosmic_conflict"

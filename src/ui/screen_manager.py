@@ -139,15 +139,9 @@ class ScreenManager:
     def draw_menu_objects(self, bg_img, bg_img_rect):
         """Draw the buttons, game title and controls on the menu screen"""
         self.screen.blit(bg_img, bg_img_rect)
-        self.screen.blit(
-            self.p1_controls_img, self.p1_controls_img_rect
-        )
-        self.screen.blit(
-            self.p2_controls_img, self.p2_controls_img_rect
-        )
-        self.screen.blit(
-            self.game_controls_img, self.game_controls_img_rect
-        )
+        self.screen.blit(self.p1_controls_img, self.p1_controls_img_rect)
+        self.screen.blit(self.p2_controls_img, self.p2_controls_img_rect)
+        self.screen.blit(self.game_controls_img, self.game_controls_img_rect)
         self.screen.blit(self.settings.game_title, self.settings.game_title_rect)
         self.buttons.single.draw_button()
         self.buttons.multi.draw_button()
@@ -229,4 +223,3 @@ class LoadingScreen:
             ),
         )
         pygame.display.update()
-

@@ -8,7 +8,6 @@ from utils.constants import OTHER
 from utils.game_utils import load_single_image
 
 
-
 class Heart(Sprite):
     """Draws a heart image on the screen to represent player health."""
 

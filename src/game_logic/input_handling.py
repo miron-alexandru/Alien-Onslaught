@@ -20,7 +20,13 @@ class PlayerInput:
         self.phoenix = self.game.phoenix_ship
 
     def check_keydown_events(
-        self, event, reset_game, run_menu, game_menu, fire_missile_method, fire_laser_method
+        self,
+        event,
+        reset_game,
+        run_menu,
+        game_menu,
+        fire_missile_method,
+        fire_laser_method,
     ):
         """Respond to keys being pressed."""
         match event.key:
@@ -53,11 +59,15 @@ class PlayerInput:
 
             # If the game is not paused, check for player keypresses
             case _ if not self.ui_options.paused:
-                self.handle_thunderbird_controls(event, fire_missile_method, fire_laser_method)
+                self.handle_thunderbird_controls(
+                    event, fire_missile_method, fire_laser_method
+                )
 
                 # Phoenix controls
                 if not self.game.singleplayer:
-                    self._handle_phoenix_controls(event, fire_missile_method, fire_laser_method)
+                    self._handle_phoenix_controls(
+                        event, fire_missile_method, fire_laser_method
+                    )
 
     def check_keyup_events(self, event):
         """Respond to keys being released."""
@@ -77,7 +87,6 @@ class PlayerInput:
                     self.thunderbird.state.firing = False
                 case pygame.K_c:
                     self.thunderbird.laser_fired = False
-
 
         # Phoenix controls
         if not self.game.singleplayer and self.phoenix.state.alive:
@@ -127,7 +136,9 @@ class PlayerInput:
                 )
                 ship.last_bullet_time = current_time
 
-    def handle_thunderbird_controls(self, event, fire_missile_method, fire_laser_method):
+    def handle_thunderbird_controls(
+        self, event, fire_missile_method, fire_laser_method
+    ):
         """Handle Thunderbird controls."""
         if (
             not self.thunderbird.state.alive
@@ -172,9 +183,7 @@ class PlayerInput:
                 )
             case pygame.K_c:
                 fire_laser_method(
-                    self.game.thunderbird_laser,
-                    self.thunderbird,
-                    laser_class=Laser
+                    self.game.thunderbird_laser, self.thunderbird, laser_class=Laser
                 )
                 self.thunderbird.laser_fired = True
 
@@ -215,9 +224,7 @@ class PlayerInput:
                 )
             case pygame.K_RSHIFT:
                 fire_laser_method(
-                    self.game.phoenix_laser,
-                    self.phoenix,
-                    laser_class=Laser
+                    self.game.phoenix_laser, self.phoenix, laser_class=Laser
                 )
                 self.phoenix.laser_fired = True
 

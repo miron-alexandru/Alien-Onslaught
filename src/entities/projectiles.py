@@ -53,10 +53,10 @@ class Bullet(Sprite):
 
     def scale_bullet(self, scale):
         """Scale the bullet image and rect."""
-        self.image = pygame.transform.scale(self.image, (
-            int(self.image.get_width() * scale),
-            int(self.image.get_height() * scale)
-        ))
+        self.image = pygame.transform.scale(
+            self.image,
+            (int(self.image.get_width() * scale), int(self.image.get_height() * scale)),
+        )
         self.rect = self.image.get_rect(center=self.rect.center)
 
 
@@ -74,7 +74,6 @@ class Thunderbolt(Bullet):
             self.image = pygame.transform.rotate(self.image, -90)
         if scaled:
             self.scale_bullet(0.5)
-
 
 
 class Firebird(Bullet):
@@ -177,7 +176,6 @@ class Missile(Sprite):
             self.image = self.frames[self.current_frame]
 
 
-
 class Laser(Sprite):
     """The Laser class represents a laser object in the game."""
 
@@ -238,7 +236,6 @@ class Laser(Sprite):
             self.rect = self.image.get_rect()
         else:
             self.image = self.frames[self.current_frame]
-
 
 
 class WeaponsManager:
@@ -382,7 +379,10 @@ class WeaponsManager:
                     ship.laser_ready_start_time = current_time
                     play_sound(self.sound_manager.game_sounds, "laser_ready")
 
-                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 1.5:
+                if (
+                    ship.laser_ready
+                    and current_time - ship.laser_ready_start_time >= 1.5
+                ):
                     ship.laser_ready = False
             else:
                 ship.laser_ready_msg = False
@@ -407,16 +407,17 @@ class WeaponsManager:
         """Check the status of the timed laser."""
         current_time = time.time()
         for ship in self.game.ships:
-            time_since_last_ready = current_time - ship.last_laser_usage
-            if time_since_last_ready >= self.settings.laser_cooldown:
-                if not ship.laser_ready:
-                    ship.laser_ready = True
-                    ship.laser_ready_start_time = current_time
-                    play_sound(self.sound_manager.game_sounds, "laser_ready")
+            if ship.state.alive:
+                time_since_last_ready = current_time - ship.last_laser_usage
+                if time_since_last_ready >= self.settings.laser_cooldown:
+                    if not ship.laser_ready:
+                        ship.laser_ready = True
+                        ship.laser_ready_start_time = current_time
+                        play_sound(self.sound_manager.game_sounds, "laser_ready")
 
-                if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
-                    ship.laser_ready = False
-                    ship.last_laser_usage = current_time
+                    if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
+                        ship.laser_ready = False
+                        ship.last_laser_usage = current_time
 
     def check_laser_availability(self):
         """Check the laser availability for each ship and

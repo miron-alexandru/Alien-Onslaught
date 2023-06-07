@@ -338,12 +338,12 @@ BOSS_LEVELS = [10, 15, 20, 25]
 
 
 POWER_DOWN_ATTRIBUTES = {
-            'reverse': 'last_reverse_power_down_time',
-            'disarmed': 'last_disarmed_power_down_time',
-            'scaled_weapon': 'last_scaled_weapon_power_down_time'
-        }
+    "reverse": "last_reverse_power_down_time",
+    "disarmed": "last_disarmed_power_down_time",
+    "scaled_weapon": "last_scaled_weapon_power_down_time",
+}
 
 PLAYER_HEALTH_ATTRS = {
-            "thunderbird": "thunderbird_hp",
-            "phoenix": "phoenix_hp",
-        }
+    "thunderbird": "thunderbird_hp",
+    "phoenix": "phoenix_hp",
+}

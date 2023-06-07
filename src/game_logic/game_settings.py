@@ -57,8 +57,12 @@ class Settings:
         as well as other game-related settings.
         """
         self.game_modes = GameModes()
-        self.timed_laser_modes = ['boss_rush', 'cosmic_conflict',
-        'meteor_madness', 'endless_onslaught']
+        self.timed_laser_modes = [
+            "boss_rush",
+            "cosmic_conflict",
+            "meteor_madness",
+            "endless_onslaught",
+        ]
         self.ui_options = UIOptions()
         self.speedup_scale = 0.2
         self.missiles_speed = 5.0
@@ -118,7 +122,6 @@ class Settings:
         self.phoenix_bullet_speed += 5.0
         self.phoenix_bullets_allowed += 3
         self.phoenix_bullet_count += 1
-
 
     def increase_speed(self):
         """Increase speed settings and alien point values."""
