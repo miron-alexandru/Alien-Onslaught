@@ -106,7 +106,7 @@ class Settings:
 
         # Asteroid settings
         self.asteroid_speed = 1.5
-        self.asteroid_freq = 700
+        self.asteroid_freq = 720
 
         if self.game_modes.one_life_reign:
             self._set_one_life_reign_settings()

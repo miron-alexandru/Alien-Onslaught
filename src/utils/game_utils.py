@@ -370,12 +370,15 @@ def display_message(screen, message, duration):
     pygame.time.wait(int(duration * 1000))
 
 
-def display_laser_message(screen, message, ship):
+def display_laser_message(screen, message, ship, cosmic=False):
     """Display a message to the right of the ship."""
     font = pygame.font.SysFont("verdana", 10)
     text = font.render(message, True, (255, 0, 0))
     ship_rect = ship.rect
-    text_rect = text.get_rect(center=(ship_rect.right + 18, ship_rect.centery - 30))
+    if cosmic:
+        text_rect = text.get_rect(center=(ship_rect.left + 18, ship_rect.centery - 35))
+    else:
+        text_rect = text.get_rect(center=(ship_rect.right + 18, ship_rect.centery - 30))
     screen.blit(text, text_rect)
 
 

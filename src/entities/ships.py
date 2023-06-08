@@ -170,17 +170,16 @@ class Ship(Sprite):
         """Center the ship on the screen."""
         if self.settings.game_modes.cosmic_conflict:
             self.rect.bottom = self.screen_rect.centery
+            x_pos = self.cosmic_conflict_pos
         else:
             self.rect.bottom = self.screen_rect.bottom
-        self.x_pos = (
-            (
+            x_pos = (
                 self.screen_rect.centerx
                 if self.game.singleplayer
                 else self.screen_rect.centerx + self.offset
             )
-            if not self.settings.game_modes.cosmic_conflict
-            else self.cosmic_conflict_pos
-        )
+
+        self.x_pos = x_pos
         self.y_pos = float(self.rect.y - 10)
 
     def draw_shield(self):
@@ -209,9 +208,12 @@ class Ship(Sprite):
 
     def update_missiles_number(self):
         """Update the number of missiles."""
-        self.missiles_num = (
-            6 if self.settings.game_modes.one_life_reign else self.starting_missiles
-        )
+        if self.settings.game_modes.one_life_reign:
+            self.missiles_num = 6
+        elif self.settings.game_modes.last_bullet:
+            self.missiles_num = 1
+        else:
+            self.missiles_num = self.starting_missiles
 
     def scale_ship(self, scale_factor):
         """Change the ship's size and set the scaled

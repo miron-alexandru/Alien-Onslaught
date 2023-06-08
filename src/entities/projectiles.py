@@ -251,6 +251,7 @@ class WeaponsManager:
         self.display_time = 0
         self.thunderbird_ship = self.game.thunderbird_ship
         self.phoenix_ship = self.game.phoenix_ship
+        self.game_modes = self.settings.game_modes
 
         self.weapons = {
             "thunderbird": {
@@ -326,7 +327,7 @@ class WeaponsManager:
                 offset = 30 * (i - (num_bullets - 1) / 2)
                 new_bullet.rect.centerx = ship.rect.centerx + offset
                 new_bullet.rect.centery = ship.rect.centery + offset
-                if self.settings.game_modes.last_bullet:
+                if self.game_modes.last_bullet:
                     ship.remaining_bullets -= 1
                     self.game.score_board.render_bullets_num()
                 bullet_fired = True
@@ -357,6 +358,11 @@ class WeaponsManager:
         """Fire a laser from the ship based
         on the required kill count.
         """
+        if self.game_modes.last_bullet:
+            self.draw_laser_message = True
+            play_sound(self.sound_manager.game_sounds, "laser_not_ready")
+            return
+
         if ship.aliens_killed >= self.settings.required_kill_count:
             new_laser = laser_class(self, ship)
             lasers.add(new_laser)
@@ -425,10 +431,18 @@ class WeaponsManager:
         """
         for ship in self.game.ships:
             if ship.laser_ready:
-                display_laser_message(self.screen, "Ready!", ship)
+                if self.game_modes.cosmic_conflict:
+                    display_laser_message(self.screen, "Ready!", ship, cosmic=True)
+                else:
+                    display_laser_message(self.screen, "Ready!", ship)
 
             if self.draw_laser_message and ship.laser_fired:
-                display_laser_message(self.screen, "Not Ready!", ship)
+                if self.game_modes.last_bullet:
+                    display_laser_message(self.screen, "Not available!", ship)
+                elif self.game_modes.cosmic_conflict:
+                    display_laser_message(self.screen, "Not Ready!", ship, cosmic=True)
+                else:
+                    display_laser_message(self.screen, "Not Ready!", ship)
 
         current_time = pygame.time.get_ticks()
         if self.draw_laser_message and current_time > self.display_time + 1500:
@@ -443,5 +457,5 @@ class WeaponsManager:
             for mode in self.settings.timed_laser_modes
         ):
             self.update_timed_laser_status()
-        else:
+        elif not self.game_modes.last_bullet:
             self.update_normal_laser_status()

@@ -30,6 +30,9 @@ class GameplayManager:
         self.singleplayer = game.singleplayer
         self.ships = game.ships
 
+        self.last_increase_time = self.last_decrease_time = self.last_level_time = 0
+        self.level_time = 100000
+
     def create_normal_level_bullets(self, bullets_manager):
         """Create bullets for the normal game."""
         if self.stats.level in BOSS_LEVELS:
@@ -214,12 +217,10 @@ class GameplayManager:
         update_asteroids()
         collision_handler(thunderbird_hit, phoenix_hit)
 
-        if not self.game.ui_options.paused:
-            level_time = 60000  # miliseconds
-            current_time = pygame.time.get_ticks() - self.game.pause_time
-            if current_time > self.game.last_level_time + level_time:
-                self.game.last_level_time = current_time
-                self._prepare_asteroids_level()
+        current_time = pygame.time.get_ticks() - self.game.pause_time
+        if current_time > self.last_level_time + self.level_time:
+            self.last_level_time = current_time
+            self._prepare_asteroids_level()
 
     def _prepare_asteroids_level(self):
         """Level progression handler for the Meteor Madness game mode."""
@@ -299,12 +300,11 @@ class GameplayManager:
 
         asteroid_handler(force_creation=True)
 
-        # Increase alien and bullet speed every 120 seconds
         current_time = time.time()
-        if current_time - self.game.last_increase_time >= 120:  # seconds
+        if current_time - self.last_increase_time >= 90:  # seconds
             self.settings.alien_speed += 0.1
             self.settings.alien_bullet_speed += 0.1
-            self.game.last_increase_time = current_time
+            self.last_increase_time = current_time
 
     def slow_burn(self, asteroid_handler):
         """Play the Slow Burn game mode, where players must navigate through increasingly
@@ -313,7 +313,7 @@ class GameplayManager:
         asteroid_handler(force_creation=True)
 
         current_time = time.time()
-        if current_time - self.game.last_increase_time >= 120:  # seconds
+        if current_time - self.last_decrease_time >= 90:  # seconds
             self.settings.thunderbird_ship_speed = max(
                 2.0, self.settings.thunderbird_ship_speed - 0.2
             )
@@ -326,7 +326,7 @@ class GameplayManager:
             self.settings.phoenix_bullet_speed = max(
                 2.0, self.settings.phoenix_bullet_speed - 0.2
             )
-            self.game.last_increase_time = current_time
+            self.last_decrease_time = current_time
 
     def cosmic_conflict(self, bullet_collisions, thunderbird_hit, phoenix_hit):
         """Play the Cosmic Conflict game mode where players are fighting against each other."""

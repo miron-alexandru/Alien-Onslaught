@@ -2,7 +2,7 @@
 This module imports all other classes and modules required to run the game.
 
 Game description:
-    - Alien-Onslaught is an action-packed space shooter game that challenges
+    - Alien Onslaught is an action-packed space shooter game that challenges
 your shooting skills and reflexes. You'll have to take on fleets of aliens
 to progress through increasingly challenging levels and earn a high score.
 As you play, be sure to collect ship power-ups that will enhance your gameplay.
@@ -73,7 +73,7 @@ class AlienOnslaught:
         self._initialize_sprite_groups()
         self.initialize_managers()
 
-        self.last_increase_time = self.last_level_time = self.pause_time = 0
+        self.pause_time = 0
 
         pygame.display.set_icon(self.settings.game_icon)
         pygame.display.set_caption("Alien Onslaught")
@@ -590,7 +590,7 @@ class AlienOnslaught:
         self.gameplay_manager.handle_boss_stats()
 
         # Reset self.last_level_time when a new game starts.
-        self.last_level_time = pygame.time.get_ticks()
+        self.reset_timed_variables()
 
         # Prepare the scoreboard
         self.score_board.render_scores()
@@ -604,6 +604,12 @@ class AlienOnslaught:
 
         if self.singleplayer:
             self.phoenix_ship.state.alive = False
+
+    def reset_timed_variables(self):
+        """Resets timer-related variables for managing game events."""
+        self.gameplay_manager.last_level_time = pygame.time.get_ticks()
+        self.powers_manager.last_power_up_time = 0
+        self.asteroids_manager.last_asteroid_time = 0
 
     def _draw_game_objects(self):
         """Draw game objects and the score on screen."""

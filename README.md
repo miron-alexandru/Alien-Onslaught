@@ -1,7 +1,7 @@
 ## Alien-Onslaught description:
-- Alien-Onslaught is an action-packed game that will test your shooting skills and reflexes. The game is set in outer space, where you must shoot fleets of aliens to reach higher levels and increase your high score. With each level, the game becomes more challenging as the aliens become stronger and faster bosses are starting to appear, and more asteroids rain down from above.
+- Alien Onslaught is an action-packed game that will test your shooting skills and reflexes. The game is set in outer space, where you must shoot fleets of aliens to reach higher levels and increase your high score. With each level, the game becomes more challenging as the aliens become stronger and faster, bosses are starting to appear, and more asteroids rain down from above.
 
-- The game offers a range of game modes (e.g.: Boss Rush, Endless Onslaught), including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased ship speed, bullet speed, and fire power, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, boss fights, different weapons and more other features.
+- The game offers a range of game modes (e.g.: Boss Rush, Endless Onslaught, Cosmic Conflict (PVP)), including single-player and multiplayer modes, where you can choose to battle it out with friends or take on the aliens alone. In game you can also get a variety of ship power-ups, including increased ship speed, bullet speed, and fire power, as well as shields that protect you from enemy fire. It also includes a high score system where players can compete with others for the top spot on the leaderboard, boss fights, different weapons and more other features.
 
 ### Requirements:
 - Python 3.7 or later

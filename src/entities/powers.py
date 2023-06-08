@@ -10,7 +10,6 @@ Classes:
 
 import time
 import random
-import pygame
 
 from pygame.sprite import Sprite
 from utils.constants import (
@@ -90,34 +89,34 @@ class PowerEffectsManager:
         self.stats = stats
 
         self.last_power_up_time = 0
-        self.power_down_time = 60
+        self.power_down_time = 35
 
     def create_powers(self):
         """Creates power-ups or penalties at random intervals and locations."""
         if self.last_power_up_time == 0:
-            self.last_power_up_time = pygame.time.get_ticks()
-        current_time = pygame.time.get_ticks()
-        # Determines how often powers and penalties are appearing.
-        if current_time - self.last_power_up_time >= random.randint(
-            15000, 20000
-        ):  # milliseconds
+            self.last_power_up_time = time.time()
+
+        current_time = time.time()
+        time_elapsed = current_time - self.last_power_up_time
+
+        if time_elapsed >= random.randint(15, 20):
             self.last_power_up_time = current_time
-            # Determine the chance for a power to be health power up, weapon power up or
-            # normal power
-            if random.randint(0, 4) == 0:
-                power = Power(self)
-                if random.randint(0, 1) == 0:
-                    power.make_health_power_up()
-                else:
-                    power.make_weapon_power_up()
+            self.create_power_up_or_penalty()
+
+    def create_power_up_or_penalty(self):
+        """Creates a power-up or penalty at a random location."""
+        if random.randint(0, 4) == 0:
+            power = Power(self)
+            if random.randint(0, 1) == 0:
+                power.make_health_power_up()
             else:
-                power = Power(self)
-            # create a power up or a penalty at a random location, at the top of the screen.
-            power.rect.x = random.randint(
-                0, self.settings.screen_width - power.rect.width
-            )
-            power.rect.y = random.randint(-100, -40)
-            self.game.powers.add(power)
+                power.make_weapon_power_up()
+        else:
+            power = Power(self)
+
+        power.rect.x = random.randint(0, self.settings.screen_width - power.rect.width)
+        power.rect.y = random.randint(-100, -40)
+        self.game.powers.add(power)
 
     def apply_powerup_or_penalty(self, player):
         """Powers up or applies a penalty on the specified player"""
