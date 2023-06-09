@@ -56,7 +56,10 @@ class PlayerInput:
                 pygame.time.delay(300)
                 self.game.stats.game_active = False
                 run_menu()
-
+            case pygame.K_4:
+                self.game.kill_aliens()
+            case pygame.K_5:
+                self.game.kill_players()
             # If the game is not paused, check for player keypresses
             case _ if not self.ui_options.paused:
                 self.handle_thunderbird_controls(

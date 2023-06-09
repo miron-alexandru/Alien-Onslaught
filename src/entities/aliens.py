@@ -8,7 +8,7 @@ Classes:
     - 'AlienMovement': A class that manages the movement of a single alien.
     - 'AlienAnimation': This class manages the animation for normal aliens.
 """
-
+import time
 import math
 import random
 import pygame
@@ -37,6 +37,8 @@ class Alien(Sprite):
         self.hit_count = 0
         self.last_bullet_time = 0
         self.immune_state = False
+        self.frozen_state = False
+        self.frozen_start_time = 0
         self.immune_start_time = 0
         self.is_baby = is_baby
         self.baby_location = baby_location
@@ -73,6 +75,15 @@ class Alien(Sprite):
         """Updates the position, animation, and state of the alien.
         It also creates random movement for the alien.
         """
+        if (
+            self.frozen_state
+            and time.time() - self.frozen_start_time > self.settings.frozen_time
+        ):
+            self.frozen_state = False
+
+        if self.frozen_state:
+            return
+
         self.x_pos += self.settings.alien_speed * self.motion.direction
         self.rect.x = round(self.x_pos)
 
@@ -88,8 +99,7 @@ class Alien(Sprite):
 
         if (
             self.immune_state
-            and pygame.time.get_ticks() - self.immune_start_time
-            > self.settings.alien_immune_time
+            and time.time() - self.immune_start_time > self.settings.alien_immune_time
         ):
             self.immune_state = False
 
@@ -117,7 +127,13 @@ class Alien(Sprite):
         """Set the alien's immune state to True."""
         self.immune_state = True
         self.immune.immune_rect.center = self.rect.center
-        self.immune_start_time = pygame.time.get_ticks()
+        self.immune_start_time = time.time()
+
+    def freeze(self):
+        """Set's the alien's frozen state to True."""
+        self.frozen_state = True
+        self.frozen_start_time = time.time()
+
 
 
 class BossAlien(Sprite):
@@ -138,6 +154,8 @@ class BossAlien(Sprite):
         self.last_bullet_time = 0
         self.hit_count = 0
         self.is_alive = True
+        self.frozen_state = False
+        self.frozen_start_time = 0
         self.immune_state = False
         self.last_hit_time = 0.0
 
@@ -162,6 +180,15 @@ class BossAlien(Sprite):
 
     def update(self):
         """Update position and movement."""
+        if (
+            self.frozen_state
+            and time.time() - self.frozen_start_time > self.settings.frozen_time
+        ):
+            self.frozen_state = False
+
+        if self.frozen_state:
+            return
+
         self.x_pos += self.settings.alien_speed * self.motion.direction
         self.rect.x = round(self.x_pos)
 
@@ -177,6 +204,11 @@ class BossAlien(Sprite):
         self.is_alive = False
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
+
+    def freeze(self):
+        """Set's the alien's frozen state to True."""
+        self.frozen_state = True
+        self.frozen_start_time = time.time()
 
     def upgrade(self):
         """Increase boss HP."""

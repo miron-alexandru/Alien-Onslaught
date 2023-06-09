@@ -48,6 +48,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* Implemented a new power up also accompanied with a sound effect: Enemies are frozen for a period of time.
 * Implemented the option to toggle from Fullscreen to Resizable.
 * UI controls are displayed on the Main Menu.
 * Added application icon.
@@ -209,6 +210,7 @@ This is a list of assets used in the project that were not created by me, along 
 * Power-up, penalty, health — by [phoenix1291](https://opengameart.org/users/phoenix1291)
 * Laser sound effect — by [celestialghost8] (https://opengameart.org/users/celestialghost8)
 * Laser not ready — by [ViRiX](https://soundcloud.com/virix)
+* Freeze — by [qubodup](https://opengameart.org/users/qubodup)
 
 ### Images/Sprites:
 * Ships/missiles — by [MillionthVector](http://millionthvector.blogspot.com/)

@@ -266,6 +266,7 @@ GAME_SOUNDS = {
     "laser_ready": "gameplay/laser_ready.mp3",
     "fire_laser": "gameplay/fire_laser.mp3",
     "laser_not_ready": "gameplay/laser_not_ready.mp3",
+    "freeze": "gameplay/freeze.wav",
 }
 
 LEVEL_SOUNDS = {

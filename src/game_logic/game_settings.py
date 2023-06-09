@@ -70,7 +70,8 @@ class Settings:
         self.scaled_time = 60
         self.laser_cooldown = 90
         self.required_kill_count = 45
-        self.alien_immune_time = 12000
+        self.alien_immune_time = 30
+        self.frozen_time = 4
         self.max_alien_speed = 3.8
 
     def dynamic_settings(self):

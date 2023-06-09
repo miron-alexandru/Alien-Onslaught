@@ -128,7 +128,10 @@ class PowerEffectsManager:
 
         # Play sound effect
         if effect_choice in powerup_choices:
-            play_sound(self.game.sound_manager.game_sounds, "power_up")
+            if effect_choice == self.freeze_enemies:
+                play_sound(self.game.sound_manager.game_sounds, "freeze")
+            else:
+                play_sound(self.game.sound_manager.game_sounds, "power_up")
         elif effect_choice in penalty_choices:
             play_sound(self.game.sound_manager.game_sounds, "penalty")
 
@@ -146,6 +149,11 @@ class PowerEffectsManager:
         """Changes the given player's weapon."""
         self.game.weapons_manager.set_weapon(player, weapon_name)
         play_sound(self.game.sound_manager.game_sounds, "weapon")
+
+    def freeze_enemies(self, _=None):
+        """Freeze all aliens that are on the screen for a period of time."""
+        for alien in self.game.aliens:
+            alien.freeze()
 
     def update_powers(self):
         """Update powers and remove the ones that went off screen."""
@@ -314,6 +322,7 @@ class PowerEffectsManager:
             self.change_ship_size,
             self.increase_bullet_count,
             self.increase_missiles_num,
+            self.freeze_enemies,
         ]
 
         if self.settings.game_modes.last_bullet:
