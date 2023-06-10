@@ -135,7 +135,6 @@ class Alien(Sprite):
         self.frozen_start_time = time.time()
 
 
-
 class BossAlien(Sprite):
     """A class to represent alien bosses in the game."""
 
@@ -316,10 +315,10 @@ class AlienMovement:
         create random movement.
         """
         now = pygame.time.get_ticks()
-        time = now + self.sins["time_offset"]
+        current_time = now + self.sins["time_offset"]
         self.alien.rect.y = round(
             self.alien.rect.y
-            + self.sins["amplitude"] * math.sin(self.sins["frequency"] * time)
+            + self.sins["amplitude"] * math.sin(self.sins["frequency"] * current_time)
             + 0.1
         )
 

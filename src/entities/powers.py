@@ -128,7 +128,7 @@ class PowerEffectsManager:
 
         # Play sound effect
         if effect_choice in powerup_choices:
-            if effect_choice == self.freeze_enemies:
+            if effect_choice.__name__ == self.freeze_enemies.__name__:
                 play_sound(self.game.sound_manager.game_sounds, "freeze")
             else:
                 play_sound(self.game.sound_manager.game_sounds, "power_up")

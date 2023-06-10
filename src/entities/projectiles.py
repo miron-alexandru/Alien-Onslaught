@@ -421,7 +421,10 @@ class WeaponsManager:
                         ship.laser_ready_start_time = current_time
                         play_sound(self.sound_manager.game_sounds, "laser_ready")
 
-                    if ship.laser_ready and current_time - ship.laser_ready_start_time >= 2:
+                    if (
+                        ship.laser_ready
+                        and current_time - ship.laser_ready_start_time >= 2
+                    ):
                         ship.laser_ready = False
                         ship.last_laser_usage = current_time
 

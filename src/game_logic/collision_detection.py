@@ -178,12 +178,24 @@ class CollisionManager:
                         ship, hit_function, score_increment
                     )
 
-        handle_collision(self.phoenix_ship, phoenix_hit, self.game.thunderbird_bullets, 1000)
-        handle_collision(self.thunderbird_ship, thunderbird_hit, self.game.phoenix_bullets, 1000)
-        handle_collision(self.phoenix_ship, phoenix_hit, self.game.thunderbird_missiles, 1000)
-        handle_collision(self.thunderbird_ship, thunderbird_hit, self.game.phoenix_missiles, 1000)
-        handle_collision(self.phoenix_ship, phoenix_hit, self.game.thunderbird_laser, 1000)
-        handle_collision(self.thunderbird_ship, thunderbird_hit, self.game.phoenix_laser, 1000)
+        handle_collision(
+            self.phoenix_ship, phoenix_hit, self.game.thunderbird_bullets, 1000
+        )
+        handle_collision(
+            self.thunderbird_ship, thunderbird_hit, self.game.phoenix_bullets, 1000
+        )
+        handle_collision(
+            self.phoenix_ship, phoenix_hit, self.game.thunderbird_missiles, 1000
+        )
+        handle_collision(
+            self.thunderbird_ship, thunderbird_hit, self.game.phoenix_missiles, 1000
+        )
+        handle_collision(
+            self.phoenix_ship, phoenix_hit, self.game.thunderbird_laser, 1000
+        )
+        handle_collision(
+            self.thunderbird_ship, thunderbird_hit, self.game.phoenix_laser, 1000
+        )
 
     def check_alien_ship_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to collisions between aliens and ships and also check if
