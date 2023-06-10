@@ -41,7 +41,7 @@
 ![Gameplay](game_assets/images/game_images/cosmic_conflict.PNG)
 ![Gameplay](game_assets/images/game_images/boss_fight.PNG)
 ![HighScores](game_assets/images/game_images/high_scores.PNG)
-![GameOver](game/assets/images/game_images/game_omver.PNG)
+![GameOver](game/assets/images/game_images/game_over.PNG)
 ### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/game_assets/images/game_images)
 
 <details>
