@@ -2,6 +2,7 @@
 The 'game_collisions' module contains the CollisionManager class
 that handles the collisions in the game.
 """
+
 import time
 import pygame
 from entities.projectiles import Missile

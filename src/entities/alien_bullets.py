@@ -1,11 +1,10 @@
 """
-The 'alien_bullets' module contains classes for managing bullets fired
-by aliens and bosses in the game.
+The 'alien_bullets' module contains classes for creating bullets for aliens and bosses
+in the game.
 
 Classes:
     - 'AlienBullet': A class to manage bullets fired by normal aliens in the game.
     - 'BossBullet': A class to manage bullets fired by the boss alien in the game.
-    - 'AlienBulletsManager': A class to manage the creation and update of alien bullets in the game.
 """
 
 import random
@@ -15,7 +14,6 @@ from pygame.sprite import Sprite
 from utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
 from utils.game_utils import load_alien_bullets, load_boss_bullets, load_single_image
 from entities.aliens import BossAlien
-
 
 class AlienBullet(Sprite):
     """A class that manages bullets for the aliens."""
@@ -39,7 +37,7 @@ class AlienBullet(Sprite):
         self.rect.bottom = random_alien.rect.bottom
         self.y_pos = float(self.rect.y)
 
-        if random_alien.is_baby:
+        if random_alien.is_baby and not isinstance(random_alien, BossAlien):
             self.scale_bullet(0.7)
 
     def scale_bullet(self, scale):
@@ -103,70 +101,3 @@ class BossBullet(Sprite):
     def draw(self):
         """Draw the bullet on screen."""
         self.screen.blit(self.image, self.rect)
-
-
-class AlienBulletsManager:
-    """The AlienBulletsManager manages the creation and update for the normal
-    and boss bullets in the game.
-    """
-
-    def __init__(self, game):
-        """Initializes the AlienBulletsManager object."""
-        self.game = game
-        self.screen = game.screen
-        self.settings = game.settings
-        self.stats = game.stats
-        self.alien_bullet = game.alien_bullet
-        self.aliens = game.aliens
-        self.thunderbird_ship = game.thunderbird_ship
-        self.phoenix_ship = game.phoenix_ship
-
-        self.last_alien_bullet_time = 0
-
-    def _create_alien_bullet(self, alien):
-        """Create an alien bullet at the specified alien rect.
-        If the given alien is a BossAlien, a BossBullet will be created,
-        otherwise an AlienBullet will be created.
-        """
-        if isinstance(alien, BossAlien):
-            bullet = BossBullet(self, alien)
-        else:
-            bullet = AlienBullet(self)
-        bullet.rect.centerx = alien.rect.centerx
-        bullet.rect.bottom = alien.rect.bottom
-        self.alien_bullet.add(bullet)
-
-    def create_alien_bullets(self, num_bullets, bullet_int, alien_int):
-        """
-        Create a certain number of bullets from randomly selected aliens, based on time intervals.
-
-        Args:
-        - num_bullets: The number of bullets to create.
-        - bullet_int: The interval of time (in milliseconds) that
-          must pass since any alien fired a bullet.
-        - alien_int: The interval of time (in milliseconds) that
-          must pass since a specific alien last fired a bullet.
-        """
-        current_time = pygame.time.get_ticks()
-        # check if enough time has passed since any alien fired a bullet
-        if current_time - self.last_alien_bullet_time >= bullet_int:
-            self.last_alien_bullet_time = current_time
-            aliens = random.sample(
-                self.aliens.sprites(), k=min(num_bullets, len(self.aliens.sprites()))
-            )
-            # create bullets from randomly selected aliens
-            for alien in aliens:
-                # check if enough time has passed since this alien fired a bullet
-                if (
-                    alien.last_bullet_time == 0
-                    or current_time - alien.last_bullet_time >= alien_int
-                ):
-                    alien.last_bullet_time = current_time
-                    self._create_alien_bullet(alien)
-
-    def update_alien_bullets(self):
-        """Update alien bullets and remove bullets that went off screen."""
-        self.alien_bullet.update()
-        for bullet in self.alien_bullet.copy():
-            if bullet.rect.y > self.settings.screen_height:
-                self.alien_bullet.remove(bullet)

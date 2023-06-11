@@ -115,7 +115,7 @@ class Animations:
         self.shield_rect = self.shield_image.get_rect()
 
     def update_warp_animation(self):
-        """Update the animation for the ship's warp effect.
+        """Update the animation for the ship's warping state.
         ship_img (int): The index of the ship image to display
         when the warp effect is finished."""
         self.warp_counter += 1
@@ -128,31 +128,34 @@ class Animations:
                 self.image = self.warp_frames[self.warp_index]
                 self.warp_counter = 0
 
-    def update_animation(self, animation_type):
-        """Update the animation for the specified type."""
-        if animation_type == "shield":
-            self.current_shield_frame = (self.current_shield_frame + 1) % len(
-                self.shield_frames
+    def update_shield_animation(self):
+        """Update shield animation for the ship's shielded state."""
+        self.current_shield_frame = (self.current_shield_frame + 1) % len(
+            self.shield_frames
+        )
+        self.shield_image = self.shield_frames[self.current_shield_frame]
+        self.shield_rect.center = self.ship.rect.center
+
+    def update_immune_animation(self):
+        """Update immune animation for the ship's immune state."""
+        self.current_immune_frame = (self.current_immune_frame + 1) % len(
+            self.immune_frames
+        )
+        self.immune_image = self.immune_frames[self.current_immune_frame]
+        self.immune_rect.center = self.ship.rect.center
+
+    def update_empower_animation(self):
+        """Update empower animation for the ship's empowered state"""
+        self.empower_timer += 1
+        if self.empower_timer >= self.empower_delay:
+            self.empower_timer = 0
+            self.current_empower_frame = (self.current_empower_frame + 1) % len(
+                self.empower_frames
             )
-            self.shield_image = self.shield_frames[self.current_shield_frame]
-            self.shield_rect.center = self.ship.rect.center
-        elif animation_type == "immune":
-            self.current_immune_frame = (self.current_immune_frame + 1) % len(
-                self.immune_frames
-            )
-            self.immune_image = self.immune_frames[self.current_immune_frame]
-            self.immune_rect.center = self.ship.rect.center
-        elif animation_type == "empower":
-            self.empower_timer += 1
-            if self.empower_timer >= self.empower_delay:
-                self.empower_timer = 0
-                self.current_empower_frame = (self.current_empower_frame + 1) % len(
-                    self.empower_frames
-                )
-                self.empower_image = self.empower_frames[self.current_empower_frame]
-                self.empower_rect.center = self.ship.rect.center
-                if self.current_empower_frame == 0:  # animation played once
-                    self.ship.state.empowered = False
+            self.empower_image = self.empower_frames[self.current_empower_frame]
+            self.empower_rect.center = self.ship.rect.center
+            if self.current_empower_frame == 0:
+                self.ship.state.empowered = False
 
     def update_explosion_animation(self):
         """Update the animation for the ship's explosion effect."""

@@ -240,8 +240,12 @@ SHIPS = {
 
 
 # Sounds for the game.
+MENU_MUSIC = {
+    "menu": "ui/menu.mp3",
+    "game_over": "ui/game_over.mp3",
+}
+
 MENU_SOUNDS = {
-    "menu": "ui/menu.wav",
     "click_menu": "ui/click_menu.wav",
     "quit_effect": "ui/quit_effect.wav",
 }
@@ -249,8 +253,7 @@ MENU_SOUNDS = {
 GAME_SOUNDS = {
     "bullet": "gameplay/fire.wav",
     "explode": "gameplay/explode.wav",
-    "game_over": "ui/game_over.wav",
-    "power_up": "gameplay/power_up.mp3",
+    "power_up": "gameplay/power_up.wav",
     "penalty": "gameplay/penalty.wav",
     "health": "gameplay/health.wav",
     "weapon": "gameplay/weapon.wav",
@@ -259,30 +262,34 @@ GAME_SOUNDS = {
     "click": "ui/click_button.wav",
     "quit_effect": "ui/quit_effect.wav",
     "keypress": "ui/keypress.wav",
-    "warp": "gameplay/warp_sound.mp3",
+    "warp": "gameplay/warp_sound.wav",
     "alien_exploding": "gameplay/alien_exploding.wav",
     "asteroid_exploding": "gameplay/asteroid_exploding.wav",
     "boss_exploding": "gameplay/boss_exploding.wav",
-    "laser_ready": "gameplay/laser_ready.mp3",
-    "fire_laser": "gameplay/fire_laser.mp3",
-    "laser_not_ready": "gameplay/laser_not_ready.mp3",
+    "laser_ready": "gameplay/laser_ready.wav",
+    "fire_laser": "gameplay/fire_laser.wav",
+    "laser_not_ready": "gameplay/laser_not_ready.wav",
     "freeze": "gameplay/freeze.wav",
 }
 
 LEVEL_SOUNDS = {
-    range(1, 8): "level/battle_one.wav",
-    range(9, 16): "level/battle_two.wav",
-    range(17, 24): "level/battle_three.wav",
-    range(25, 27): "level/battle_four.wav",
+    range(1, 8): "level/battle_one.mp3",
+    range(9, 16): "level/battle_two.mp3",
+    range(17, 24): "level/battle_three.mp3",
+    range(25, 27): "level/battle_four.mp3",
 }
 
 BOSS_RUSH_MUSIC = {
-    range(1, 5): "boss_rush/first_phase.wav",
-    range(6, 9): "boss_rush/second_phase.wav",
-    range(10, 16): "boss_rush/third_phase.wav",
+    range(1, 5): "boss_rush/first_phase.mp3",
+    range(6, 9): "boss_rush/second_phase.mp3",
+    range(10, 16): "boss_rush/third_phase.mp3",
 }
 
 ENDLESS_SOUNDTRACK = {range(1, 3): "endless/endless.mp3"}
+
+METEOR_MADNESS_MUSIC = {range(1, 999): "meteor_madness/meteor_music.mp3"}
+
+MUSIC_LIST = ["menu", "game_over"]
 
 # Dict used to map alien images to game level.
 LEVEL_PREFIX = {

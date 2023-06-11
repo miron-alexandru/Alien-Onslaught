@@ -48,6 +48,8 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* Refactored the code by moving all managers into a new package called 'managers' to enhance maintainability. Additionally, various classes and functions were further refactored to improve code readability and maintainability.
+* Improved overall sound management for the game.
 * Implemented a new power up also accompanied with a sound effect: Enemies are frozen for a period of time.
 * Implemented the option to toggle from Fullscreen to Resizable.
 * UI controls are displayed on the Main Menu.
@@ -201,6 +203,7 @@ This is a list of assets used in the project that were not created by me, along 
 * Level soundtracks — by [Matthew Pablo](https://opengameart.org/users/matthew-pablo)
 * Third phase song in Boss Rush — by [Juhani Junkala](https://www.free-stock-music.com/artist.juhani-junkala.html)
 * Endless Onslaught soundtrack — by [Alexander Ehlers](https://opengameart.org/users/tricksntraps)
+* Meteor Madness soundtrack — by [Alexandr Zhelanov](https://opengameart.org/users/alexandr-zhelanov)
 * Game over music — by [Otto Halmén](https://opengameart.org/users/otto-halm%C3%A9n)
 * Menu music — by [yd](https://opengameart.org/users/yd)
 

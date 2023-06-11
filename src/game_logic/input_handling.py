@@ -6,7 +6,7 @@ handling player input events in a game.
 import sys
 import pygame
 from entities.projectiles import Missile, Firebird, Thunderbolt, Laser
-from utils.game_utils import play_sound
+from utils.game_utils import play_sound, play_music
 
 
 class PlayerInput:
@@ -41,13 +41,12 @@ class PlayerInput:
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_r if self.ui_options.paused:
                 play_sound(self.game.sound_manager.game_sounds, "keypress")
+                self.game.sound_manager.current_sound = None
                 reset_game()
                 self.ui_options.paused = not self.ui_options.paused
             case pygame.K_ESCAPE if self.ui_options.paused:
-                pygame.mixer.stop()
-                self.game.sound_manager.load_sounds("menu_sounds")
                 play_sound(self.game.sound_manager.game_sounds, "keypress")
-                play_sound(self.game.sound_manager.menu_sounds, "menu", loop=True)
+                play_music(self.game.sound_manager.menu_music, "menu")
                 self.game.sound_manager.current_sound = "menu"
                 game_menu()
                 self.ui_options.paused = not self.ui_options.paused

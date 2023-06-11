@@ -70,10 +70,35 @@ def load_sound_files(sounds_dict):
     }
 
 
+def load_music_files(music_dict):
+    """A function that loads multiple music files from a dict of the form:
+    key: music name:
+    value: path to music file."""
+    pygame.mixer.init()
+    return {
+        key: value if value is None else os.path.join(SOUND_PATH, value)
+        for key, value in music_dict.items()
+    }
+
+
+def play_music(music_files, music_name):
+    """A function that plays the specified music using its name."""
+    music_path = music_files.get(music_name)
+    if music_path is not None:
+        pygame.mixer.music.load(music_path)
+        pygame.mixer.music.play(-1)
+
+
 def set_sounds_volume(sounds, volume):
     """Set the volume for all sounds in the passed sounds dict."""
     for sound in sounds.values():
         sound.set_volume(volume)
+
+
+def set_music_volume(music, volume):
+    """Set the volume of all music."""
+    for _ in music.values():
+        pygame.mixer.music.set_volume(volume)
 
 
 def get_available_channels():
@@ -168,6 +193,32 @@ def load_boss_bullets():
         bullet_name: pygame.image.load(os.path.join(BASE_PATH, bullet_image_path))
         for bullet_name, bullet_image_path in BOSS_BULLETS_IMG.items()
     }
+
+def get_boss_rush_title(level):
+    """Set the boss rush title for each level."""
+    boss_rush_key = f"boss{level}"
+    boss_rush_title = BOSS_RUSH.get(boss_rush_key, f"Level {level}")
+    return boss_rush_title.split("/")[-1].split(".png")[0].title()
+
+def draw_image(screen, image, rect):
+    """Draw a image to the screen."""
+    screen.blit(image, rect)
+
+def render_bullet_num(bullets, x_pos, y_pos, right_aligned=False):
+    """Renders the bullet number and returns the image and rect."""
+    font = pygame.font.SysFont("", 25)
+    text_color = (238, 75, 43)
+    bullets_str = f"Remaining bullets: {bullets}" if bullets else "Out of bullets!"
+    bullets_num_img = font.render(bullets_str, True, text_color, None)
+    bullets_num_rect = bullets_num_img.get_rect()
+    bullets_num_rect.top = y_pos
+
+    if right_aligned:
+        bullets_num_rect.right = x_pos
+    else:
+        bullets_num_rect.left = x_pos
+
+    return bullets_num_img, bullets_num_rect
 
 
 def render_text(text, font, color, start_pos, line_spacing, second_color=None):

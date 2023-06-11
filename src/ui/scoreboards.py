@@ -10,8 +10,12 @@ import pygame.font
 
 from pygame.sprite import Group
 from entities.player_health import Heart
-from utils.constants import BOSS_RUSH, SINGLE_PLAYER_FILE, MULTI_PLAYER_FILE
-from utils.game_utils import get_player_name, display_message, load_single_image
+from utils.constants import SINGLE_PLAYER_FILE, MULTI_PLAYER_FILE
+from utils.game_utils import (
+    get_player_name, display_message,
+    load_single_image, get_boss_rush_title,
+    draw_image, render_bullet_num
+)
 
 
 class ScoreBoard:
@@ -25,6 +29,8 @@ class ScoreBoard:
         self.settings = game.settings
         self.stats = game.stats
         self.second_stats = game.stats
+        self.thunderbird_ship = self.game.thunderbird_ship
+        self.phoenix_ship = self.game.phoenix_ship
         self.high_scores_file = (
             SINGLE_PLAYER_FILE if self.game.singleplayer else MULTI_PLAYER_FILE
         )
@@ -42,7 +48,6 @@ class ScoreBoard:
         self.render_scores()
         self.render_high_score()
         self.create_health()
-        self.render_bullets_num()
 
     def render_scores(self):
         """Render the scores and missiles number for the ships
@@ -130,22 +135,17 @@ class ScoreBoard:
         """Render the current level as an image and position it
         at the center of the screen based on the game mode.
         """
-        level_map = {
+        level_titles = {
             "endless_onslaught": "Endless Onslaught",
-            "slow_burn": f"Slow Burn Level {str(self.stats.level)}",
-            "meteor_madness": f"Meteor Madness Level {str(self.stats.level)}",
-            "last_bullet": f"Last Bullet Level {str(self.stats.level)}",
+            "slow_burn": f"Slow Burn Level {self.stats.level}",
+            "meteor_madness": f"Meteor Madness Level {self.stats.level}",
+            "last_bullet": f"Last Bullet Level {self.stats.level}",
             "cosmic_conflict": "Cosmic Conflict",
-            "boss_rush": "Boss Rush: "
-            + BOSS_RUSH.get(
-                f"boss{str(self.stats.level)}", f"Level {str(self.stats.level)}"
-            )
-            .split("/")[-1]
-            .split(".png")[0]
-            .title(),
+            "one_life_reign": f"One Life Reign Level {self.stats.level}",
+            "boss_rush": get_boss_rush_title(self.stats.level),
         }
 
-        level_str = level_map.get(
+        level_str = level_titles.get(
             self.settings.game_modes.game_mode, f"Level {str(self.stats.level)}"
         )
         self.level_image = self.font.render(level_str, True, self.level_color, None)
@@ -162,34 +162,20 @@ class ScoreBoard:
         )
 
     def render_bullets_num(self):
-        """Renders the remaining bullets number for Thunderbird and Pheonix
+        """Renders the remaining bullets number for Thunderbird and Phoenix
         and if they are out of bullets, displays an appropriate message.
         """
         screen_rect = self.screen.get_rect()
-        bullets_num = {}
-        ships = [
-            ("Thunderbird", self.game.thunderbird_ship),
-            ("Phoenix", self.game.phoenix_ship),
-        ]
 
-        for ship_name, ship in ships:
-            bullets = ship.remaining_bullets if ship.state.alive else 0
-            bullets_str = (
-                f"Remaining bullets: {bullets}" if bullets else "Out of bullets!"
-            )
-            bullets_num[ship_name] = self.bullets_num_font.render(
-                bullets_str, True, self.text_color, None
-            )
+        thunderbird_bullets = self.thunderbird_ship.remaining_bullets if self.thunderbird_ship.state.alive else 0
+        phoenix_bullets = self.phoenix_ship.remaining_bullets if self.phoenix_ship.state.alive else 0
 
-        self.thunder_bullets_num_rect = bullets_num["Thunderbird"].get_rect()
-        self.phoenix_bullets_num_rect = bullets_num["Phoenix"].get_rect()
-
-        self.thunder_bullets_num_rect.top = self.phoenix_bullets_num_rect.top = 55
-        self.thunder_bullets_num_rect.left = screen_rect.left + 10
-        self.phoenix_bullets_num_rect.right = screen_rect.right - 10
-
-        self.thunder_bullets_num_img = bullets_num["Thunderbird"]
-        self.phoenix_bullets_num_img = bullets_num["Phoenix"]
+        self.thunder_bullets_num_img, self.thunder_bullets_num_rect = render_bullet_num(
+            thunderbird_bullets, screen_rect.left + 10, 55
+        )
+        self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect = render_bullet_num(
+            phoenix_bullets, screen_rect.right -10 , 55, right_aligned=True
+        )
 
     def create_health(self):
         """Creates heart sprites for both players based on their health points."""
@@ -284,51 +270,61 @@ class ScoreBoard:
         with open(filename, "w", encoding="utf-8") as score_file:
             json.dump(high_scores, score_file)
 
-    def show_score(self):
-        """Draw various score-related elements to the screen,
-        including player scores, remaining missiles and bullets,
-        high score, current level, and remaining health of each player's ship.
-        """
-
-        def draw_score(image, rect):
-            self.screen.blit(image, rect)
-
-        def draw_missiles(image, rect):
-            self.screen.blit(image, rect)
-
-        draw_score(self.thunderbird_score_image, self.thunderbird_score_rect)
-
-        if not self.game.singleplayer:
-            draw_score(self.phoenix_score_image, self.phoenix_score_rect)
-
-        if self.settings.game_modes.last_bullet:
-            draw_score(self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
-
-            if not self.game.singleplayer:
-                draw_score(self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
-
-        draw_missiles(
-            self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect
-        )
-        draw_missiles(self.missiles_icon, self.thunderbird_missiles_img_rect)
-
-        if not self.game.singleplayer:
-            draw_missiles(self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
-            draw_missiles(self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
-
-        draw_score(self.level_image, self.level_rect)
-
-        if not self.settings.game_modes.cosmic_conflict:
-            draw_score(self.high_score_image, self.high_score_rect)
-
-        if self.game.thunderbird_ship.state.alive:
-            self.thunderbird_health.draw(self.screen)
-        if self.game.phoenix_ship.state.alive and not self.game.singleplayer:
-            self.phoenix_health.draw(self.screen)
-
     def update_high_score_filename(self):
         """Update highscore filename based on the game."""
         if self.game.singleplayer:
             self.high_scores_file = SINGLE_PLAYER_FILE
         else:
             self.high_scores_file = MULTI_PLAYER_FILE
+
+
+    def show_score(self):
+        """Draw various score-related elements to the screen,
+        including player scores, remaining missiles and bullets,
+        high score, current level, and remaining health of each player's ship.
+        """
+        self.draw_player_scores()
+        self.draw_missiles_info()
+        self.draw_level()
+        self.draw_high_score()
+        self.draw_player_health()
+        self.draw_bullets_info()
+
+    def draw_player_scores(self):
+        """Draw player scores to the screen."""
+        draw_image(self.screen, self.thunderbird_score_image, self.thunderbird_score_rect)
+        if not self.game.singleplayer:
+            draw_image(self.screen, self.phoenix_score_image, self.phoenix_score_rect)
+
+    def draw_missiles_info(self):
+        """Draw player missiles info to the screen."""
+        draw_image(self.screen, self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
+        draw_image(self.screen, self.missiles_icon, self.thunderbird_missiles_img_rect)
+
+        if not self.game.singleplayer:
+            draw_image(self.screen, self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
+            draw_image(self.screen, self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
+
+    def draw_bullets_info(self):
+        """Draw bullets info for the Last Bullet game mode."""
+        if self.settings.game_modes.last_bullet:
+            draw_image(self.screen, self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
+
+            if not self.game.singleplayer:
+                draw_image(self.screen, self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
+
+    def draw_level(self):
+        """Draw the current level to the screen."""
+        draw_image(self.screen, self.level_image, self.level_rect)
+
+    def draw_high_score(self):
+        """Draw the high score to the screen, if applicable."""
+        if not self.settings.game_modes.cosmic_conflict:
+            draw_image(self.screen, self.high_score_image, self.high_score_rect)
+
+    def draw_player_health(self):
+        """Draw the remaining health of each player's ship to the screen."""
+        if self.thunderbird_ship.state.alive:
+            self.thunderbird_health.draw(self.screen)
+        if self.phoenix_ship.state.alive and not self.game.singleplayer:
+            self.phoenix_health.draw(self.screen)

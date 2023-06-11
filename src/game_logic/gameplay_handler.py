@@ -27,7 +27,6 @@ class GameplayManager:
         self.settings = settings
         self.stats = stats
         self.score_board = game.score_board
-        self.singleplayer = game.singleplayer
         self.ships = game.ships
 
         self.last_increase_time = self.last_decrease_time = self.last_level_time = 0
@@ -51,7 +50,7 @@ class GameplayManager:
             ):
                 self._prepare_next_level()
 
-            if not self.singleplayer:
+            if not self.game.singleplayer:
                 self.check_for_player_revive()
 
     def _prepare_last_bullet_level(self):
@@ -64,7 +63,7 @@ class GameplayManager:
         based on the level"""
 
         available_bullets_map = (
-            AVAILABLE_BULLETS_MAP_SINGLE if self.singleplayer else AVAILABLE_BULLETS_MAP
+            AVAILABLE_BULLETS_MAP_SINGLE if self.game.singleplayer else AVAILABLE_BULLETS_MAP
         )
 
         for bullet_range, bullets in available_bullets_map.items():
@@ -72,7 +71,7 @@ class GameplayManager:
                 available_bullets = bullets
                 break
         else:
-            available_bullets = 50 if self.singleplayer else 25
+            available_bullets = 50 if self.game.singleplayer else 25
 
         for ship in self.ships:
             ship.remaining_bullets = available_bullets
