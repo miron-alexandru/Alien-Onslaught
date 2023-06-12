@@ -206,8 +206,7 @@ This is a list of assets used in the project that were not created by me, along 
 * Endless Onslaught soundtrack — by [Alexander Ehlers](https://opengameart.org/users/tricksntraps)
 * Meteor Madness soundtrack — by [Alexandr Zhelanov](https://opengameart.org/users/alexandr-zhelanov)
 * Game over music — by [Otto Halmén](https://opengameart.org/users/otto-halm%C3%A9n)
-* Victory music — by [yd](https://opengameart.org/users/yd)
-* Menu music — by [yd](https://opengameart.org/users/yd)
+* Victory and Menu music — by [yd](https://opengameart.org/users/yd)
 
 ### Sound Effects (SFx):
 * UI Sound effects (click sound, quit sound) — by [Circlerun](https://opengameart.org/users/circlerun)
