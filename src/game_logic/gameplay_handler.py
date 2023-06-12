@@ -63,7 +63,9 @@ class GameplayManager:
         based on the level"""
 
         available_bullets_map = (
-            AVAILABLE_BULLETS_MAP_SINGLE if self.game.singleplayer else AVAILABLE_BULLETS_MAP
+            AVAILABLE_BULLETS_MAP_SINGLE
+            if self.game.singleplayer
+            else AVAILABLE_BULLETS_MAP
         )
 
         for bullet_range, bullets in available_bullets_map.items():
@@ -93,6 +95,9 @@ class GameplayManager:
         self.game.sound_manager.prepare_level_music()
         self.set_max_alien_bullets(self.settings.speedup_scale)
         self.check_alien_bullets_num()
+
+        for ship in self.ships:
+            ship.center_ship()
 
     def handle_boss_stats(self):
         """Updates stats for bosses based on the game mode."""
@@ -135,16 +140,17 @@ class GameplayManager:
         """Clear the screen of game objects."""
         all_groups = [
             self.game.thunderbird_bullets,
+            self.game.thunderbird_missiles,
+            self.game.thunderbird_laser,
+            self.game.phoenix_missiles,
+            self.game.phoenix_laser,
             self.game.phoenix_bullets,
             self.game.alien_bullet,
             self.game.powers,
             self.game.aliens,
             self.game.asteroids,
-            self.game.thunderbird_missiles,
-            self.game.phoenix_missiles,
-            self.game.phoenix_laser,
-            self.game.thunderbird_laser,
         ]
+
         for group in all_groups:
             group.empty()
 
@@ -281,6 +287,16 @@ class GameplayManager:
 
         if all(not player.state.alive for player in [thunderbird, phoenix]):
             self.stats.game_active = False
+
+    def check_remaining_bullets(self):
+        """Update the remaining bullets to 0 if the ships
+        have not hp left.
+        """
+        if self.stats.thunderbird_hp < 0:
+            self.game.thunderbird_ship.remaining_bullets = 0
+        if self.stats.phoenix_hp < 0:
+            self.game.phoenix_ship.remaining_bullets = 0
+        self.score_board.render_bullets_num()
 
     def boss_rush(self, asteroid_handler, bullets_manager):
         """Play the Boss Rush game mode in which the players must battle

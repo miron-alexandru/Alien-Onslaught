@@ -15,6 +15,7 @@ from utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
 from utils.game_utils import load_alien_bullets, load_boss_bullets, load_single_image
 from entities.aliens import BossAlien
 
+
 class AlienBullet(Sprite):
     """A class that manages bullets for the aliens."""
 

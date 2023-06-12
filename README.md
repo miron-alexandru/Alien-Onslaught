@@ -48,6 +48,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* New music for the Victory screen.
 * Refactored the code by moving all managers into a new package called 'managers' to enhance maintainability. Additionally, various classes and functions were further refactored to improve code readability and maintainability.
 * Improved overall sound management for the game.
 * Implemented a new power up also accompanied with a sound effect: Enemies are frozen for a period of time.
@@ -205,6 +206,7 @@ This is a list of assets used in the project that were not created by me, along 
 * Endless Onslaught soundtrack — by [Alexander Ehlers](https://opengameart.org/users/tricksntraps)
 * Meteor Madness soundtrack — by [Alexandr Zhelanov](https://opengameart.org/users/alexandr-zhelanov)
 * Game over music — by [Otto Halmén](https://opengameart.org/users/otto-halm%C3%A9n)
+* Victory music — by [yd](https://opengameart.org/users/yd)
 * Menu music — by [yd](https://opengameart.org/users/yd)
 
 ### Sound Effects (SFx):

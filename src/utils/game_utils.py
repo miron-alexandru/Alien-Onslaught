@@ -112,7 +112,7 @@ def get_available_channels():
     return available_channels
 
 
-def play_sound(sounds_list, sound_name, loop=False):
+def play_sound(sounds_list, sound_name):
     """Plays a certain sound located in the 'sounds_list' on an available sound channel."""
     if sound_name == "bullet":
         channel = pygame.mixer.Channel(7)
@@ -123,7 +123,7 @@ def play_sound(sounds_list, sound_name, loop=False):
     else:
         channel = pygame.mixer.Channel(1)
 
-    channel.play(sounds_list[sound_name], -1 if loop else 0)
+    channel.play(sounds_list[sound_name])
 
 
 def load_frames(filename_pattern, num_frames, start=0):
@@ -194,21 +194,24 @@ def load_boss_bullets():
         for bullet_name, bullet_image_path in BOSS_BULLETS_IMG.items()
     }
 
+
 def get_boss_rush_title(level):
     """Set the boss rush title for each level."""
     boss_rush_key = f"boss{level}"
     boss_rush_title = BOSS_RUSH.get(boss_rush_key, f"Level {level}")
     return boss_rush_title.split("/")[-1].split(".png")[0].title()
 
+
 def draw_image(screen, image, rect):
     """Draw a image to the screen."""
     screen.blit(image, rect)
+
 
 def render_bullet_num(bullets, x_pos, y_pos, right_aligned=False):
     """Renders the bullet number and returns the image and rect."""
     font = pygame.font.SysFont("", 25)
     text_color = (238, 75, 43)
-    bullets_str = f"Remaining bullets: {bullets}" if bullets else "Out of bullets!"
+    bullets_str = f"Remaining bullets: {bullets}" if bullets else ""
     bullets_num_img = font.render(bullets_str, True, text_color, None)
     bullets_num_rect = bullets_num_img.get_rect()
     bullets_num_rect.top = y_pos

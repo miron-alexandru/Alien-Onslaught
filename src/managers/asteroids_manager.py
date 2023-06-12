@@ -1,9 +1,6 @@
 """
-The 'asteroids_manager' module contains classes for managing asteroids in the game.
-
-Classes:
-    - 'AsteroidsManager': A class that manages the update and creation of asteroids.
-"""
+The 'asteroids_manager' module contains the AsteroidsManager class that manages
+the update and creation of asteroids."""
 
 import random
 import pygame
@@ -47,3 +44,19 @@ class AsteroidsManager:
         for asteroid in self.game.asteroids.copy():
             if asteroid.rect.y > self.settings.screen_height:
                 self.game.asteroids.remove(asteroid)
+
+    def handle_asteroids(self, create_at_high_levels=True, force_creation=False):
+        """Create, update, and check collisions for asteroids.
+        Args:
+            create_at_high_levels (bool, optional): Whether to create asteroids when
+                the current level is 7 or above. Defaults to True.
+            force_creation (bool, optional): Whether to always create and update asteroids.
+                Defaults to False.
+        """
+        if force_creation or (create_at_high_levels and self.game.stats.level >= 7):
+            self.create_asteroids()
+            self.update_asteroids()
+            self.game.collision_handler.check_asteroids_collisions(
+                self.game.ships_manager.thunderbird_ship_hit,
+                self.game.ships_manager.phoenix_ship_hit,
+            )

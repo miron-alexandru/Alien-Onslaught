@@ -243,6 +243,7 @@ SHIPS = {
 MENU_MUSIC = {
     "menu": "ui/menu.mp3",
     "game_over": "ui/game_over.mp3",
+    "victory": "ui/victory.mp3",
 }
 
 MENU_SOUNDS = {

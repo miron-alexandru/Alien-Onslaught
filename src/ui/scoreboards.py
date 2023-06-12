@@ -12,9 +12,12 @@ from pygame.sprite import Group
 from entities.player_health import Heart
 from utils.constants import SINGLE_PLAYER_FILE, MULTI_PLAYER_FILE
 from utils.game_utils import (
-    get_player_name, display_message,
-    load_single_image, get_boss_rush_title,
-    draw_image, render_bullet_num
+    get_player_name,
+    display_message,
+    load_single_image,
+    get_boss_rush_title,
+    draw_image,
+    render_bullet_num,
 )
 
 
@@ -28,7 +31,6 @@ class ScoreBoard:
         self.screen_rect = self.screen.get_rect()
         self.settings = game.settings
         self.stats = game.stats
-        self.second_stats = game.stats
         self.thunderbird_ship = self.game.thunderbird_ship
         self.phoenix_ship = self.game.phoenix_ship
         self.high_scores_file = (
@@ -46,17 +48,15 @@ class ScoreBoard:
         # Prepare the initial score and player health images.
         self.prep_level()
         self.render_scores()
+        self.render_missiles_num()
         self.render_high_score()
         self.create_health()
 
     def render_scores(self):
-        """Render the scores and missiles number for the ships
-        and display them on the screen.
-        """
-        screen_rect = self.screen.get_rect()
+        """Render the scores for the ships and display them on the screen."""
         ship_scores = [
             ("Thunderbird", self.stats.thunderbird_score),
-            ("Phoenix", self.second_stats.phoenix_score),
+            ("Phoenix", self.stats.phoenix_score),
         ]
         for i, (ship_name, score) in enumerate(ship_scores):
             # Calculate the rounded score and convert it into a string with proper formatting.
@@ -79,19 +79,30 @@ class ScoreBoard:
                 self.phoenix_score_image = score_img
                 self.phoenix_score_rect = score_rect
 
-            missiles_str = (
-                f"{getattr(self.game, f'{ship_name.lower()}_ship').missiles_num}"
-            )
+    def render_missiles_num(self, ship=None):
+        """Render the missiles number for the specified ship or all ships."""
+        screen_rect = self.screen.get_rect()
+
+        ships_to_render = []
+
+        if ship is None:
+            ships_to_render.extend(self.game.ships)
+        elif ship is self.thunderbird_ship or ship is self.phoenix_ship:
+            ships_to_render.append(ship)
+
+        for ship in ships_to_render:
+            missiles_str = str(ship.missiles_num)
             rend_missiles_num = self.font.render(
                 missiles_str, True, (71, 71, 71, 255), None
             )
-            missiles_img_rect = self.missiles_icon.get_rect()
             missiles_rect = rend_missiles_num.get_rect()
-            missiles_rect.left = screen_rect.left + 28
-            missiles_rect.bottom = screen_rect.bottom - 10
+            missiles_img_rect = self.missiles_icon.get_rect()
             missiles_img_rect.bottom = screen_rect.bottom - 5
 
-            if ship_name == "Thunderbird":
+            missiles_rect.left = screen_rect.left + 28
+            missiles_rect.bottom = screen_rect.bottom - 10
+
+            if ship is self.thunderbird_ship:
                 self.thunderbird_rend_missiles_num = rend_missiles_num
                 self.thunderbird_missiles_rect = missiles_rect
                 self.thunderbird_missiles_img_rect = missiles_img_rect
@@ -126,9 +137,8 @@ class ScoreBoard:
     def update_high_score(self):
         """Updates the high score if the current score is higher and,
         renders the new high score on screen."""
-        self.stats.high_score = (
-            self.stats.thunderbird_score + self.second_stats.phoenix_score
-        )
+        self.stats.high_score = self.stats.thunderbird_score + self.stats.phoenix_score
+
         self.render_high_score()
 
     def prep_level(self):
@@ -167,14 +177,14 @@ class ScoreBoard:
         """
         screen_rect = self.screen.get_rect()
 
-        thunderbird_bullets = self.thunderbird_ship.remaining_bullets if self.thunderbird_ship.state.alive else 0
-        phoenix_bullets = self.phoenix_ship.remaining_bullets if self.phoenix_ship.state.alive else 0
-
         self.thunder_bullets_num_img, self.thunder_bullets_num_rect = render_bullet_num(
-            thunderbird_bullets, screen_rect.left + 10, 55
+            self.thunderbird_ship.remaining_bullets, screen_rect.left + 10, 55
         )
         self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect = render_bullet_num(
-            phoenix_bullets, screen_rect.right -10 , 55, right_aligned=True
+            self.phoenix_ship.remaining_bullets,
+            screen_rect.right - 10,
+            55,
+            right_aligned=True,
         )
 
     def create_health(self):
@@ -277,7 +287,6 @@ class ScoreBoard:
         else:
             self.high_scores_file = MULTI_PLAYER_FILE
 
-
     def show_score(self):
         """Draw various score-related elements to the screen,
         including player scores, remaining missiles and bullets,
@@ -292,26 +301,42 @@ class ScoreBoard:
 
     def draw_player_scores(self):
         """Draw player scores to the screen."""
-        draw_image(self.screen, self.thunderbird_score_image, self.thunderbird_score_rect)
+        draw_image(
+            self.screen, self.thunderbird_score_image, self.thunderbird_score_rect
+        )
         if not self.game.singleplayer:
             draw_image(self.screen, self.phoenix_score_image, self.phoenix_score_rect)
 
     def draw_missiles_info(self):
         """Draw player missiles info to the screen."""
-        draw_image(self.screen, self.thunderbird_rend_missiles_num, self.thunderbird_missiles_rect)
+        draw_image(
+            self.screen,
+            self.thunderbird_rend_missiles_num,
+            self.thunderbird_missiles_rect,
+        )
         draw_image(self.screen, self.missiles_icon, self.thunderbird_missiles_img_rect)
 
         if not self.game.singleplayer:
-            draw_image(self.screen, self.phoenix_rend_missiles_num, self.phoenix_missiles_rect)
-            draw_image(self.screen, self.phoenix_missiles_icon, self.phoenix_missiles_img_rect)
+            draw_image(
+                self.screen, self.phoenix_rend_missiles_num, self.phoenix_missiles_rect
+            )
+            draw_image(
+                self.screen, self.phoenix_missiles_icon, self.phoenix_missiles_img_rect
+            )
 
     def draw_bullets_info(self):
         """Draw bullets info for the Last Bullet game mode."""
         if self.settings.game_modes.last_bullet:
-            draw_image(self.screen, self.thunder_bullets_num_img, self.thunder_bullets_num_rect)
+            draw_image(
+                self.screen, self.thunder_bullets_num_img, self.thunder_bullets_num_rect
+            )
 
             if not self.game.singleplayer:
-                draw_image(self.screen, self.phoenix_bullets_num_img, self.phoenix_bullets_num_rect)
+                draw_image(
+                    self.screen,
+                    self.phoenix_bullets_num_img,
+                    self.phoenix_bullets_num_rect,
+                )
 
     def draw_level(self):
         """Draw the current level to the screen."""

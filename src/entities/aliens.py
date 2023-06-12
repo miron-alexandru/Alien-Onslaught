@@ -11,7 +11,7 @@ import random
 
 from pygame.sprite import Sprite
 from animations.other_animations import DestroyAnim, Immune
-from managers.aliens_behaviors import AlienMovement, AlienAnimation
+from managers.alien_managers.aliens_behaviors import AlienMovement, AlienAnimation
 from utils.game_utils import load_boss_images
 
 
@@ -130,6 +130,10 @@ class Alien(Sprite):
         self.frozen_state = True
         self.frozen_start_time = time.time()
 
+    def draw(self):
+        """Draw the alien on screen."""
+        self.screen.blit(self.image, self.rect)
+
 
 class BossAlien(Sprite):
     """A class to represent alien bosses in the game."""
@@ -208,3 +212,7 @@ class BossAlien(Sprite):
     def upgrade(self):
         """Increase boss HP."""
         self.settings.boss_hp += 15
+
+    def draw(self):
+        """Draw the alien on screen."""
+        self.screen.blit(self.image, self.rect)
