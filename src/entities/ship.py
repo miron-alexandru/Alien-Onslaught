@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 import pygame
 from pygame.sprite import Sprite
-from animations.ship_animations import Animations
+from src.animations.ship_animations import Animations
 
 
 class Ship(Sprite):

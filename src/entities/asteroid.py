@@ -5,8 +5,7 @@ The 'asteroid' module contains the Asteroid class that represents the asteroids 
 import random
 
 from pygame.sprite import Sprite
-from utils.animation_constants import asteroid_frames
-
+from src.utils.animation_constants import asteroid_frames
 
 class Asteroid(Sprite):
     """A class to represent an asteroid in the game."""
@@ -36,7 +35,7 @@ class Asteroid(Sprite):
         self.image = self.frames[self.current_frame]
 
         self.y_pos += self.speed
-        self.rect.y = self.y_pos
+        self.rect.y = int(self.y_pos)
 
     def draw(self):
         """Draw the asteroid on the screen."""

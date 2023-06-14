@@ -7,12 +7,12 @@ It also contains the UIOptions and GameModes dataclasses.
 """
 
 from dataclasses import dataclass
-from utils.constants import (
+from src.utils.constants import (
     BACKGROUNDS,
     GAME_CONSTANTS,
     OTHER,
 )
-from utils.game_utils import load_images
+from src.utils.game_utils import load_images
 
 
 class Settings:

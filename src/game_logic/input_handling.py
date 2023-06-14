@@ -5,8 +5,8 @@ handling player input events in a game.
 
 import sys
 import pygame
-from entities.projectiles import Missile, Firebird, Thunderbolt, Laser
-from utils.game_utils import play_sound, play_music
+from src.entities.projectiles import Missile, Firebird, Thunderbolt, Laser
+from src.utils.game_utils import play_sound, play_music
 
 
 class PlayerInput:

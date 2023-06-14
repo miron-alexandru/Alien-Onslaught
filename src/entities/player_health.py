@@ -4,8 +4,8 @@ of the player(s) in the game by displaying a heart image on the screen.
 """
 
 from pygame.sprite import Sprite
-from utils.constants import OTHER
-from utils.game_utils import load_single_image
+from src.utils.constants import OTHER
+from src.utils.game_utils import load_single_image
 
 
 class Heart(Sprite):

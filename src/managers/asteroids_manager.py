@@ -5,7 +5,7 @@ the update and creation of asteroids."""
 import random
 import pygame
 
-from entities.asteroid import Asteroid
+from src.entities.asteroid import Asteroid
 
 
 class AsteroidsManager:

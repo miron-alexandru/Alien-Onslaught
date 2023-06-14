@@ -6,8 +6,8 @@ the creation and behavior of player weapons available in the game.
 import time
 import pygame
 
-from utils.constants import WEAPONS
-from utils.game_utils import play_sound, display_laser_message, load_single_image
+from src.utils.constants import WEAPONS
+from src.utils.game_utils import play_sound, display_laser_message, load_single_image
 
 
 class WeaponsManager:

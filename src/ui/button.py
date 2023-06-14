@@ -4,7 +4,7 @@ The 'button module provides a class `Button` that creates a button in the game.
 
 import pygame
 
-from utils.game_utils import display_game_modes_description
+from src.utils.game_utils import display_game_modes_description
 
 
 class Button:

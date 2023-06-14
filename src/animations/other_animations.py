@@ -7,7 +7,7 @@ Classes:
 - Immune: Manages the immune animation for aliens in the game.
 """
 
-from utils.animation_constants import (
+from src.utils.animation_constants import (
     destroy_frames,
     missile_ex_frames,
     alien_immune_frames,

@@ -6,7 +6,7 @@ which manages the game modes and behavior for every game mode in the game.
 import time
 import pygame
 
-from utils.constants import (
+from src.utils.constants import (
     DIFFICULTIES,
     GAME_CONSTANTS,
     BOSS_LEVELS,

@@ -10,9 +10,9 @@ import time
 import random
 
 from pygame.sprite import Sprite
-from animations.other_animations import DestroyAnim, Immune
-from managers.alien_managers.aliens_behaviors import AlienMovement, AlienAnimation
-from utils.game_utils import load_boss_images
+from src.animations.other_animations import DestroyAnim, Immune
+from src.managers.alien_managers.aliens_behaviors import AlienMovement, AlienAnimation
+from src.utils.game_utils import load_boss_images
 
 
 class Alien(Sprite):

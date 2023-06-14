@@ -8,13 +8,14 @@ Classes:
 """
 
 import pygame
-from utils.game_utils import (
+
+from src.utils.game_utils import (
     display_controls,
     load_single_image,
     display_high_scores,
     resize_image,
 )
-from utils.constants import GAME_MODE_SCORE_KEYS
+from src.utils.constants import GAME_MODE_SCORE_KEYS
 
 
 class ScreenManager:

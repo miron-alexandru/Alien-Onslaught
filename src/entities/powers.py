@@ -5,8 +5,8 @@ The 'powers' module contains the Power class that represents a power in the game
 import random
 
 from pygame.sprite import Sprite
-from utils.constants import POWERS, GAME_CONSTANTS, WEAPON_BOXES
-from utils.game_utils import load_single_image
+from src.utils.constants import POWERS, GAME_CONSTANTS, WEAPON_BOXES
+from src.utils.game_utils import load_single_image
 
 
 class Power(Sprite):
@@ -52,7 +52,7 @@ class Power(Sprite):
     def update(self):
         """Update the position of the power on the screen."""
         self.y_pos += self.speed
-        self.rect.y = self.y_pos
+        self.rect.y = int(self.y_pos)
 
     def draw(self):
         """Draw the power on the screen."""

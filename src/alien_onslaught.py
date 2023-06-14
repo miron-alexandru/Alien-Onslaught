@@ -16,30 +16,31 @@ Contact: quality_xqs@yahoo.com
 
 import pygame
 
-from game_logic.game_settings import Settings
-from game_logic.game_stats import GameStats
-from game_logic.collision_detection import CollisionManager
-from game_logic.input_handling import PlayerInput
-from game_logic.gameplay_handler import GameplayManager
+from src.game_logic.game_settings import Settings
+from src.game_logic.game_stats import GameStats
+from src.game_logic.collision_detection import CollisionManager
+from src.game_logic.input_handling import PlayerInput
+from src.game_logic.gameplay_handler import GameplayManager
 
-from utils.game_utils import (
+from src.utils.game_utils import (
     resize_image,
     play_sound,
     play_music,
 )
 
-from ui.scoreboards import ScoreBoard
+from src.ui.scoreboards import ScoreBoard
 
-from managers.powers_manager import PowerEffectsManager
-from managers.asteroids_manager import AsteroidsManager
-from managers.sounds_manager import SoundManager
-from managers.game_over_manager import EndGameManager
-from managers.alien_managers.alien_bullets_manager import AlienBulletsManager
-from managers.alien_managers.aliens_manager import AliensManager
-from managers.ui_managers.screen_manager import ScreenManager, LoadingScreen
-from managers.ui_managers.buttons_manager import GameButtonsManager
-from managers.player_managers.weapons_manager import WeaponsManager
-from managers.player_managers.ships_manager import ShipsManager
+from src.managers.powers_manager import PowerEffectsManager
+from src.managers.asteroids_manager import AsteroidsManager
+from src.managers.sounds_manager import SoundManager
+from src.managers.game_over_manager import EndGameManager
+from src.managers.alien_managers.alien_bullets_manager import AlienBulletsManager
+from src.managers.alien_managers.aliens_manager import AliensManager
+from src.managers.ui_managers.screen_manager import ScreenManager, LoadingScreen
+from src.managers.ui_managers.buttons_manager import GameButtonsManager
+from src.managers.player_managers.weapons_manager import WeaponsManager
+from src.managers.player_managers.ships_manager import ShipsManager
+
 
 
 class AlienOnslaught:
@@ -93,9 +94,9 @@ class AlienOnslaught:
     def singleplayer(self, value):
         """Setter for singleplayer attribute."""
         self._singleplayer = value
-        if hasattr(self, "ships_manager"):
+        if hasattr(self, 'ships_manager'):
             self.ships_manager.singleplayer = value
-        if hasattr(self, "screen_manager"):
+        if hasattr(self, 'screen_manager'):
             self.screen_manager.singleplayer = value
 
     def _initialize_sprite_groups(self):
@@ -131,7 +132,7 @@ class AlienOnslaught:
             self.thunderbird_missiles,
             self.thunderbird_laser,
             self.asteroids,
-            self.alien_bullet,
+            self.alien_bullet
         ]
 
     def initialize_managers(self):
@@ -141,12 +142,8 @@ class AlienOnslaught:
             self, self.screen, self.ui_options, self.settings.game_modes
         )
         self.screen_manager = ScreenManager(
-            self,
-            self.settings,
-            self.score_board,
-            self.buttons_manager,
-            self.screen,
-            self.singleplayer,
+            self, self.settings, self.score_board, self.buttons_manager,
+            self.screen, self.singleplayer
         )
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
@@ -158,9 +155,7 @@ class AlienOnslaught:
             self, self.aliens, self.settings, self.screen
         )
         self.gameplay_manager = GameplayManager(self, self.settings, self.stats)
-        self.game_over_manager = EndGameManager(
-            self, self.settings, self.stats, self.screen
-        )
+        self.game_over_manager = EndGameManager(self, self.settings, self.stats, self.screen)
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -383,15 +378,14 @@ class AlienOnslaught:
         game_modes = self.settings.game_modes
         if game_modes.endless_onslaught:
             self.gameplay_manager.endless_onslaught(
-                self.aliens_manager.create_fleet,
-                self.asteroids_manager.handle_asteroids,
+                self.aliens_manager.create_fleet, self.asteroids_manager.handle_asteroids
             )
         elif game_modes.slow_burn:
             self.gameplay_manager.slow_burn(self.asteroids_manager.handle_asteroids)
         elif game_modes.boss_rush:
             self.gameplay_manager.boss_rush(
                 self.asteroids_manager.handle_asteroids,
-                self.alien_bullets_manager.create_alien_bullets,
+                self.alien_bullets_manager.create_alien_bullets
             )
         elif game_modes.meteor_madness:
             self.gameplay_manager.meteor_madness(
@@ -403,9 +397,7 @@ class AlienOnslaught:
             )
         elif game_modes.last_bullet:
             self.gameplay_manager.last_bullet(
-                self.thunderbird_ship,
-                self.phoenix_ship,
-                self.asteroids_manager.handle_asteroids,
+                self.thunderbird_ship, self.phoenix_ship, self.asteroids_manager.handle_asteroids
             )
         elif game_modes.cosmic_conflict:
             self.gameplay_manager.cosmic_conflict(

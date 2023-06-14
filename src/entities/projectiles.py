@@ -12,8 +12,8 @@ Classes:
 import time
 import pygame
 from pygame.sprite import Sprite
-from utils.animation_constants import missile_frames, laser_frames
-from animations.other_animations import MissileEx
+from src.utils.animation_constants import missile_frames, laser_frames
+from src.animations.other_animations import MissileEx
 
 
 class Bullet(Sprite):

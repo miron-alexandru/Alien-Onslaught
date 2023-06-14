@@ -6,9 +6,9 @@ and update of the power-ups and penalties in the game.
 import time
 import random
 
-from entities.powers import Power
-from utils.constants import POWER_DOWN_ATTRIBUTES, PLAYER_HEALTH_ATTRS
-from utils.game_utils import play_sound
+from src.entities.powers import Power
+from src.utils.constants import POWER_DOWN_ATTRIBUTES, PLAYER_HEALTH_ATTRS
+from src.utils.game_utils import play_sound
 
 
 class PowerEffectsManager:

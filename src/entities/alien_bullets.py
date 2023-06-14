@@ -11,9 +11,9 @@ import random
 import pygame
 
 from pygame.sprite import Sprite
-from utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
-from utils.game_utils import load_alien_bullets, load_boss_bullets, load_single_image
-from entities.aliens import BossAlien
+from src.utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
+from src.utils.game_utils import load_alien_bullets, load_boss_bullets, load_single_image
+from src.entities.aliens import BossAlien
 
 
 class AlienBullet(Sprite):

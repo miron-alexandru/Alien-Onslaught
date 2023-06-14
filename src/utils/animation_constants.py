@@ -13,7 +13,7 @@ The constants include the following:
 - 'empower_frames': a list of frames used for empower animations.
 """
 
-from .game_utils import load_frames
+from src.utils.game_utils import load_frames
 
 destroy_frames = load_frames("destroyed/destroyed-0{}.png", 15, start=1)
 

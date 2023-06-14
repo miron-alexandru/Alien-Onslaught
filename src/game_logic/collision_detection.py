@@ -5,10 +5,10 @@ that handles the collisions in the game.
 
 import time
 import pygame
-from entities.projectiles import Missile
-from entities.aliens import BossAlien
-from utils.constants import ALIENS_HP_MAP
-from utils.game_utils import play_sound, get_colliding_sprites
+from src.entities.projectiles import Missile
+from src.entities.aliens import BossAlien
+from src.utils.constants import ALIENS_HP_MAP
+from src.utils.game_utils import play_sound, get_colliding_sprites
 
 
 class CollisionManager:

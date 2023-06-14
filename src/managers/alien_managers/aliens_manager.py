@@ -4,7 +4,7 @@ the creation and update of aliens and bosses in the game.
 """
 
 
-from entities.aliens import Alien, BossAlien
+from src.entities.aliens import Alien, BossAlien
 
 
 class AliensManager:

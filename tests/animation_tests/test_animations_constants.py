@@ -7,7 +7,7 @@ import os
 import unittest
 import pygame
 
-from alien_onslaught.src.utils.animation_constants import (
+from src.utils.animation_constants import (
     destroy_frames,
     ship_images,
     warp_frames,
@@ -21,7 +21,7 @@ from alien_onslaught.src.utils.animation_constants import (
     alien_immune_frames,
     laser_frames,
 )
-from alien_onslaught.src.utils.game_utils import load_frames, BASE_PATH
+from src.utils.game_utils import load_frames, BASE_PATH
 
 
 class AnimationConstantsTests(unittest.TestCase):

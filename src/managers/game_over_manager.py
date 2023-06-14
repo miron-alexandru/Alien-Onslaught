@@ -3,8 +3,8 @@ The 'game_over_manager' module contains the EndGameManager class that manages
 game ending related tasks.
 """
 
-from utils.game_utils import play_music
-from utils.constants import GAME_MODE_SCORE_KEYS
+from src.utils.game_utils import play_music
+from src.utils.constants import GAME_MODE_SCORE_KEYS
 
 
 class EndGameManager:

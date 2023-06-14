@@ -6,7 +6,7 @@ updating, and rendering ship animations.
 
 import pygame
 
-from utils.animation_constants import (
+from src.utils.animation_constants import (
     ship_images,
     warp_frames,
     shield_frames,

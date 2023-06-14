@@ -7,6 +7,13 @@
 - Python 3.7 or later
 - Pygame 2.0 or later
 
+### Game Launch:
+* Open a command prompt or terminal.
+* Navigate to the game project's root directory (containing setup.py).
+* Install the game package with pip install . (including the dot).
+* After installation, go to the src directory (use cd src).
+* Run the game by executing python alien_onslaught.py.
+
 ## Controls:
 #### Gameplay:
 #### Player 1 (Thunderbird):
@@ -48,6 +55,8 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* Added tests for animations and entities.
+* The project is now available for installation as a package.
 * New music for the Victory screen.
 * Refactored the code by moving all managers into a new package called 'managers' to enhance maintainability. Additionally, various classes and functions were further refactored to improve code readability and maintainability.
 * Improved overall sound management for the game.

@@ -4,8 +4,8 @@ It handles operations related to player ships, such as responding to hits, updat
 maintaining ship states, and resetting ships.
 """
 
-from entities.player_ships import Thunderbird, Phoenix
-from utils.game_utils import play_sound
+from src.entities.player_ships import Thunderbird, Phoenix
+from src.utils.game_utils import play_sound
 
 
 class ShipsManager:

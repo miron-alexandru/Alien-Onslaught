@@ -6,15 +6,15 @@ behavior and creation of the buttons in the game.
 import sys
 import pygame
 
-from ui.button import Button
+from src.ui.button import Button
 
-from utils.constants import (
+from src.utils.constants import (
     BUTTON_NAMES,
     GAME_MODE_SCORE_KEYS,
     DIFFICULTIES,
     GAME_MODES_DESCRIPTIONS,
 )
-from utils.game_utils import load_button_imgs, play_sound
+from src.utils.game_utils import load_button_imgs, play_sound
 
 
 class GameButtonsManager:

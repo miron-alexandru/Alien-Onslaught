@@ -3,8 +3,8 @@ The 'game_stats' module contains the GameStats class
 that manages the statistics that change during the game.
 """
 
-from utils.constants import STARTING_HP, MAX_HP
-from utils.game_utils import play_sound
+from src.utils.constants import STARTING_HP, MAX_HP
+from src.utils.game_utils import play_sound
 
 
 class GameStats:

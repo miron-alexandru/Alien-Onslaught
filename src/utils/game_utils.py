@@ -5,7 +5,7 @@ import sys
 import json
 import pygame
 
-from .constants import (
+from src.utils.constants import (
     P1_CONTROLS,
     P2_CONTROLS,
     GAME_CONTROLS,
@@ -35,7 +35,6 @@ else:
     SOUND_PATH = os.path.abspath(
         os.path.join(os.path.dirname(__file__), "..", "..", "game_assets", "sounds")
     )
-
 
 def load_single_image(relative_path):
     """Loads an image based on the BASED_PATH."""

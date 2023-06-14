@@ -5,7 +5,7 @@ files for usage throughout the game.
 
 import pygame
 
-from utils.constants import (
+from src.utils.constants import (
     LEVEL_SOUNDS,
     MENU_SOUNDS,
     MENU_MUSIC,
@@ -14,7 +14,7 @@ from utils.constants import (
     ENDLESS_SOUNDTRACK,
     METEOR_MADNESS_MUSIC,
 )
-from utils.game_utils import (
+from src.utils.game_utils import (
     load_sound_files,
     set_sounds_volume,
     set_music_volume,

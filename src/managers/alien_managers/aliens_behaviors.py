@@ -12,8 +12,8 @@ import math
 import random
 import pygame
 
-from utils.constants import LEVEL_PREFIX
-from utils.game_utils import load_alien_images
+from src.utils.constants import LEVEL_PREFIX
+from src.utils.game_utils import load_alien_images
 
 
 class AlienMovement:

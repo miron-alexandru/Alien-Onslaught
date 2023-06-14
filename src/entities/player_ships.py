@@ -9,10 +9,10 @@ Classes:
 import os
 import pygame
 
-from utils.game_utils import BASE_PATH
-from utils.constants import SHIPS
+from src.utils.game_utils import BASE_PATH
+from src.utils.constants import SHIPS
 
-from .ship import Ship
+from src.entities.ship import Ship
 
 
 class Thunderbird(Ship):
