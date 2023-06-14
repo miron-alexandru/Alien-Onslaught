@@ -4,7 +4,7 @@ setup(
     name='Alien-Onslaught',
     version='3.1',
     author='Miron Alexandru',
-    author_email='example..com',
+    author_email='quality_xqs@yahoo.com',
     description='Alien Onslaught, an action-packed game that will test your shooting skills and reflexes',
     packages=find_packages(exclude=['src.test_alien.py']),
     package_data={
