@@ -42,7 +42,6 @@ from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
 
 
-
 class AlienOnslaught:
     """Overall class to manage game assets and behavior for the multiplayer version."""
 
@@ -94,9 +93,9 @@ class AlienOnslaught:
     def singleplayer(self, value):
         """Setter for singleplayer attribute."""
         self._singleplayer = value
-        if hasattr(self, 'ships_manager'):
+        if hasattr(self, "ships_manager"):
             self.ships_manager.singleplayer = value
-        if hasattr(self, 'screen_manager'):
+        if hasattr(self, "screen_manager"):
             self.screen_manager.singleplayer = value
 
     def _initialize_sprite_groups(self):
@@ -132,7 +131,7 @@ class AlienOnslaught:
             self.thunderbird_missiles,
             self.thunderbird_laser,
             self.asteroids,
-            self.alien_bullet
+            self.alien_bullet,
         ]
 
     def initialize_managers(self):
@@ -142,8 +141,12 @@ class AlienOnslaught:
             self, self.screen, self.ui_options, self.settings.game_modes
         )
         self.screen_manager = ScreenManager(
-            self, self.settings, self.score_board, self.buttons_manager,
-            self.screen, self.singleplayer
+            self,
+            self.settings,
+            self.score_board,
+            self.buttons_manager,
+            self.screen,
+            self.singleplayer,
         )
         self.player_input = PlayerInput(self, self.ui_options)
         self.collision_handler = CollisionManager(self)
@@ -155,7 +158,9 @@ class AlienOnslaught:
             self, self.aliens, self.settings, self.screen
         )
         self.gameplay_manager = GameplayManager(self, self.settings, self.stats)
-        self.game_over_manager = EndGameManager(self, self.settings, self.stats, self.screen)
+        self.game_over_manager = EndGameManager(
+            self, self.settings, self.stats, self.screen
+        )
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -378,14 +383,15 @@ class AlienOnslaught:
         game_modes = self.settings.game_modes
         if game_modes.endless_onslaught:
             self.gameplay_manager.endless_onslaught(
-                self.aliens_manager.create_fleet, self.asteroids_manager.handle_asteroids
+                self.aliens_manager.create_fleet,
+                self.asteroids_manager.handle_asteroids,
             )
         elif game_modes.slow_burn:
             self.gameplay_manager.slow_burn(self.asteroids_manager.handle_asteroids)
         elif game_modes.boss_rush:
             self.gameplay_manager.boss_rush(
                 self.asteroids_manager.handle_asteroids,
-                self.alien_bullets_manager.create_alien_bullets
+                self.alien_bullets_manager.create_alien_bullets,
             )
         elif game_modes.meteor_madness:
             self.gameplay_manager.meteor_madness(
@@ -397,7 +403,9 @@ class AlienOnslaught:
             )
         elif game_modes.last_bullet:
             self.gameplay_manager.last_bullet(
-                self.thunderbird_ship, self.phoenix_ship, self.asteroids_manager.handle_asteroids
+                self.thunderbird_ship,
+                self.phoenix_ship,
+                self.asteroids_manager.handle_asteroids,
             )
         elif game_modes.cosmic_conflict:
             self.gameplay_manager.cosmic_conflict(

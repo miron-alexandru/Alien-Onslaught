@@ -28,6 +28,7 @@ class AnimationConstantsTests(unittest.TestCase):
     """
     Test case for the 'animation_constants' module.
     """
+
     def test_destroy_frames(self):
         """
         Test the destroy_frames constant.
@@ -191,11 +192,11 @@ class AnimationConstantsTests(unittest.TestCase):
         )
 
 
-
 class LoadFramesTests(unittest.TestCase):
     """Test case for the load_frames function
     which is used to load the frames constants.
     """
+
     def test_load_frames(self):
         """Test for the load_frames function."""
         filename_pattern = "frame_{}.png"

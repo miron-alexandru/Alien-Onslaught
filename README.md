@@ -8,11 +8,21 @@
 - Pygame 2.0 or later
 
 ### Game Launch:
+#### Option one:
 * Open a command prompt or terminal.
 * Navigate to the game project's root directory (containing setup.py).
 * Install the game package with pip install . (including the dot).
 * After installation, go to the src directory (use cd src).
 * Run the game by executing python alien_onslaught.py.
+
+#### Option two:
+* git clone https://github.com/KhadaAke/Alien-Onslaught.git
+* cd Alien-Onslaught
+* python -m venv env
+* source env/Scripts/activate
+* pip install .
+* cd src
+* python alien_onslaught.py
 
 ## Controls:
 #### Gameplay:

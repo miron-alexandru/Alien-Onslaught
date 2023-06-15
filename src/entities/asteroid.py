@@ -7,6 +7,7 @@ import random
 from pygame.sprite import Sprite
 from src.utils.animation_constants import asteroid_frames
 
+
 class Asteroid(Sprite):
     """A class to represent an asteroid in the game."""
 

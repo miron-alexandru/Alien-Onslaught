@@ -11,9 +11,9 @@ from src.entities.powers import Power
 from src.game_logic.game_settings import Settings
 
 
-
 class TestPower(unittest.TestCase):
     """Test cases for Power class."""
+
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
@@ -41,7 +41,9 @@ class TestPower(unittest.TestCase):
     def test_initialize_position(self):
         """Test the initialize_position method."""
         self.power._initialize_position()
-        self.assertTrue(0 <= self.power.rect.x <= self.settings.screen_width - self.power.rect.width)
+        self.assertTrue(
+            0 <= self.power.rect.x <= self.settings.screen_width - self.power.rect.width
+        )
         self.assertEqual(self.power.rect.y, 0)
         self.assertEqual(self.power.y_pos, float(self.power.rect.y))
 
@@ -71,5 +73,6 @@ class TestPower(unittest.TestCase):
         self.power.draw()
         self.screen.blit.assert_called_once_with(self.power.image, self.power.rect)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

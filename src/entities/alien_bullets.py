@@ -12,7 +12,11 @@ import pygame
 
 from pygame.sprite import Sprite
 from src.utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
-from src.utils.game_utils import load_alien_bullets, load_boss_bullets, load_single_image
+from src.utils.game_utils import (
+    load_alien_bullets,
+    load_boss_bullets,
+    load_single_image,
+)
 from src.entities.aliens import BossAlien
 
 

@@ -46,7 +46,7 @@ class TestHeart(unittest.TestCase):
         self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
     def test_blitme_screen_rect_updated(self):
-        """Test if the heart is blitted at the correct position 
+        """Test if the heart is blitted at the correct position
         on the screen after updating the rect.
         """
         self.heart.rect.topleft = (100, 200)
@@ -54,5 +54,6 @@ class TestHeart(unittest.TestCase):
         self.heart.blitme()
         self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

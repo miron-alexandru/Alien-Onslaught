@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: alien-onslaught
+Version: 3.1
+Summary: Alien Onslaught: An action-packed game that will test your shooting skills and reflexes.
+Author: Miron Alexandru
+Author-email: quality_xqs@yahoo.com
+Classifier: Development Status :: - Production
+Classifier: Intended Audience :: Developers, Users
+Classifier: License :: MIT License 
+Classifier: Programming Language :: Python :: 3.11
+License-File: LICENSE

@@ -36,6 +36,7 @@ else:
         os.path.join(os.path.dirname(__file__), "..", "..", "game_assets", "sounds")
     )
 
+
 def load_single_image(relative_path):
     """Loads an image based on the BASED_PATH."""
     base_path = BASE_PATH
