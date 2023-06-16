@@ -14,10 +14,10 @@ from src.game_logic.game_settings import Settings
 
 
 class TestAlien(unittest.TestCase):
-    """Test cases for the Alien class"""
+    """Test cases for the Alien class."""
 
     def setUp(self):
-        """Set up test environment."""
+        """Set up the test environment."""
         self.game = MagicMock()
         self.screen = MagicMock(spec=pygame.Surface)
         self.screen.get_rect.return_value = pygame.Rect(0, 0, 800, 600)
@@ -26,8 +26,11 @@ class TestAlien(unittest.TestCase):
         self.game.settings = self.settings
         self.alien = Alien(self.game)
 
+    def tearDown(self):
+        pygame.quit()
+
     def test_init(self):
-        """Test init method."""
+        """Test the initialization of the Alien."""
         self.assertEqual(self.alien.aliens, self.game.aliens)
         self.assertEqual(self.alien.screen, self.screen)
         self.assertEqual(self.alien.settings, self.settings)
@@ -47,7 +50,7 @@ class TestAlien(unittest.TestCase):
         self.assertIsInstance(self.alien.image, pygame.Surface)
 
     def test_init_position(self):
-        """Test init_position method."""
+        """Test the _init_position method."""
         self.alien._init_position()
         self.assertIsInstance(self.alien.rect, pygame.Rect)
         self.assertGreaterEqual(self.alien.rect.x, 0)
@@ -55,22 +58,22 @@ class TestAlien(unittest.TestCase):
         self.assertEqual(self.alien.x_pos, float(self.alien.rect.x))
 
     def test_check_edges(self):
-        """Test the check_edges method of the alien."""
-        # Test case: alien at the right edge of the screen
+        """Test the check_edges method of the Alien."""
+        # Test case: Alien at the right edge of the screen
         self.alien.rect.right = self.game.screen.get_rect().right
         self.assertTrue(self.alien.check_edges())
 
-        # Test case: alien at the left edge of the screen
+        # Test case: Alien at the left edge of the screen
         self.alien.rect.left = 0
         self.assertTrue(self.alien.check_edges())
 
-        # Test case: alien not at the edge of the screen
+        # Test case: Alien not at the edge of the screen
         self.alien.rect.right = 100
         self.alien.rect.left = 100
         self.assertFalse(self.alien.check_edges())
 
     def test_check_top_edges(self):
-        """Test the check_top_edges method of the alien."""
+        """Test the check_top_edges method of the Alien."""
         # Test case: Alien at the top edge of the screen
         self.alien.rect.top = 0
         self.assertTrue(self.alien.check_top_edges())
@@ -84,13 +87,13 @@ class TestAlien(unittest.TestCase):
         self.assertFalse(self.alien.check_top_edges())
 
     def test_update(self):
-        """Test for the update method."""
+        """Test the update method."""
         initial_x_pos = self.alien.x_pos
         initial_image = self.alien.image.copy()
         initial_frozen_state = self.alien.frozen_state
         initial_immune_state = self.alien.immune_state
 
-        # Test when alien is not in frozen state
+        # Test when the alien is not in the frozen state
         self.alien.update()
 
         # Verify position update
@@ -108,7 +111,7 @@ class TestAlien(unittest.TestCase):
         self.assertEqual(self.alien.frozen_state, initial_frozen_state)
         self.assertEqual(self.alien.immune_state, initial_immune_state)
 
-        # Test when alien is in frozen state
+        # Test when the alien is in the frozen state
         self.alien.frozen_state = True
         initial_time = time.time()
         self.alien.frozen_start_time = (
@@ -120,7 +123,7 @@ class TestAlien(unittest.TestCase):
         # Verify that the frozen state is deactivated after the specified frozen time
         self.assertEqual(self.alien.frozen_state, False)
 
-        # Test when alien is in immune state
+        # Test when the alien is in the immune state
         self.alien.immune_state = True
         initial_time = time.time()
         self.alien.immune_start_time = (
@@ -133,14 +136,14 @@ class TestAlien(unittest.TestCase):
         self.assertEqual(self.alien.immune_state, False)
 
     def test_destroy_alien(self):
-        """Test for the destroy method."""
+        """Test the destroy_alien method."""
         self.alien.destroy = MagicMock()
         self.alien.destroy_alien()
         self.alien.destroy.update_destroy_animation.assert_called_once()
         self.alien.destroy.draw_animation.assert_called_once()
 
     def test_split_alien(self):
-        """Test case for the split alien method."""
+        """Test the split_alien method."""
         with patch("src.entities.aliens.Alien") as mock_alien:
             # Generate a random number of splits between 1 and 4
             actual_splits = random.randint(1, 4)
@@ -152,7 +155,7 @@ class TestAlien(unittest.TestCase):
                 self.assertEqual(mock_alien.call_count, actual_splits)
 
     def test_upgrade(self):
-        """Test for the upgrade method."""
+        """Test the upgrade method."""
         self.alien.immune = MagicMock()
         self.alien.upgrade()
         self.assertTrue(self.alien.immune_state)
@@ -160,13 +163,13 @@ class TestAlien(unittest.TestCase):
         self.assertNotEqual(self.alien.immune_start_time, 0)
 
     def test_freeze(self):
-        """Test for the freeze method."""
+        """Test the freeze method."""
         self.alien.freeze()
         self.assertTrue(self.alien.frozen_state)
         self.assertNotEqual(self.alien.frozen_start_time, 0)
 
     def test_draw(self):
-        """Test for the draw method."""
+        """Test the draw method."""
         self.alien.draw()
         self.screen.blit.assert_called_once_with(self.alien.image, self.alien.rect)
 

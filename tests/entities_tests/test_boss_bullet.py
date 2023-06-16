@@ -26,6 +26,7 @@ class TestBossBullet(unittest.TestCase):
         self.assertEqual(self.bullet.screen, self.game.screen)
         self.assertEqual(self.bullet.alien, self.alien)
         self.assertIsNotNone(self.bullet.image)
+        self.assertIsInstance(self.bullet.image, pygame.Surface)
         self.assertIsNotNone(self.bullet.rect)
         self.assertIsInstance(self.bullet.rect, pygame.Rect)
         self.assertIsInstance(self.bullet.y_pos, float)
@@ -109,7 +110,9 @@ class TestBossBullet(unittest.TestCase):
     def test_draw(self):
         """Test the drawing of the bullet."""
         self.bullet.screen.blit = MagicMock()
+
         self.bullet.draw()
+
         self.bullet.screen.blit.assert_called_once_with(
             self.bullet.image, self.bullet.rect
         )

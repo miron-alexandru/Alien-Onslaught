@@ -17,7 +17,6 @@ class TestHeart(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        pygame.init()
         self.settings = Settings()
         self.screen = MagicMock(spec=pygame.Surface)
         self.screen.get_rect.return_value = pygame.Rect(0, 0, 800, 600)

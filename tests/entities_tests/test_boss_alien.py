@@ -1,21 +1,22 @@
 """
-This module tests the BossAlien class that is used
-to create bosses in the game.
+This module tests the BossAlien class which is used for creating
+alien bosses in the game.
 """
 
 import unittest
 from unittest.mock import MagicMock
 
 from pygame import Surface
-from src.game_logic.game_settings import Settings
+
 from src.entities.aliens import BossAlien
+from src.game_logic.game_settings import Settings
 
 
 class TestBossAlien(unittest.TestCase):
     """Test cases for BossAlien."""
 
     def setUp(self):
-        """Set up test environment."""
+        """Set up the test environment."""
         self.game = MagicMock()
         self.settings = Settings()
         self.game.screen = Surface((800, 600))
@@ -77,24 +78,24 @@ class TestBossAlien(unittest.TestCase):
         """Test the update movement of the boss alien."""
         # Test case: Boss alien not frozen, moving in positive direction
         self.boss_alien.frozen_state = False
-        self.boss_alien.settings.alien_speed = 2.0
         self.boss_alien.motion.direction = 1
         self.boss_alien.x_pos = 0.0
 
         self.boss_alien.update()
 
-        self.assertEqual(self.boss_alien.x_pos, 2.0)
-        self.assertEqual(self.boss_alien.rect.x, 2)
+        self.assertEqual(self.boss_alien.x_pos, self.boss_alien.settings.alien_speed)
+        self.assertEqual(self.boss_alien.rect.x, round(self.boss_alien.x_pos))
 
         # Test case: Boss alien not frozen, moving in negative direction
-        self.boss_alien.frozen_state = False
         self.boss_alien.motion.direction = -1
         self.boss_alien.x_pos = 4.0
 
         self.boss_alien.update()
 
-        self.assertEqual(self.boss_alien.x_pos, 2.0)
-        self.assertEqual(self.boss_alien.rect.x, 2)
+        self.assertEqual(
+            self.boss_alien.x_pos, 4.0 - self.boss_alien.settings.alien_speed
+        )
+        self.assertEqual(self.boss_alien.rect.x, round(self.boss_alien.x_pos))
 
         # Test case: Boss alien frozen, should not move
         self.boss_alien.freeze()
@@ -122,7 +123,7 @@ class TestBossAlien(unittest.TestCase):
         self.assertFalse(self.boss_alien.check_edges())
 
     def test_destroy_alien(self):
-        """Teste the destroy method."""
+        """Test the destroy_alien method."""
         self.boss_alien.is_alive = True
         self.boss_alien.destroy.update_destroy_animation = MagicMock()
         self.boss_alien.destroy.draw_animation = MagicMock()
@@ -144,7 +145,7 @@ class TestBossAlien(unittest.TestCase):
         self.assertNotEqual(self.boss_alien.frozen_start_time, 0)
 
     def test_upgrade(self):
-        """Teste the upgrade method."""
+        """Test the upgrade method."""
         initial_boss_hp = self.boss_alien.settings.boss_hp
 
         self.boss_alien.upgrade()
