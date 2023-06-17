@@ -227,8 +227,7 @@ class PowerEffectsManager:
     def increase_bullets_remaining(self, player):
         """Power up special for the Last Bullet game mode, it increases
         the remaining bullets number by one for the specified player."""
-        players = {"thunderbird": self.thunderbird_ship, "phoenix": self.phoenix_ship}
-        players[player].remaining_bullets += 1
+        getattr(self, f"{player}_ship").remaining_bullets += 1
         self.score_board.render_bullets_num()
 
     def manage_power_downs(self):

@@ -85,5 +85,6 @@ class TestBullet(unittest.TestCase):
             self.bullet.image.get_rect(center=self.bullet.rect.center).center,
         )
 
+
 if __name__ == "__main__":
     unittest.main()
