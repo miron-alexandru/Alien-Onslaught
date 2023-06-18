@@ -2,7 +2,7 @@
 This module tests the PowerEffectsManager class that is used for
 creating powers in the game.
 """
-
+import time
 import unittest
 from unittest.mock import MagicMock, patch
 import pygame
@@ -22,13 +22,37 @@ class TestPowerEffectsManager(unittest.TestCase):
         self.score_board = MagicMock()
         self.stats = MagicMock()
         self.sound_manager = MagicMock()
+        self.sound_manager.game_sounds = MagicMock(spec=pygame.mixer.Sound)
         self.settings = Settings()
+        self.game.settings = self.settings
         self.power_effects_manager = PowerEffectsManager(
             self.game, self.score_board, self.stats
         )
         self.power_effects_manager.settings = self.settings
         self.game.sound_manager = self.sound_manager
         self.game.weapons_manager = MagicMock()
+
+    def test_init(self):
+        """Test the initialization of the manager."""
+        self.assertEqual(self.power_effects_manager.screen, self.game.screen)
+        self.assertEqual(self.power_effects_manager.settings, self.game.settings)
+        self.assertEqual(
+            self.power_effects_manager.thunderbird_ship, self.game.thunderbird_ship
+        )
+        self.assertEqual(
+            self.power_effects_manager.phoenix_ship, self.game.phoenix_ship
+        )
+        self.assertEqual(
+            self.power_effects_manager.phoenix_bullets, self.game.phoenix_bullets
+        )
+        self.assertEqual(
+            self.power_effects_manager.thunderbird_bullets,
+            self.game.thunderbird_bullets,
+        )
+        self.assertIsNotNone(self.power_effects_manager.stats)
+        self.assertIsNotNone(self.power_effects_manager.score_board)
+        self.assertEqual(self.power_effects_manager.last_power_up_time, 0)
+        self.assertEqual(self.power_effects_manager.power_down_time, 35)
 
     @patch("src.managers.powers_manager.time")
     @patch("src.managers.powers_manager.random")
@@ -74,10 +98,6 @@ class TestPowerEffectsManager(unittest.TestCase):
     def test_weapon_power_up(self, mock_play_sound):
         """Test the weapon power up."""
 
-        # Create a mock sound object
-        mock_sound = MagicMock(spec=pygame.mixer.Sound)
-        self.sound_manager.game_sounds = mock_sound
-
         self.power_effects_manager.weapon_power_up("phoenix", "fire_bullet")
 
         self.game.weapons_manager.set_weapon.assert_called_once_with(
@@ -85,7 +105,9 @@ class TestPowerEffectsManager(unittest.TestCase):
         )
 
         # Check if the appropriate sound effect was played
-        mock_play_sound.assert_called_once_with(mock_sound, "weapon")
+        mock_play_sound.assert_called_once_with(
+            self.sound_manager.game_sounds, "weapon"
+        )
 
     def test_freeze_enemies(self):
         """Test the freeze enemies power up."""
@@ -98,6 +120,149 @@ class TestPowerEffectsManager(unittest.TestCase):
         # Assert that the freeze method was called on each alien
         for alien in mock_aliens:
             alien.freeze.assert_called_once()
+
+    @patch("src.managers.powers_manager.play_sound")
+    def test_health_power_up(self, mock_play_sound):
+        """Test the health power-up."""
+        player = "thunderbird"
+
+        self.stats.thunderbird_hp = 4
+        self.stats.max_hp = 5
+
+        self.power_effects_manager.health_power_up(player)
+
+        self.assertEqual(self.stats.thunderbird_hp, 5)
+        self.power_effects_manager.score_board.create_health.assert_called_once()
+        mock_play_sound.assert_called_once_with(
+            self.sound_manager.game_sounds, "health"
+        )
+
+        self.power_effects_manager.score_board.create_health.reset_mock()
+        mock_play_sound.reset_mock()
+
+        # Test if the hp remains the same when it reached the max value.
+        self.power_effects_manager.health_power_up(player)
+        self.assertEqual(self.stats.thunderbird_hp, 5)
+
+        mock_play_sound.assert_called_once_with(
+            self.sound_manager.game_sounds, "health"
+        )
+        self.power_effects_manager.score_board.create_health.assert_called_once()
+
+    @patch("src.managers.powers_manager.play_sound")
+    def test_apply_powerup_or_penalty_freeze(self, mock_play_sound):
+        """Test the apply power up or penalty for the freeze enemies power up."""
+        player = "thunderbird"
+
+        mock_freeze_enemies = MagicMock(name="freeze_enemies")
+        mock_freeze_enemies.__name__ = "freeze_enemies"
+        self.power_effects_manager.freeze_enemies = mock_freeze_enemies
+
+        with patch("random.choice") as mock_choice:
+            mock_choice.return_value = self.power_effects_manager.freeze_enemies
+            self.power_effects_manager.apply_powerup_or_penalty(player)
+
+            mock_freeze_enemies.assert_called_once_with(player)
+            mock_play_sound.assert_called_once_with(
+                self.sound_manager.game_sounds, "freeze"
+            )
+
+    @patch("src.managers.powers_manager.play_sound")
+    def test_apply_powerup_or_penalty_normal(self, mock_play_sound):
+        """Test the apply power up or penalty for the other power ups."""
+        player = "thunderbird"
+
+        mock_increase_ship_speed = MagicMock(name="increase_ship_speed")
+        mock_increase_ship_speed.__name__ = "increase_ship_speed"
+        self.power_effects_manager.increase_ship_speed = mock_increase_ship_speed
+
+        with patch("random.choice") as mock_choice:
+            mock_choice.return_value = self.power_effects_manager.increase_ship_speed
+            self.power_effects_manager.apply_powerup_or_penalty(player)
+
+            mock_increase_ship_speed.assert_called_once_with(player)
+            mock_play_sound.assert_called_once_with(
+                self.sound_manager.game_sounds, "power_up"
+            )
+
+    @patch("src.managers.powers_manager.play_sound")
+    def test_apply_powerup_or_penalty_penalties(self, mock_play_sound):
+        """Test the apply power up or penalty for the penalties."""
+        player = "thunderbird"
+
+        mock_disarm_ship = MagicMock(name="disarm_ship")
+        self.power_effects_manager.disarm_ship = mock_disarm_ship
+
+        with patch("random.choice") as mock_choice:
+            mock_choice.return_value = self.power_effects_manager.disarm_ship
+            self.power_effects_manager.apply_powerup_or_penalty(player)
+
+            mock_disarm_ship.assert_called_once_with(player)
+            mock_play_sound.assert_called_once_with(
+                self.sound_manager.game_sounds, "penalty"
+            )
+
+    def test_manage_power_downs(self):
+        """Test the manage power downs method when the power
+        are turned off."""
+        self.game.pause_time = 5
+
+        # Create ships with power down states and last power down times
+        ship = MagicMock()
+        ship.state.reverse = True
+        ship.state.disarmed = True
+        ship.state.scaled_weapon = True
+
+        ship.last_reverse_power_down_time = 0
+        ship.last_disarmed_power_down_time = 0
+        ship.last_scaled_weapon_power_down_time = 0
+
+        self.game.ships = [ship]
+
+        self.power_effects_manager.manage_power_downs()
+
+        # Assert that ship1's power down state is still True since it hasn't been 10 seconds yet
+        self.assertFalse(ship.state.reverse)
+        self.assertFalse(ship.state.disarmed)
+        self.assertFalse(ship.state.scaled_weapon)
+        self.assertEqual(ship.last_reverse_power_down_time, None)
+        self.assertEqual(ship.last_disarmed_power_down_time, None)
+        self.assertEqual(ship.last_scaled_weapon_power_down_time, None)
+
+        self.assertEqual(self.game.pause_time, 0)
+
+    def test_manage_power_downs_still_active(self):
+        """Test the manage power downs method when the power down
+        is still active."""
+
+        self.game.pause_time = 0
+
+        # Create ships with power down states and last power down times
+        ship = MagicMock()
+        ship.state.reverse = True
+        ship.state.disarmed = True
+        ship.state.scaled_weapon = True
+
+        ship.last_reverse_power_down_time = time.time() - 5
+        ship.last_disarmed_power_down_time = time.time() - 5
+        ship.last_scaled_weapon_power_down_time = time.time() - 5
+
+        self.game.ships = [ship]
+
+        # Mock the time to the current time
+        current_time = time.time() - (self.game.pause_time / 1000)
+        with patch("time.time", return_value=current_time):
+            self.power_effects_manager.manage_power_downs()
+
+        # Assert that ship1's power down state is still True since it hasn't been 10 seconds yet
+        self.assertTrue(ship.state.reverse)
+        self.assertTrue(ship.state.disarmed)
+        self.assertTrue(ship.state.scaled_weapon)
+        self.assertEqual(ship.last_reverse_power_down_time, current_time - 5)
+        self.assertEqual(ship.last_disarmed_power_down_time, current_time - 5)
+        self.assertEqual(ship.last_scaled_weapon_power_down_time, current_time - 5)
+
+        self.assertEqual(self.game.pause_time, 0)
 
     def test_decrease_ship_speed(self):
         """Test the decrease ship speed penalty."""
