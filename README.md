@@ -9,18 +9,18 @@
 
 ### Game Launch:
 #### Option one:
-* Open a command prompt or terminal.
-* Navigate to the game project's root directory (containing setup.py).
-* Install the game package with pip install . (including the dot).
-* After installation, go to the src directory (use cd src).
-* Run the game by executing python alien_onslaught.py.
+* Open a command prompt or terminal
+* Navigate to the game project's root directory (containing setup.py)
+* Install the game package with pip install . (including the dot)
+* After installation, go to the src directory (use cd src)
+* Run the game by executing python alien_onslaught.py
 
 #### Option two:
 * git clone https://github.com/KhadaAke/Alien-Onslaught.git
 * cd Alien-Onslaught
 * python -m venv env
 * source env/Scripts/activate
-* pip install .
+* pip install . (including the dot)
 * cd src
 * python alien_onslaught.py
 
@@ -65,6 +65,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* New tests for entities, managers and animations.
 * Added tests for animations and entities.
 * The project is now available for installation as a package.
 * New music for the Victory screen.
