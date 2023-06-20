@@ -12,6 +12,7 @@ from src.entities.player_ships import Thunderbird
 
 class TestThunderbird(unittest.TestCase):
     """Test cases for the Thunderbird class."""
+
     def setUp(self):
         self.game = MagicMock()
         self.game.screen.get_rect.return_value = pygame.Rect(0, 0, 800, 600)
