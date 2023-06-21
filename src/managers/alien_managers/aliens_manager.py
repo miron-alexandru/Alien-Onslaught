@@ -3,7 +3,6 @@ The 'aliens_manager' module contains the AliensManager class that manages
 the creation and update of aliens and bosses in the game.
 """
 
-
 from src.entities.aliens import Alien, BossAlien
 
 
@@ -48,25 +47,15 @@ class AliensManager:
         self.aliens.update()
 
     def _check_fleet_edges(self):
-        """Respond appropriately if any aliens have reached an edge."""
-        for alien in self.aliens.sprites():
-            if alien.check_edges():
-                self._change_fleet_direction()
-                break
-
-    def _change_fleet_direction(self):
-        """Change the direction of the fleet of aliens and move
-        them down if they reach the screen's edge.
+        """Check if any aliens have reached an edge and respond
+        appropriately by changing the direction and moving them down if needed.
         Boss aliens do not move down.
         """
         for alien in self.aliens.sprites():
             if isinstance(alien, BossAlien):
                 if alien.check_edges():
                     alien.motion.direction *= -1
-                else:
-                    alien.rect.x += self.settings.alien_speed * alien.motion.direction
             elif alien.check_edges():
                 alien.motion.direction *= -1
-
             elif alien.check_top_edges():
                 alien.rect.y += self.settings.alien_speed

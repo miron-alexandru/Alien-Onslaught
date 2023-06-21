@@ -46,7 +46,7 @@ class AlienMovement:
                 self.direction *= -1
             self.last_direction_change = now
             # how often the direction changes
-            self.direction_change_delay = random.randint(3000, 5000)  # miliseconds
+            self.direction_change_delay = random.randint(5000, 15000)  # miliseconds
 
     def update_vertical_position(self):
         """Update the vertical position of the alien and
