@@ -6,7 +6,7 @@ manage the ships in the game.
 import unittest
 from unittest.mock import MagicMock, patch
 
-#import pygame
+# import pygame
 
 from src.managers.player_managers.ships_manager import ShipsManager
 
@@ -41,7 +41,9 @@ class TestShipsManager(unittest.TestCase):
 
         self.ships_manager.thunderbird_ship_hit()
 
-        self.ships_manager._destroy_ship.assert_called_once_with(self.ships_manager.thunderbird_ship)
+        self.ships_manager._destroy_ship.assert_called_once_with(
+            self.ships_manager.thunderbird_ship
+        )
 
         # Case when hp is below 0
         self.ships_manager._destroy_ship.reset_mock()
@@ -52,7 +54,6 @@ class TestShipsManager(unittest.TestCase):
 
         self.ships_manager._destroy_ship.assert_not_called()
 
-
     def test_phoenix_ship_hit(self):
         """Test the phoenix ship hit method."""
         # Case when hp is above 0
@@ -61,7 +62,9 @@ class TestShipsManager(unittest.TestCase):
 
         self.ships_manager.phoenix_ship_hit()
 
-        self.ships_manager._destroy_ship.assert_called_once_with(self.ships_manager.phoenix_ship)
+        self.ships_manager._destroy_ship.assert_called_once_with(
+            self.ships_manager.phoenix_ship
+        )
 
         # Case when hp is below 0
         self.ships_manager._destroy_ship.reset_mock()
@@ -70,7 +73,7 @@ class TestShipsManager(unittest.TestCase):
         self.ships_manager.phoenix_ship_hit()
         self.ships_manager._destroy_ship.assert_not_called()
 
-    @patch('src.managers.player_managers.ships_manager.play_sound')
+    @patch("src.managers.player_managers.ships_manager.play_sound")
     def test_destroy_ship_thunderbird(self, mock_play_sound):
         """Test the destroying of the Thunderbird ship."""
         self.settings.game_modes.last_bullet = False
@@ -83,7 +86,9 @@ class TestShipsManager(unittest.TestCase):
         self.ships_manager._destroy_ship(ship_mock)
 
         ship_mock.explode.assert_called_once()
-        mock_play_sound.assert_called_once_with(self.game.sound_manager.game_sounds, "explode")
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "explode"
+        )
         self.assertEqual(self.ships_manager.thunderbird_ship.state.shielded, False)
         self.ships_manager._update_thunderbird_stats.assert_called_once()
         ship_mock.set_immune.assert_called_once()
@@ -97,7 +102,7 @@ class TestShipsManager(unittest.TestCase):
 
         self.game.gameplay_manager.check_remaining_bullets.assert_called_once()
 
-    @patch('src.managers.player_managers.ships_manager.play_sound')
+    @patch("src.managers.player_managers.ships_manager.play_sound")
     def test_destroy_ship_phoenix(self, mock_play_sound):
         """Test the destroying of the Phoenix ship."""
         self.settings.game_modes.last_bullet = False
@@ -110,7 +115,9 @@ class TestShipsManager(unittest.TestCase):
         self.ships_manager._destroy_ship(ship_mock)
 
         ship_mock.explode.assert_called_once()
-        mock_play_sound.assert_called_once_with(self.game.sound_manager.game_sounds, "explode")
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "explode"
+        )
         self.assertEqual(self.ships_manager.phoenix_ship.state.shielded, False)
         self.ships_manager._update_phoenix_stats.assert_called_once()
         ship_mock.set_immune.assert_called_once()
@@ -182,7 +189,7 @@ class TestShipsManager(unittest.TestCase):
 
         self.assertFalse(self.ships_manager.phoenix_ship.state.alive)
 
-    @patch('src.managers.player_managers.ships_manager.play_sound')
+    @patch("src.managers.player_managers.ships_manager.play_sound")
     def test_reset_ships(self, mock_play_sound):
         """Test the reset ships method."""
         ship_mock = MagicMock()
@@ -201,7 +208,9 @@ class TestShipsManager(unittest.TestCase):
 
         self.game.weapons_manager.reset_weapons.assert_called_once()
 
-        mock_play_sound.assert_called_once_with(self.game.sound_manager.game_sounds, "warp")
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "warp"
+        )
 
     def test_update_ship_state(self):
         """Test the update ship state method."""
@@ -213,5 +222,5 @@ class TestShipsManager(unittest.TestCase):
         ship_mock.update_state.assert_called_once()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

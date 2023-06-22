@@ -41,7 +41,7 @@ class AlienBulletsManagerTestCase(unittest.TestCase):
         self.assertEqual(self.manager.phoenix_ship, self.game.phoenix_ship)
         self.assertEqual(self.manager.last_alien_bullet_time, 0)
 
-    @patch('src.managers.alien_managers.alien_bullets_manager.BossBullet')
+    @patch("src.managers.alien_managers.alien_bullets_manager.BossBullet")
     def test_create_alien_bullet_boss(self, mock_boss_bullet):
         """Test the creation of a BossBullet."""
         self.manager.alien_bullet.add = MagicMock()
@@ -60,7 +60,7 @@ class AlienBulletsManagerTestCase(unittest.TestCase):
         self.assertEqual(mock_boss_bullet_instance.rect.bottom, alien.rect.bottom)
         self.manager.alien_bullet.add.assert_called_once_with(mock_boss_bullet_instance)
 
-    @patch('src.managers.alien_managers.alien_bullets_manager.AlienBullet')
+    @patch("src.managers.alien_managers.alien_bullets_manager.AlienBullet")
     def test_create_alien_bullet_normal(self, mock_alien_bullet):
         """Test the creation of the normal alien bullet."""
         self.manager.alien_bullet.add = MagicMock()
@@ -77,11 +77,12 @@ class AlienBulletsManagerTestCase(unittest.TestCase):
         mock_alien_bullet.assert_called_once_with(self.manager)
         self.assertEqual(mock_alien_bullet_instance.rect.centerx, alien.rect.centerx)
         self.assertEqual(mock_alien_bullet_instance.rect.bottom, alien.rect.bottom)
-        self.manager.alien_bullet.add.assert_called_once_with(mock_alien_bullet_instance)
+        self.manager.alien_bullet.add.assert_called_once_with(
+            mock_alien_bullet_instance
+        )
 
-
-    @patch('random.sample')
-    @patch('pygame.time.get_ticks')
+    @patch("random.sample")
+    @patch("pygame.time.get_ticks")
     def test_create_alien_bullets(self, mock_get_ticks, mock_sample):
         """Test the creation of multiple alien bullets."""
         num_bullets = 3
@@ -109,7 +110,10 @@ class AlienBulletsManagerTestCase(unittest.TestCase):
         self.manager.create_alien_bullets(num_bullets, bullet_int, alien_int)
 
         mock_get_ticks.assert_called_once()
-        mock_sample.assert_called_once_with(self.game.aliens.sprites(), k=min(num_bullets, len(self.game.aliens.sprites())))
+        mock_sample.assert_called_once_with(
+            self.game.aliens.sprites(),
+            k=min(num_bullets, len(self.game.aliens.sprites())),
+        )
 
         self.assertEqual(alien1.last_bullet_time, current_time)
         self.assertEqual(alien2.last_bullet_time, 4000)
@@ -132,5 +136,5 @@ class AlienBulletsManagerTestCase(unittest.TestCase):
         self.manager.alien_bullet.remove.assert_called_once_with(bullet2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

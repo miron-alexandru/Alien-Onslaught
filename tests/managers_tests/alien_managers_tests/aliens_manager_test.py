@@ -28,13 +28,17 @@ class AliensManagerTest(unittest.TestCase):
         self.manager.create_fleet(rows)
 
         # Assert that the correct number of aliens were created
-        self.assertEqual(len(self.aliens.add.call_args_list), rows * self.settings.aliens_num)
+        self.assertEqual(
+            len(self.aliens.add.call_args_list), rows * self.settings.aliens_num
+        )
 
         # Assert that each alien's position was set correctly
         calls = self.aliens.add.call_args_list
         for row_number in range(rows):
             for alien_number in range(self.settings.aliens_num):
-                alien = calls[row_number * self.settings.aliens_num + alien_number][0][0]
+                alien = calls[row_number * self.settings.aliens_num + alien_number][0][
+                    0
+                ]
                 expected_x = alien.rect.width + 2 * alien.rect.width * alien_number
                 expected_y = 50 - (2 * alien.rect.height * row_number)
                 self.assertEqual(alien.rect.x, expected_x)
@@ -99,5 +103,5 @@ class AliensManagerTest(unittest.TestCase):
         self.assertEqual(alien2.rect.y, 100 + self.settings.alien_speed)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

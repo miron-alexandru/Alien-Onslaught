@@ -39,7 +39,10 @@ class AlienAnimationTestCase(unittest.TestCase):
 
         self.animation.update_animation()
 
-        self.assertEqual(self.animation.current_frame, (initial_frame + 1) % len(self.animation.frames))
+        self.assertEqual(
+            self.animation.current_frame,
+            (initial_frame + 1) % len(self.animation.frames),
+        )
         self.assertEqual(self.animation.frame_counter, 0)
 
     def test_change_scale(self):
@@ -54,7 +57,7 @@ class AlienAnimationTestCase(unittest.TestCase):
         self.assertNotEqual(self.animation.frames, initial_frames)
         self.assertEqual(self.animation.scale, scale)
 
-    @patch('pygame.transform.scale')
+    @patch("pygame.transform.scale")
     def test_update_scale(self, mock_scale):
         """Test the update scale method."""
         scale = 2.0
@@ -72,5 +75,5 @@ class AlienAnimationTestCase(unittest.TestCase):
         self.assertEqual(current_image, self.animation.image)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
