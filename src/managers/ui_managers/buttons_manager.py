@@ -158,6 +158,22 @@ class GameButtonsManager:
             self.one_life_reign,
         ]
 
+    def _create_menu_buttons(self):
+        """Create the buttons for the main menu."""
+        self.single = Button(
+            self, self.button_imgs["single_player"], (0, 0), center=True
+        )
+        self.multi = Button(
+            self,
+            self.button_imgs["multiplayer"],
+            (self.single.rect.centerx - 100, self.single.rect.bottom),
+        )
+        self.menu_quit = Button(
+            self,
+            self.button_imgs["menu_quit_button"],
+            (self.multi.rect.centerx - 100, self.multi.rect.bottom),
+        )
+
     def display_description(self):
         """Display the description of the game mode button currently
         hovered over by the mouse cursor.
@@ -184,22 +200,6 @@ class GameButtonsManager:
         """Draw game menu buttons on screen."""
         for button in self.game_buttons:
             button.draw_button()
-
-    def _create_menu_buttons(self):
-        """Create the buttons for the main menu."""
-        self.single = Button(
-            self, self.button_imgs["single_player"], (0, 0), center=True
-        )
-        self.multi = Button(
-            self,
-            self.button_imgs["multiplayer"],
-            (self.single.rect.centerx - 100, self.single.rect.bottom),
-        )
-        self.menu_quit = Button(
-            self,
-            self.button_imgs["menu_quit_button"],
-            (self.multi.rect.centerx - 100, self.multi.rect.bottom),
-        )
 
     def handle_buttons_visibility(self):
         """Handle the visibility of buttons based on the current ui options."""
@@ -245,7 +245,6 @@ class GameButtonsManager:
 
     def handle_endless_button(self):
         """Toggle the Endless game mode setting and hide game mode buttons."""
-        self.gm_options.endless_onslaught = not self.gm_options.endless_onslaught
         self._set_game_mode_settings("endless_onslaught")
         self.gm_options.game_mode = "endless_onslaught"
         self.ui_options.show_game_modes = False
@@ -258,30 +257,32 @@ class GameButtonsManager:
 
     def handle_slow_burn_button(self):
         """Toggle the Slow Burn game mode and hide game mode buttons."""
-        self.gm_options.slow_burn = not self.gm_options.slow_burn
         self._set_game_mode_settings("slow_burn")
         self.gm_options.game_mode = "slow_burn"
         self.ui_options.show_game_modes = False
 
     def handle_meteor_madness_button(self):
         """Toggle the Meteor Madness game mode and hide all game mode buttons."""
-        self.gm_options.meteor_madness = not self.gm_options.meteor_madness
         self._set_game_mode_settings("meteor_madness")
         self.gm_options.game_mode = "meteor_madness"
         self.ui_options.show_game_modes = False
 
     def handle_boss_rush_button(self):
         """Toggle the Boss Rush game mode and hide all game mode buttons."""
-        self.gm_options.boss_rush = not self.gm_options.boss_rush
         self._set_game_mode_settings("boss_rush")
         self.gm_options.game_mode = "boss_rush"
         self.ui_options.show_game_modes = False
 
     def handle_last_bullet_button(self):
         """Toggle the Last Bullet game mode and hide all game mode buttons."""
-        self.gm_options.last_bullet = not self.gm_options.last_bullet
         self._set_game_mode_settings("last_bullet")
         self.gm_options.game_mode = "last_bullet"
+        self.ui_options.show_game_modes = False
+
+    def handle_one_life_reign_button(self):
+        """Toggle the One Life Reign game mode and hide all game mode buttons."""
+        self._set_game_mode_settings("one_life_reign")
+        self.gm_options.game_mode = "one_life_reign"
         self.ui_options.show_game_modes = False
 
     def handle_cosmic_conflict_button(self):
@@ -290,16 +291,8 @@ class GameButtonsManager:
             return
         for ship in self.game.ships:
             ship.state.alive = True
-        self.gm_options.cosmic_conflict = not self.gm_options.cosmic_conflict
         self._set_game_mode_settings("cosmic_conflict")
         self.gm_options.game_mode = "cosmic_conflict"
-        self.ui_options.show_game_modes = False
-
-    def handle_one_life_reign_button(self):
-        """Toggle the One Life Reign game mode and hide all game mode buttons."""
-        self.gm_options.one_life_reign = not self.gm_options.one_life_reign
-        self._set_game_mode_settings("one_life_reign")
-        self.gm_options.game_mode = "one_life_reign"
         self.ui_options.show_game_modes = False
 
     def handle_difficulty_button(self, speedup_scale, max_alien_speed):
