@@ -17,7 +17,7 @@ class LoadingScreenTest(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        self.screen = MagicMock(spec=pygame.Surface)
+        self.screen = MagicMock()
         self.screen.get_size.return_value = (800, 600)
 
         with patch("pygame.font.Font"):

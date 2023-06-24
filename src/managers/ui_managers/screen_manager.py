@@ -269,6 +269,6 @@ class LoadingScreen:
             (
                 (screen_width - self.text.get_width()) // 2,
                 (screen_height - self.text.get_height()) // 2 - 40,
-            )
+            ),
         )
         pygame.display.update()

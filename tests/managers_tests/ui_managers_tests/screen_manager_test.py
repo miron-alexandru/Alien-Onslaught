@@ -154,22 +154,25 @@ class TestScreenManager(unittest.TestCase):
         self.screen_manager.score_board.render_bullets_num.assert_called_once()
 
     @patch("pygame.mouse")
-    def test__initialize_cursor(self, mock_mouse):
+    @patch("pygame.Surface", return_value=MagicMock())
+    def test__initialize_cursor(self, mock_surface, mock_mouse):
         """Test the initialize_cursor method."""
-        pygame.Surface = MagicMock(return_value=MagicMock())
+        # pygame.Surface = MagicMock(return_value=MagicMock())
         self.screen.get_size.return_value = (100, 100)
 
         self.screen_manager._initialize_cursor()
 
         mock_mouse.set_visible.assert_called_once_with(False)
-        pygame.Surface.assert_called_once_with((100, 100), pygame.SRCALPHA)
+        mock_surface.assert_called_once_with((100, 100), pygame.SRCALPHA)
 
     @patch("pygame.mouse")
-    def test_draw_cursor(self, mock_mouse):
+    @patch("pygame.Surface", return_value=pygame.Surface((50, 100)))
+    def test_draw_cursor(self, mock_surface, mock_mouse):
         """Test the draw_cursor method."""
         mock_cursor_img = MagicMock()
         mock_cursor_rect = MagicMock()
-        self.settings.cursor_img = mock_cursor_img
+        self.screen_manager.cursor_surface = MagicMock()
+        self.settings.cursor_img = mock_surface.return_value
         self.settings.cursor_rect = mock_cursor_rect
         pygame.mouse.get_pos.return_value = (10, 10)
 
