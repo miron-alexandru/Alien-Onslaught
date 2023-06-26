@@ -16,8 +16,11 @@ from src.utils.game_utils import (
     display_message,
     display_laser_message,
     render_text,
+    calculate_control_positions,
+    display_controls,
 )
 
+from src.utils.constants import P1_CONTROLS, P2_CONTROLS, GAME_CONTROLS
 
 class MiscFunctionsTests(unittest.TestCase):
     """Test miscellaneous functions."""
@@ -48,7 +51,7 @@ class MiscFunctionsTests(unittest.TestCase):
         mock_boss_rush.get.assert_called_once_with("boss2", "Level 2")
 
     @patch("pygame.font.SysFont")
-    @patch("src.utils.game_utils.render_text")
+    @patch('src.utils.game_utils.render_text')
     def test_display_game_modes_description(self, mock_render_text, mock_sysfont):
         """Test the display_game_modes_description function."""
         screen = MagicMock(spec=pygame.Surface)
@@ -239,6 +242,100 @@ class MiscFunctionsTests(unittest.TestCase):
             render_mock.return_value.get_rect.call_count, expected_lines
         )  # Check the number of get_rect calls
 
+    def test_calculate_control_positions(self):
+        """Test the calculate_control_positions function."""
+        # First case
+        center = (500, 500)
+        x_offset = 200
+        expected_p1_pos = (300, 260)
+        expected_p2_pos = (700, 260)
+
+        p1_pos, p2_pos = calculate_control_positions(center, x_offset)
+        self.assertEqual(p1_pos, expected_p1_pos)
+        self.assertEqual(p2_pos, expected_p2_pos)
+
+        # Second case
+        center = (0, 0)
+        x_offset = 100
+        expected_p1_pos = (-100, 260)
+        expected_p2_pos = (100, 260)
+
+        p1_pos, p2_pos = calculate_control_positions(center, x_offset)
+        self.assertEqual(p1_pos, expected_p1_pos)
+        self.assertEqual(p2_pos, expected_p2_pos)
+
+
+    @patch('pygame.font.SysFont')
+    def test_display_controls(self, mock_sysfont):
+        """Test the display_controls function."""
+        # Mocking pygame functions for testing
+        mock_sysfont.return_value = MagicMock()
+
+        # Mocking necessary variables and functions
+        controls_surface = MagicMock()
+        surface = MagicMock()
+        load_controls_image = MagicMock()
+        load_controls_image.side_effect = [
+            (MagicMock(), MagicMock()),
+            (MagicMock(), MagicMock()),
+            (MagicMock(), MagicMock())
+        ]
+
+        render_text_mock = MagicMock()
+        render_text_mock.side_effect = [
+            (MagicMock(), MagicMock()),
+            (MagicMock(), MagicMock()),
+            (MagicMock(), MagicMock()),
+        ]
+
+        with patch('src.utils.game_utils.load_controls_image', load_controls_image):
+            with patch('src.utils.game_utils.render_text', render_text_mock):
+                result = display_controls(controls_surface, surface)
+                self.assertEqual(len(result), 12)
+
+                # Check if the correct font is used
+                mock_sysfont.assert_called_with("verdana", 20)
+
+                # Check if load_controls_image is called with the correct parameters
+                load_controls_image.assert_has_calls([
+                    call(controls_surface, {"topleft": (0, 0)}),
+                    call(controls_surface, {"topright": (0, 0)}),
+                    call(
+                        controls_surface,
+                        {
+                            "midbottom": (
+                                result[1].centerx,
+                                result[1].bottom + 225,
+                            ),
+                        },
+                    ),
+                ])
+
+                # Check if render_text is called with the correct parameters
+                expected_calls = [
+                    call(
+                        P1_CONTROLS,
+                        mock_sysfont.return_value,
+                        "white",
+                        (result[1].left + 25, result[1].top + 20),
+                        25,
+                    ),
+                    call(
+                        P2_CONTROLS,
+                        mock_sysfont.return_value,
+                        "white",
+                        (result[3].left + 25, result[3].top + 20),
+                        25,
+                    ),
+                    call(
+                        GAME_CONTROLS,
+                        mock_sysfont.return_value,
+                        "white",
+                        (result[9].left + 25, result[9].top + 20),
+                        25,
+                    ),
+                ]
+                render_text_mock.assert_has_calls(expected_calls)
 
 if __name__ == "__main__":
     unittest.main()

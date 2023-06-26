@@ -43,6 +43,7 @@ class ImageLoaderTest(unittest.TestCase):
         pygame.image.save(pygame.Surface((100, 100)), TEST_BUTTON_IMAGE_PATH)
 
         self.test_alien_image_paths = []
+
         for i in range(6):
             alien_image_path = os.path.join(
                 os.path.dirname(__file__), f"aliens/test_alien_{i+1}.png"
