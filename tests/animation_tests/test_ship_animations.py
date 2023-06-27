@@ -6,6 +6,7 @@ ship animations in the game.
 
 import unittest
 from unittest.mock import MagicMock
+
 import pygame
 
 from src.utils.animation_constants import (
@@ -105,7 +106,7 @@ class TestAnimations(unittest.TestCase):
         original_empower_frames = self.animations.empower_frames[:]
 
         # Mock the surface and its get_rect method
-        mock_surface = MagicMock(spec=pygame.surface.Surface)
+        mock_surface = MagicMock(spec=pygame.Surface)
         mock_surface.get_rect.return_value = MagicMock()
 
         # Mock the smoothscale function to return the mock surface

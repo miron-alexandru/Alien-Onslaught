@@ -11,8 +11,10 @@ import pygame
 from src.game_logic.gameplay_handler import GameplayManager
 from src.game_logic.game_settings import Settings
 
+
 class TestGameplayManager(unittest.TestCase):
     """Test cases for the GameplayManager class."""
+
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
@@ -34,7 +36,9 @@ class TestGameplayManager(unittest.TestCase):
 
         self.gameplay_handler.create_normal_level_bullets(bullets_manager)
 
-        bullets_manager.assert_called_once_with(self.settings.alien_bullets_num, 900, 7500)
+        bullets_manager.assert_called_once_with(
+            self.settings.alien_bullets_num, 900, 7500
+        )
 
         # Boss level case
         bullets_manager.reset_mock()
@@ -148,7 +152,9 @@ class TestGameplayManager(unittest.TestCase):
         self.score_board.prep_level.assert_called_once()
         self.gameplay_handler.handle_alien_creation.assert_called_once()
         self.game.sound_manager.prepare_level_music.assert_called_once()
-        self.gameplay_handler.set_max_alien_bullets.assert_called_once_with(self.settings.speedup_scale)
+        self.gameplay_handler.set_max_alien_bullets.assert_called_once_with(
+            self.settings.speedup_scale
+        )
         self.gameplay_handler.check_alien_bullets_num.assert_called_once()
 
         for ship in self.ships:
@@ -215,7 +221,9 @@ class TestGameplayManager(unittest.TestCase):
 
         self.gameplay_handler.handle_alien_creation()
 
-        self.game.aliens_manager.create_fleet.assert_called_once_with(self.settings.last_bullet_rows)
+        self.game.aliens_manager.create_fleet.assert_called_once_with(
+            self.settings.last_bullet_rows
+        )
 
     def test_handle_alien_creation_boss_level(self):
         """Test the handle alien creation for the boss levels in the other game modes."""
@@ -238,7 +246,9 @@ class TestGameplayManager(unittest.TestCase):
 
         self.gameplay_handler.handle_alien_creation()
 
-        self.game.aliens_manager.create_fleet.assert_called_once_with(self.settings.fleet_rows)
+        self.game.aliens_manager.create_fleet.assert_called_once_with(
+            self.settings.fleet_rows
+        )
         self.game.aliens_manager.create_boss_alien.assert_not_called()
 
     def test_check_for_player_revive(self):
@@ -253,7 +263,9 @@ class TestGameplayManager(unittest.TestCase):
         self.gameplay_handler.check_for_player_revive()
 
         self.stats.revive_phoenix.assert_called_once_with(self.game.phoenix_ship)
-        self.stats.revive_thunderbird.assert_called_once_with(self.game.thunderbird_ship)
+        self.stats.revive_thunderbird.assert_called_once_with(
+            self.game.thunderbird_ship
+        )
         self.score_board.create_health.assert_called_once()
 
     def test_reset_game_objects(self):
@@ -290,8 +302,10 @@ class TestGameplayManager(unittest.TestCase):
         self._update_normal_boss_info_helper(0.4, initial_boss_hp, 25)
         self._update_normal_boss_info_helper(0.6, initial_boss_hp, 45)
 
-    def _update_normal_boss_info_helper(self, difficulty, initial_boss_hp, increase_amount):
-        """Helper method used to test the update of normal boss info 
+    def _update_normal_boss_info_helper(
+        self, difficulty, initial_boss_hp, increase_amount
+    ):
+        """Helper method used to test the update of normal boss info
         for different difficulties."""
         self.settings.speedup_scale = difficulty
         self.gameplay_handler.update_normal_boss_info()
@@ -364,7 +378,7 @@ class TestGameplayManager(unittest.TestCase):
 
         self.assertEqual(self.settings.alien_bullets_num, 6)
 
-    @patch('pygame.time.get_ticks')
+    @patch("pygame.time.get_ticks")
     def test_meteor_madness(self, mock_get_ticks):
         """Test the meteor_madness method."""
         # Case when the time has not yet passed and the level was not increased.
@@ -447,7 +461,9 @@ class TestGameplayManager(unittest.TestCase):
         self.game.aliens.sprites = MagicMock(spec=pygame.sprite.Group)
         self.game.aliens.sprites.return_value = [MagicMock(), MagicMock()]
 
-        self.gameplay_handler.last_bullet(self.thunderbird_ship, self.phoenix_ship, asteroid_handler)
+        self.gameplay_handler.last_bullet(
+            self.thunderbird_ship, self.phoenix_ship, asteroid_handler
+        )
 
         asteroid_handler.assert_called_once_with(create_at_high_levels=True)
         self.assertEqual(self.thunderbird_ship.state.alive, True)
@@ -474,7 +490,9 @@ class TestGameplayManager(unittest.TestCase):
         mock_bullet.rect.bottom = 79
         self.game.phoenix_bullets.sprites.return_value = [mock_bullet]
 
-        self.gameplay_handler.last_bullet(self.thunderbird_ship, self.phoenix_ship, asteroid_handler)
+        self.gameplay_handler.last_bullet(
+            self.thunderbird_ship, self.phoenix_ship, asteroid_handler
+        )
 
         asteroid_handler.assert_called_once_with(create_at_high_levels=True)
         self.assertEqual(self.thunderbird_ship.state.alive, False)
@@ -491,7 +509,9 @@ class TestGameplayManager(unittest.TestCase):
         self.phoenix_ship.state.alive = False
         self.stats.game_active = True
 
-        self.gameplay_handler.last_bullet(self.thunderbird_ship, self.phoenix_ship, asteroid_handler)
+        self.gameplay_handler.last_bullet(
+            self.thunderbird_ship, self.phoenix_ship, asteroid_handler
+        )
 
         asteroid_handler.assert_called_once_with(create_at_high_levels=True)
         self.assertEqual(self.thunderbird_ship.state.alive, False)
@@ -518,9 +538,11 @@ class TestGameplayManager(unittest.TestCase):
         self.gameplay_handler.boss_rush(asteroid_handler, bullets_manager)
 
         asteroid_handler.assert_called_once_with(force_creation=True)
-        self.gameplay_handler._create_boss_rush_bullets.assert_called_once_with(bullets_manager)
+        self.gameplay_handler._create_boss_rush_bullets.assert_called_once_with(
+            bullets_manager
+        )
 
-    @patch('time.time')
+    @patch("time.time")
     def test_endless_onslaught(self, mock_time):
         """Test the endless_onslaught method."""
         # Case when the time has passed and the alien stats got increased.
@@ -554,7 +576,7 @@ class TestGameplayManager(unittest.TestCase):
         self.assertEqual(self.gameplay_handler.settings.alien_bullet_speed, 2.0)
         self.assertEqual(self.gameplay_handler.last_increase_time, 100)
 
-    @patch('time.time')
+    @patch("time.time")
     def test_slow_burn(self, mock_time):
         """Test the slow_burn method."""
         asteroid_handler = MagicMock()
@@ -576,7 +598,9 @@ class TestGameplayManager(unittest.TestCase):
         thunderbird_hit = MagicMock()
         phoenix_hit = MagicMock()
 
-        self.gameplay_handler.cosmic_conflict(bullet_collisions, thunderbird_hit, phoenix_hit)
+        self.gameplay_handler.cosmic_conflict(
+            bullet_collisions, thunderbird_hit, phoenix_hit
+        )
 
         bullet_collisions.assert_called_once_with(thunderbird_hit, phoenix_hit)
 
@@ -608,5 +632,5 @@ class TestGameplayManager(unittest.TestCase):
         self.assertEqual(self.settings.game_modes.game_mode, "normal")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

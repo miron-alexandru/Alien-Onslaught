@@ -29,6 +29,7 @@ class TestThunderbird(unittest.TestCase):
     @patch("pygame.transform")
     def test_set_cosmic_conflict_pos(self, mock_transform):
         """Test the positioning for the cosmic conflict game mode."""
+        # Cosmic conflict game mode active
         self.game.settings.game_modes.cosmic_conflict = True
         self.ship.set_cosmic_conflict_pos()
         self.assertTrue(self.game.screen.get_rect.called)
@@ -38,9 +39,12 @@ class TestThunderbird(unittest.TestCase):
             self.game.screen.get_rect.return_value.left + 10,
         )
 
+        # Cosmic conflict game mode not active.
         self.game.settings.game_modes.cosmic_conflict = False
         mock_transform.reset_mock()
+
         self.ship.set_cosmic_conflict_pos()
+
         self.assertFalse(pygame.transform.rotate.called)
         self.assertEqual(self.ship.image, pygame.transform.rotate.return_value)
         self.assertEqual(

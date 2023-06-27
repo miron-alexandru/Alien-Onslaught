@@ -38,6 +38,7 @@ else:
 
 # IMAGE RELATED FINCTIONS
 
+
 def load_single_image(relative_path):
     """Loads an image based on the BASED_PATH."""
     base_path = BASE_PATH
@@ -54,6 +55,7 @@ def load_images(image_dict):
         for key, value in image_dict.items()
     }
 
+
 def load_frames(filename_pattern, num_frames, start=0):
     """Loads a sequence of image frames into a list"""
     frame_list = []
@@ -63,6 +65,7 @@ def load_frames(filename_pattern, num_frames, start=0):
         image = pygame.image.load(path)
         frame_list.append(image)
     return frame_list
+
 
 def load_alien_images(alien_prefix):
     """Load the images for the given alien prefix."""
@@ -74,15 +77,18 @@ def load_alien_images(alien_prefix):
 
     return frames
 
+
 def draw_image(screen, image, rect):
     """Draw a image to the screen."""
     screen.blit(image, rect)
+
 
 def resize_image(image, screen_size=None):
     """Resizes an image to match the current screen size."""
     if screen_size is None:
         screen_size = pygame.display.get_surface().get_size()
     return pygame.transform.smoothscale(image, screen_size)
+
 
 def load_button_imgs(button_names):
     """Load button images."""
@@ -92,11 +98,13 @@ def load_button_imgs(button_names):
         button_images[name] = filename
     return button_images
 
+
 def load_controls_image(image_surface, position):
     """Loads images for controls displayed on menu screen."""
     image = image_surface
     rect = image.get_rect(**position)
     return image, rect
+
 
 def load_boss_images():
     """Loads and returns a dict of boss images."""
@@ -105,12 +113,14 @@ def load_boss_images():
         for alien_name, alien_image_path in BOSS_RUSH.items()
     }
 
+
 def load_alien_bullets():
     """Loads and returns a dict of alien bullet images."""
     return {
         bullet_name: pygame.image.load(os.path.join(BASE_PATH, bullet_image_path))
         for bullet_name, bullet_image_path in ALIEN_BULLETS_IMG.items()
     }
+
 
 def load_boss_bullets():
     """Loads and returns a dict of boss bullet images."""
@@ -122,6 +132,7 @@ def load_boss_bullets():
 
 # SOUND RELATED FUNCTIONS:
 
+
 def load_sound_files(sounds_dict):
     """A function that loads multiple sounds from a dict of the form:
     key: sound name:
@@ -131,6 +142,7 @@ def load_sound_files(sounds_dict):
         key: pygame.mixer.Sound(os.path.join(SOUND_PATH, value))
         for key, value in sounds_dict.items()
     }
+
 
 def load_music_files(music_dict):
     """A function that loads multiple music files from a dict of the form:
@@ -142,6 +154,7 @@ def load_music_files(music_dict):
         for key, value in music_dict.items()
     }
 
+
 def play_music(music_files, music_name):
     """A function that plays the specified music using its name."""
     music_path = music_files.get(music_name)
@@ -149,15 +162,18 @@ def play_music(music_files, music_name):
         pygame.mixer.music.load(music_path)
         pygame.mixer.music.play(-1)
 
+
 def set_sounds_volume(sounds, volume):
     """Set the volume for all sounds in the passed sounds dict."""
     for sound in sounds.values():
         sound.set_volume(volume)
 
+
 def set_music_volume(music, volume):
     """Set the volume of all music."""
     for _ in music.values():
         pygame.mixer.music.set_volume(volume)
+
 
 def get_available_channels():
     """Returns a list of available sound channels."""
@@ -168,6 +184,7 @@ def get_available_channels():
         if not channel.get_busy():
             available_channels.append(channel)
     return available_channels
+
 
 def play_sound(sounds_list, sound_name):
     """Plays a certain sound located in the 'sounds_list' on an available sound channel."""
@@ -185,15 +202,18 @@ def play_sound(sounds_list, sound_name):
 
 # MISC FUNCTIONS:
 
+
 def get_colliding_sprites(ship, bullets_or_missiles):
     """Returns the sprites that collide with the given ship."""
     return pygame.sprite.spritecollide(ship, bullets_or_missiles, False)
+
 
 def get_boss_rush_title(level):
     """Set the boss rush title for each level."""
     boss_rush_key = f"boss{level}"
     boss_rush_title = BOSS_RUSH.get(boss_rush_key, f"Level {level}")
     return boss_rush_title.split("/")[-1].split(".png")[0].title()
+
 
 def display_game_modes_description(screen, description):
     """Render game modes description on screen."""
@@ -207,6 +227,7 @@ def display_game_modes_description(screen, description):
 
     for i, surface in enumerate(text_surfaces):
         screen.blit(surface, text_rects[i])
+
 
 def render_bullet_num(bullets, x_pos, y_pos, right_aligned=False):
     """Renders the bullet number and returns the image and rect."""
@@ -224,6 +245,7 @@ def render_bullet_num(bullets, x_pos, y_pos, right_aligned=False):
 
     return bullets_num_img, bullets_num_rect
 
+
 def display_message(screen, message, duration):
     """Display a message on the screen for a specified amount of time."""
     font = pygame.font.SysFont("verdana", 14)
@@ -232,6 +254,7 @@ def display_message(screen, message, duration):
     screen.blit(text, rect)
     pygame.display.flip()
     pygame.time.wait(int(duration * 1000))
+
 
 def display_laser_message(screen, message, ship, cosmic=False):
     """Display a message to the right of the ship."""
@@ -243,6 +266,7 @@ def display_laser_message(screen, message, ship, cosmic=False):
     else:
         text_rect = text.get_rect(center=(ship_rect.right + 18, ship_rect.centery - 30))
     screen.blit(text, text_rect)
+
 
 def render_text(text, font, color, start_pos, line_spacing, second_color=None):
     """Render text with new_lines and tabs."""
@@ -270,12 +294,14 @@ def render_text(text, font, color, start_pos, line_spacing, second_color=None):
 
     return text_surfaces, text_rects
 
+
 def calculate_control_positions(center, x_offset):
     """Calculate the positions of player 1 and player 2 controls."""
     p1_controls_x = center[0] - x_offset
     p2_controls_x = center[0] + x_offset
     y_pos = 260
     return (p1_controls_x, y_pos), (p2_controls_x, y_pos)
+
 
 def display_controls(controls_surface, surface):
     """Display controls on screen."""
@@ -346,6 +372,7 @@ def display_controls(controls_surface, surface):
 
 # HIGH SCORE RELATED FUNCTIONS:
 
+
 def load_high_scores(game):
     """Load the high score data from the JSON file or create a new high score list."""
     filename = SINGLE_PLAYER_FILE if game.singleplayer else MULTI_PLAYER_FILE
@@ -355,6 +382,7 @@ def load_high_scores(game):
     except (FileNotFoundError, json.JSONDecodeError):
         high_scores = DEFAULT_HIGH_SCORES
     return high_scores
+
 
 def display_high_scores(game, screen, score_key):
     """Display the high scores on the screen."""
@@ -418,19 +446,24 @@ def display_high_scores(game, screen, score_key):
         for surface, rect in zip(surfaces, rects):
             screen.blit(surface, rect)
 
+
 def draw_buttons(screen, button_info, font, text_color):
     for button in button_info:
-        pygame.draw.rect(screen, (0, 0, 0, 0), button["rect"])  # Set background color to transparent
+        pygame.draw.rect(
+            screen, (0, 0, 0, 0), button["rect"]
+        )  # Set background color to transparent
         text_surface = font.render(button["label"], True, text_color)
         text_x = button["rect"].centerx - text_surface.get_width() // 2
         text_y = button["rect"].centery - 13
         screen.blit(text_surface, (text_x, text_y))
+
 
 def draw_label(screen, text, pos, text_font, text_color):
     text_surface = text_font.render(text, True, text_color)
     text_x = pos[0] - text_surface.get_width() // 2
     text_y = pos[1] - 18
     screen.blit(text_surface, (text_x, text_y))
+
 
 def get_player_name(
     screen, background_image, cursor, high_score, game_end_img=None, game_end_rect=None
@@ -504,7 +537,13 @@ def get_player_name(
         screen.blit(high_score_surface, high_score_rect)
 
         # Draw label, buttons, and cursor
-        draw_label(screen, "High score name:", (input_box.centerx - 205, input_box.centery), text_font, text_color)
+        draw_label(
+            screen,
+            "High score name:",
+            (input_box.centerx - 205, input_box.centery),
+            text_font,
+            text_color,
+        )
         draw_buttons(screen, button_info, font, text_color)
         cursor()
 

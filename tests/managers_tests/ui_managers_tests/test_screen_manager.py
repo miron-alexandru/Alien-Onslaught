@@ -169,7 +169,6 @@ class TestScreenManager(unittest.TestCase):
     @patch("pygame.Surface", return_value=pygame.Surface((50, 100)))
     def test_draw_cursor(self, mock_surface, mock_mouse):
         """Test the draw_cursor method."""
-        mock_cursor_img = MagicMock()
         mock_cursor_rect = MagicMock()
         self.screen_manager.cursor_surface = MagicMock()
         self.settings.cursor_img = mock_surface.return_value

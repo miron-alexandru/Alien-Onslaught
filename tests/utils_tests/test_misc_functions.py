@@ -22,6 +22,7 @@ from src.utils.game_utils import (
 
 from src.utils.constants import P1_CONTROLS, P2_CONTROLS, GAME_CONTROLS
 
+
 class MiscFunctionsTests(unittest.TestCase):
     """Test miscellaneous functions."""
 
@@ -51,7 +52,7 @@ class MiscFunctionsTests(unittest.TestCase):
         mock_boss_rush.get.assert_called_once_with("boss2", "Level 2")
 
     @patch("pygame.font.SysFont")
-    @patch('src.utils.game_utils.render_text')
+    @patch("src.utils.game_utils.render_text")
     def test_display_game_modes_description(self, mock_render_text, mock_sysfont):
         """Test the display_game_modes_description function."""
         screen = MagicMock(spec=pygame.Surface)
@@ -231,8 +232,7 @@ class MiscFunctionsTests(unittest.TestCase):
         )  # Check the number of render calls
 
         expected_get_rect_calls = [
-            call(topleft=(100, 200 + i * line_spacing))
-            for i in range(expected_lines)
+            call(topleft=(100, 200 + i * line_spacing)) for i in range(expected_lines)
         ]
         # Check the get_rect calls
         render_mock.return_value.get_rect.assert_has_calls(
@@ -264,8 +264,7 @@ class MiscFunctionsTests(unittest.TestCase):
         self.assertEqual(p1_pos, expected_p1_pos)
         self.assertEqual(p2_pos, expected_p2_pos)
 
-
-    @patch('pygame.font.SysFont')
+    @patch("pygame.font.SysFont")
     def test_display_controls(self, mock_sysfont):
         """Test the display_controls function."""
         # Mocking pygame functions for testing
@@ -278,7 +277,7 @@ class MiscFunctionsTests(unittest.TestCase):
         load_controls_image.side_effect = [
             (MagicMock(), MagicMock()),
             (MagicMock(), MagicMock()),
-            (MagicMock(), MagicMock())
+            (MagicMock(), MagicMock()),
         ]
 
         render_text_mock = MagicMock()
@@ -288,8 +287,8 @@ class MiscFunctionsTests(unittest.TestCase):
             (MagicMock(), MagicMock()),
         ]
 
-        with patch('src.utils.game_utils.load_controls_image', load_controls_image):
-            with patch('src.utils.game_utils.render_text', render_text_mock):
+        with patch("src.utils.game_utils.load_controls_image", load_controls_image):
+            with patch("src.utils.game_utils.render_text", render_text_mock):
                 result = display_controls(controls_surface, surface)
                 self.assertEqual(len(result), 12)
 
@@ -297,19 +296,21 @@ class MiscFunctionsTests(unittest.TestCase):
                 mock_sysfont.assert_called_with("verdana", 20)
 
                 # Check if load_controls_image is called with the correct parameters
-                load_controls_image.assert_has_calls([
-                    call(controls_surface, {"topleft": (0, 0)}),
-                    call(controls_surface, {"topright": (0, 0)}),
-                    call(
-                        controls_surface,
-                        {
-                            "midbottom": (
-                                result[1].centerx,
-                                result[1].bottom + 225,
-                            ),
-                        },
-                    ),
-                ])
+                load_controls_image.assert_has_calls(
+                    [
+                        call(controls_surface, {"topleft": (0, 0)}),
+                        call(controls_surface, {"topright": (0, 0)}),
+                        call(
+                            controls_surface,
+                            {
+                                "midbottom": (
+                                    result[1].centerx,
+                                    result[1].bottom + 225,
+                                ),
+                            },
+                        ),
+                    ]
+                )
 
                 # Check if render_text is called with the correct parameters
                 expected_calls = [
@@ -336,6 +337,7 @@ class MiscFunctionsTests(unittest.TestCase):
                     ),
                 ]
                 render_text_mock.assert_has_calls(expected_calls)
+
 
 if __name__ == "__main__":
     unittest.main()

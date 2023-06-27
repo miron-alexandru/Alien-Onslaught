@@ -6,7 +6,6 @@ manage the ships in the game.
 import unittest
 from unittest.mock import MagicMock, patch
 
-# import pygame
 
 from src.managers.player_managers.ships_manager import ShipsManager
 

@@ -15,10 +15,10 @@ class ButtonTest(unittest.TestCase):
     """Test cases for the Button class."""
 
     @patch("src.ui.button.pygame.image.load", return_value=pygame.Surface((50, 50)))
-    def setUp(self, mock_load_image):
+    def setUp(self, _):
         """Set up test environment."""
         self.game = MagicMock()
-        self.screen = MagicMock(spec=pygame.surface.Surface)
+        self.screen = MagicMock(spec=pygame.Surface)
         self.game.screen = self.screen
         self.image_loc = "button_img_path"
         self.pos = (100, 100)
@@ -31,7 +31,7 @@ class ButtonTest(unittest.TestCase):
         self.assertEqual(self.button.screen_rect, self.screen.get_rect())
         self.assertFalse(self.button.visible)
         self.assertEqual(self.button.description, "Test Button")
-        self.assertIsInstance(self.button.image, pygame.surface.Surface)
+        self.assertIsInstance(self.button.image, pygame.Surface)
         self.assertIsInstance(self.button.rect, pygame.Rect)
         self.assertEqual(self.button.rect.x, 100)
         self.assertEqual(self.button.rect.y, 100)
@@ -43,9 +43,6 @@ class ButtonTest(unittest.TestCase):
 
     def test_button_update_pos_with_x_y(self):
         """Test the update_button_pos with x and y passed."""
-        initial_x_pos = self.button.rect.x
-        initial_y_pos = self.button.rect.y
-
         self.button.update_pos(x=50, y=-50)
 
         self.assertEqual(self.button.rect.x, 150)

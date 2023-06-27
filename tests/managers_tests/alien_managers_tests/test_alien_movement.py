@@ -60,7 +60,7 @@ class AlienMovementTestCase(unittest.TestCase):
         )
 
     @patch("pygame.time.get_ticks", return_value=3000)
-    def test_update_vertical_position(self, mock_get_ticks):
+    def test_update_vertical_position(self, _):
         """Test the update vertical position method."""
         self.alien_movement.sins = {
             "time_offset": 1 * math.pi,

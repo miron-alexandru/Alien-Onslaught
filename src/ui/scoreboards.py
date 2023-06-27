@@ -1,8 +1,7 @@
 """
-The 'scoreboards' module contains the ScoreBoard and SingleScoreboard
-class for managing the score and other UI aspects of the game such as:
-scoring, player health, available missiles.
-It also manages the saving of the highscores.
+The 'scoreboards' module contains the ScoreBoard class for
+managing the score and the HUD of the game, and also manages
+the saving and deleting of the high scores.
 """
 
 import json

@@ -30,7 +30,7 @@ class AlienAnimationTestCase(unittest.TestCase):
         self.assertEqual(self.animation.frame_counter, 0)
         self.assertEqual(self.animation.current_frame, 0)
         self.assertIsInstance(self.animation.frames, list)
-        self.assertIsInstance(self.animation.image, pygame.surface.Surface)
+        self.assertIsInstance(self.animation.image, pygame.Surface)
 
     def test_update_animation(self):
         """Test the update_animation method."""

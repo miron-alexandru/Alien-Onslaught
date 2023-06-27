@@ -65,6 +65,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* Tests for all managers
 * New tests for alien managers and player managers.
 * New tests for entities, managers and animations.
 * Added tests for animations and entities.

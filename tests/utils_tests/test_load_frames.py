@@ -1,6 +1,7 @@
+"""This module tests the load_frames function."""
+
 import os
 import unittest
-from unittest.mock import MagicMock, patch
 import pygame
 
 from src.utils.game_utils import load_frames, BASE_PATH

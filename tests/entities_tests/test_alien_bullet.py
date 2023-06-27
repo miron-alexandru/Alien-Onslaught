@@ -5,9 +5,8 @@ creating alien bullets in the game.
 
 import unittest
 from unittest.mock import MagicMock, Mock
-import pygame
+
 from src.entities.alien_bullets import AlienBullet
-from src.entities.aliens import Alien
 from src.game_logic.game_settings import Settings
 
 
@@ -19,6 +18,8 @@ class TestAlienBullet(unittest.TestCase):
         self.alien_bullet = AlienBullet(self.game)
 
     def create_mock_game(self):
+        """Helper fucntion used to create a mock game also with
+        mocked alien sprites."""
         game = MagicMock()
         game.screen = MagicMock()
         game.settings = Settings()
