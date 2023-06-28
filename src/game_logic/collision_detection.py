@@ -165,20 +165,17 @@ class CollisionManager:
         self.score_board.render_scores()
         self.score_board.update_high_score()
 
+    def handle_collision(self, ship, hit_function, sprite_group, score_increment):
+        hits = get_colliding_sprites(ship, sprite_group)
+        for sprite in hits:
+            if not ship.state.immune and not ship.state.shielded:
+                if isinstance(sprite, Missile):
+                    sprite.explode()
+                    play_sound(self.game.sound_manager.game_sounds, "missile")
+                self._update_cosmic_conflict_scores(ship, hit_function, score_increment)
+
     def check_cosmic_conflict_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to PVP projectile collisions."""
-
-        def handle_collision(ship, hit_function, sprite_group, score_increment):
-            hits = get_colliding_sprites(ship, sprite_group)
-            for sprite in hits:
-                if not ship.state.immune and not ship.state.shielded:
-                    if isinstance(sprite, Missile):
-                        sprite.explode()
-                        play_sound(self.game.sound_manager.game_sounds, "missile")
-                    self._update_cosmic_conflict_scores(
-                        ship, hit_function, score_increment
-                    )
-
         handle_collision(
             self.phoenix_ship, phoenix_hit, self.game.thunderbird_bullets, 1000
         )
