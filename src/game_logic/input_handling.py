@@ -58,7 +58,7 @@ class PlayerInput:
 
             # If the game is not paused, check for player keypresses
             case _ if not self.ui_options.paused:
-                self.handle_thunderbird_controls(
+                self._handle_thunderbird_controls(
                     event, fire_missile_method, fire_laser_method
                 )
 
@@ -135,7 +135,7 @@ class PlayerInput:
                 )
                 ship.last_bullet_time = current_time
 
-    def handle_thunderbird_controls(
+    def _handle_thunderbird_controls(
         self, event, fire_missile_method, fire_laser_method
     ):
         """Handle Thunderbird controls."""

@@ -6,6 +6,7 @@ collisions in the game.
 
 import unittest
 from unittest.mock import MagicMock, patch, call
+
 import pygame
 
 from src.game_logic.collision_detection import CollisionManager
@@ -29,6 +30,18 @@ class TestCollisionManager(unittest.TestCase):
         self.game.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.collision_manager = CollisionManager(self.game)
 
+    def test_init(self):
+        """Test the initialization of the class."""
+        self.assertEqual(self.collision_manager.game, self.game)
+        self.assertEqual(self.collision_manager.stats, self.game.stats)
+        self.assertEqual(self.collision_manager.settings, self.game.settings)
+        self.assertEqual(self.collision_manager.score_board, self.game.score_board)
+        self.assertEqual(
+            self.collision_manager.thunderbird_ship, self.game.thunderbird_ship
+        )
+        self.assertEqual(self.collision_manager.phoenix_ship, self.game.phoenix_ship)
+        self.assertEqual(self.collision_manager.handled_collisions, {})
+
     @patch("src.game_logic.collision_detection.play_sound")
     def test_shield_collisions_with_aliens(self, mock_play_sound):
         """Test the shield collisions with aliens."""
@@ -36,10 +49,6 @@ class TestCollisionManager(unittest.TestCase):
         alien = MagicMock()
         bullet = MagicMock()
         asteroid = MagicMock()
-
-        ship.state.shielded = True
-        ship.anims.shield_rect = MagicMock()
-        ship.anims.shield_rect.colliderect.return_value = True
 
         self.collision_manager.shield_collisions([ship], [alien], [bullet], [asteroid])
 
@@ -53,11 +62,6 @@ class TestCollisionManager(unittest.TestCase):
         """Test the shield collisions with bullets."""
         ship = MagicMock()
         bullet = MagicMock()
-        bullet.rect = MagicMock()
-
-        ship.state.shielded = True
-        ship.anims.shield_rect = MagicMock()
-        ship.anims.shield_rect.colliderect.return_value = True
 
         self.collision_manager._handle_collision_with_shielded_ship = MagicMock()
 
@@ -71,10 +75,6 @@ class TestCollisionManager(unittest.TestCase):
         """Test the shield collisions with asteroids."""
         ship = MagicMock()
         asteroid = MagicMock()
-
-        ship.state.shielded = True
-        ship.anims.shield_rect = MagicMock()
-        ship.anims.shield_rect.colliderect.return_value = True
 
         self.collision_manager._handle_collision_with_shielded_ship = MagicMock()
 
@@ -121,6 +121,7 @@ class TestCollisionManager(unittest.TestCase):
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.game_sounds, "asteroid_exploding"
         )
+
         phoenix_hit.assert_not_called()
 
     @patch("src.game_logic.collision_detection.play_sound")
@@ -146,25 +147,26 @@ class TestCollisionManager(unittest.TestCase):
     @patch("src.game_logic.collision_detection.play_sound")
     def test_check_asteroids_collisions_with_missiles_and_lasers(self, mock_play_sound):
         """Test the asteroids collisions with lasers and missiles."""
-        # Mock objects and set up initial conditions
+        # Mock objects
         thunder_missile = MagicMock(spec=Missile)
         thunder_missile.rect = MagicMock()
         thunder_laser = MagicMock(spec=pygame.sprite.Sprite)
         thunder_laser.rect = MagicMock()
+
         phoenix_missile = MagicMock(spec=Missile)
         phoenix_missile.rect = MagicMock()
         phoenix_laser = MagicMock(spec=pygame.sprite.Sprite)
         phoenix_laser.rect = MagicMock()
+
         asteroid = MagicMock()
         asteroid.rect = MagicMock()
-        self.game.asteroids = [asteroid]
 
+        self.game.asteroids = [asteroid]
         self.game.thunderbird_missiles = [thunder_missile]
         self.game.phoenix_missiles = [phoenix_missile]
         self.game.thunderbird_laser = [thunder_laser]
         self.game.phoenix_laser = [phoenix_laser]
 
-        # Run the collision check
         self.collision_manager.check_asteroids_collisions(MagicMock(), MagicMock())
 
         # Assertions
@@ -199,8 +201,13 @@ class TestCollisionManager(unittest.TestCase):
         self.assertTrue(power.kill.call_count, 2)
         self.thunderbird_ship.empower.assert_called_once()
         self.phoenix_ship.empower.assert_called_once()
-        power_method.has_any_call("phoenix")
-        power_method.has_any_call("thunderbird")
+
+        expected_calls = [
+            call("thunderbird"),
+            call("phoenix"),
+        ]
+
+        self.assertEqual(power_method.call_args_list, expected_calls)
 
         health_power_method.assert_not_called()
         weapon_power_method.assert_not_called()
@@ -226,9 +233,9 @@ class TestCollisionManager(unittest.TestCase):
 
         self.assertTrue(power.kill.call_count, 2)
         self.thunderbird_ship.empower.assert_called_once()
-        self.phoenix_ship.empower.assert_not_called()
         self.assertEqual(health_power_method.call_count, 1)
 
+        self.phoenix_ship.empower.assert_not_called()
         power_method.assert_not_called()
         weapon_power_method.assert_not_called()
 
@@ -265,10 +272,13 @@ class TestCollisionManager(unittest.TestCase):
         self.game.singleplayer = True
         alien = MagicMock(spec=pygame.sprite.Sprite)
         alien.rect = MagicMock()
+
         thunder_bullet = MagicMock(spec=pygame.sprite.Sprite)
         thunder_bullet.rect = MagicMock()
+
         phoenix_bullet = MagicMock(spec=pygame.sprite.Sprite)
         phoenix_bullet.rect = MagicMock()
+
         self.collision_manager._handle_alien_hits = MagicMock()
         self.game.aliens = [alien]
 
@@ -289,13 +299,13 @@ class TestCollisionManager(unittest.TestCase):
 
     def test_update_cosmic_conflict_scores(self):
         """Test the update_cosmic_conflict_scores method."""
+        # Thunderbird ship test case
         self.game.stats.phoenix_score = 0
         self.game.stats.thunderbird_score = 0
-
         ship = self.thunderbird_ship
-        hit_function = MagicMock()
         score_increment = 50
 
+        hit_function = MagicMock()
         self.game.score_board.render_scores = MagicMock()
         self.game.score_board.update_high_score = MagicMock()
 
@@ -308,6 +318,7 @@ class TestCollisionManager(unittest.TestCase):
         self.assertTrue(self.game.score_board.render_scores.called)
         self.assertTrue(self.game.score_board.update_high_score.called)
 
+        # Phoenix ship test case
         ship = self.phoenix_ship
 
         self.collision_manager._update_cosmic_conflict_scores(
@@ -325,13 +336,14 @@ class TestCollisionManager(unittest.TestCase):
         """Test the handle_collision method."""
         mock_get_sprite.return_value = [MagicMock(spec=Missile)]
         missile = mock_get_sprite.return_value[0]
+
         ship = self.thunderbird_ship
         ship.state.immune = False
         ship.state.shielded = False
         score_increment = 1000
+
         sprite_group = MagicMock()
         hit_function = MagicMock()
-
         self.collision_manager._update_cosmic_conflict_scores = MagicMock()
 
         self.collision_manager.handle_collision(
@@ -378,6 +390,7 @@ class TestCollisionManager(unittest.TestCase):
         """Test the check_alien_ship_collisions method."""
         alien = MagicMock(spec=pygame.sprite.Sprite)
         alien.rect = MagicMock()
+
         self.collision_manager._check_aliens_bottom = MagicMock()
         self.thunderbird_ship.state.alive = True
         self.thunderbird_ship.state.immune = False
@@ -392,7 +405,6 @@ class TestCollisionManager(unittest.TestCase):
 
         thunderbird_hit.assert_called_once()
         phoenix_hit.assert_called_once()
-
         self.collision_manager._check_aliens_bottom.assert_called_once()
 
     def test_check_aliens_bottom_aliens_below_bottom(self):
@@ -438,9 +450,10 @@ class TestCollisionManager(unittest.TestCase):
 
         self.collision_manager._check_aliens_bottom()
 
-        alien.kill.assert_not_called()
         self.assertEqual(self.game.stats.thunderbird_score, 1000)
         self.assertEqual(self.game.stats.phoenix_score, 1000)
+
+        alien.kill.assert_not_called()
         self.game.score_board.render_scores.assert_not_called()
         self.game.score_board.update_high_score.assert_not_called()
 
@@ -450,8 +463,10 @@ class TestCollisionManager(unittest.TestCase):
         self.game.singleplayer = True
         alien = MagicMock(spec=pygame.sprite.Sprite)
         alien.rect = MagicMock()
+
         thunder_missile = MagicMock(spec=pygame.sprite.Sprite)
         thunder_missile.rect = MagicMock()
+
         phoenix_missile = MagicMock(spec=pygame.sprite.Sprite)
         phoenix_missile.rect = MagicMock()
 
@@ -474,6 +489,7 @@ class TestCollisionManager(unittest.TestCase):
 
         self.collision_manager.check_missile_alien_collisions()
 
+        # Assert that the methods were called for both cases
         self.assertEqual(
             self.collision_manager._handle_player_missile_collisions.call_count, 2
         )
@@ -488,18 +504,20 @@ class TestCollisionManager(unittest.TestCase):
 
         alien = MagicMock(spec=pygame.sprite.Sprite)
         alien.rect = MagicMock()
+
         boss_alien = MagicMock(spec=BossAlien)
         boss_alien.rect = MagicMock()
         boss_alien.last_hit_time = 0
         boss_alien.hit_count = 0
+
         laser = MagicMock(spec=pygame.sprite.Sprite)
         laser.rect = MagicMock()
+
         self.game.thunderbird_laser = pygame.sprite.Group(laser)
         self.game.phoenix_laser = pygame.sprite.Group(laser)
         self.game.aliens = [alien, boss_alien]
         self.game.aliens[0].immune_state = False
 
-        # Run the method being tested
         self.collision_manager.check_laser_alien_collisions()
 
         expected_calls = [
@@ -532,7 +550,6 @@ class TestCollisionManager(unittest.TestCase):
 
         self.collision_manager._play_missile_sound(aliens)
 
-        # Assert that the play_sound method was called with the correct arguments
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.game_sounds, "missile"
         )
@@ -543,7 +560,7 @@ class TestCollisionManager(unittest.TestCase):
         missile1 = MagicMock()
         missile2 = MagicMock()
 
-        # Set up the player missile collisions dictionary
+        # Set up the player missile collisions
         player_missile_collisions = {
             missile1: [MagicMock()],
             missile2: [MagicMock()],
@@ -553,7 +570,7 @@ class TestCollisionManager(unittest.TestCase):
             player_missile_collisions, "thunderbird"
         )
 
-        # Assert that the explode method was called for each player missile
+        # Assert that the explode method was called for each missile
         self.assertTrue(missile1.explode.called)
         self.assertTrue(missile2.explode.called)
 
@@ -561,6 +578,7 @@ class TestCollisionManager(unittest.TestCase):
         self.assertEqual(
             self.collision_manager._check_missile_ex_collision.call_count, 2
         )
+
         expected_calls = [
             call(
                 self.game.aliens,
@@ -573,12 +591,13 @@ class TestCollisionManager(unittest.TestCase):
                 missile2,
             ),
         ]
+
         self.assertEqual(
             self.collision_manager._check_missile_ex_collision.call_args_list,
             expected_calls,
         )
 
-    @patch("pygame.sprite.spritecollideany")
+    @patch("src.game_logic.collision_detection.pygame.sprite.spritecollideany")
     def test_check_alien_bullets_collisions(self, mock_collide):
         """Test the check_alien_bullets_collisions method."""
         # Collisions are happening and one ship is immune
@@ -623,40 +642,226 @@ class TestCollisionManager(unittest.TestCase):
     @patch("src.game_logic.collision_detection.play_sound")
     def test_handle_boss_alien_collision(self, mock_play_sound):
         """Test the handle_boss_alien_collision method."""
-        # Case when the boss is not yet destroyed
+        player = "thunderbird"
         self.game.settings.boss_hp = 10
         self.game.stats.thunderbird_score = 0
         self.game.stats.phoenix_score = 0
         self.game.settings.boss_points = 1500
-        alien = MagicMock()
-        alien.hit_count = 5
-        alien.is_alive = True
-        player = "thunderbird"
+
+        boss = MagicMock()
+        boss.hit_count = 5
+        boss.is_alive = True
 
         self.game.aliens = MagicMock()
         self.game.score_board.render_scores = MagicMock()
         self.game.score_board.update_high_score = MagicMock()
 
-        self.collision_manager._handle_boss_alien_collision(alien, player)
+        # Case when the boss hit count has not reached the
+        # boss_hp so the boss is not destroyed.
+        self.collision_manager._handle_boss_alien_collision(boss, player)
 
-        alien.destroy_alien.assert_not_called()
+        boss.destroy_alien.assert_not_called()
         mock_play_sound.assert_not_called()
 
-        alien.hit_count = 10
+        # Case when the hit_count matches the boss hp so the
+        # boss is destroyed.
+        boss.hit_count = 10
 
-        self.collision_manager._handle_boss_alien_collision(alien, player)
+        self.collision_manager._handle_boss_alien_collision(boss, player)
 
-        alien.destroy_alien.assert_called_once()
+        boss.destroy_alien.assert_called_once()
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.game_sounds, "boss_exploding"
         )
-        self.game.aliens.remove.assert_called_once_with(alien)
+        self.game.aliens.remove.assert_called_once_with(boss)
         self.assertEqual(
             self.game.stats.thunderbird_score, self.game.settings.boss_points
         )
         self.assertEqual(self.game.stats.phoenix_score, 0)
         self.game.score_board.render_scores.assert_called_once()
         self.game.score_board.update_high_score.assert_called_once()
+
+    def test_handle_alien_hits_boss_alien(self):
+        """Test the handle_alien_hits with a boss."""
+        player = "thunderbird"
+
+        # Create mock boss
+        boss_alien = MagicMock(spec=BossAlien)
+        boss_alien.hit_count = 0
+        boss_alien.is_baby = False
+        boss_alien.immune_state = False
+
+        # Create mock collisions
+        player_ship_collisions = {"some_key": [boss_alien]}
+
+        self.game.stats.level = 1
+        self.collision_manager._handle_boss_alien_collision = MagicMock()
+        self.collision_manager._update_stats = MagicMock()
+
+        self.collision_manager._handle_alien_hits(player_ship_collisions, player)
+
+        # Assertions
+        self.assertEqual(boss_alien.hit_count, 1)
+        self.collision_manager._handle_boss_alien_collision.assert_called_with(
+            boss_alien, player
+        )
+
+        self.collision_manager._update_stats.assert_not_called()
+
+    def test_handle_alien_hits_aliens(self):
+        """Test the handle_alien_hits method with normal and baby
+        aliens."""
+        player = "phoenix"
+
+        alien = MagicMock()
+        alien.hit_count = 3
+        alien.is_baby = False
+        alien.immune_state = False
+
+        # Create mock collisions
+        player_ship_collisions = {"some_key": [alien]}
+        self.game.stats.level = 5
+        self.collision_manager._handle_boss_alien_collision = MagicMock()
+        self.collision_manager._update_stats = MagicMock()
+
+        # Normal alien test case
+        self.collision_manager._handle_alien_hits(player_ship_collisions, player)
+
+        # Assertions
+        self.assertEqual(alien.hit_count, 4)
+        self.collision_manager._update_stats.assert_called_once_with(alien, player)
+
+        self.collision_manager._handle_boss_alien_collision.assert_not_called()
+
+        # Baby alien test case
+        self.collision_manager._update_stats.reset_mock()
+        alien.is_baby = True
+
+        self.collision_manager._handle_alien_hits(player_ship_collisions, player)
+
+        self.assertEqual(alien.hit_count, 5)
+        self.collision_manager._update_stats.assert_called_once_with(alien, player)
+
+        self.collision_manager._handle_boss_alien_collision.assert_not_called()
+
+    @patch("src.game_logic.collision_detection.play_sound")
+    def test_update_stats(self, mock_play_sound):
+        """Test the update_stats method."""
+        player1 = "thunderbird"
+        player2 = "phoenix"
+
+        alien = MagicMock()
+
+        self.game.score_board.render_scores = MagicMock()
+        self.game.score_board.update_high_score = MagicMock()
+        self.game.aliens = MagicMock()
+
+        self.game.settings.alien_points = 5
+        self.game.stats.thunderbird_score = 0
+        self.game.stats.phoenix_score = 0
+        self.thunderbird_ship.aliens_killed = 0
+        self.phoenix_ship.aliens_killed = 0
+
+        # Player1 test case
+        self.collision_manager._update_stats(alien, player1)
+
+        self.assertEqual(
+            self.game.stats.thunderbird_score, self.game.settings.alien_points
+        )
+        self.assertEqual(self.thunderbird_ship.aliens_killed, 1)
+        alien.destroy_alien.assert_called_once()
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "alien_exploding"
+        )
+        self.game.aliens.remove.assert_called_once_with(alien)
+
+        # Player2 test case
+        alien.reset_mock()
+        mock_play_sound.reset_mock()
+        self.game.aliens.reset_mock()
+
+        self.collision_manager._update_stats(alien, player2)
+
+        self.assertEqual(self.game.stats.phoenix_score, self.game.settings.alien_points)
+        self.assertEqual(self.phoenix_ship.aliens_killed, 1)
+        alien.destroy_alien.assert_called_once()
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "alien_exploding"
+        )
+        self.game.aliens.remove.assert_called_once_with(alien)
+
+        # Assert that the methods were called for each player one time.
+        self.assertEqual(self.game.score_board.render_scores.call_count, 2)
+        self.assertEqual(self.game.score_board.update_high_score.call_count, 2)
+
+    @patch("src.game_logic.collision_detection.play_sound")
+    def test_check_missile_ex_collision_with_aliens(self, mock_play_sound):
+        """Test the check_missile_ex_collision with aliens."""
+        player = "thunderbird"
+
+        alien = MagicMock()
+        missile = MagicMock()
+        missile.rect.center = (100, 100)
+
+        # mock ex_frame
+        ex_frame = MagicMock()
+        ex_frame.get_rect.return_value = MagicMock()
+        ex_frame.get_rect.return_value.colliderect.return_value = True
+
+        missile.destroy_anim.ex_frames = [ex_frame]
+
+        self.collision_manager._update_stats = MagicMock()
+        self.collision_manager._handle_boss_alien_collision = MagicMock()
+
+        self.collision_manager._check_missile_ex_collision([alien], player, missile)
+
+        # Assertions
+        ex_frame.get_rect.assert_called_with(center=missile.rect.center)
+        ex_frame.get_rect.return_value.colliderect.assert_called_with(alien.rect)
+        self.collision_manager._update_stats.assert_called_with(alien, player)
+        self.assertEqual(self.collision_manager.handled_collisions, {})
+
+        self.collision_manager._handle_boss_alien_collision.assert_not_called()
+        mock_play_sound.assert_not_called()
+
+    @patch("src.game_logic.collision_detection.play_sound")
+    def test_check_missile_ex_collision_with_alien_boss(self, mock_play_sound):
+        """Test the check_missile_ex_collision with aliens."""
+        player = "thunderbird"
+
+        boss = MagicMock(spec=BossAlien)
+        boss.rect = MagicMock()
+        boss.hit_count = 0
+
+        missile = MagicMock()
+        missile.rect.center = (100, 100)
+
+        # mock ex_frame
+        ex_frame = MagicMock()
+        ex_frame.get_rect.return_value = MagicMock()
+        ex_frame.get_rect.return_value.colliderect.return_value = True
+
+        missile.destroy_anim.ex_frames = [ex_frame]
+
+        self.collision_manager._update_stats = MagicMock()
+        self.collision_manager._handle_boss_alien_collision = MagicMock()
+
+        self.collision_manager._check_missile_ex_collision([boss], player, missile)
+
+        # Assertions
+        ex_frame.get_rect.assert_called_with(center=missile.rect.center)
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "missile"
+        )
+        self.assertEqual(boss.hit_count, 5)
+        self.collision_manager._handle_boss_alien_collision.assert_called_once_with(
+            boss, player
+        )
+        self.assertEqual(
+            self.collision_manager.handled_collisions, {(missile, boss): True}
+        )
+
+        self.collision_manager._update_stats.assert_not_called()
 
 
 if __name__ == "__main__":
