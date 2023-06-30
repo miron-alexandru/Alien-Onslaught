@@ -176,22 +176,22 @@ class CollisionManager:
 
     def check_cosmic_conflict_collisions(self, thunderbird_hit, phoenix_hit):
         """Respond to PVP projectile collisions."""
-        handle_collision(
+        self.handle_collision(
             self.phoenix_ship, phoenix_hit, self.game.thunderbird_bullets, 1000
         )
-        handle_collision(
+        self.handle_collision(
             self.thunderbird_ship, thunderbird_hit, self.game.phoenix_bullets, 1000
         )
-        handle_collision(
+        self.handle_collision(
             self.phoenix_ship, phoenix_hit, self.game.thunderbird_missiles, 1000
         )
-        handle_collision(
+        self.handle_collision(
             self.thunderbird_ship, thunderbird_hit, self.game.phoenix_missiles, 1000
         )
-        handle_collision(
+        self.handle_collision(
             self.phoenix_ship, phoenix_hit, self.game.thunderbird_laser, 1000
         )
-        handle_collision(
+        self.handle_collision(
             self.thunderbird_ship, thunderbird_hit, self.game.phoenix_laser, 1000
         )
 

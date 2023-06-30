@@ -39,7 +39,9 @@ class TestPlayerInput(unittest.TestCase):
     @patch("src.game_logic.input_handling.pygame.quit")
     @patch("src.game_logic.input_handling.sys.exit")
     @patch("src.game_logic.input_handling.pygame.time.delay")
-    def test_check_keydown_events_quit(self, mock_delay, mock_exit, mock_quit, mock_play_sound):
+    def test_check_keydown_events_quit(
+        self, mock_delay, mock_exit, mock_quit, mock_play_sound
+    ):
         """Test the Q keypress event."""
         event_mock = MagicMock()
         event_mock.key = pygame.K_q
@@ -140,7 +142,9 @@ class TestPlayerInput(unittest.TestCase):
 
         run_menu_mock = MagicMock()
 
-        with patch("src.game_logic.input_handling.pygame.time.delay") as time_delay_mock:
+        with patch(
+            "src.game_logic.input_handling.pygame.time.delay"
+        ) as time_delay_mock:
             self.player_input.check_keydown_events(
                 event_mock,
                 MagicMock(),

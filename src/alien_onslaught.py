@@ -45,6 +45,9 @@ from src.managers.player_managers.ships_manager import ShipsManager
 class AlienOnslaught:
     """Overall class to manage game assets and behavior for the multiplayer version."""
 
+    MENU_RUNNING = True
+    GAME_RUNNING = True
+
     def __init__(self, singleplayer=False):
         """Initialize the game, and create game resources."""
         pygame.init()
@@ -166,7 +169,7 @@ class AlienOnslaught:
         """Run the main menu screen"""
         self.sound_manager.load_sounds("menu_sounds")
         play_music(self.sound_manager.menu_music, "menu")
-        while True:
+        while self.MENU_RUNNING:
             self.handle_menu_events()
             self.screen_manager.update_window_mode()
             self.screen_manager.draw_menu_objects(self.bg_img, self.bg_img_rect)
@@ -253,9 +256,8 @@ class AlienOnslaught:
 
     def run_game(self):
         """Main loop for the game."""
-        running = True
         i = 0
-        while running:
+        while self.GAME_RUNNING:
             self.check_events()
             self.game_over_manager.check_game_over()
             self.screen_manager.update_window_mode()
@@ -269,7 +271,6 @@ class AlienOnslaught:
                 self._check_for_pause()
             else:
                 self.screen.blit(self.bg_img, [0, 0])
-                self.game_over_manager.check_game_over()
                 self._update_screen()
             self.clock.tick(60)
 
@@ -445,6 +446,7 @@ class AlienOnslaught:
         self.score_board.render_high_score()
         self.score_board.prep_level()
         self.score_board.create_health()
+
         # Prepare sounds
         self.sound_manager.prepare_level_music()
         play_sound(self.sound_manager.game_sounds, "warp")
