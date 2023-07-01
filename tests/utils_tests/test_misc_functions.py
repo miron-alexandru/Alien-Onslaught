@@ -101,6 +101,7 @@ class MiscFunctionsTests(unittest.TestCase):
         self.assertEqual(bullets_num_rect, bullets_num_img.get_rect.return_value)
         self.assertEqual(bullets_num_rect.top, y_pos)
         self.assertEqual(bullets_num_rect.left, x_pos)
+
         font.render.assert_called_once_with(
             f"Remaining bullets: {bullets}", True, (238, 75, 43), None
         )
@@ -119,6 +120,7 @@ class MiscFunctionsTests(unittest.TestCase):
         self.assertEqual(bullets_num_rect, bullets_num_img.get_rect.return_value)
         self.assertEqual(bullets_num_rect.top, y_pos)
         self.assertEqual(bullets_num_rect.right, x_pos)
+
         font.render.assert_called_once_with(
             f"Remaining bullets: {bullets}", True, (238, 75, 43), None
         )

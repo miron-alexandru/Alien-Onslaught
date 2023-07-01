@@ -3,9 +3,10 @@ This module tests various functions from the game_utils modules
 that are related to sounds.
 """
 
-import unittest
-from unittest.mock import patch
 import os
+import unittest
+from unittest.mock import patch, call
+
 import pygame
 
 from src.utils.game_utils import (
@@ -32,6 +33,9 @@ class SoundUtilsTest(unittest.TestCase):
         self.sounds_dict = {"sound1": "sound1.wav", "sound2": "sound2.wav"}
 
         self.music_dict = {"music1": "music1.mp3", "music2": "music2.mp3"}
+
+    def tearDown(self):
+        pygame.mixer.quit()
 
     @patch("src.utils.game_utils.SOUND_PATH", SOUND_PATH)
     def test_load_sound_files(self):
@@ -65,9 +69,9 @@ class SoundUtilsTest(unittest.TestCase):
             # Call the function being tested
             play_music(music_files, music_name)
 
-            # Assert that pygame.mixer.music.load and pygame.mixer.music.play were called
-            mock_music.load.assert_called_once_with(music_files[music_name])
-            mock_music.play.assert_called_once_with(-1)
+        # Assert that pygame.mixer.music.load and pygame.mixer.music.play were called
+        mock_music.load.assert_called_once_with(music_files[music_name])
+        mock_music.play.assert_called_once_with(-1)
 
     def test_set_sounds_volume(self):
         """Test setting sounds volume."""
@@ -81,9 +85,9 @@ class SoundUtilsTest(unittest.TestCase):
             # Call the function being tested
             set_sounds_volume(sounds, volume)
 
-            # Assert that the set_volume method was called for each sound
-            for sound in mock_sound.return_value:
-                sound.set_volume.assert_called_once_with(volume)
+        # Assert that the set_volume method was called for each sound
+        for sound in mock_sound.return_value:
+            sound.set_volume.assert_called_once_with(volume)
 
     def test_set_music_volume(self):
         """Test setting music volume."""
@@ -120,7 +124,6 @@ class SoundUtilsTest(unittest.TestCase):
             "sound1": pygame.mixer.Sound(os.path.join(SOUND_PATH, "sound1.wav")),
             "sound2": pygame.mixer.Sound(os.path.join(SOUND_PATH, "sound2.wav")),
         }
-        sound_name = "sound1"
 
         with patch("pygame.mixer.Channel") as mock_channel, patch(
             "src.utils.game_utils.get_available_channels"
@@ -130,22 +133,33 @@ class SoundUtilsTest(unittest.TestCase):
                 pygame.mixer.Channel(3),
             ]
 
-            # Call the function being tested
-            play_sound(sounds_list, sound_name)
+            # Call the function two times to test for both sounds
+            play_sound(sounds_list, "bullet")
+            play_sound(sounds_list, "alien_exploding")
+            play_sound(sounds_list, "sound1")
 
-            # Assert the expected behavior based on the sound_name
-            if sound_name == "bullet":
-                mock_channel.assert_called_once_with(7)
-            elif sound_name == "alien_exploding":
-                mock_channel.assert_called_once_with(6)
-            else:
-                mock_get_available_channels.assert_called_once()
-                self.assertEqual(mock_channel.call_count, 2)
+        expected_calls = [
+            call(2),
+            call(3),
+            call(7),
+            call(6),
+        ]
 
-            # Assert that the play method was called with the correct sound
-            mock_channel.return_value.play.assert_called_once_with(
-                sounds_list[sound_name]
-            )
+        self.assertEqual(mock_channel.call_args_list, expected_calls)
+
+        mock_get_available_channels.assert_called_once()
+        self.assertEqual(mock_channel.call_count, 4)
+
+        # Assert that the play method was called with the correct sound
+        expected_play_calls = [
+            call(sounds_list["bullet"]),
+            call(sounds_list["alien_exploding"]),
+            call(sounds_list["sound1"]),
+        ]
+
+        self.assertEqual(
+            mock_channel.return_value.play.call_args_list, expected_play_calls
+        )
 
 
 if __name__ == "__main__":

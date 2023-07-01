@@ -5,8 +5,9 @@ creating powers in the game.
 import time
 import unittest
 from unittest.mock import MagicMock, patch
+
 import pygame
-import pygame.sprite
+
 from src.managers.powers_manager import PowerEffectsManager
 from src.game_logic.game_settings import Settings
 
@@ -18,11 +19,9 @@ class TestPowerEffectsManager(unittest.TestCase):
         """Set up test environment."""
         pygame.mixer.init()
         self.game = MagicMock()
-        self.game.powers = MagicMock(spec=pygame.sprite.Group())
         self.score_board = MagicMock()
         self.stats = MagicMock()
         self.sound_manager = MagicMock()
-        self.sound_manager.game_sounds = MagicMock(spec=pygame.mixer.Sound)
         self.settings = Settings()
         self.game.settings = self.settings
         self.power_effects_manager = PowerEffectsManager(
@@ -30,7 +29,9 @@ class TestPowerEffectsManager(unittest.TestCase):
         )
         self.power_effects_manager.settings = self.settings
         self.game.sound_manager = self.sound_manager
-        self.game.weapons_manager = MagicMock()
+
+    def tearDown(self):
+        pygame.mixer.quit()
 
     def test_init(self):
         """Test the initialization of the manager."""
@@ -58,8 +59,8 @@ class TestPowerEffectsManager(unittest.TestCase):
     @patch("src.managers.powers_manager.random")
     def test_create_powers(self, mock_random, mock_time):
         """Test the creation of the powers."""
-        mock_time.time.side_effect = [1, 16]  # Mock time elapsed of 15 seconds
-        mock_random.randint.return_value = 15  # Mock random interval of 15
+        mock_time.time.side_effect = [1, 16]
+        mock_random.randint.return_value = 15
 
         self.power_effects_manager.create_power_up_or_penalty = MagicMock()
 
@@ -97,7 +98,6 @@ class TestPowerEffectsManager(unittest.TestCase):
     @patch("src.managers.powers_manager.play_sound")
     def test_weapon_power_up(self, mock_play_sound):
         """Test the weapon power up."""
-
         self.power_effects_manager.weapon_power_up("phoenix", "fire_bullet")
 
         self.game.weapons_manager.set_weapon.assert_called_once_with(
@@ -162,10 +162,10 @@ class TestPowerEffectsManager(unittest.TestCase):
             mock_choice.return_value = self.power_effects_manager.freeze_enemies
             self.power_effects_manager.apply_powerup_or_penalty(player)
 
-            mock_freeze_enemies.assert_called_once_with(player)
-            mock_play_sound.assert_called_once_with(
-                self.sound_manager.game_sounds, "freeze"
-            )
+        mock_freeze_enemies.assert_called_once_with(player)
+        mock_play_sound.assert_called_once_with(
+            self.sound_manager.game_sounds, "freeze"
+        )
 
     @patch("src.managers.powers_manager.play_sound")
     def test_apply_powerup_or_penalty_normal(self, mock_play_sound):
@@ -180,10 +180,10 @@ class TestPowerEffectsManager(unittest.TestCase):
             mock_choice.return_value = self.power_effects_manager.increase_ship_speed
             self.power_effects_manager.apply_powerup_or_penalty(player)
 
-            mock_increase_ship_speed.assert_called_once_with(player)
-            mock_play_sound.assert_called_once_with(
-                self.sound_manager.game_sounds, "power_up"
-            )
+        mock_increase_ship_speed.assert_called_once_with(player)
+        mock_play_sound.assert_called_once_with(
+            self.sound_manager.game_sounds, "power_up"
+        )
 
     @patch("src.managers.powers_manager.play_sound")
     def test_apply_powerup_or_penalty_penalties(self, mock_play_sound):
@@ -197,10 +197,10 @@ class TestPowerEffectsManager(unittest.TestCase):
             mock_choice.return_value = self.power_effects_manager.disarm_ship
             self.power_effects_manager.apply_powerup_or_penalty(player)
 
-            mock_disarm_ship.assert_called_once_with(player)
-            mock_play_sound.assert_called_once_with(
-                self.sound_manager.game_sounds, "penalty"
-            )
+        mock_disarm_ship.assert_called_once_with(player)
+        mock_play_sound.assert_called_once_with(
+            self.sound_manager.game_sounds, "penalty"
+        )
 
     def test_manage_power_downs(self):
         """Test the manage power downs method when the power
@@ -316,7 +316,6 @@ class TestPowerEffectsManager(unittest.TestCase):
 
     def test_alien_upgrade(self):
         """Test the alien upgrade penalty."""
-        self.game.aliens = MagicMock()
         aliens = [MagicMock() for _ in range(12)]
         self.game.aliens.sprites = MagicMock(return_value=aliens)
 
@@ -329,8 +328,6 @@ class TestPowerEffectsManager(unittest.TestCase):
 
     def test_increase_alien_numbers(self):
         """Test the increase alien numbers penalty."""
-        self.game.aliens_manager = MagicMock()
-
         self.power_effects_manager.increase_alien_numbers()
 
         self.assertTrue(self.game.aliens_manager.create_fleet.called_with(1))
@@ -339,13 +336,13 @@ class TestPowerEffectsManager(unittest.TestCase):
         """Test the increase alien hp penalty."""
         alien1 = MagicMock()
         alien2 = MagicMock()
-        alien1.hit_count = alien2.hit_count = 0
+        alien1.hit_count = alien2.hit_count = 2
         self.game.aliens = [alien1, alien2]
 
         self.power_effects_manager.increase_alien_hp()
 
-        self.assertEqual(alien1.hit_count, -1)
-        self.assertEqual(alien2.hit_count, -1)
+        self.assertEqual(alien1.hit_count, 1)
+        self.assertEqual(alien2.hit_count, 1)
 
     def test_increase_asteroid_freq(self):
         """Test the increase asteroid freq penalty."""

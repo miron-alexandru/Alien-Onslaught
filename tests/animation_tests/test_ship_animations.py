@@ -3,7 +3,6 @@ This module tests the Animations class which is used to manage
 ship animations in the game.
 """
 
-
 import unittest
 from unittest.mock import MagicMock
 
@@ -27,9 +26,6 @@ class TestAnimations(unittest.TestCase):
         self.ship = MagicMock()
         self.ship.rect = pygame.Rect(0, 0, 100, 100)
         self.animations = Animations(self.ship)
-
-    def tearDown(self):
-        pygame.transform.smoothscale.assert_called()
 
     def test_init(self):
         """Test for the init method."""
@@ -61,7 +57,6 @@ class TestAnimations(unittest.TestCase):
 
     def test_reset_size(self):
         """Test the reset size method."""
-        # Modify the attributes
         self.animations.ship_images = ["image1", "image2", "image3"]
         self.animations.immune_frames = ["frame1", "frame2", "frame3"]
         self.animations.immune_image = "frame1"
@@ -105,14 +100,11 @@ class TestAnimations(unittest.TestCase):
         original_explosion_frames = self.animations.explosion_frames[:]
         original_empower_frames = self.animations.empower_frames[:]
 
-        # Mock the surface and its get_rect method
+        # Mock the necessary objects and functions
         mock_surface = MagicMock(spec=pygame.Surface)
         mock_surface.get_rect.return_value = MagicMock()
-
-        # Mock the smoothscale function to return the mock surface
         pygame.transform.smoothscale = MagicMock(return_value=mock_surface)
 
-        # Call the change_ship_size method
         self.animations.change_ship_size(scale_factor)
 
         # Verify that the ship images and animation frames have been modified

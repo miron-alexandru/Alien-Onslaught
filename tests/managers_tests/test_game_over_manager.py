@@ -3,7 +3,6 @@ This module tests the EndGameManager which manages the endgame
 behaviors.
 """
 
-
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -20,8 +19,6 @@ class MockGame:
         self.ui_options = MagicMock()
         self.sound_manager = MagicMock()
         self.gameplay_manager = MagicMock()
-        self.gameplay_manager.set_cosmic_conflict_high_score = MagicMock()
-        self.gameplay_manager.reset_game_objects = MagicMock()
         self.reset_bg = MagicMock()
         self.score_board = MagicMock()
 
@@ -104,29 +101,26 @@ class TestEndGameManager(unittest.TestCase):
 
             mock_display_endgame.assert_called_with("gameover")
 
-    def test_display_game_over(self):
+    @patch("src.managers.game_over_manager.EndGameManager.set_game_end_position")
+    @patch("src.managers.game_over_manager.EndGameManager._play_game_over_sound")
+    @patch("src.managers.game_over_manager.EndGameManager._check_high_score_saved")
+    def test_display_game_over(
+        self,
+        mock_check_high_score_saved,
+        mock_play_game_over_sound,
+        mock_set_game_end_position,
+    ):
         """Test the display game over method."""
-        self.settings.game_end_img = MagicMock()
+        self.end_game_manager._display_game_over()
 
-        with patch(
-            "src.managers.game_over_manager.EndGameManager.set_game_end_position"
-        ) as mock_set_game_end_position:
-            with patch(
-                "src.managers.game_over_manager.EndGameManager._play_game_over_sound"
-            ) as mock_play_game_over_sound:
-                with patch(
-                    "src.managers.game_over_manager.EndGameManager._check_high_score_saved"
-                ) as mock_check_high_score_saved:
-                    self.end_game_manager._display_game_over()
-
-                    self.game.score_board.update_high_score.assert_called()
-                    mock_set_game_end_position.assert_called()
-                    self.screen.blit.assert_called_with(
-                        self.settings.game_end_img, self.settings.game_end_rect
-                    )
-                    self.game.gameplay_manager.reset_game_objects.assert_called()
-                    mock_play_game_over_sound.assert_called()
-                    mock_check_high_score_saved.assert_called()
+        self.game.score_board.update_high_score.assert_called_once()
+        self.screen.blit.assert_called_once_with(
+            self.settings.game_end_img, self.settings.game_end_rect
+        )
+        self.game.gameplay_manager.reset_game_objects.assert_called_once()
+        mock_set_game_end_position.assert_called_once()
+        mock_play_game_over_sound.assert_called_once()
+        mock_check_high_score_saved.assert_called_once()
 
     def test_play_game_over_sound_already_played(self):
         """Test the play game over sound when the sound was
@@ -136,7 +130,7 @@ class TestEndGameManager(unittest.TestCase):
         with patch("src.managers.game_over_manager.play_music") as mock_play_music:
             self.end_game_manager._play_game_over_sound()
 
-            mock_play_music.assert_not_called()
+        mock_play_music.assert_not_called()
 
     def test_play_game_over_sound_first_time(self):
         """Test the play game over sound when the sound
@@ -144,25 +138,23 @@ class TestEndGameManager(unittest.TestCase):
         """
         self.game.ui_options.game_over_sound_played = False
         self.end_game_manager.ending_music = "game_over"
-        self.game.sound_manager.menu_music = MagicMock()
 
         with patch("src.managers.game_over_manager.play_music") as mock_play_music:
             self.end_game_manager._play_game_over_sound()
 
-            mock_play_music.assert_called_with(
-                self.game.sound_manager.menu_music, "game_over"
-            )
-            self.assertEqual(self.game.ui_options.game_over_sound_played, True)
-            self.assertEqual(
-                self.game.sound_manager.current_sound,
-                self.game.sound_manager.menu_music["game_over"],
-            )
+        mock_play_music.assert_called_with(
+            self.game.sound_manager.menu_music, "game_over"
+        )
+        self.assertEqual(self.game.ui_options.game_over_sound_played, True)
+        self.assertEqual(
+            self.game.sound_manager.current_sound,
+            self.game.sound_manager.menu_music["game_over"],
+        )
 
     def test_set_game_end_position(self):
         """Test te positioning of the ending text on screen."""
         self.settings.screen_width = 800
         self.settings.screen_height = 600
-        self.settings.game_end_rect = MagicMock()
 
         self.end_game_manager.set_game_end_position()
 

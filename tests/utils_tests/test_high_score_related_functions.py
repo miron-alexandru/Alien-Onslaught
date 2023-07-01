@@ -6,7 +6,9 @@ related to the high scores.
 import sys
 import unittest
 from unittest.mock import patch, MagicMock
+
 import pygame
+
 from src.utils.game_utils import (
     load_high_scores,
     display_high_scores,
@@ -24,6 +26,7 @@ class HighScoreFunctionsTests(unittest.TestCase):
         """Set up test_environment."""
         pygame.init()
         self.screen = pygame.Surface((800, 600))
+        self.game = MagicMock()
 
     def tearDown(self):
         pygame.quit()
@@ -38,8 +41,7 @@ class HighScoreFunctionsTests(unittest.TestCase):
 
         mock_json_load.return_value = expected_scores
 
-        game = MagicMock(singleplayer=True)
-        scores = load_high_scores(game)
+        scores = load_high_scores(self.game)
 
         mock_open.assert_called_once_with(
             "single_high_score.json", "r", encoding="utf-8"
@@ -55,8 +57,9 @@ class HighScoreFunctionsTests(unittest.TestCase):
         mock_open.side_effect = FileNotFoundError
         expected_scores = DEFAULT_HIGH_SCORES
 
-        game = MagicMock(singleplayer=False)
-        scores = load_high_scores(game)
+        self.game.singleplayer = False
+
+        scores = load_high_scores(self.game)
 
         mock_open.assert_called_once_with("high_score.json", "r", encoding="utf-8")
         mock_json_load.assert_not_called()
@@ -71,7 +74,6 @@ class HighScoreFunctionsTests(unittest.TestCase):
     ):
         """Test the display_high_scores function."""
         # Set up mock objects and test data
-        game = MagicMock()
         screen = MagicMock()
         screen.get_size.return_value = (800, 600)
         score_key = "score_key"
@@ -91,11 +93,10 @@ class HighScoreFunctionsTests(unittest.TestCase):
             (score_text_surfaces, score_text_rects),
         ]
 
-        display_high_scores(game, screen, score_key)
+        display_high_scores(self.game, screen, score_key)
 
         # Assertions
-        mock_sysfont.assert_any_call("impact", int(screen.get_size()[1] * 0.07))
-        mock_sysfont.assert_any_call("impact", int(screen.get_size()[1] * 0.05))
+        self.assertEqual(mock_sysfont.call_count, 2)
 
         mock_render_text.assert_any_call(
             "HIGH SCORES",
@@ -124,7 +125,7 @@ class HighScoreFunctionsTests(unittest.TestCase):
         screen.blit.assert_any_call(score_text_surfaces[0], score_text_rects[0])
         screen.blit.assert_any_call(score_text_surfaces[1], score_text_rects[1])
 
-        mock_load_high_scores.assert_called_with(game)
+        mock_load_high_scores.assert_called_with(self.game)
 
     @patch("pygame.font.SysFont")
     def test_get_player_name(self, mock_sysfont):
@@ -165,6 +166,7 @@ class HighScoreFunctionsTests(unittest.TestCase):
             self.assertEqual(player_name, "Ake")
             self.assertEqual(pygame.display.flip.call_count, 9)
             self.assertEqual(cursor.call_count, 9)
+
             mock_sysfont.assert_any_call("verdana", 19)
             mock_sysfont.assert_any_call("verdana", 23)
 

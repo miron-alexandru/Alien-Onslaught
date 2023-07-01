@@ -76,11 +76,13 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertDictEqual(weapons_manager.weapons, expected_weapons)
 
         # Assert that the lists of projectiles are initialized correctly
+
         expected_singleplayer_projectiles = [
             self.game.thunderbird_bullets,
             self.game.thunderbird_missiles,
             self.game.thunderbird_laser,
         ]
+
         expected_multiplayer_projectiles = [
             self.game.thunderbird_bullets,
             self.game.thunderbird_missiles,
@@ -89,6 +91,7 @@ class WeaponsManagerTest(unittest.TestCase):
             self.game.phoenix_missiles,
             self.game.phoenix_laser,
         ]
+
         self.assertEqual(
             weapons_manager.singleplayer_projectiles, expected_singleplayer_projectiles
         )
@@ -187,12 +190,6 @@ class WeaponsManagerTest(unittest.TestCase):
         in multiplayer.
         """
         self.game.singleplayer = False
-        projectile_mock1 = MagicMock()
-        projectile_mock2 = MagicMock()
-        self.weapons_manager.multiplayer_projectiles[0].copy.return_value = [
-            projectile_mock1,
-            projectile_mock2,
-        ]
 
         self.weapons_manager.update_projectiles()
 
@@ -200,9 +197,7 @@ class WeaponsManagerTest(unittest.TestCase):
 
         self.assertTrue(self.weapons_manager.multiplayer_projectiles[0].copy.called)
         self.assertTrue(
-            self.weapons_manager.multiplayer_projectiles[0].remove.called_with(
-                projectile_mock1
-            )
+            self.weapons_manager.multiplayer_projectiles[0].remove.called_once()
         )
 
         self.assertFalse(self.weapons_manager.singleplayer_projectiles[0].copy.called)
@@ -260,7 +255,6 @@ class WeaponsManagerTest(unittest.TestCase):
         bullet_class_mock = MagicMock()
         num_bullets = 1
         ship_mock = MagicMock()
-        self.game.score_board.render_bullets_num = MagicMock()
         ship_mock.remaining_bullets = 5
         ship_mock.state.disarmed = False
         ship_mock.state.scaled_weapon = False
@@ -312,7 +306,6 @@ class WeaponsManagerTest(unittest.TestCase):
         ship_mock = MagicMock()
         ship_mock.missiles_num = 2
         missile_class_mock = MagicMock()
-        self.game.score_board.render_missiles_num = MagicMock()
 
         self.weapons_manager.fire_missile(missiles_mock, ship_mock, missile_class_mock)
 

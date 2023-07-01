@@ -5,6 +5,7 @@ manage the statistics that change during the game.
 
 import unittest
 from unittest.mock import MagicMock, patch
+
 from src.game_logic.game_stats import GameStats
 from src.utils.constants import STARTING_HP, MAX_HP
 
@@ -15,15 +16,14 @@ class GameStatsTestCase(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.settings = MagicMock()
-        self.game.settings = self.settings
+        self.game.settings = MagicMock()
         self.phoenix_ship = MagicMock()
         self.thunderbird_ship = MagicMock()
         self.stats = GameStats(self.game, self.phoenix_ship, self.thunderbird_ship)
 
     def test_init(self):
         """Test the initialization of the class."""
-        self.settings.game_modes.one_life_reign = False
+        self.game.settings.game_modes.one_life_reign = False
         self.stats = GameStats(self.game, self.phoenix_ship, self.thunderbird_ship)
 
         self.assertEqual(self.stats.game, self.game)
@@ -35,7 +35,7 @@ class GameStatsTestCase(unittest.TestCase):
         self.assertEqual(self.stats.high_score, 0)
 
         # Test the one one life reign case
-        self.settings.game_modes.one_life_reign = True
+        self.game.settings.game_modes.one_life_reign = True
 
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
 
@@ -45,7 +45,7 @@ class GameStatsTestCase(unittest.TestCase):
 
     def test_reset_stats(self):
         """Test the reset_stats method."""
-        self.settings.game_modes.one_life_reign = False
+        self.game.settings.game_modes.one_life_reign = False
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
 
         self.assertTrue(self.phoenix_ship.state.alive)
@@ -112,7 +112,7 @@ class GameStatsTestCase(unittest.TestCase):
     @patch("src.game_logic.game_stats.play_sound")
     def test_revive_ship(self, mock_play_sound):
         """Test the revive_ship method."""
-        self.settings.game_modes.last_bullet = False
+        self.game.settings.game_modes.last_bullet = False
         ship = self.thunderbird_ship
         self.stats._revive_ship(ship)
 
@@ -126,7 +126,7 @@ class GameStatsTestCase(unittest.TestCase):
         self.game.score_board.render_bullets_num.assert_not_called()
 
         # Test case for the last_bullet
-        self.settings.game_modes.last_bullet = True
+        self.game.settings.game_modes.last_bullet = True
 
         self.stats._revive_ship(ship)
 

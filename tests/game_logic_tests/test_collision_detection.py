@@ -20,9 +20,6 @@ class TestCollisionManager(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.game.stats = MagicMock()
-        self.game.settings = MagicMock()
-        self.game.score_board = MagicMock()
         self.thunderbird_ship = MagicMock()
         self.phoenix_ship = MagicMock()
         self.game.thunderbird_ship = self.thunderbird_ship
@@ -306,8 +303,6 @@ class TestCollisionManager(unittest.TestCase):
         score_increment = 50
 
         hit_function = MagicMock()
-        self.game.score_board.render_scores = MagicMock()
-        self.game.score_board.update_high_score = MagicMock()
 
         self.collision_manager._update_cosmic_conflict_scores(
             ship, hit_function, score_increment
@@ -415,8 +410,6 @@ class TestCollisionManager(unittest.TestCase):
         self.game.screen = pygame.Surface((800, 600))
         self.game.stats.thunderbird_score = 1000
         self.game.stats.phoenix_score = 1000
-        self.game.score_board.render_scores = MagicMock()
-        self.game.score_board.update_high_score = MagicMock()
 
         alien = MagicMock(spec=pygame.sprite.Sprite)
         alien.rect = MagicMock()
@@ -439,8 +432,6 @@ class TestCollisionManager(unittest.TestCase):
         self.game.screen = pygame.Surface((800, 600))
         self.game.stats.thunderbird_score = 1000
         self.game.stats.phoenix_score = 1000
-        self.game.score_board.render_scores = MagicMock()
-        self.game.score_board.update_high_score = MagicMock()
 
         alien = MagicMock(spec=pygame.sprite.Sprite)
         alien.rect = MagicMock()
@@ -652,10 +643,6 @@ class TestCollisionManager(unittest.TestCase):
         boss.hit_count = 5
         boss.is_alive = True
 
-        self.game.aliens = MagicMock()
-        self.game.score_board.render_scores = MagicMock()
-        self.game.score_board.update_high_score = MagicMock()
-
         # Case when the boss hit count has not reached the
         # boss_hp so the boss is not destroyed.
         self.collision_manager._handle_boss_alien_collision(boss, player)
@@ -751,10 +738,6 @@ class TestCollisionManager(unittest.TestCase):
         player2 = "phoenix"
 
         alien = MagicMock()
-
-        self.game.score_board.render_scores = MagicMock()
-        self.game.score_board.update_high_score = MagicMock()
-        self.game.aliens = MagicMock()
 
         self.game.settings.alien_points = 5
         self.game.stats.thunderbird_score = 0

@@ -6,7 +6,6 @@ manage the ships in the game.
 import unittest
 from unittest.mock import MagicMock, patch
 
-
 from src.managers.player_managers.ships_manager import ShipsManager
 
 
@@ -79,8 +78,6 @@ class TestShipsManager(unittest.TestCase):
         ship_mock = MagicMock()
         self.ships_manager.thunderbird_ship = ship_mock
         self.ships_manager._update_thunderbird_stats = MagicMock()
-        self.game.score_board.create_health = MagicMock()
-        self.game.gameplay_manager.check_remaining_bullets = MagicMock()
 
         self.ships_manager._destroy_ship(ship_mock)
 
@@ -108,8 +105,6 @@ class TestShipsManager(unittest.TestCase):
         ship_mock = MagicMock()
         self.ships_manager.phoenix_ship = ship_mock
         self.ships_manager._update_phoenix_stats = MagicMock()
-        self.game.score_board.create_health = MagicMock()
-        self.game.gameplay_manager.check_remaining_bullets = MagicMock()
 
         self.ships_manager._destroy_ship(ship_mock)
 
@@ -193,8 +188,6 @@ class TestShipsManager(unittest.TestCase):
         """Test the reset ships method."""
         ship_mock = MagicMock()
         self.game.ships = [ship_mock]
-        self.game.sound_manager.game_sounds = MagicMock()
-        self.game.weapons_manager = MagicMock()
 
         self.ships_manager.reset_ships()
 

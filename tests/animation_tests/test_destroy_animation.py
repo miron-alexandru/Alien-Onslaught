@@ -4,7 +4,8 @@ the destroy animation on entities in the game.
 """
 
 import unittest
-from unittest.mock import Mock
+from unittest.mock import MagicMock
+
 import pygame
 
 from src.animations.other_animations import DestroyAnim
@@ -23,6 +24,7 @@ class DestroyAnimTests(unittest.TestCase):
     def test_init(self):
         """Test the initialization of DestroyAnim."""
         destroy_anim = DestroyAnim(self.entity)
+
         self.assertEqual(destroy_anim.entity, self.entity)
         self.assertIsNone(destroy_anim.image)
         self.assertEqual(destroy_anim.screen, self.entity.screen)  # type: ignore
@@ -36,13 +38,16 @@ class DestroyAnimTests(unittest.TestCase):
         destroy_anim.current_destroy_frame = 0
 
         destroy_anim.update_destroy_animation()
+
         self.assertEqual(destroy_anim.current_destroy_frame, 1)
         self.assertEqual(destroy_anim.destroy_image, destroy_frames[1])
         self.assertEqual(destroy_anim.destroy_rect.center, self.entity.rect.center)  # type: ignore
 
         # Test wrapping around to the first frame
         destroy_anim.current_destroy_frame = len(destroy_frames) - 1
+
         destroy_anim.update_destroy_animation()
+
         self.assertEqual(destroy_anim.current_destroy_frame, 0)
         self.assertEqual(destroy_anim.destroy_image, destroy_frames[0])
         self.assertEqual(destroy_anim.destroy_rect.center, self.entity.rect.center)  # type: ignore
@@ -50,9 +55,11 @@ class DestroyAnimTests(unittest.TestCase):
     def test_draw_animation(self):
         """Test the drawing of the destroy animation on the screen."""
         destroy_anim = DestroyAnim(self.entity)
-        destroy_anim.screen = Mock()
+
+        destroy_anim.screen = MagicMock()
 
         destroy_anim.draw_animation()
+
         destroy_anim.screen.blit.assert_called_once_with(
             destroy_anim.destroy_image, destroy_anim.destroy_rect
         )

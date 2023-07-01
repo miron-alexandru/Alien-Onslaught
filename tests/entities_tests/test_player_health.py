@@ -36,12 +36,15 @@ class TestHeart(unittest.TestCase):
     def test_blitme(self):
         """Test the blitting of the Heart."""
         self.heart.blitme()
+
         self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
     def test_blitme_screen_rect(self):
         """Test if the heart is blitted at the correct position on the screen."""
         self.heart.rect.topleft = (100, 200)
+
         self.heart.blitme()
+
         self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
     def test_blitme_screen_rect_updated(self):
@@ -50,7 +53,9 @@ class TestHeart(unittest.TestCase):
         """
         self.heart.rect.topleft = (100, 200)
         self.heart.rect.move_ip(10, 20)
+
         self.heart.blitme()
+
         self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
 

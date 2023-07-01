@@ -3,7 +3,6 @@ This module tests the LoadingScreen class which is used to display
 the loading screen in the game.
 """
 
-
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -42,10 +41,11 @@ class LoadingScreenTest(unittest.TestCase):
         self.update_test_helper(50)
         self.update_test_helper(100)
 
-    def update_test_helper(self, arg0):
+    def update_test_helper(self, percent):
         """Helper function to call the update method with different percents."""
-        self.loading_screen.update(arg0)
-        self.assertEqual(self.loading_screen.load_percent, arg0)
+        self.loading_screen.update(percent)
+
+        self.assertEqual(self.loading_screen.load_percent, percent)
         self.loading_screen.draw.assert_called()
 
     def test_draw(self):

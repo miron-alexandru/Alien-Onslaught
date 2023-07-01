@@ -17,10 +17,10 @@ class AliensManagerTest(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.aliens = MagicMock()
         self.settings = Settings()
-        self.screen = self.game.screen
-        self.manager = AliensManager(self.game, self.aliens, self.settings, self.screen)
+        self.manager = AliensManager(
+            self.game, self.game.aliens, self.settings, self.game.screen
+        )
 
     def test_create_fleet(self):
         """Test the creation of the fleet."""
@@ -29,11 +29,11 @@ class AliensManagerTest(unittest.TestCase):
 
         # Assert that the correct number of aliens were created
         self.assertEqual(
-            len(self.aliens.add.call_args_list), rows * self.settings.aliens_num
+            len(self.game.aliens.add.call_args_list), rows * self.settings.aliens_num
         )
 
         # Assert that each alien's position was set correctly
-        calls = self.aliens.add.call_args_list
+        calls = self.game.aliens.add.call_args_list
         for row_number in range(rows):
             for alien_number in range(self.settings.aliens_num):
                 alien = calls[row_number * self.settings.aliens_num + alien_number][0][
@@ -49,20 +49,20 @@ class AliensManagerTest(unittest.TestCase):
         self.manager.create_boss_alien()
 
         # Assert that a boss alien was added to the aliens group
-        self.assertTrue(self.aliens.add.called)
-        added_alien = self.aliens.add.call_args[0][0]
+        self.assertTrue(self.game.aliens.add.called)
+        added_alien = self.game.aliens.add.call_args[0][0]
         self.assertIsInstance(added_alien, BossAlien)
 
     def test_update_aliens(self):
         """Test the update of aliens."""
         self.manager._check_fleet_edges = MagicMock()
-        self.aliens.update = MagicMock()
+        self.game.aliens.update = MagicMock()
 
         self.manager.update_aliens()
 
         # Assert that the _check_fleet_edges and update methods were called
         self.manager._check_fleet_edges.assert_called_once()
-        self.aliens.update.assert_called_once()
+        self.game.aliens.update.assert_called_once()
 
     def test__check_fleet_edges(self):
         """Test the check_fleet_edges method."""
@@ -89,7 +89,12 @@ class AliensManagerTest(unittest.TestCase):
         boss_alien2.motion.direction = 1
         boss_alien2.check_edges.return_value = False
 
-        self.aliens.sprites.return_value = [alien1, alien2, boss_alien, boss_alien2]
+        self.game.aliens.sprites.return_value = [
+            alien1,
+            alien2,
+            boss_alien,
+            boss_alien2,
+        ]
 
         self.manager._check_fleet_edges()
 

@@ -20,11 +20,10 @@ class TestGameplayManager(unittest.TestCase):
         self.game = MagicMock()
         self.settings = Settings()
         self.stats = MagicMock()
-        self.score_board = MagicMock()
         self.thunderbird_ship = MagicMock()
         self.phoenix_ship = MagicMock()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
-        self.game.score_board = self.score_board
+        self.game.score_board = MagicMock()
         self.game.ships = self.ships
         self.game.aliens = pygame.sprite.Group()
         self.gameplay_handler = GameplayManager(self.game, self.settings, self.stats)
@@ -100,7 +99,6 @@ class TestGameplayManager(unittest.TestCase):
     def test_prepare_last_bullet_bullets_singleplayer(self):
         """Test the prepare_last_bullet_bullets in singleplayer."""
         self.game.singleplayer = True
-        self.game.aliens_manager = MagicMock()
         self.gameplay_handler.score_board.render_bullets_num = MagicMock()
 
         self.gameplay_handler.prepare_last_bullet_bullets()
@@ -113,7 +111,6 @@ class TestGameplayManager(unittest.TestCase):
     def test_prepare_last_bullet_bullets_multiplayer(self):
         """Test the prepare_last_bullet_bullets in multiplayer."""
         self.game.singleplayer = False
-        self.game.aliens_manager = MagicMock()
         self.gameplay_handler.score_board.render_bullets_num = MagicMock()
 
         self.gameplay_handler.prepare_last_bullet_bullets()
@@ -137,10 +134,7 @@ class TestGameplayManager(unittest.TestCase):
         """Test the prepare_level method."""
         self.gameplay_handler.reset_game_objects = MagicMock()
         self.settings.increase_speed = MagicMock()
-        self.stats.increase_level = MagicMock()
-        self.score_board.prep_level = MagicMock()
         self.gameplay_handler.handle_alien_creation = MagicMock()
-        self.game.sound_manager.prepare_level_music = MagicMock()
         self.gameplay_handler.set_max_alien_bullets = MagicMock()
         self.gameplay_handler.check_alien_bullets_num = MagicMock()
 
@@ -149,7 +143,7 @@ class TestGameplayManager(unittest.TestCase):
         self.gameplay_handler.reset_game_objects.assert_called_once()
         self.settings.increase_speed.assert_called_once()
         self.stats.increase_level.assert_called_once()
-        self.score_board.prep_level.assert_called_once()
+        self.game.score_board.prep_level.assert_called_once()
         self.gameplay_handler.handle_alien_creation.assert_called_once()
         self.game.sound_manager.prepare_level_music.assert_called_once()
         self.gameplay_handler.set_max_alien_bullets.assert_called_once_with(
@@ -185,7 +179,6 @@ class TestGameplayManager(unittest.TestCase):
     def test_handle_alien_creation_cosmic_conflict(self):
         """Test the handle_alien_creation in the cosmic conflict game mode."""
         self.settings.game_modes.game_mode = "cosmic_conflict"
-        self.game.aliens_manager = MagicMock()
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -195,7 +188,6 @@ class TestGameplayManager(unittest.TestCase):
     def test_handle_alien_creation_meteor_madness(self):
         """Test the handle_alien_creation in the meteor madness game mode."""
         self.settings.game_modes.game_mode = "meteor_madness"
-        self.game.aliens_manager = MagicMock()
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -205,8 +197,6 @@ class TestGameplayManager(unittest.TestCase):
     def test_handle_alien_creation_boss_rush(self):
         """Test the handle_alien_creation in the boss rush game mode."""
         self.settings.game_modes.game_mode = "boss_rush"
-        self.game.aliens_manager = MagicMock()
-        self.game.collision_handler.handled_collisions.clear = MagicMock()
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -217,7 +207,6 @@ class TestGameplayManager(unittest.TestCase):
     def test_handle_alien_creation_last_bullet(self):
         """Test the handle_alien_creation in the last bullet game mode."""
         self.settings.game_modes.game_mode = "last_bullet"
-        self.game.aliens_manager = MagicMock()
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -229,8 +218,6 @@ class TestGameplayManager(unittest.TestCase):
         """Test the handle alien creation for the boss levels in the other game modes."""
         self.settings.game_modes.game_mode = "Normal"
         self.stats.level = 10
-        self.game.aliens_manager = MagicMock()
-        self.game.collision_handler.handled_collisions.clear = MagicMock()
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -242,7 +229,6 @@ class TestGameplayManager(unittest.TestCase):
         """Test the handle_alien_creation in the regular levels."""
         self.settings.game_modes.game_mode = "other_game_mode"
         self.stats.level = 3
-        self.game.aliens_manager = MagicMock()
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -256,9 +242,6 @@ class TestGameplayManager(unittest.TestCase):
         self.stats.level = 21
         self.game.phoenix_ship.state.alive = False
         self.game.thunderbird_ship.state.alive = False
-        self.stats.revive_phoenix = MagicMock()
-        self.stats.revive_thunderbird = MagicMock()
-        self.score_board.create_health = MagicMock()
 
         self.gameplay_handler.check_for_player_revive()
 
@@ -266,20 +249,11 @@ class TestGameplayManager(unittest.TestCase):
         self.stats.revive_thunderbird.assert_called_once_with(
             self.game.thunderbird_ship
         )
-        self.score_board.create_health.assert_called_once()
+        self.game.score_board.create_health.assert_called_once()
 
     def test_reset_game_objects(self):
         """Test the reset_game_objects method."""
-        self.game.thunderbird_bullets.empty = MagicMock()
-        self.game.thunderbird_missiles.empty = MagicMock()
-        self.game.thunderbird_laser.empty = MagicMock()
-        self.game.phoenix_missiles.empty = MagicMock()
-        self.game.phoenix_laser.empty = MagicMock()
-        self.game.phoenix_bullets.empty = MagicMock()
-        self.game.alien_bullet.empty = MagicMock()
-        self.game.powers.empty = MagicMock()
         self.game.aliens.empty = MagicMock()
-        self.game.asteroids.empty = MagicMock()
 
         self.gameplay_handler.reset_game_objects()
 
@@ -445,12 +419,12 @@ class TestGameplayManager(unittest.TestCase):
         self.assertEqual(self.settings.thunderbird_ship_speed, 3.8)
         self.assertEqual(self.settings.phoenix_ship_speed, 3.8)
         self.assertEqual(self.stats.thunderbird_score, 3000)
-        self.score_board.update_high_score.assert_called_once()
+        self.game.score_board.update_high_score.assert_called_once()
         self.stats.increase_level.assert_called_once()
-        self.score_board.prep_level.assert_called_once()
-        self.score_board.render_high_score.assert_called_once()
+        self.game.score_board.prep_level.assert_called_once()
+        self.game.score_board.render_high_score.assert_called_once()
 
-    def tesi_last_bullet_all_ships_alive(self):
+    def test_last_bullet_all_ships_alive(self):
         """Test the last_bullet method when the both ships remain alive."""
         asteroid_handler = MagicMock()
         self.thunderbird_ship.remaining_bullets = 9
@@ -458,8 +432,6 @@ class TestGameplayManager(unittest.TestCase):
         self.thunderbird_ship.state.alive = True
         self.phoenix_ship.state.alive = True
         self.stats.game_active = True
-        self.game.aliens.sprites = MagicMock(spec=pygame.sprite.Group)
-        self.game.aliens.sprites.return_value = [MagicMock(), MagicMock()]
 
         self.gameplay_handler.last_bullet(
             self.thunderbird_ship, self.phoenix_ship, asteroid_handler
@@ -479,15 +451,18 @@ class TestGameplayManager(unittest.TestCase):
         self.thunderbird_ship.state.alive = True
         self.phoenix_ship.state.alive = True
         self.stats.game_active = True
+
         self.game.aliens.sprites = MagicMock(spec=pygame.sprite.Group)
         self.game.aliens.sprites.return_value = [MagicMock(), MagicMock()]
         self.game.thunderbird_bullets.sprites.return_value = []
+
         mock_bullet = MagicMock(spec=pygame.sprite.Sprite)
         mock_bullet.rect = MagicMock()
         mock_bullet.rect.left = 100
         mock_bullet.rect.right = 50
         mock_bullet.rect.top = 45
         mock_bullet.rect.bottom = 79
+
         self.game.phoenix_bullets.sprites.return_value = [mock_bullet]
 
         self.gameplay_handler.last_bullet(
@@ -527,7 +502,7 @@ class TestGameplayManager(unittest.TestCase):
 
         self.assertEqual(self.game.thunderbird_ship.remaining_bullets, 0)
         self.assertEqual(self.game.phoenix_ship.remaining_bullets, 0)
-        self.score_board.render_bullets_num.assert_called_once()
+        self.game.score_board.render_bullets_num.assert_called_once()
 
     def test_boss_rush(self):
         """Test the boss_rush method."""
@@ -549,6 +524,7 @@ class TestGameplayManager(unittest.TestCase):
         aliens_manager = MagicMock()
         asteroid_handler = MagicMock()
         mock_time.return_value = 100
+
         self.game.aliens = [MagicMock() for _ in range(51)]
         self.gameplay_handler.settings.alien_speed = 1.0
         self.gameplay_handler.settings.alien_bullet_speed = 2.0

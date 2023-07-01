@@ -5,6 +5,7 @@ Phoenix player in the game.
 
 import unittest
 from unittest.mock import MagicMock, patch
+
 import pygame
 
 from src.entities.player_ships import Phoenix
@@ -32,7 +33,9 @@ class TestPhoenix(unittest.TestCase):
         """Test the positioning in the cosmic conflict game mode."""
         # Cosmic conflict game mode active
         self.game.settings.game_modes.cosmic_conflict = True
+
         self.ship.set_cosmic_conflict_pos()
+
         self.assertTrue(self.game.screen.get_rect.called)
         self.assertEqual(self.ship.image, pygame.transform.rotate.return_value)
         self.assertEqual(

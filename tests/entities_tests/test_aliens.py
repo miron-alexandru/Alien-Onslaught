@@ -9,6 +9,7 @@ import time
 import random
 
 import pygame
+
 from src.entities.aliens import Alien
 from src.game_logic.game_settings import Settings
 
@@ -25,9 +26,6 @@ class TestAlien(unittest.TestCase):
         self.settings = Settings()
         self.game.settings = self.settings
         self.alien = Alien(self.game)
-
-    def tearDown(self):
-        pygame.quit()
 
     def test_init(self):
         """Test the initialization of the Alien."""
@@ -52,6 +50,7 @@ class TestAlien(unittest.TestCase):
     def test_init_position(self):
         """Test the _init_position method."""
         self.alien._init_position()
+
         self.assertIsInstance(self.alien.rect, pygame.Rect)
         self.assertGreaterEqual(self.alien.rect.x, 0)
         self.assertEqual(self.alien.rect.y, self.alien.rect.height)
@@ -61,15 +60,18 @@ class TestAlien(unittest.TestCase):
         """Test the check_edges method of the Alien."""
         # Test case: Alien at the right edge of the screen
         self.alien.rect.right = self.game.screen.get_rect().right
+
         self.assertTrue(self.alien.check_edges())
 
         # Test case: Alien at the left edge of the screen
         self.alien.rect.left = 0
+
         self.assertTrue(self.alien.check_edges())
 
         # Test case: Alien not at the edge of the screen
         self.alien.rect.right = 100
         self.alien.rect.left = 100
+
         self.assertFalse(self.alien.check_edges())
 
     def test_check_top_edges(self):
@@ -138,7 +140,9 @@ class TestAlien(unittest.TestCase):
     def test_destroy_alien(self):
         """Test the destroy_alien method."""
         self.alien.destroy = MagicMock()
+
         self.alien.destroy_alien()
+
         self.alien.destroy.update_destroy_animation.assert_called_once()
         self.alien.destroy.draw_animation.assert_called_once()
 
@@ -157,7 +161,9 @@ class TestAlien(unittest.TestCase):
     def test_upgrade(self):
         """Test the upgrade method."""
         self.alien.immune = MagicMock()
+
         self.alien.upgrade()
+
         self.assertTrue(self.alien.immune_state)
         self.assertEqual(self.alien.immune.immune_rect.center, self.alien.rect.center)
         self.assertNotEqual(self.alien.immune_start_time, 0)
@@ -165,12 +171,14 @@ class TestAlien(unittest.TestCase):
     def test_freeze(self):
         """Test the freeze method."""
         self.alien.freeze()
+
         self.assertTrue(self.alien.frozen_state)
         self.assertNotEqual(self.alien.frozen_start_time, 0)
 
     def test_draw(self):
         """Test the draw method."""
         self.alien.draw()
+
         self.screen.blit.assert_called_once_with(self.alien.image, self.alien.rect)
 
 

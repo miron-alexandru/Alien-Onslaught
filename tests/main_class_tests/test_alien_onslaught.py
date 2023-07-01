@@ -36,7 +36,6 @@ from src.entities.player_ships import Thunderbird, Phoenix
 class AlienOnslaughtTestCase(unittest.TestCase):
     """Test cases for the AlienOnslaught class."""
 
-    # @patch("src.alien_onslaught.pygame.display.set_mode")
     def setUp(self):
         """Set up test environment."""
         with patch("src.alien_onslaught.pygame.display.set_mode") as mock_display:
@@ -903,6 +902,36 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.game.buttons_manager.draw_game_mode_buttons.assert_not_called()
         self.game.screen_manager.draw_cursor.assert_called_once()
         mock_display_flip.assert_called_once()
+
+    @mock.patch("src.alien_onslaught.pygame.time.get_ticks")
+    def test_check_for_pause(self, mock_get_ticks):
+        """Test the check_for_pause method."""
+        mock_get_ticks.return_value = 10
+
+        # Mocking self.ui_options.paused and self.check_events()
+        with mock.patch.object(
+            self.game, "ui_options"
+        ) as mock_ui_options, mock.patch.object(
+            self.game, "check_events"
+        ) as mock_check_events:
+            mock_ui_options.paused = True
+            mock_check_events.side_effect = lambda: setattr(
+                mock_ui_options, "paused", False
+            )
+
+            self.game._check_for_pause()
+
+            # Assertions
+            mock_check_events.assert_called_once()
+            self.assertFalse(mock_ui_options.paused)
+            self.assertEqual(mock_get_ticks.call_count, 2)
+
+            # Calculate the expected value of pause_time
+            pause_start_time = 10
+            pause_end_time = mock_get_ticks.return_value
+            expected_pause_time = pause_end_time - pause_start_time
+
+            self.assertEqual(self.game.pause_time, expected_pause_time)
 
 
 if __name__ == "__main__":

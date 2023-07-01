@@ -6,6 +6,7 @@ explosion animation in the game.
 import copy
 import unittest
 from unittest.mock import Mock
+
 import pygame
 
 from src.animations.other_animations import MissileEx
@@ -24,6 +25,7 @@ class MissileExTests(unittest.TestCase):
     def test_init(self):
         """Test the initialization of MissileEx."""
         missile_ex = MissileEx(self.missile)
+
         self.assertEqual(missile_ex.missile, self.missile)
         self.assertEqual(missile_ex.screen, self.missile.screen)  # type: ignore
         self.assertEqual(missile_ex.ex_frames, missile_ex_frames)
@@ -39,12 +41,15 @@ class MissileExTests(unittest.TestCase):
         initial_frame = copy.copy(missile_ex.ex_image)
 
         missile_ex.update_animation()
+
         self.assertEqual(missile_ex.current_frame, 0)
         self.assertNotEqual(missile_ex.ex_image, initial_frame)
         self.assertEqual(missile_ex.ex_rect.center, self.missile.rect.center)  # type: ignore
 
         missile_ex.current_frame = len(missile_ex_frames) - 1
+
         missile_ex.update_animation()
+
         self.assertEqual(missile_ex.current_frame, len(missile_ex_frames) - 1)
         self.assertNotEqual(missile_ex.ex_image, initial_frame)
         self.assertEqual(missile_ex.ex_rect.center, self.missile.rect.center)  # type: ignore
@@ -55,6 +60,7 @@ class MissileExTests(unittest.TestCase):
         missile_ex.screen = Mock()
 
         missile_ex.draw_explosion()
+
         missile_ex.screen.blit.assert_called_once_with(
             missile_ex.ex_image, missile_ex.ex_rect
         )

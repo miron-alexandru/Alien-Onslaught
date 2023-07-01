@@ -3,7 +3,6 @@ This module tests the Asteroid class which is used to create
 asteroids in the game.
 """
 
-
 import unittest
 from unittest.mock import MagicMock
 
@@ -36,6 +35,7 @@ class TestAsteroid(unittest.TestCase):
     def test_initialize_position(self):
         """Test the _initialize_position method."""
         self.asteroid._initialize_position()
+
         self.assertGreaterEqual(self.asteroid.rect.x, 0)
         self.assertLessEqual(
             self.asteroid.rect.x,
@@ -72,6 +72,7 @@ class TestAsteroid(unittest.TestCase):
     def test_draw(self):
         """Test the draw method."""
         self.asteroid.draw()
+
         self.screen.blit.assert_called_once_with(
             self.asteroid.image, self.asteroid.rect
         )

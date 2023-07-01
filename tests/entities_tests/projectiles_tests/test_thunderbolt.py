@@ -3,9 +3,9 @@ This module tests the Thunderbolt class which is used to create
 bullets for the Thunderbird player.
 """
 
-
 from unittest.mock import MagicMock
 import unittest
+
 import pygame
 
 from src.entities.projectiles import Thunderbolt
@@ -35,14 +35,15 @@ class TestThunderbolt(unittest.TestCase):
         """Test the initialization of the Thunderbolt with rotation."""
         self.manager.settings.game_modes.cosmic_conflict = True
         thunderbolt = Thunderbolt(self.manager, self.ship)
+        expected_width, expected_height = thunderbolt.image.get_size()
+        rotated_image = pygame.transform.rotate(thunderbolt.image, -90)
+        actual_width, actual_height = rotated_image.get_size()
+
         self.assertIsNotNone(thunderbolt.image)
         self.assertIsNotNone(thunderbolt.rect)
         self.assertEqual(
             thunderbolt.speed, self.manager.settings.thunderbird_bullet_speed
         )
-        expected_width, expected_height = thunderbolt.image.get_size()
-        rotated_image = pygame.transform.rotate(thunderbolt.image, -90)
-        actual_width, actual_height = rotated_image.get_size()
         self.assertEqual(
             (actual_width, actual_height), (expected_height, expected_width)
         )
@@ -50,6 +51,7 @@ class TestThunderbolt(unittest.TestCase):
     def test_init_scaled(self):
         """Test the initialization of the scaled Thunderbolt."""
         scaled_thunderbolt = Thunderbolt(self.manager, self.ship, scaled=True)
+
         self.assertIsNotNone(scaled_thunderbolt.image)
         self.assertIsNotNone(scaled_thunderbolt.rect)
         self.assertEqual(

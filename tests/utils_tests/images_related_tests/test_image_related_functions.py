@@ -113,7 +113,7 @@ class ImageLoaderTest(unittest.TestCase):
         button_images = load_button_imgs(button_names)
 
         # Assert that the loaded button images are not None and contain the test button
-        self.assertIsNotNone(button_images)
+        self.assertIsInstance(button_images, dict)
         self.assertIn("test_button", button_images)
 
     def test_load_controls_image(self):
@@ -124,16 +124,15 @@ class ImageLoaderTest(unittest.TestCase):
         loaded_image, rect = load_controls_image(image_surface, position)
 
         # Assert that the loaded image and rect are not None
-        self.assertIsNotNone(loaded_image)
-        self.assertIsNotNone(rect)
+        self.assertIsInstance(loaded_image, pygame.Surface)
+        self.assertIsInstance(rect, pygame.Rect)
 
     def test_load_boss_images(self):
         """Test loading the boss images."""
         boss_images = load_boss_images()
 
         # Assert that the loaded boss images are not None and contain boss names
-        self.assertIsNotNone(boss_images)
-        self.assertTrue(len(boss_images) > 0)
+        self.assertIsInstance(boss_images, dict)
         self.assertIn("boss1", boss_images)
         self.assertIn("boss10", boss_images)
 
@@ -142,8 +141,7 @@ class ImageLoaderTest(unittest.TestCase):
         alien_bullets = load_alien_bullets()
 
         # Assert that the loaded alien bullets are not None and contain bullet names
-        self.assertIsNotNone(alien_bullets)
-        self.assertTrue(len(alien_bullets) > 0)
+        self.assertIsInstance(alien_bullets, dict)
         self.assertIn("alien_bullet1", alien_bullets)
         self.assertIn("alien_bullet5", alien_bullets)
 
@@ -152,8 +150,7 @@ class ImageLoaderTest(unittest.TestCase):
         boss_bullets = load_boss_bullets()
 
         # Assert that the loaded boss bullets are not None and contain bullet names
-        self.assertIsNotNone(boss_bullets)
-        self.assertTrue(len(boss_bullets) > 0)
+        self.assertIsInstance(boss_bullets, dict)
         self.assertIn("boss_bullet1", boss_bullets)
         self.assertIn("boss_bullet8", boss_bullets)
 

@@ -6,8 +6,6 @@ alien bullets in the game.
 import unittest
 from unittest.mock import MagicMock, patch
 
-import pygame
-
 from src.managers.alien_managers.alien_bullets_manager import AlienBulletsManager
 from src.entities.aliens import Alien, BossAlien
 
@@ -17,16 +15,7 @@ class AlienBulletsManagerTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-
         self.game = MagicMock()
-        self.game.screen = MagicMock(spec=pygame.Surface)
-        self.game.settings = MagicMock()
-        self.game.stats = MagicMock()
-        self.game.alien_bullet = MagicMock(sepc=pygame.sprite.Group)
-        self.game.aliens = MagicMock()
-        self.game.thunderbird_ship = MagicMock()
-        self.game.phoenix_ship = MagicMock()
-
         self.manager = AlienBulletsManager(self.game)
 
     def test_init(self):

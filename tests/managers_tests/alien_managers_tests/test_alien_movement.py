@@ -2,7 +2,9 @@
 This module tests the AlienMovement class which manages
 the movement behaviors of the aliens.
 """
+
 import math
+
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -16,11 +18,10 @@ class AlienMovementTestCase(unittest.TestCase):
         """Set up test environment."""
         self.alien = MagicMock()
         self.game = MagicMock()
-        self.settings = MagicMock()
-        self.game.settings = self.settings
+        self.game.settings = MagicMock()
 
-        self.settings.alien_direction = 1
-        self.settings.alien_speed = 5
+        self.game.settings.alien_direction = 1
+        self.game.settings.alien_speed = 5
 
         self.alien_movement = AlienMovement(self.alien, self.game)
 

@@ -5,6 +5,7 @@ in the game.
 
 import unittest
 from unittest.mock import MagicMock, patch
+
 import pygame
 
 from src.managers.sounds_manager import SoundManager
@@ -17,10 +18,10 @@ class TestSoundManager(unittest.TestCase):
         """Set up the test environment."""
         pygame.mixer.init()
         self.game = MagicMock()
-        self.game.settings = MagicMock()
-        self.game.loading_screen = MagicMock()
-        self.game.stats = MagicMock()
         self.sound_manager = SoundManager(self.game)
+
+    def tearDown(self):
+        pygame.mixer.quit()
 
     def test_init(self):
         """Test the initialization of the class."""
@@ -63,54 +64,34 @@ class TestSoundManager(unittest.TestCase):
         mock_set_music_volume.assert_called_with(self.sound_manager.menu_music, 0.8)
         mock_set_sounds_volume.assert_called_with(self.sound_manager.menu_sounds, 0.7)
 
-    def test__load_gameplay_sounds(self):
+    @patch("src.managers.sounds_manager.load_music_files")
+    @patch("src.managers.sounds_manager.load_sound_files")
+    def test__load_gameplay_sounds(self, mock_load_sound_files, mock_load_music_files):
         """Test the load_gameplay_sounds method."""
-        with patch(
-            "src.managers.sounds_manager.load_music_files"
-        ) as mock_load_music_files:
-            with patch(
-                "src.managers.sounds_manager.load_sound_files"
-            ) as mock_load_sound_files:
-                self.sound_manager._load_gameplay_sounds()
+        self.sound_manager._load_gameplay_sounds()
 
-                self.assertEqual(mock_load_music_files.call_count, 4)
-                self.assertEqual(mock_load_sound_files.call_count, 1)
+        self.assertEqual(mock_load_music_files.call_count, 4)
+        self.assertEqual(mock_load_sound_files.call_count, 1)
 
-                self.assertEqual(
-                    self.sound_manager.level_music, mock_load_music_files()
-                )
-                self.assertEqual(
-                    self.sound_manager.boss_rush_levels, mock_load_music_files()
-                )
-                self.assertEqual(
-                    self.sound_manager.endless_music, mock_load_music_files()
-                )
-                self.assertEqual(
-                    self.sound_manager.meteor_music, mock_load_music_files()
-                )
-                self.assertEqual(
-                    self.sound_manager.game_sounds, mock_load_sound_files()
-                )
-                self.sound_manager.loading_screen.update.assert_called_with(100)
+        self.assertEqual(self.sound_manager.level_music, mock_load_music_files())
+        self.assertEqual(self.sound_manager.boss_rush_levels, mock_load_music_files())
+        self.assertEqual(self.sound_manager.endless_music, mock_load_music_files())
+        self.assertEqual(self.sound_manager.meteor_music, mock_load_music_files())
+        self.assertEqual(self.sound_manager.game_sounds, mock_load_sound_files())
+        self.sound_manager.loading_screen.update.assert_called_with(100)
 
-    def test_load_menu_sounds(self):
+    @patch("src.managers.sounds_manager.load_music_files")
+    @patch("src.managers.sounds_manager.load_sound_files")
+    def test_load_menu_sounds(self, mock_load_sound_files, mock_load_music_files):
         """Test for the loading of the menu sounds."""
-        with patch(
-            "src.managers.sounds_manager.load_sound_files"
-        ) as mock_load_sound_files:
-            with patch(
-                "src.managers.sounds_manager.load_music_files"
-            ) as mock_load_music_files:
-                self.sound_manager.load_menu_sounds()
+        self.sound_manager.load_menu_sounds()
 
-                self.assertEqual(mock_load_music_files.call_count, 1)
-                self.assertEqual(mock_load_sound_files.call_count, 1)
+        self.assertEqual(mock_load_music_files.call_count, 1)
+        self.assertEqual(mock_load_sound_files.call_count, 1)
 
-                self.assertEqual(
-                    self.sound_manager.menu_sounds, mock_load_sound_files()
-                )
-                self.assertEqual(self.sound_manager.menu_music, mock_load_music_files())
-                self.sound_manager.loading_screen.update.assert_called_with(100)
+        self.assertEqual(self.sound_manager.menu_sounds, mock_load_sound_files())
+        self.assertEqual(self.sound_manager.menu_music, mock_load_music_files())
+        self.sound_manager.loading_screen.update.assert_called_with(100)
 
     def test__set_level_music_boss_rush_mode(self):
         """Test the music dictionary assignment for the boss rush game mode."""
@@ -122,7 +103,6 @@ class TestSoundManager(unittest.TestCase):
 
     def test__set_level_music_endless_onslaught_mode(self):
         """Test the music dictionary assignment for the endless onslaught game mode."""
-        self.sound_manager.settings.game_modes.boss_rush = False
         self.sound_manager.settings.game_modes.endless_onslaught = True
 
         self.assertEqual(
@@ -131,8 +111,6 @@ class TestSoundManager(unittest.TestCase):
 
     def test__set_level_music_meteor_madness_mode(self):
         """Test the music dictionary assignment for the meteor madness game mode."""
-        self.sound_manager.settings.game_modes.boss_rush = False
-        self.sound_manager.settings.game_modes.endless_onslaught = False
         self.sound_manager.settings.game_modes.meteor_madness = True
 
         self.assertEqual(
@@ -141,10 +119,6 @@ class TestSoundManager(unittest.TestCase):
 
     def test__set_level_music_default(self):
         """Test the default level music dictionary assignment."""
-        self.sound_manager.settings.game_modes.boss_rush = False
-        self.sound_manager.settings.game_modes.endless_onslaught = False
-        self.sound_manager.settings.game_modes.meteor_madness = False
-
         self.assertEqual(
             self.sound_manager._set_level_music(), self.sound_manager.level_music
         )
@@ -155,6 +129,7 @@ class TestSoundManager(unittest.TestCase):
         self.sound_manager._set_level_music = MagicMock(
             return_value=self.sound_manager.level_music
         )
+
         self.sound_manager.current_sound = None
         self.sound_manager.level_music[range(1, 8)] = "path_to_sound_file"
         self.sound_manager.stats.level = 1
@@ -162,10 +137,8 @@ class TestSoundManager(unittest.TestCase):
         with patch("src.managers.sounds_manager.play_music") as mock_play_music:
             self.sound_manager.prepare_level_music()
 
-            mock_play_music.assert_called_with(
-                self.sound_manager.level_music, range(1, 8)
-            )
-            self.assertEqual(self.sound_manager.current_sound, "path_to_sound_file")
+        mock_play_music.assert_called_with(self.sound_manager.level_music, range(1, 8))
+        self.assertEqual(self.sound_manager.current_sound, "path_to_sound_file")
 
     def test_prepare_level_music_no_change(self):
         """Test case for the  prepare level music when the
@@ -180,7 +153,8 @@ class TestSoundManager(unittest.TestCase):
 
         with patch("src.managers.sounds_manager.play_music") as mock_play_music:
             self.sound_manager.prepare_level_music()
-            mock_play_music.assert_not_called()
+
+        mock_play_music.assert_not_called()
 
     def test_prepare_level_music_change(self):
         """Test case for the prepare level music when the
@@ -196,10 +170,8 @@ class TestSoundManager(unittest.TestCase):
         with patch("src.managers.sounds_manager.play_music") as mock_play_music:
             self.sound_manager.prepare_level_music()
 
-            mock_play_music.assert_called_with(
-                self.sound_manager.level_music, range(1, 8)
-            )
-            self.assertEqual(self.sound_manager.current_sound, "path_to_sound_file")
+        mock_play_music.assert_called_with(self.sound_manager.level_music, range(1, 8))
+        self.assertEqual(self.sound_manager.current_sound, "path_to_sound_file")
 
     def test__prepare_gameplay_sounds_volume(self):
         """Test the preparation of the gameplay sound volume."""

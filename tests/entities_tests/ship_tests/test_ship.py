@@ -21,11 +21,13 @@ class ShipTestCase(unittest.TestCase):
         self.settings = Settings()
         self.game = MagicMock()
         self.game.settings = self.settings
+        self.game.screen = MagicMock()
         self.image = MagicMock()
 
         with patch("pygame.image.load", return_value=self.image):
             self.ship = Ship(self.game, "ship.png", (400, 300))
         self.ship.ship_type = "thunderbird"
+        self.ship.anims = MagicMock()
 
     def test_ship_initialization(self):
         """Test case for the initialization of the ship."""
@@ -88,25 +90,14 @@ class ShipTestCase(unittest.TestCase):
         self.ship.state.immune = True
         self.ship.settings.immune_time = 0
         self.ship.immune_start_time = 0
-
         self.ship.state.scaled = True
         self.ship.settings.scaled_time = 0
         self.ship.small_ship_time = 0
-
         self.ship.state.exploding = True
-        self.ship.anims.update_explosion_animation = MagicMock()
-
         self.ship.state.warping = True
-        self.ship.anims.update_warp_animation = MagicMock()
-
         self.ship.state.shielded = True
-        self.ship.anims.update_shield_animation = MagicMock()
-
         self.ship.state.immune = True
-        self.ship.anims.update_immune_animation = MagicMock()
-
         self.ship.state.empowered = True
-        self.ship.anims.update_empower_animation = MagicMock()
 
         self.ship._update_position = MagicMock()
         self.ship.rect = MagicMock()
@@ -125,18 +116,21 @@ class ShipTestCase(unittest.TestCase):
         self.assertEqual(self.ship.rect.x, 200)
         self.assertEqual(self.ship.rect.y, 300)
 
+        # Test case when the ship is not exploding
         self.ship.state.exploding = False
 
         self.ship.update_state()
 
         self.ship.anims.update_warp_animation.assert_called_once()
 
+        # Test case when the ship is not warping
         self.ship.state.warping = False
 
         self.ship.update_state()
 
         self.ship._update_position.assert_called_once()
 
+        # Test case when the ship is in the immune state.
         self.ship.state.immune = True
         self.ship.settings.immune_time = 1000
 
@@ -148,12 +142,14 @@ class ShipTestCase(unittest.TestCase):
         """Test the _update_position method."""
         # Set up initial state and values
         self.ship.state.reverse = False
+
         self.ship.moving_flags = {
             "right": True,
             "left": False,
             "up": False,
             "down": False,
         }
+
         self.ship.x_pos = 100.0
         self.ship.y_pos = 200.0
         self.ship.rect.width = 46
@@ -162,23 +158,30 @@ class ShipTestCase(unittest.TestCase):
         self.ship.screen_rect = pygame.Rect(0, 0, 800, 600)
 
         self._update_position_assert_helper(103.5, 200.0)
+
         self.settings.thunderbird_ship_speed = 1
+
         self._update_position_movement_helper(False, 200.0)
+
         self.settings.thunderbird_ship_speed = 3
 
         self._update_position_assert_helper(102.5, 197.0)
-        # Set up different movement flags and ship speed
+
         self.ship.moving_flags = {
             "right": False,
             "left": False,
             "up": False,
             "down": True,
         }
+
         self.settings.thunderbird_ship_speed = 5
 
         self._update_position_assert_helper(102.5, 202.0)
+
         self._update_position_movement_helper(True, 202.0)
+
         self._update_position_assert_helper(107.5, 197.0)
+
         # Set up movement flags to keep ship within screen boundaries
         self.ship.moving_flags = {
             "right": False,
@@ -189,86 +192,73 @@ class ShipTestCase(unittest.TestCase):
 
         self._update_position_assert_helper(102.5, 202.0)
 
-    def _update_position_movement_helper(self, arg0, arg1):
+    def _update_position_movement_helper(self, movement_flags, right_flag):
         self.ship.moving_flags = {
-            "right": arg0,
+            "right": movement_flags,
             "left": True,
-            "up": arg0,
-            "down": arg0,
+            "up": movement_flags,
+            "down": movement_flags,
         }
-        self._update_position_assert_helper(102.5, arg1)
+
+        self._update_position_assert_helper(102.5, right_flag)
+
         # Set up different movement flags and ship speed
         self.ship.moving_flags = {
-            "right": arg0,
+            "right": movement_flags,
             "left": False,
             "up": True,
             "down": False,
         }
 
-    def _update_position_assert_helper(self, arg0, arg1):
+    def _update_position_assert_helper(self, x_pos, y_pos):
         # Call the _update_position method
         self.ship._update_position()
 
         # Assert the updated position
-        self.assertEqual(self.ship.x_pos, arg0)
-        self.assertEqual(self.ship.y_pos, arg1)
+        self.assertEqual(self.ship.x_pos, x_pos)
+        self.assertEqual(self.ship.y_pos, y_pos)
 
-    def test_blitme(self):
-        """Test the blitme method."""
-        # Create separate MagicMock objects for the surface and rect
-        surface_mock = MagicMock()
-        # Assign the surface mock to self.screen
-        self.ship.screen = surface_mock
-
+    def test_blitme_multiple(self):
+        """Test the blitme method for multiple states"""
         # Set up initial state and values
-        self.ship.state.warping = False
-        self.ship.state.exploding = False
         self.ship.state.shielded = True
         self.ship.state.immune = True
         self.ship.state.empowered = True
 
-        # Set up the animation and image mocks
-        self.ship.anims.warp_frames = [MagicMock()]
-        self.ship.anims.warp_index = 0
-        self.ship.anims.explosion_image = MagicMock()
-        self.ship.anims.explosion_rect = MagicMock()
-        self.ship.anims.shield_image = MagicMock()
-        self.ship.anims.shield_rect = MagicMock()
-        self.ship.anims.immune_image = MagicMock()
-        self.ship.anims.immune_rect = MagicMock()
-        self.ship.anims.empower_image = MagicMock()
-        self.ship.anims.empower_rect = MagicMock()
-
         self.ship.blitme()
 
         # Assert the correct blitting calls
-        surface_mock.blit.assert_any_call(
+        self.ship.screen.blit.assert_any_call(
             self.ship.anims.shield_image, self.ship.anims.shield_rect
         )
-        surface_mock.blit.assert_any_call(
+        self.ship.screen.blit.assert_any_call(
             self.ship.anims.immune_image, self.ship.anims.immune_rect
         )
-        surface_mock.blit.assert_any_call(
+        self.ship.screen.blit.assert_any_call(
             self.ship.anims.empower_image, self.ship.anims.empower_rect
         )
 
-        # Reset the blit mock
-        surface_mock.blit.reset_mock()
-
+    def test_blitme_exploding(self):
+        """Test the blitme method when the ship is exploding."""
+        # Set up initial state and values
         self.ship.state.exploding = True
 
         self.ship.blitme()
 
-        surface_mock.blit.assert_any_call(
+        # Assert the correct blitting calls
+        self.ship.screen.blit.assert_called_once_with(
             self.ship.anims.explosion_image, self.ship.anims.explosion_rect
         )
 
-        self.ship.state.exploding = False
+    def test_blitme_warping(self):
+        """Test the blitme method when the ship is warping."""
+        # Set up initial state and values
         self.ship.state.warping = True
 
         self.ship.blitme()
 
-        surface_mock.blit.assert_any_call(
+        # Assert the correct blitting calls
+        self.ship.screen.blit.assert_called_once_with(
             self.ship.anims.warp_frames[self.ship.anims.warp_index], self.ship.rect
         )
 
@@ -312,9 +302,6 @@ class ShipTestCase(unittest.TestCase):
 
     def test_explode(self):
         """Test the explode method."""
-        self.ship.anims.explosion_rect = MagicMock()
-        self.ship.rect = MagicMock()
-
         self.ship.explode()
 
         self.assertTrue(self.ship.state.exploding)
@@ -323,12 +310,11 @@ class ShipTestCase(unittest.TestCase):
     def test_start_warp(self):
         """Test the start_warp method."""
         self.ship.start_warp()
+
         self.assertTrue(self.ship.state.warping)
 
     def test_set_immune(self):
         """Test the set_immune method."""
-        self.ship.anims.immune_rect = MagicMock()
-        self.ship.rect = MagicMock()
 
         self.ship.set_immune()
 
@@ -339,30 +325,37 @@ class ShipTestCase(unittest.TestCase):
     def test_empower(self):
         """Test the empower method."""
         self.ship.empower()
+
         self.assertTrue(self.ship.state.empowered)
 
     def test_update_missiles_number_one_life_reign(self):
         """Test the update_missiles_number method in one_life_reign mode."""
         self.ship.settings.game_modes.one_life_reign = True
+
         self.ship.update_missiles_number()
+
         self.assertEqual(self.ship.missiles_num, 6)
 
     def test_update_missiles_number_last_bullet(self):
         """Test the update_missiles_number method in last_bullet mode."""
         self.ship.settings.game_modes.last_bullet = True
+
         self.ship.update_missiles_number()
+
         self.assertEqual(self.ship.missiles_num, 1)
 
     def test_update_missiles_number_default(self):
         """Test the update_missiles_number method with default settings."""
         self.ship.starting_missiles = 8
+
         self.ship.update_missiles_number()
+
         self.assertEqual(self.ship.missiles_num, 8)
 
     def test_scale_ship(self):
         """Test the scale_ship method."""
-        self.ship.anims.change_ship_size = MagicMock()
         self.ship.scale_ship(1.5)
+
         self.ship.anims.change_ship_size.assert_called_once()
         self.assertTrue(self.ship.state.scaled)
 
@@ -418,7 +411,9 @@ class ShipTestCase(unittest.TestCase):
         """Test the update_speed_from_settings method."""
         player = "thunderbird"
         setattr(self.ship.settings, f"{player}_ship_speed", 5)
+
         self.ship.update_speed_from_settings(player)
+
         self.assertEqual(self.ship.ship_speed, 5)
 
 

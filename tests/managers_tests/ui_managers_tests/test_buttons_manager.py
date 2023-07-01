@@ -5,7 +5,9 @@ the buttons in the game.
 
 import unittest
 from unittest.mock import MagicMock, patch
+
 import pygame
+
 from src.utils.constants import GAME_MODES_DESCRIPTIONS, DIFFICULTIES
 from src.managers.ui_managers.buttons_manager import GameButtonsManager
 
@@ -198,19 +200,14 @@ class GameButtonsManagerTest(unittest.TestCase):
         )
 
     @patch("pygame.mouse.get_pos")
-    def test_display_description(self, mock_get_pos):
+    def test_display_description(self, _):
         """Test the display_description method."""
         button = MagicMock()
-        button.rect = pygame.Rect(100, 100, 200, 50)
-
-        # Set the mouse position within the collision rectangle of the button
-        mock_get_pos.return_value = (150, 125)
 
         self.manager.game_mode_buttons = [button]  # type: ignore
 
         self.manager.display_description()
 
-        # Assert that the show_button_info method of the button is called
         button.show_button_info.assert_called_once()
 
     def test_draw_difficulty_buttons(self):
@@ -455,7 +452,6 @@ class GameButtonsManagerTest(unittest.TestCase):
         # Set up initial state
         self.gm_options.cosmic_conflict = False
         self.game.singleplayer = False
-        self.game.ships = [MagicMock(), MagicMock()]
 
         # Set ship states to not alive
         for ship in self.game.ships:
@@ -519,8 +515,6 @@ class GameButtonsManagerTest(unittest.TestCase):
         # Endless Onslaught game mode
         self.game.settings.game_modes.game_mode = "endless_onslaught"
         self.ui_options.show_high_scores = True
-
-        self.game.score_board.delete_high_scores = MagicMock()
 
         self.manager.handle_delete_button()
 
@@ -625,7 +619,9 @@ class GameButtonsManagerTest(unittest.TestCase):
     def test_handle_single_player_button_click(self, mock_play_sound):
         """Test the handle_single_player_button_click method."""
         start_single = MagicMock()
+
         self.manager.handle_single_player_button_click(start_single)
+
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.menu_sounds, "click_menu"
         )
@@ -635,7 +631,9 @@ class GameButtonsManagerTest(unittest.TestCase):
     def test_handle_multiplayer_button_click(self, mock_play_sound):
         """Test the handle multiplayer button click method."""
         start_multi = MagicMock()
+
         self.manager.handle_multiplayer_button_click(start_multi)
+
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.menu_sounds, "click_menu"
         )

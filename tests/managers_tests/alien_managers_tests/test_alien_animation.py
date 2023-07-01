@@ -17,7 +17,6 @@ class AlienAnimationTestCase(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.game.stats.level = 1
         self.alien = MagicMock()
         self.animation = AlienAnimation(self.game, self.alien)
 

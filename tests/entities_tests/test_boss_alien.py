@@ -6,7 +6,7 @@ alien bosses in the game.
 import unittest
 from unittest.mock import MagicMock
 
-from pygame import Surface
+import pygame
 
 from src.entities.aliens import BossAlien
 from src.game_logic.game_settings import Settings
@@ -19,9 +19,10 @@ class TestBossAlien(unittest.TestCase):
         """Set up the test environment."""
         self.game = MagicMock()
         self.settings = Settings()
-        self.game.screen = Surface((800, 600))
+        self.game.screen = pygame.Surface((800, 600))
         self.game.settings = self.settings
         self.boss_alien = BossAlien(self.game)
+        self.boss_alien.destroy = MagicMock()
 
     def test_init(self):
         """Test the initialization of the boss alien."""
@@ -69,7 +70,9 @@ class TestBossAlien(unittest.TestCase):
     def _check_level_mapping(self, level, expected_image):
         """Method used to help the testing for multiple level images."""
         self.game.stats.level = level
+
         self.boss_alien._update_image(self.game)
+
         self.assertEqual(
             self.boss_alien.image, self.boss_alien.boss_images[expected_image]
         )
@@ -111,22 +114,23 @@ class TestBossAlien(unittest.TestCase):
         """Test the check_edges method of the boss alien."""
         # Test case: Boss alien at the right edge of the screen
         self.boss_alien.rect.right = self.game.screen.get_rect().right
+
         self.assertTrue(self.boss_alien.check_edges())
 
         # Test case: Boss alien at the left edge of the screen
         self.boss_alien.rect.left = 0
+
         self.assertTrue(self.boss_alien.check_edges())
 
         # Test case: Boss alien not at the edge of the screen
         self.boss_alien.rect.right = 100
         self.boss_alien.rect.left = 100
+
         self.assertFalse(self.boss_alien.check_edges())
 
     def test_destroy_alien(self):
         """Test the destroy_alien method."""
         self.boss_alien.is_alive = True
-        self.boss_alien.destroy.update_destroy_animation = MagicMock()
-        self.boss_alien.destroy.draw_animation = MagicMock()
 
         self.boss_alien.destroy_alien()
 
@@ -154,10 +158,13 @@ class TestBossAlien(unittest.TestCase):
 
     def test_draw(self):
         """Test the drawing of the boss alien."""
-        screen = MagicMock()
-        self.boss_alien.screen = screen
+        self.boss_alien.screen = MagicMock()
+
         self.boss_alien.draw()
-        screen.blit.assert_called_once_with(self.boss_alien.image, self.boss_alien.rect)
+
+        self.boss_alien.screen.blit.assert_called_once_with(
+            self.boss_alien.image, self.boss_alien.rect
+        )
 
 
 if __name__ == "__main__":

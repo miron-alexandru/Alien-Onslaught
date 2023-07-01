@@ -5,7 +5,9 @@ creating boss alien bullets in the game.
 
 import unittest
 from unittest.mock import MagicMock
+
 import pygame
+
 from src.entities.alien_bullets import BossBullet
 from src.entities.aliens import BossAlien
 from src.game_logic.game_settings import Settings
@@ -78,7 +80,10 @@ class TestBossBullet(unittest.TestCase):
         initial_y_pos = self.bullet.y_pos
         initial_rect_y = self.bullet.rect.y
         initial_rect_x = self.bullet.rect.x
+
         self.bullet.update()
+
+        # Assertions
         self.assertEqual(
             self.bullet.y_pos, initial_y_pos + self.bullet.settings.alien_bullet_speed
         )
@@ -94,8 +99,11 @@ class TestBossBullet(unittest.TestCase):
         initial_y_pos = self.bullet.y_pos
         initial_rect_y = self.bullet.rect.y
         initial_rect_x = self.bullet.rect.x
-        self.bullet.x_vel = 2.5  # Set a different x velocity
+        self.bullet.x_vel = 2.5
+
         self.bullet.update()
+
+        # Assertions
         self.assertEqual(
             self.bullet.y_pos, initial_y_pos + self.bullet.settings.alien_bullet_speed
         )
@@ -109,8 +117,6 @@ class TestBossBullet(unittest.TestCase):
 
     def test_draw(self):
         """Test the drawing of the bullet."""
-        self.bullet.screen.blit = MagicMock()
-
         self.bullet.draw()
 
         self.bullet.screen.blit.assert_called_once_with(

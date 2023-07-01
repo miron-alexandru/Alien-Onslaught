@@ -39,9 +39,6 @@ class TestScreenManager(unittest.TestCase):
 
     def test_init(self):
         """Test the initialization of the class."""
-        self.screen_manager._initialize_cursor = MagicMock()
-        self.screen_manager.create_controls = MagicMock()
-
         self.assertEqual(self.screen_manager.game, self.game)
         self.assertEqual(self.screen_manager.settings, self.settings)
         self.assertEqual(self.screen_manager.buttons, self.buttons_manager)
@@ -157,7 +154,6 @@ class TestScreenManager(unittest.TestCase):
     @patch("pygame.Surface", return_value=MagicMock())
     def test__initialize_cursor(self, mock_surface, mock_mouse):
         """Test the initialize_cursor method."""
-        # pygame.Surface = MagicMock(return_value=MagicMock())
         self.screen.get_size.return_value = (100, 100)
 
         self.screen_manager._initialize_cursor()
@@ -173,7 +169,6 @@ class TestScreenManager(unittest.TestCase):
         self.screen_manager.cursor_surface = MagicMock()
         self.settings.cursor_img = mock_surface.return_value
         self.settings.cursor_rect = mock_cursor_rect
-        pygame.mouse.get_pos.return_value = (10, 10)
 
         self.screen_manager.draw_cursor()
 
@@ -205,45 +200,41 @@ class TestScreenManager(unittest.TestCase):
                 [MagicMock()],
             )
         )
+
         with patch(
             "src.managers.ui_managers.screen_manager.display_controls",
             mock_display_controls,
         ):
             self.screen_manager.create_controls()
 
-            self.assertTrue(mock_display_controls.called)
-            self.assertIsNotNone(self.screen_manager.p1_controls_img)
-            self.assertIsNotNone(self.screen_manager.p2_controls_img)
-            self.assertIsNotNone(self.screen_manager.game_controls_img)
-            self.assertIsNotNone(self.screen_manager.p1_controls_img_rect)
-            self.assertIsNotNone(self.screen_manager.p2_controls_img_rect)
-            self.assertIsNotNone(self.screen_manager.game_controls_img_rect)
-            self.assertIsNotNone(self.screen_manager.p1_controls_text)
-            self.assertIsNotNone(self.screen_manager.p2_controls_text)
-            self.assertIsNotNone(self.screen_manager.game_controls_text)
-            self.assertIsNotNone(self.screen_manager.p1_controls_text_rects)
-            self.assertIsNotNone(self.screen_manager.p2_controls_text_rects)
-            self.assertIsNotNone(self.screen_manager.game_controls_text_rects)
+        self.assertTrue(mock_display_controls.called)
+        self.assertIsNotNone(self.screen_manager.p1_controls_img)
+        self.assertIsNotNone(self.screen_manager.p2_controls_img)
+        self.assertIsNotNone(self.screen_manager.game_controls_img)
+        self.assertIsNotNone(self.screen_manager.p1_controls_img_rect)
+        self.assertIsNotNone(self.screen_manager.p2_controls_img_rect)
+        self.assertIsNotNone(self.screen_manager.game_controls_img_rect)
+        self.assertIsNotNone(self.screen_manager.p1_controls_text)
+        self.assertIsNotNone(self.screen_manager.p2_controls_text)
+        self.assertIsNotNone(self.screen_manager.game_controls_text)
+        self.assertIsNotNone(self.screen_manager.p1_controls_text_rects)
+        self.assertIsNotNone(self.screen_manager.p2_controls_text_rects)
+        self.assertIsNotNone(self.screen_manager.game_controls_text_rects)
 
-            self.assertIsInstance(self.screen_manager.p1_controls_text[0], MagicMock)
-            self.assertIsInstance(self.screen_manager.p2_controls_text[0], MagicMock)
-            self.assertIsInstance(self.screen_manager.game_controls_text[0], MagicMock)
-            self.assertIsInstance(
-                self.screen_manager.p1_controls_text_rects[0], MagicMock
-            )
-            self.assertIsInstance(
-                self.screen_manager.p2_controls_text_rects[0], MagicMock
-            )
-            self.assertIsInstance(
-                self.screen_manager.game_controls_text_rects[0], MagicMock
-            )
+        self.assertIsInstance(self.screen_manager.p1_controls_text[0], MagicMock)
+        self.assertIsInstance(self.screen_manager.p2_controls_text[0], MagicMock)
+        self.assertIsInstance(self.screen_manager.game_controls_text[0], MagicMock)
+        self.assertIsInstance(self.screen_manager.p1_controls_text_rects[0], MagicMock)
+        self.assertIsInstance(self.screen_manager.p2_controls_text_rects[0], MagicMock)
+        self.assertIsInstance(
+            self.screen_manager.game_controls_text_rects[0], MagicMock
+        )
 
     def test_draw_menu_objects(self):
         """Test the draw_menu_objects method."""
         mock_bg_img = MagicMock()
         mock_bg_img_rect = MagicMock()
-        self.settings.game_title = MagicMock()
-        self.settings.game_title_rect = MagicMock()
+
         mock_display_controls = MagicMock(
             return_value=(
                 MagicMock(),
@@ -268,9 +259,7 @@ class TestScreenManager(unittest.TestCase):
 
         self.screen_manager.draw_menu_objects(mock_bg_img, mock_bg_img_rect)
 
-        self.assertTrue(self.screen.blit.called)
-        self.assertEqual(
-            self.screen.blit.call_args_list,
+        expected_calls = (
             [
                 call(mock_bg_img, mock_bg_img_rect),
                 call(
@@ -307,8 +296,10 @@ class TestScreenManager(unittest.TestCase):
                     self.screen_manager.game_controls_text,
                     self.screen_manager.game_controls_text_rects,
                 )
-            ],
+            ]
         )
+
+        self.assertEqual(self.screen.blit.call_args_list, expected_calls)
         self.buttons_manager.single.draw_button.assert_called_once()
         self.buttons_manager.multi.draw_button.assert_called_once()
         self.buttons_manager.menu_quit.draw_button.assert_called_once()
@@ -341,11 +332,6 @@ class TestScreenManager(unittest.TestCase):
 
     def test_display_pause(self):
         """Test the display_pause method."""
-        mock_pause_rect = MagicMock()
-        self.settings.pause.get_rect.return_value = mock_pause_rect
-        mock_screen_rect = MagicMock()
-        self.screen.get_rect.return_value = mock_screen_rect
-
         self.screen_manager.display_pause()
 
         self.screen.blit.assert_called_once_with(

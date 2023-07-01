@@ -4,7 +4,7 @@ and the saving / deleting of the high scores.
 """
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 import pygame
 
@@ -20,9 +20,7 @@ class ScoreBoardTest(unittest.TestCase):
         pygame.init()
         self.game = MagicMock()
         self.game.screen = pygame.Surface((1260, 700))
-        self.game.settings = MagicMock()
         self.game.settings.screen_width = 1260
-        self.game.stats = MagicMock()
         self.game.stats.phoenix_score = 0
         self.game.stats.thunderbird_score = 0
         self.game.stats.high_score = 0
@@ -286,6 +284,7 @@ class ScoreBoardTest(unittest.TestCase):
     def update_high_score_filename_helper(self, singleplayer, high_score_filename):
         """Helper function for the test_update_high_score_filename."""
         self.game.singleplayer = singleplayer
+
         self.scoreboard.update_high_score_filename()
 
         self.assertEqual(self.scoreboard.high_scores_file, high_score_filename)
@@ -316,16 +315,19 @@ class ScoreBoardTest(unittest.TestCase):
 
         self.scoreboard.draw_player_scores()
 
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.thunderbird_score_image,
-            self.scoreboard.thunderbird_score_rect,
-        )
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.phoenix_score_image,
-            self.scoreboard.phoenix_score_rect,
-        )
+        expected_calls = [
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.thunderbird_score_image,
+                self.scoreboard.thunderbird_score_rect,
+            ),
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.phoenix_score_image,
+                self.scoreboard.phoenix_score_rect,
+            ),
+        ]
+        mock_draw_img.assert_has_calls(expected_calls)
 
         # Singleplayer case
         mock_draw_img.reset_mock()
@@ -348,46 +350,49 @@ class ScoreBoardTest(unittest.TestCase):
 
         self.scoreboard.draw_missiles_info()
 
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.thunderbird_rend_missiles_num,
-            self.scoreboard.thunderbird_missiles_rect,
-        )
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.missiles_icon,
-            self.scoreboard.thunderbird_missiles_img_rect,
-        )
+        expected_calls = [
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.thunderbird_rend_missiles_num,
+                self.scoreboard.thunderbird_missiles_rect,
+            ),
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.missiles_icon,
+                self.scoreboard.thunderbird_missiles_img_rect,
+            ),
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.phoenix_rend_missiles_num,
+                self.scoreboard.phoenix_missiles_rect,
+            ),
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.phoenix_missiles_icon,
+                self.scoreboard.phoenix_missiles_img_rect,
+            ),
+        ]
 
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.phoenix_rend_missiles_num,
-            self.scoreboard.phoenix_missiles_rect,
-        )
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.phoenix_missiles_icon,
-            self.scoreboard.phoenix_missiles_img_rect,
-        )
-        self.assertEqual(mock_draw_img.call_count, 4)
+        self.assertEqual(mock_draw_img.call_args_list, expected_calls)
 
-        # Singleplay case
+        # Singleplayer case
         mock_draw_img.reset_mock()
         self.game.singleplayer = True
 
         self.scoreboard.draw_missiles_info()
-
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.thunderbird_rend_missiles_num,
-            self.scoreboard.thunderbird_missiles_rect,
-        )
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.missiles_icon,
-            self.scoreboard.thunderbird_missiles_img_rect,
-        )
-        self.assertEqual(mock_draw_img.call_count, 2)
+        single_expected_calls = [
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.thunderbird_rend_missiles_num,
+                self.scoreboard.thunderbird_missiles_rect,
+            ),
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.missiles_icon,
+                self.scoreboard.thunderbird_missiles_img_rect,
+            ),
+        ]
+        self.assertEqual(mock_draw_img.call_args_list, single_expected_calls)
 
     @patch("src.ui.scoreboards.draw_image")
     def test_draw_bullets_info(self, mock_draw_img):
@@ -399,17 +404,20 @@ class ScoreBoardTest(unittest.TestCase):
 
         self.scoreboard.draw_bullets_info()
 
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.phoenix_bullets_num_img,
-            self.scoreboard.phoenix_bullets_num_rect,
-        )
-        mock_draw_img.has_any_call(
-            self.scoreboard.screen,
-            self.scoreboard.thunder_bullets_num_img,
-            self.scoreboard.thunder_bullets_num_rect,
-        )
+        expected_calls = [
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.thunder_bullets_num_img,
+                self.scoreboard.thunder_bullets_num_rect,
+            ),
+            call(
+                self.scoreboard.screen,
+                self.scoreboard.phoenix_bullets_num_img,
+                self.scoreboard.phoenix_bullets_num_rect,
+            ),
+        ]
 
+        self.assertEqual(mock_draw_img.call_args_list, expected_calls)
         # Singleplayer case
         self.game.singleplayer = True
         mock_draw_img.reset_mock()
