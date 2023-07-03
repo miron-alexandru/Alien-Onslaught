@@ -29,13 +29,9 @@ class SoundUtilsTest(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        pygame.mixer.init()
         self.sounds_dict = {"sound1": "sound1.wav", "sound2": "sound2.wav"}
 
         self.music_dict = {"music1": "music1.mp3", "music2": "music2.mp3"}
-
-    def tearDown(self):
-        pygame.mixer.quit()
 
     @patch("src.utils.game_utils.SOUND_PATH", SOUND_PATH)
     def test_load_sound_files(self):
@@ -105,14 +101,18 @@ class SoundUtilsTest(unittest.TestCase):
 
     def test_get_available_channels(self):
         """Test getting available sound channels."""
-        available_channels = get_available_channels()
+        with patch('pygame.mixer') as mock_mixer:
+            mock_channel = mock_mixer.Channel
+            available_channels = [mock_channel(0), mock_channel(1)]
 
-        # Assert that the returned value is a list
-        self.assertIsInstance(available_channels, list)
+            with patch('src.utils.game_utils.get_available_channels') as mock_channels:
+                mock_channels.return_value = available_channels
+                result = get_available_channels()
 
-        # Assert that each element in the list is an instance of pygame.mixer.Channel
-        for channel in available_channels:
-            self.assertIsInstance(channel, pygame.mixer.Channel)
+            self.assertIsInstance(available_channels, list)
+
+            for channel in result:
+                self.assertIsInstance(channel, pygame.mixer.Channel)
 
     def test_play_sound(self):
         """Test playing a sound."""

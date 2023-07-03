@@ -17,7 +17,6 @@ class TestPowerEffectsManager(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        pygame.mixer.init()
         self.game = MagicMock()
         self.score_board = MagicMock()
         self.stats = MagicMock()
@@ -29,9 +28,6 @@ class TestPowerEffectsManager(unittest.TestCase):
         )
         self.power_effects_manager.settings = self.settings
         self.game.sound_manager = self.sound_manager
-
-    def tearDown(self):
-        pygame.mixer.quit()
 
     def test_init(self):
         """Test the initialization of the manager."""
