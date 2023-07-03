@@ -49,6 +49,10 @@ class Ship(Sprite):
         self.laser_ready_start_time = 0.0
         self.last_laser_usage = 0.0
 
+        self.display_power = False
+        self.power_name = ""
+        self.power_time = 0
+
         self.ship_type = None
         self.last_reverse_power_down_time = None
         self.last_disarmed_power_down_time = None

@@ -7,7 +7,7 @@ import time
 import pygame
 
 from src.utils.constants import WEAPONS
-from src.utils.game_utils import play_sound, display_laser_message, load_single_image
+from src.utils.game_utils import play_sound, display_custom_message, load_single_image
 
 
 class WeaponsManager:
@@ -207,17 +207,17 @@ class WeaponsManager:
         for ship in self.game.ships:
             if ship.laser_ready:
                 if self.game_modes.cosmic_conflict:
-                    display_laser_message(self.screen, "Ready!", ship, cosmic=True)
+                    display_custom_message(self.screen, "Ready!", ship, cosmic=True)
                 else:
-                    display_laser_message(self.screen, "Ready!", ship)
+                    display_custom_message(self.screen, "Ready!", ship)
 
             if self.draw_laser_message and ship.laser_fired:
                 if self.game_modes.last_bullet:
-                    display_laser_message(self.screen, "Not available!", ship)
+                    display_custom_message(self.screen, "Not available!", ship)
                 elif self.game_modes.cosmic_conflict:
-                    display_laser_message(self.screen, "Not Ready!", ship, cosmic=True)
+                    display_custom_message(self.screen, "Not Ready!", ship, cosmic=True)
                 else:
-                    display_laser_message(self.screen, "Not Ready!", ship)
+                    display_custom_message(self.screen, "Not Ready!", ship)
 
         current_time = pygame.time.get_ticks()
         if self.draw_laser_message and current_time > self.display_time + 1500:

@@ -532,7 +532,7 @@ class WeaponsManagerTest(unittest.TestCase):
         self.weapons_manager.update_normal_laser_status.assert_called_once()
 
     @patch("pygame.time.get_ticks")
-    @patch("src.managers.player_managers.weapons_manager.display_laser_message")
+    @patch("src.managers.player_managers.weapons_manager.display_custom_message")
     def test_check_laser_availability_laser_ready_cosmic_conflict(
         self, mock_display_laser, mock_get_ticks
     ):
@@ -556,7 +556,7 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertEqual(self.weapons_manager.display_time, mock_get_ticks.return_value)
 
     @patch("pygame.time.get_ticks")
-    @patch("src.managers.player_managers.weapons_manager.display_laser_message")
+    @patch("src.managers.player_managers.weapons_manager.display_custom_message")
     def test_check_laser_availability_laser_not_ready(
         self, mock_display_laser, mock_get_ticks
     ):
@@ -580,7 +580,7 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertEqual(self.weapons_manager.display_time, mock_get_ticks.return_value)
 
     @patch("pygame.time.get_ticks")
-    @patch("src.managers.player_managers.weapons_manager.display_laser_message")
+    @patch("src.managers.player_managers.weapons_manager.display_custom_message")
     def test_check_laser_availability_laser_not_ready_last_bullet(
         self, mock_display_laser, mock_get_ticks
     ):
@@ -606,7 +606,7 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertEqual(self.weapons_manager.display_time, mock_get_ticks.return_value)
 
     @patch("pygame.time.get_ticks")
-    @patch("src.managers.player_managers.weapons_manager.display_laser_message")
+    @patch("src.managers.player_managers.weapons_manager.display_custom_message")
     def test_check_laser_availability_laser_not_ready_cosmic(
         self, mock_display_laser, mock_get_ticks
     ):

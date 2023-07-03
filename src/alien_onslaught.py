@@ -287,6 +287,7 @@ class AlienOnslaught:
             self.powers_manager.weapon_power_up,
         )
         self.powers_manager.manage_power_downs()
+        self.powers_manager.display_powers_effect()
 
         self.gameplay_manager.create_normal_level_bullets(
             self.alien_bullets_manager.create_alien_bullets

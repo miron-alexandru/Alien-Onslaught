@@ -508,6 +508,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
             self.game.powers_manager.weapon_power_up,
         )
         self.game.powers_manager.manage_power_downs.assert_called_once()
+        self.game.powers_manager.display_powers_effect.assert_called_once()
         self.game.gameplay_manager.create_normal_level_bullets.assert_called_once_with(
             self.game.alien_bullets_manager.create_alien_bullets
         )

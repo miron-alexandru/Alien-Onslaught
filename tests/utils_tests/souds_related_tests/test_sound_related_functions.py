@@ -101,11 +101,11 @@ class SoundUtilsTest(unittest.TestCase):
 
     def test_get_available_channels(self):
         """Test getting available sound channels."""
-        with patch('pygame.mixer') as mock_mixer:
+        with patch("pygame.mixer") as mock_mixer:
             mock_channel = mock_mixer.Channel
             available_channels = [mock_channel(0), mock_channel(1)]
 
-            with patch('src.utils.game_utils.get_available_channels') as mock_channels:
+            with patch("src.utils.game_utils.get_available_channels") as mock_channels:
                 mock_channels.return_value = available_channels
                 result = get_available_channels()
 

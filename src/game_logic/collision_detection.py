@@ -133,8 +133,12 @@ class CollisionManager:
                 # play the empower effect, check the type of the power and activate the func
                 if collision.health:
                     health_power_up(player)
+                    ship.power_name = "+1 HP"
+                    ship.display_power = True
                 elif collision.weapon:
                     weapon(player, collision.weapon_name)
+                    ship.power_name = "Weapon"
+                    ship.display_power = True
                 else:
                     power(player)
                 collision.kill()
@@ -166,6 +170,8 @@ class CollisionManager:
         self.score_board.update_high_score()
 
     def handle_collision(self, ship, hit_function, sprite_group, score_increment):
+        """Helper method used to help for checking collisions in the Cosmic
+        Conflict game mode."""
         hits = get_colliding_sprites(ship, sprite_group)
         for sprite in hits:
             if not ship.state.immune and not ship.state.shielded:

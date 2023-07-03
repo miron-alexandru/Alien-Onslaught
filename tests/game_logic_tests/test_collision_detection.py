@@ -217,6 +217,8 @@ class TestCollisionManager(unittest.TestCase):
 
         self.thunderbird_ship.state.alive = True
         self.phoenix_ship.state.alive = False
+        self.phoenix_ship.power_name = ""
+        self.phoenix_ship.display_power = False
 
         self.game.powers = [power]
 
@@ -230,9 +232,13 @@ class TestCollisionManager(unittest.TestCase):
 
         self.assertTrue(power.kill.call_count, 2)
         self.thunderbird_ship.empower.assert_called_once()
+        self.assertEqual(self.thunderbird_ship.power_name, "+1 HP")
+        self.assertTrue(self.thunderbird_ship.display_power)
         self.assertEqual(health_power_method.call_count, 1)
 
         self.phoenix_ship.empower.assert_not_called()
+        self.assertEqual(self.phoenix_ship.power_name, "")
+        self.assertFalse(self.phoenix_ship.display_power)
         power_method.assert_not_called()
         weapon_power_method.assert_not_called()
 
@@ -257,7 +263,11 @@ class TestCollisionManager(unittest.TestCase):
 
         self.assertTrue(power.kill.call_count, 2)
         self.thunderbird_ship.empower.assert_called_once()
+        self.assertEqual(self.thunderbird_ship.power_name, "Weapon")
+        self.assertTrue(self.thunderbird_ship.display_power)
         self.phoenix_ship.empower.assert_called_once()
+        self.assertEqual(self.phoenix_ship.power_name, "Weapon")
+        self.assertTrue(self.phoenix_ship.display_power)
         self.assertEqual(weapon_power_method.call_count, 2)
 
         power_method.assert_not_called()

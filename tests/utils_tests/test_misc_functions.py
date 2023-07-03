@@ -14,7 +14,7 @@ from src.utils.game_utils import (
     display_game_modes_description,
     render_bullet_num,
     display_message,
-    display_laser_message,
+    display_custom_message,
     render_text,
     calculate_control_positions,
     display_controls,
@@ -157,8 +157,8 @@ class MiscFunctionsTests(unittest.TestCase):
             time_wait_mock.assert_called_once_with(int(duration * 1000))
 
     @patch("pygame.font.SysFont")
-    def test_display_laser_message(self, mock_sysfont):
-        """Test the display_laser_message function."""
+    def test_display_custom_message(self, mock_sysfont):
+        """Test the display_custom_message function."""
         screen = MagicMock()
         message = "Laser message"
         ship = MagicMock()
@@ -172,22 +172,22 @@ class MiscFunctionsTests(unittest.TestCase):
         text_surface.get_rect.return_value = text_rect
 
         # Test the functionality with the cosmic=False
-        display_laser_message(screen, message, ship, cosmic=False)
+        display_custom_message(screen, message, ship, cosmic=False)
 
         # Assert that the necessary objects and functions were called with the correct arguments
         mock_sysfont.assert_called_once_with("verdana", 10)
         font.render.assert_called_once_with(message, True, (255, 0, 0))
         ship_rect = ship.rect
         text_surface.get_rect.assert_called_once_with(
-            center=(ship_rect.right + 18, ship_rect.centery - 30)
+            top=(ship_rect.top - 5), left=(ship_rect.right)
         )
         screen.blit.assert_called_once_with(text_surface, text_rect)
 
         # Test the functionality with the cosmic=True
         text_surface.reset_mock()
-        display_laser_message(screen, message, ship, cosmic=True)
+        display_custom_message(screen, message, ship, cosmic=True)
         text_surface.get_rect.assert_called_once_with(
-            center=(ship_rect.left + 18, ship_rect.centery - 35)
+            top=(ship_rect.top - 20), left=(ship_rect.left + 5)
         )
 
     def test_render_text(self):

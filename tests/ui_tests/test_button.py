@@ -22,7 +22,9 @@ class ButtonTest(unittest.TestCase):
         self.image_loc = "button_img_path"
         self.pos = (100, 100)
         self.description = "Test Button"
-        with patch("src.ui.button.pygame.image.load", return_value=pygame.Surface((50, 50))):
+        with patch(
+            "src.ui.button.pygame.image.load", return_value=pygame.Surface((50, 50))
+        ):
             self.button = Button(self.game, self.image_loc, self.pos, self.description)
 
     def test_button_initialization(self):
