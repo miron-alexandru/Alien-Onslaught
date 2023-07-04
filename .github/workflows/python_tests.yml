@@ -22,4 +22,5 @@ jobs:
           pip install pygame pytest
       - name: Test with pytest
         run: |
-          pytest --ignore tests/utils_tests/images_related_tests/* --ignore tests/utils_tests/sounds_related_tests/*
+          pytest -k "not sounds_related_tests and not images_related_tests"
+
