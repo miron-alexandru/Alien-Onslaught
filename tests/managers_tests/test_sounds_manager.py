@@ -16,12 +16,8 @@ class TestSoundManager(unittest.TestCase):
 
     def setUp(self):
         """Set up the test environment."""
-        pygame.mixer.init()
         self.game = MagicMock()
         self.sound_manager = SoundManager(self.game)
-
-    def tearDown(self):
-        pygame.mixer.quit()
 
     def test_init(self):
         """Test the initialization of the class."""
