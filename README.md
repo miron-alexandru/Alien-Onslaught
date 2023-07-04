@@ -65,6 +65,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* New feature: Now a message is displayed saying what power was picked up.
 * Completed unit testing for the entire project.
 * Tests for all managers
 * New tests for alien managers and player managers.
