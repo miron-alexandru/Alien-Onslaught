@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="alien onslaught",
-    version="3.1",
+    version="3.2",
     author="Miron Alexandru",
     author_email="quality_xqs@yahoo.com",
     description="Alien Onslaught: An action-packed game that will test your shooting skills and reflexes.",

@@ -22,7 +22,7 @@ class Thunderbird(Ship):
         self.screen_rect = game.screen.get_rect()
         super().__init__(
             game,
-            os.path.join(BASE_PATH, SHIPS["thunderbird"]),
+            os.path.join(BASE_PATH, SHIPS["thunderbird1"]),
             self.screen_rect.left + 10,
         )
         self.missiles_num = game.settings.thunderbird_missiles_num
@@ -42,7 +42,7 @@ class Phoenix(Ship):
     def __init__(self, game):
         self.screen_rect = game.screen.get_rect()
         super().__init__(
-            game, os.path.join(BASE_PATH, SHIPS["phoenix"]), self.screen_rect.right - 50
+            game, os.path.join(BASE_PATH, SHIPS["phoenix1"]), self.screen_rect.right - 50
         )
         self.missiles_num = game.settings.phoenix_missiles_num
         self.ship_type = "phoenix"

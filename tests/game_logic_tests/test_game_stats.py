@@ -17,6 +17,8 @@ class GameStatsTestCase(unittest.TestCase):
         """Set up test environment."""
         self.game = MagicMock()
         self.game.settings = MagicMock()
+        self.game.settings.starting_phoenix_hp = 3
+        self.game.settings.starting_thunder_hp = 3
         self.phoenix_ship = MagicMock()
         self.thunderbird_ship = MagicMock()
         self.stats = GameStats(self.game, self.phoenix_ship, self.thunderbird_ship)

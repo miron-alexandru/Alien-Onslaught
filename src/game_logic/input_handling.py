@@ -156,24 +156,6 @@ class PlayerInput:
                 self.thunderbird.moving_flags["up"] = True
             case pygame.K_s:
                 self.thunderbird.moving_flags["down"] = True
-            case pygame.K_1:
-                self.thunderbird.image = self.thunderbird.anims.ship_images[0]
-                if self.settings.game_modes.cosmic_conflict:
-                    self.thunderbird.image = pygame.transform.rotate(
-                        self.thunderbird.image, -90
-                    )
-            case pygame.K_2:
-                self.thunderbird.image = self.thunderbird.anims.ship_images[1]
-                if self.settings.game_modes.cosmic_conflict:
-                    self.thunderbird.image = pygame.transform.rotate(
-                        self.thunderbird.image, -90
-                    )
-            case pygame.K_3:
-                self.thunderbird.image = self.thunderbird.anims.ship_images[2]
-                if self.settings.game_modes.cosmic_conflict:
-                    self.thunderbird.image = pygame.transform.rotate(
-                        self.thunderbird.image, -90
-                    )
             case pygame.K_x:
                 fire_missile_method(
                     self.game.thunderbird_missiles,
@@ -205,18 +187,6 @@ class PlayerInput:
                 self.phoenix.moving_flags["up"] = True
             case pygame.K_DOWN:
                 self.phoenix.moving_flags["down"] = True
-            case pygame.K_KP1:
-                self.phoenix.image = self.phoenix.anims.ship_images[3]
-                if self.settings.game_modes.cosmic_conflict:
-                    self.phoenix.image = pygame.transform.rotate(self.phoenix.image, 90)
-            case pygame.K_KP2:
-                self.phoenix.image = self.phoenix.anims.ship_images[4]
-                if self.settings.game_modes.cosmic_conflict:
-                    self.phoenix.image = pygame.transform.rotate(self.phoenix.image, 90)
-            case pygame.K_KP3:
-                self.phoenix.image = self.phoenix.anims.ship_images[5]
-                if self.settings.game_modes.cosmic_conflict:
-                    self.phoenix.image = pygame.transform.rotate(self.phoenix.image, 90)
             case pygame.K_RCTRL:
                 fire_missile_method(
                     self.game.phoenix_missiles, self.phoenix, missile_class=Missile

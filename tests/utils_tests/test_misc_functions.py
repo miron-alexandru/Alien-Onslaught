@@ -75,7 +75,7 @@ class MiscFunctionsTests(unittest.TestCase):
             description,
             font,
             "white",
-            (screen_width // 2 + 74, screen_height // 2 + 120),
+            (screen_width // 2 + 74, screen_height // 2 + 180),
             int(screen_height * 0.03),
         )
         for i, surface in enumerate(text_surfaces):

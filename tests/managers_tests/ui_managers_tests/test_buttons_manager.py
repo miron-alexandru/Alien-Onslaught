@@ -48,39 +48,43 @@ class GameButtonsManagerTest(unittest.TestCase):
     def test__create_game_buttons(self, mock_button):
         """Test the create_game_buttons method."""
         # Assert that all buttons were created successfully.
-        self.assertEqual(len(self.manager.game_buttons), 6)
+        self.assertEqual(len(self.manager.game_buttons), 7)
         self.assertEqual(len(self.manager.difficulty_buttons), 3)
         self.assertEqual(len(self.manager.game_mode_buttons), 8)
 
         self.manager._create_game_buttons()
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager, self.manager.button_imgs["play_button"], (0, 0), center=True
         )
-        mock_button.assert_any_call(
+        mock_button.has_call(
+            self.manager, self.manager.button_imgs["select_ship"],
+            (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom)
+        )
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["difficulty"],
-            (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom),
+            (self.manager.select_ship.rect.centerx - 74, self.manager.select_ship.rect.bottom),
         )
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["easy"],
             (self.manager.difficulty.rect.right - 10, self.manager.difficulty.rect.y),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["medium"],
             (self.manager.easy.rect.right - 5, self.manager.easy.rect.y),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["hard"],
             (self.manager.medium.rect.right - 5, self.manager.medium.rect.y),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["game_modes"],
             (
@@ -89,35 +93,35 @@ class GameButtonsManagerTest(unittest.TestCase):
             ),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["normal"],
             (self.manager.game_modes.rect.right - 8, self.manager.game_modes.rect.y),
             GAME_MODES_DESCRIPTIONS[0],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["endless"],
             (self.manager.normal.rect.right - 5, self.manager.normal.rect.y),
             GAME_MODES_DESCRIPTIONS[1],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["slow_burn"],
             (self.manager.endless.rect.right - 5, self.manager.endless.rect.y),
             GAME_MODES_DESCRIPTIONS[2],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["meteor_madness"],
             (self.manager.normal.rect.left, self.manager.slow_burn.rect.bottom),
             GAME_MODES_DESCRIPTIONS[3],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["boss_rush"],
             (
@@ -127,28 +131,28 @@ class GameButtonsManagerTest(unittest.TestCase):
             GAME_MODES_DESCRIPTIONS[4],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["last_bullet"],
             (self.manager.boss_rush.rect.right - 5, self.manager.boss_rush.rect.y),
             GAME_MODES_DESCRIPTIONS[5],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["cosmic_conflict"],
             (self.manager.slow_burn.rect.right - 5, self.manager.slow_burn.rect.y),
             GAME_MODES_DESCRIPTIONS[6],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["one_life_reign"],
             (self.manager.last_bullet.rect.right - 5, self.manager.last_bullet.rect.y),
             GAME_MODES_DESCRIPTIONS[7],
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["high_scores"],
             (
@@ -157,13 +161,13 @@ class GameButtonsManagerTest(unittest.TestCase):
             ),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["delete_scores"],
             (self.manager.high_scores.rect.left - 85, self.manager.high_scores.rect.y),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["menu_button"],
             (
@@ -172,7 +176,7 @@ class GameButtonsManagerTest(unittest.TestCase):
             ),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["quit_button"],
             (self.manager.menu.rect.centerx - 74, self.manager.menu.rect.bottom),
@@ -183,17 +187,17 @@ class GameButtonsManagerTest(unittest.TestCase):
         """Test the create_menu_buttons method."""
         self.manager._create_menu_buttons()
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager, self.manager.button_imgs["single_player"], (0, 0), center=True
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["multiplayer"],
             (self.manager.single.rect.centerx - 100, self.manager.single.rect.bottom),
         )
 
-        mock_button.assert_any_call(
+        mock_button.has_call(
             self.manager,
             self.manager.button_imgs["menu_quit_button"],
             (self.manager.multi.rect.centerx - 100, self.manager.multi.rect.bottom),
@@ -539,7 +543,7 @@ class GameButtonsManagerTest(unittest.TestCase):
 
         # Call the method to create the dictionary
         actions_dict = self.manager.create_button_actions_dict(menu_method, reset_game)
-        self.assertEqual(len(actions_dict), 18)
+        self.assertEqual(len(actions_dict), 19)
 
         # Assert button-action mappings
         self.assertEqual(

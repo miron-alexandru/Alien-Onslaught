@@ -57,9 +57,13 @@ class TestScreenManager(unittest.TestCase):
         self.screen_manager.buttons.play.update_pos.assert_called_once_with(
             self.screen.get_rect().center, y=-50
         )
-        self.screen_manager.buttons.difficulty.update_pos.assert_called_once_with(
+        self.screen_manager.buttons.select_ship.update_pos.assert_called_once_with(
             self.screen_manager.buttons.play.rect.centerx - 74,
             self.screen_manager.buttons.play.rect.bottom,
+        )
+        self.screen_manager.buttons.difficulty.update_pos.assert_called_once_with(
+            self.screen_manager.buttons.select_ship.rect.centerx - 74,
+            self.screen_manager.buttons.select_ship.rect.bottom,
         )
         self.screen_manager.buttons.game_modes.update_pos.assert_called_once_with(
             self.screen_manager.buttons.difficulty.rect.centerx - 74,

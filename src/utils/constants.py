@@ -24,6 +24,7 @@ BUTTON_NAMES = [
     "last_bullet",
     "cosmic_conflict",
     "one_life_reign",
+    "select_ship",
 ]
 
 # PLAYER_CONTROLS
@@ -35,7 +36,6 @@ P2_CONTROLS = (
     "Fire: Enter\n"
     "Laser: R-Shift\n"
     "Launch Missiles: R-Ctrl\n"
-    "Change Ship: Numpad 1, 2, 3\n"
 )
 
 # Player1 controls
@@ -45,7 +45,6 @@ P1_CONTROLS = (
     "Fire: Space\n"
     "Laser: C\n"
     "Launch Missiles: X\n"
-    "Change Ship: 1, 2, 3\n"
 )
 
 GAME_CONTROLS = (
@@ -87,6 +86,36 @@ GAME_MODES_DESCRIPTIONS = (
     "Embrace unstoppable strength, but remember, a single life is all you have.\n"
     "Battle against relentless alien forces, navigate deadly challenges,\n"
     "and face epic bosses."
+).split("\n\n")
+
+THUNDER_SHIP_DESCRIPTIONS = (
+    # Regular Thunder
+    "A balanced ship with moderate speed and firepower. It offers\n"
+    "versatility in combat and is a good choice for players who\n"
+    "prefer a well-rounded ship.\n\n"
+    # Slow Thunder
+    "Characterized by slower movement and firing speed, it offers\n"
+    "increased firepower and enhanced durability. It is suitable\n"
+    "for players who prioritize survivability and heavy firepower.\n\n"
+    # Heavy Artillery Thunder
+    "Sacrifices health for devastating firepower. With its moderate\n"
+    "speed and increased number of missiles, it is designed for players\n"
+    "who prefer high-damage output and tactical gameplay."
+).split("\n\n")
+
+PHOENIX_SHIP_DESCRIPTIONS = (
+    # Regular Phoenix
+    "A balanced ship with moderate speed and firepower. It offers\n"
+    "a combination of speed and firepower, making it suitable for\n"
+    "players who value balance in their playstyle.\n\n"
+    # Fast Phoenix
+    "Excels in speed, providing high mobility and rapid fire.\n"
+    "However, it has lower health and bullet count, requiring\n"
+    "careful maneuvering and precise aim.\n\n"
+    # Heavy Artillery Phoenix
+    "Combines a low to moderate speed with a high bullet count.\n"
+    "It sacrifices health for increased firepower, allowing players\n"
+    "to unleash a barrage of bullets."
 ).split("\n\n")
 
 
@@ -234,10 +263,22 @@ NORMAL_BOSS_HP_MAP = {
 
 
 SHIPS = {
-    "thunderbird": "ships/ship1.png",
-    "phoenix": "ships/ship4.png",
+    "thunderbird1": "ships/ship1.png",
+    "thunderbird2": "ships/ship2.png",
+    "thunderbird3": "ships/ship3.png",
+    "phoenix1": "ships/ship4.png",
+    "phoenix2": "ships/ship5.png",
+    "phoenix3": "ships/ship6.png",
 }
 
+ship_image_paths = {
+    "regular_thunder": SHIPS["thunderbird1"],
+    "slow_thunder": SHIPS["thunderbird2"],
+    "artillery_thunder": SHIPS["thunderbird3"],
+    "regular_phoenix": SHIPS["phoenix1"],
+    "fast_phoenix": SHIPS["phoenix2"],
+    "artillery_phoenix": SHIPS["phoenix3"],
+}
 
 # Sounds for the game.
 MENU_MUSIC = {
@@ -271,6 +312,7 @@ GAME_SOUNDS = {
     "fire_laser": "gameplay/fire_laser.wav",
     "laser_not_ready": "gameplay/laser_not_ready.wav",
     "freeze": "gameplay/freeze.wav",
+    "select_ship": "gameplay/select_ship.wav",
 }
 
 LEVEL_SOUNDS = {

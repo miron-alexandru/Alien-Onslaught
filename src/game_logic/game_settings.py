@@ -23,6 +23,8 @@ class Settings:
         self._init_screen_settings()
         self._init_images()
         self._init_game_settings()
+        self.regular_thunder_ship()
+        self.regular_phoenix_ship()
         self.dynamic_settings()
 
     def _init_screen_settings(self):
@@ -74,20 +76,68 @@ class Settings:
         self.frozen_time = 4
         self.max_alien_speed = 3.8
 
+    def regular_thunder_ship(self):
+        """Settings for the regular Thunderbird."""
+        self.starting_thunder_ship_speed = 3.5
+        self.starting_thunder_bullet_speed = 5.0
+        self.starting_thunder_bullet_count = 1
+        self.starting_thunder_bullets_allowed = 3
+        self.starting_thunder_hp = 3
+
+    def slow_thunder(self):
+        """Settings for the slow Thunderbird."""
+        self.starting_thunder_ship_speed = 2.2
+        self.starting_thunder_bullet_speed = 3.2
+        self.starting_thunder_bullet_count = 7
+        self.starting_thunder_bullets_allowed = 7
+        self.starting_thunder_hp = 5
+
+    def heavy_artillery_thunder(self):
+        """Settings for the heavy artillery Thunderbird."""
+        self.starting_thunder_ship_speed = 3.0
+        self.starting_thunder_bullet_speed = 6.0
+        self.starting_thunder_bullet_count = 2
+        self.starting_thunder_bullets_allowed = 6
+        self.starting_thunder_hp = 1
+
+    def regular_phoenix_ship(self):
+        """Settings for the regular Phoenix."""
+        self.starting_phoenix_ship_speed = 3.5
+        self.starting_phoenix_bullet_speed = 5.0
+        self.starting_phoenix_bullet_count = 1
+        self.starting_phoenix_bullets_allowed = 3
+        self.starting_phoenix_hp = 3
+
+    def fast_phoenix(self):
+        """Settings for the fast Phoenix."""
+        self.starting_phoenix_ship_speed = 6.0
+        self.starting_phoenix_bullet_speed = 8.5
+        self.starting_phoenix_bullet_count = 1
+        self.starting_phoenix_bullets_allowed = 3
+        self.starting_phoenix_hp = 1
+
+    def heavy_artillery_phoenix(self):
+        """Settings for the heavy artillery Phoenix."""
+        self.starting_phoenix_ship_speed = 3.0
+        self.starting_phoenix_bullet_speed = 4.5
+        self.starting_phoenix_bullet_count = 4
+        self.starting_phoenix_bullets_allowed = 8
+        self.starting_phoenix_hp = 2
+
     def dynamic_settings(self):
         """Settings that can change during the game."""
         # Thunderbird settings
-        self.thunderbird_ship_speed = 3.5
-        self.thunderbird_bullet_speed = 5.0
-        self.thunderbird_bullets_allowed = 3
-        self.thunderbird_bullet_count = 1
+        self.thunderbird_ship_speed = self.starting_thunder_ship_speed
+        self.thunderbird_bullet_speed = self.starting_thunder_bullet_speed
+        self.thunderbird_bullets_allowed = self.starting_thunder_bullets_allowed
+        self.thunderbird_bullet_count = self.starting_thunder_bullet_count
         self.thunderbird_missiles_num = 3
 
         # Phoenix settings
-        self.phoenix_ship_speed = 3.5
-        self.phoenix_bullet_speed = 5.0
-        self.phoenix_bullets_allowed = 3
-        self.phoenix_bullet_count = 1
+        self.phoenix_ship_speed = self.starting_phoenix_ship_speed
+        self.phoenix_bullet_speed = self.starting_phoenix_bullet_speed
+        self.phoenix_bullets_allowed = self.starting_phoenix_bullets_allowed
+        self.phoenix_bullet_count = self.starting_phoenix_bullet_count
         self.phoenix_missiles_num = 3
 
         # Alien Settings
@@ -149,6 +199,7 @@ class UIOptions:
     show_high_scores: bool = False
     show_game_modes: bool = False
     game_over_sound_played: bool = False
+    ship_selection: bool = False
 
 
 @dataclass

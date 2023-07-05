@@ -220,7 +220,20 @@ def display_game_modes_description(screen, description):
     screen_width, screen_height = screen.get_size()
     font = pygame.font.SysFont("verdana", 15)
     text_x = screen_width // 2 + 74
-    text_y = screen_height // 2 + 120
+    text_y = screen_height // 2 + 180
+    text_surfaces, text_rects = render_text(
+        description, font, "white", (text_x, text_y), int(screen_height * 0.03)
+    )
+
+    for i, surface in enumerate(text_surfaces):
+        screen.blit(surface, text_rects[i])
+
+def display_ship_description(screen, description):
+    """Render ships description on screen."""
+    screen_width, screen_height = screen.get_size()
+    font = pygame.font.SysFont("verdana", 15)
+    text_x = 55
+    text_y = 150
     text_surfaces, text_rects = render_text(
         description, font, "white", (text_x, text_y), int(screen_height * 0.03)
     )

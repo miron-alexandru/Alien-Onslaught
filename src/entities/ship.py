@@ -4,12 +4,15 @@ player ships in the game and the ShipStates dataclass that manages the
 state of the ships.
 """
 
+import os
 import time
 from dataclasses import dataclass
 
 import pygame
 from pygame.sprite import Sprite
 from src.animations.ship_animations import Animations
+from src.utils.game_utils import BASE_PATH
+from src.utils.constants import SHIPS, ship_image_paths
 
 
 class Ship(Sprite):
@@ -40,6 +43,7 @@ class Ship(Sprite):
         self.small_ship_time = 0
         self.last_bullet_time = 0
         self.scale_counter = 0
+        self.ship_selected = False
 
         self.laser_fired = False
         self.laser_ready = False
@@ -54,6 +58,7 @@ class Ship(Sprite):
         self.power_time = 0
 
         self.ship_type = None
+        self.ship_name = ""
         self.last_reverse_power_down_time = None
         self.last_disarmed_power_down_time = None
         self.last_scaled_weapon_power_down_time = None
@@ -223,9 +228,15 @@ class Ship(Sprite):
 
     def reset_ship_size(self):
         """Reset the ship to the original state and size."""
-        self.image = pygame.image.load(self.image_path)
-        self.rect = self.image.get_rect()
         self.anims.reset_size()
+
+        ship_type = "thunderbird" if self.ship_type == "thunderbird" else "phoenix"
+        self.image_path = os.path.join(
+            BASE_PATH, ship_image_paths.get(self.ship_name, SHIPS[f"{ship_type}1"])
+        )
+        self.image = pygame.image.load(self.image_path)
+
+        self.rect = self.image.get_rect()
 
         self.state.scaled = False
         self.small_ship_time = time.time()
@@ -245,6 +256,7 @@ class Ship(Sprite):
         self.laser_ready_start_time = 0.0
         self.last_laser_usage = 0.0
         self.laser_ready_msg = False
+        self.ship_selected = False
 
     def update_speed_from_settings(self, player):
         """Updates the ship speed attribute based on the current value

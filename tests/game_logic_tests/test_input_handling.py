@@ -409,65 +409,6 @@ class TestPlayerInput(unittest.TestCase):
         )
         self.assertTrue(self.game.thunderbird_ship.laser_fired)
 
-    @patch("src.game_logic.input_handling.pygame.transform.rotate")
-    def test_handle_thunderbird_controls_ship_change_cosmic(self, mock_rotate):
-        """Test the handling of thunderbird controls when the ship is changed
-        in the cosmic conflict game mode."""
-        event_mock = MagicMock()
-        fire_missile_method_mock = MagicMock()
-        fire_laser_method_mock = MagicMock()
-
-        # Cosmic conflict game mode is active.
-        self.game.settings.game_modes.cosmic_conflict = True
-        self.game.thunderbird_ship.state.alive = True
-        self.game.thunderbird_ship.state.warping = False
-        self.game.thunderbird_ship.state.exploding = False
-
-        keys_to_release = [pygame.K_1, pygame.K_2, pygame.K_3]
-        for key in keys_to_release:
-            event_mock.key = key
-            self.player_input._handle_thunderbird_controls(
-                event_mock, fire_missile_method_mock, fire_laser_method_mock
-            )
-
-        self.assertEqual(mock_rotate.call_count, 3)
-        expected_calls = [
-            call(self.game.thunderbird_ship.anims.ship_images[0], -90),
-            call(self.game.thunderbird_ship.anims.ship_images[1], -90),
-            call(self.game.thunderbird_ship.anims.ship_images[2], -90),
-        ]
-
-        self.assertEqual(mock_rotate.call_args_list, expected_calls)
-
-    def test_handle_thunderbird_controls_ship_change_normal(self):
-        """Test the handling of thunderbird controls when the ship is changed
-        in the other game modes."""
-        event_mock = MagicMock()
-        fire_missile_method_mock = MagicMock()
-        fire_laser_method_mock = MagicMock()
-
-        # Cosmic conflict game mode is not active
-        self.game.settings.game_modes.cosmic_conflict = False
-        self.game.thunderbird_ship.state.alive = True
-        self.game.thunderbird_ship.state.warping = False
-        self.game.thunderbird_ship.state.exploding = False
-
-        keys_to_release = [pygame.K_1, pygame.K_2, pygame.K_3]
-        for key in keys_to_release:
-            event_mock.key = key
-            self.player_input._handle_thunderbird_controls(
-                event_mock, fire_missile_method_mock, fire_laser_method_mock
-            )
-
-            if key == pygame.K_1:
-                expected_image = self.game.thunderbird_ship.anims.ship_images[0]
-            elif key == pygame.K_2:
-                expected_image = self.game.thunderbird_ship.anims.ship_images[1]
-            elif key == pygame.K_3:
-                expected_image = self.game.thunderbird_ship.anims.ship_images[2]
-
-            self.assertEqual(self.game.thunderbird_ship.image, expected_image)
-
     def test_handle_phoenix_controls(self):
         """Test the handle_phoenix_controls method."""
         self.game.phoenix_ship.moving_flags = {
@@ -520,68 +461,6 @@ class TestPlayerInput(unittest.TestCase):
         )
 
         self.assertTrue(self.game.phoenix_ship.laser_fired)
-
-    @patch("src.game_logic.input_handling.pygame.transform.rotate")
-    def test_handle_phoenix_controls_ship_change_cosmic(self, mock_rotate):
-        """Test the handle_phoenix_controls method when the ship is changing
-        in the cosmic conflict game mode.
-        """
-        event_mock = MagicMock()
-        fire_missile_method_mock = MagicMock()
-        fire_laser_method_mock = MagicMock()
-
-        # Cosmic conflict game mode is active.
-        self.game.settings.game_modes.cosmic_conflict = True
-        self.game.phoenix_ship.state.alive = True
-        self.game.phoenix_ship.state.warping = False
-        self.game.phoenix_ship.state.exploding = False
-
-        keys_to_release = [pygame.K_KP1, pygame.K_KP2, pygame.K_KP3]
-        for key in keys_to_release:
-            event_mock.key = key
-            self.player_input._handle_phoenix_controls(
-                event_mock, fire_missile_method_mock, fire_laser_method_mock
-            )
-
-        self.assertEqual(mock_rotate.call_count, 3)
-
-        expected_calls = [
-            call(self.game.phoenix_ship.anims.ship_images[3], 90),
-            call(self.game.phoenix_ship.anims.ship_images[4], 90),
-            call(self.game.phoenix_ship.anims.ship_images[5], 90),
-        ]
-
-        self.assertEqual(mock_rotate.call_args_list, expected_calls)
-
-    def test_handle_phoenix_controls_ship_change_normal(self):
-        """Test the handle_phoenix_controls method when the ship is changing
-        in the other game modes.
-        """
-        event_mock = MagicMock()
-        fire_missile_method_mock = MagicMock()
-        fire_laser_method_mock = MagicMock()
-
-        # Cosmic conflict game mode is not active
-        self.game.settings.game_modes.cosmic_conflict = False
-        self.game.phoenix_ship.state.alive = True
-        self.game.phoenix_ship.state.warping = False
-        self.game.phoenix_ship.state.exploding = False
-
-        keys_to_release = [pygame.K_KP1, pygame.K_KP2, pygame.K_KP3]
-        for key in keys_to_release:
-            event_mock.key = key
-            self.player_input._handle_phoenix_controls(
-                event_mock, fire_missile_method_mock, fire_laser_method_mock
-            )
-
-            if key == pygame.K_KP1:
-                expected_image = self.game.phoenix_ship.anims.ship_images[3]
-            elif key == pygame.K_KP2:
-                expected_image = self.game.phoenix_ship.anims.ship_images[4]
-            elif key == pygame.K_KP3:
-                expected_image = self.game.phoenix_ship.anims.ship_images[5]
-
-            self.assertEqual(self.game.phoenix_ship.image, expected_image)
 
     def test_reset_ship_flags(self):
         """Test the reset_ship_flags method."""

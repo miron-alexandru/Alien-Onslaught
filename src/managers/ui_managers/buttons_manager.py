@@ -38,11 +38,16 @@ class GameButtonsManager:
     def _create_game_buttons(self):
         """Create buttons for the game menu."""
         self.play = Button(self, self.button_imgs["play_button"], (0, 0), center=True)
+        self.select_ship = Button(
+            self,
+            self.button_imgs["select_ship"],
+            (self.play.rect.centerx - 74, self.play.rect.bottom),
+        )
         # Difficulty buttons
         self.difficulty = Button(
             self,
             self.button_imgs["difficulty"],
-            (self.play.rect.centerx - 74, self.play.rect.bottom),
+            (self.select_ship.rect.centerx - 74, self.select_ship.rect.bottom),
         )
         self.easy = Button(
             self,
@@ -142,6 +147,7 @@ class GameButtonsManager:
             self.play,
             self.quit,
             self.menu,
+            self.select_ship,
             self.difficulty,
             self.high_scores,
             self.game_modes,
@@ -215,6 +221,7 @@ class GameButtonsManager:
         self.ui_options.show_difficulty = False
         self.ui_options.show_high_scores = False
         self.ui_options.show_game_modes = False
+        self.ui_options.ship_selection = False
 
     def handle_quit_button(self):
         """Play the quit sound effect and quit the game."""
@@ -344,6 +351,7 @@ class GameButtonsManager:
             ),
             self.difficulty: self.handle_difficulty_toggle,
             self.delete_scores: self.handle_delete_button,
+            self.select_ship: self.handle_ship_selection_button,
         }
 
     def handle_quit_event(self):
@@ -370,3 +378,11 @@ class GameButtonsManager:
         play_sound(self.game.sound_manager.menu_sounds, "quit_effect")
         pygame.time.delay(800)
         self.handle_quit_event()
+
+    def handle_ship_selection_button(self):
+        """Handle the even when the ship selection button
+        is clicked.
+        """
+        self.ui_options.ship_selection = not self.ui_options.ship_selection
+        self.game.thunderbird_ship.ship_selected = False
+        self.game.phoenix_ship.ship_selected = False

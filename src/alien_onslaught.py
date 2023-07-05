@@ -40,6 +40,7 @@ from src.managers.ui_managers.screen_manager import ScreenManager, LoadingScreen
 from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
+from src.managers.ui_managers.ship_selection_screen import ShipSelection
 
 
 class AlienOnslaught:
@@ -86,6 +87,7 @@ class AlienOnslaught:
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
         self.loading_screen = LoadingScreen(self.screen)
+        self.ship_selection = ShipSelection(self, self.screen, self.thunderbird_ship.anims.ship_images, self.settings)
 
     @property
     def singleplayer(self):
@@ -337,6 +339,7 @@ class AlienOnslaught:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_buttons(mouse_pos)
+                self.ship_selection.handle_ship_selection(mouse_pos)
             elif event.type == pygame.VIDEORESIZE:
                 self.screen_manager.resize_screen(event.size)
                 self.screen_manager.update_buttons()
@@ -502,6 +505,9 @@ class AlienOnslaught:
 
             if self.ui_options.show_game_modes:
                 self.buttons_manager.draw_game_mode_buttons()
+
+            if self.ui_options.ship_selection:
+                self.ship_selection.draw()
 
             self.screen_manager.draw_cursor()
 

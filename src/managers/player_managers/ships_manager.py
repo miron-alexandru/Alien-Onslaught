@@ -84,8 +84,8 @@ class ShipsManager:
         """Resets ships to their initial state, updates missiles number,
         resets the player weapon and plays the warp sound effect."""
         for ship in self.game.ships:
-            ship.reset_ship_state()
             ship.reset_ship_size()
+            ship.reset_ship_state()
             ship.center_ship()
             ship.start_warp()
             ship.update_missiles_number()

@@ -3,7 +3,7 @@ The 'game_stats' module contains the GameStats class
 that manages the statistics that change during the game.
 """
 
-from src.utils.constants import STARTING_HP, MAX_HP
+from src.utils.constants import MAX_HP
 from src.utils.game_utils import play_sound
 
 
@@ -26,14 +26,15 @@ class GameStats:
         """Resets the statistics to their initial values."""
         phoenix_ship.state.alive = True
         thunderbird_ship.state.alive = True
-        self.phoenix_hp = self.thunderbird_hp = STARTING_HP
         self.max_hp = MAX_HP
-        self.thunder_bullets = self.settings.thunderbird_bullet_count
-        self.fire_bullets = self.settings.phoenix_bullet_count
         self.thunderbird_score = 0
         self.phoenix_score = 0
         self.level = 1
         self.high_score = 0
+        self.thunder_bullets = self.game.settings.thunderbird_bullet_count
+        self.fire_bullets = self.game.settings.phoenix_bullet_count
+        self.phoenix_hp = self.settings.starting_phoenix_hp
+        self.thunderbird_hp = self.settings.starting_thunder_hp
 
         if self.settings.game_modes.one_life_reign:
             self._set_one_life_reign_stats()
