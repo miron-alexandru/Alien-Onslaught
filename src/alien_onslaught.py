@@ -40,7 +40,7 @@ from src.managers.ui_managers.screen_manager import ScreenManager, LoadingScreen
 from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
-from src.managers.ui_managers.ship_selection_screen import ShipSelection
+from src.managers.player_managers.ship_selection_manager import ShipSelection
 
 
 class AlienOnslaught:
@@ -87,7 +87,9 @@ class AlienOnslaught:
         self.stats = GameStats(self, self.phoenix_ship, self.thunderbird_ship)
         self.score_board = ScoreBoard(self)
         self.loading_screen = LoadingScreen(self.screen)
-        self.ship_selection = ShipSelection(self, self.screen, self.thunderbird_ship.anims.ship_images, self.settings)
+        self.ship_selection = ShipSelection(
+            self, self.screen, self.thunderbird_ship.anims.ship_images, self.settings
+        )
 
     @property
     def singleplayer(self):

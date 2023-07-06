@@ -5,7 +5,7 @@ ability to change the ship in the game.
 
 import pygame
 from src.utils.constants import THUNDER_SHIP_DESCRIPTIONS, PHOENIX_SHIP_DESCRIPTIONS
-from src.utils.game_utils import play_sound, display_ship_description
+from src.utils.game_utils import play_sound, display_description
 
 
 class ShipSelection:
@@ -22,12 +22,48 @@ class ShipSelection:
         self.clickable_regions = []
 
         self.ship_selection_functions = {
-            (1, 0): ("regular_thunder", self.settings.regular_thunder_ship),
-            (1, 1): ("slow_thunder", self.settings.slow_thunder),
-            (1, 2): ("artillery_thunder", lambda: (self.settings.heavy_artillery_thunder(), setattr(self.thunderbird_ship, "starting_missiles", 6))),
-            (2, 0): ("regular_phoenix", self.settings.regular_phoenix_ship),
-            (2, 1): ("fast_phoenix", self.settings.fast_phoenix),
-            (2, 2): ("artillery_phoenix", lambda: (self.settings.heavy_artillery_phoenix(), setattr(self.phoenix_ship, "starting_missiles", 4))),
+            (1, 0): (
+                "regular_thunder",
+                lambda: (
+                    self.settings.regular_thunder_ship(),
+                    setattr(self.thunderbird_ship, "starting_missiles", 3),
+                ),
+            ),
+            (1, 1): (
+                "slow_thunder",
+                lambda: (
+                    self.settings.slow_thunder(),
+                    setattr(self.thunderbird_ship, "starting_missiles", 3),
+                ),
+            ),
+            (1, 2): (
+                "artillery_thunder",
+                lambda: (
+                    self.settings.heavy_artillery_thunder(),
+                    setattr(self.thunderbird_ship, "starting_missiles", 6),
+                ),
+            ),
+            (2, 0): (
+                "regular_phoenix",
+                lambda: (
+                    self.settings.regular_phoenix_ship(),
+                    setattr(self.phoenix_ship, "starting_missiles", 3),
+                ),
+            ),
+            (2, 1): (
+                "fast_phoenix",
+                lambda: (
+                    self.settings.fast_phoenix(),
+                    setattr(self.phoenix_ship, "starting_missiles", 3),
+                ),
+            ),
+            (2, 2): (
+                "artillery_phoenix",
+                lambda: (
+                    self.settings.heavy_artillery_phoenix(),
+                    setattr(self.phoenix_ship, "starting_missiles", 4),
+                ),
+            ),
         }
 
     def draw(self):
@@ -51,7 +87,7 @@ class ShipSelection:
 
     def draw_ships(self, ship_type, y_position, x_position):
         """Draws the ship images on the screen."""
-        ship_images = self.ship_images[(ship_type - 1) * 3:ship_type * 3]
+        ship_images = self.ship_images[(ship_type - 1) * 3 : ship_type * 3]
         image_width = ship_images[0].get_width()
 
         for i, ship_image in enumerate(ship_images):
@@ -63,15 +99,25 @@ class ShipSelection:
 
             if ship_rect.collidepoint(pygame.mouse.get_pos()):
                 if ship_type == 1:
-                    display_ship_description(self.screen, THUNDER_SHIP_DESCRIPTIONS[i])
+                    display_description(
+                        self.screen, THUNDER_SHIP_DESCRIPTIONS[i], 55, 150
+                    )
                 else:
-                    display_ship_description(self.screen, PHOENIX_SHIP_DESCRIPTIONS[i])
+                    display_description(
+                        self.screen, PHOENIX_SHIP_DESCRIPTIONS[i], 55, 150
+                    )
 
     def handle_ship_selection(self, mouse_pos):
         """Handles the ship selection."""
         for region, ship_type, index in self.clickable_regions:
-            if region.collidepoint(mouse_pos) and self.game.ui_options.ship_selection and (ship_type, index) in self.ship_selection_functions:
-                ship_name, ship_function = self.ship_selection_functions[(ship_type, index)]
+            if (
+                region.collidepoint(mouse_pos)
+                and self.game.ui_options.ship_selection
+                and (ship_type, index) in self.ship_selection_functions
+            ):
+                ship_name, ship_function = self.ship_selection_functions[
+                    (ship_type, index)
+                ]
                 if ship_type == 1:
                     self.thunderbird_ship.ship_name = ship_name
                     self.thunderbird_ship.ship_selected = True

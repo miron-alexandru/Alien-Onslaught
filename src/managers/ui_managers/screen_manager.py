@@ -46,7 +46,8 @@ class ScreenManager:
             self.buttons.play.rect.centerx - 74, self.buttons.play.rect.bottom
         )
         self.buttons.difficulty.update_pos(
-            self.buttons.select_ship.rect.centerx - 74, self.buttons.select_ship.rect.bottom
+            self.buttons.select_ship.rect.centerx - 74,
+            self.buttons.select_ship.rect.bottom,
         )
         self.buttons.game_modes.update_pos(
             self.buttons.difficulty.rect.centerx - 74,

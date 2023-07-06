@@ -4,7 +4,7 @@ The 'button module provides a class `Button` that creates a button in the game.
 
 import pygame
 
-from src.utils.game_utils import display_game_modes_description
+from src.utils.game_utils import display_description
 
 
 class Button:
@@ -48,4 +48,10 @@ class Button:
         This method is mainly used for displaying
         the description for the game modes.
         """
-        display_game_modes_description(self.screen, self.description)
+        screen_width, screen_height = self.screen.get_size()
+        display_description(
+            self.screen,
+            self.description,
+            screen_width // 2 + 74,
+            screen_height // 2 + 180,
+        )

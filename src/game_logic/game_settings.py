@@ -23,8 +23,21 @@ class Settings:
         self._init_screen_settings()
         self._init_images()
         self._init_game_settings()
-        self.regular_thunder_ship()
-        self.regular_phoenix_ship()
+
+        # Default Thunderbird settings
+        self.starting_thunder_ship_speed = 3.5
+        self.starting_thunder_bullet_speed = 5.0
+        self.starting_thunder_bullet_count = 1
+        self.starting_thunder_bullets_allowed = 3
+        self.starting_thunder_hp = 3
+
+        # Default Phoenix settings.
+        self.starting_phoenix_ship_speed = 3.5
+        self.starting_phoenix_bullet_speed = 5.0
+        self.starting_phoenix_bullet_count = 1
+        self.starting_phoenix_bullets_allowed = 3
+        self.starting_phoenix_hp = 3
+
         self.dynamic_settings()
 
     def _init_screen_settings(self):

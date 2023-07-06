@@ -214,26 +214,10 @@ def get_boss_rush_title(level):
     boss_rush_title = BOSS_RUSH.get(boss_rush_key, f"Level {level}")
     return boss_rush_title.split("/")[-1].split(".png")[0].title()
 
-
-def display_game_modes_description(screen, description):
-    """Render game modes description on screen."""
-    screen_width, screen_height = screen.get_size()
+def display_description(screen, description, text_x, text_y):
+    """Render description on screen."""
+    _, screen_height = screen.get_size()
     font = pygame.font.SysFont("verdana", 15)
-    text_x = screen_width // 2 + 74
-    text_y = screen_height // 2 + 180
-    text_surfaces, text_rects = render_text(
-        description, font, "white", (text_x, text_y), int(screen_height * 0.03)
-    )
-
-    for i, surface in enumerate(text_surfaces):
-        screen.blit(surface, text_rects[i])
-
-def display_ship_description(screen, description):
-    """Render ships description on screen."""
-    screen_width, screen_height = screen.get_size()
-    font = pygame.font.SysFont("verdana", 15)
-    text_x = 55
-    text_y = 150
     text_surfaces, text_rects = render_text(
         description, font, "white", (text_x, text_y), int(screen_height * 0.03)
     )
@@ -465,6 +449,7 @@ def display_high_scores(game, screen, score_key):
 
 
 def draw_buttons(screen, button_info, font, text_color):
+    """Render buttons on screen."""
     for button in button_info:
         pygame.draw.rect(
             screen, (0, 0, 0, 0), button["rect"]
@@ -474,8 +459,8 @@ def draw_buttons(screen, button_info, font, text_color):
         text_y = button["rect"].centery - 13
         screen.blit(text_surface, (text_x, text_y))
 
-
-def draw_label(screen, text, pos, text_font, text_color):
+def render_label(screen, text, pos, text_font, text_color):
+    """Render label on screen."""
     text_surface = text_font.render(text, True, text_color)
     text_x = pos[0] - text_surface.get_width() // 2
     text_y = pos[1] - 18
@@ -554,7 +539,7 @@ def get_player_name(
         screen.blit(high_score_surface, high_score_rect)
 
         # Draw label, buttons, and cursor
-        draw_label(
+        render_label(
             screen,
             "High score name:",
             (input_box.centerx - 205, input_box.centery),
