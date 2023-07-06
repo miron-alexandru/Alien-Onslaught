@@ -62,10 +62,12 @@
 <details>
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
-### Version 3.1:
+### Version 3.2:
 * New feature: Now the players are able to choose their ship type. Each player has three different ship types.
+* Removed the ability to change the ship by pressing a button.
 * New feature: Now a message is displayed saying what power was picked up.
 * Completed unit testing for the entire project.
+### Version 3.1:
 * Tests for all managers
 * New tests for alien managers and player managers.
 * New tests for entities, managers and animations.
