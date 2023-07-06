@@ -58,13 +58,17 @@ class GameButtonsManagerTest(unittest.TestCase):
             self.manager, self.manager.button_imgs["play_button"], (0, 0), center=True
         )
         mock_button.has_call(
-            self.manager, self.manager.button_imgs["select_ship"],
-            (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom)
+            self.manager,
+            self.manager.button_imgs["select_ship"],
+            (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom),
         )
         mock_button.has_call(
             self.manager,
             self.manager.button_imgs["difficulty"],
-            (self.manager.select_ship.rect.centerx - 74, self.manager.select_ship.rect.bottom),
+            (
+                self.manager.select_ship.rect.centerx - 74,
+                self.manager.select_ship.rect.bottom,
+            ),
         )
         mock_button.has_call(
             self.manager,

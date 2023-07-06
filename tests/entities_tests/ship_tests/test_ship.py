@@ -390,6 +390,7 @@ class ShipTestCase(unittest.TestCase):
         self.ship.laser_ready_start_time = 200.0
         self.ship.last_laser_usage = 50.0
         self.ship.laser_ready_msg = True
+        self.ship.ship_selected = True
 
         # Call the reset_ship_state method
         self.ship.reset_ship_state()
@@ -409,6 +410,7 @@ class ShipTestCase(unittest.TestCase):
         self.assertEqual(self.ship.laser_ready_start_time, 0.0)
         self.assertEqual(self.ship.last_laser_usage, 0.0)
         self.assertFalse(self.ship.laser_ready_msg)
+        self.assertFalse(self.ship.ship_selected)
 
     def test_update_speed_from_settings(self):
         """Test the update_speed_from_settings method."""

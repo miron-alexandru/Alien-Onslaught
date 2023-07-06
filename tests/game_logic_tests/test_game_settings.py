@@ -61,6 +61,60 @@ class SettingsTestCase(unittest.TestCase):
         self.assertEqual(self.settings.frozen_time, 4)
         self.assertEqual(self.settings.max_alien_speed, 3.8)
 
+    def test_regular_thunder_ship(self):
+        """Test settings for the regular Thunderbird ship."""
+        self.settings.regular_thunder_ship()
+        self.assertEqual(self.settings.starting_thunder_ship_speed, 3.5)
+        self.assertEqual(self.settings.starting_thunder_bullet_speed, 5.0)
+        self.assertEqual(self.settings.starting_thunder_bullet_count, 1)
+        self.assertEqual(self.settings.starting_thunder_bullets_allowed, 3)
+        self.assertEqual(self.settings.starting_thunder_hp, 3)
+
+    def test_slow_thunder(self):
+        """Test settings for the slow Thunderbird ship."""
+        self.settings.slow_thunder()
+        self.assertEqual(self.settings.starting_thunder_ship_speed, 2.2)
+        self.assertEqual(self.settings.starting_thunder_bullet_speed, 3.2)
+        self.assertEqual(self.settings.starting_thunder_bullet_count, 7)
+        self.assertEqual(self.settings.starting_thunder_bullets_allowed, 7)
+        self.assertEqual(self.settings.starting_thunder_hp, 5)
+
+    def test_heavy_artillery_thunder(self):
+        """Test settings for the heavy artillery Thunderbird ship."""
+        self.settings.heavy_artillery_thunder()
+        self.assertEqual(self.settings.starting_thunder_ship_speed, 3.0)
+        self.assertEqual(self.settings.starting_thunder_bullet_speed, 6.0)
+        self.assertEqual(self.settings.starting_thunder_bullet_count, 2)
+        self.assertEqual(self.settings.starting_thunder_bullets_allowed, 6)
+        self.assertEqual(self.settings.starting_thunder_hp, 1)
+
+    def test_regular_phoenix_ship(self):
+        """Test settings for the regular Phoenix ship."""
+        self.settings.regular_phoenix_ship()
+        self.assertEqual(self.settings.starting_phoenix_ship_speed, 3.5)
+        self.assertEqual(self.settings.starting_phoenix_bullet_speed, 5.0)
+        self.assertEqual(self.settings.starting_phoenix_bullet_count, 1)
+        self.assertEqual(self.settings.starting_phoenix_bullets_allowed, 3)
+        self.assertEqual(self.settings.starting_phoenix_hp, 3)
+
+    def test_fast_phoenix(self):
+        """Test settings for the fast Phoenix ship."""
+        self.settings.fast_phoenix()
+        self.assertEqual(self.settings.starting_phoenix_ship_speed, 6.0)
+        self.assertEqual(self.settings.starting_phoenix_bullet_speed, 8.5)
+        self.assertEqual(self.settings.starting_phoenix_bullet_count, 1)
+        self.assertEqual(self.settings.starting_phoenix_bullets_allowed, 3)
+        self.assertEqual(self.settings.starting_phoenix_hp, 1)
+
+    def test_heavy_artillery_phoenix(self):
+        """Test settings for the heavy artillery Phoenix ship."""
+        self.settings.heavy_artillery_phoenix()
+        self.assertEqual(self.settings.starting_phoenix_ship_speed, 3.0)
+        self.assertEqual(self.settings.starting_phoenix_bullet_speed, 4.5)
+        self.assertEqual(self.settings.starting_phoenix_bullet_count, 4)
+        self.assertEqual(self.settings.starting_phoenix_bullets_allowed, 8)
+        self.assertEqual(self.settings.starting_phoenix_hp, 2)
+
     def test_dynamic_settings(self):
         """Test the settings of the dynamic settings."""
         self.settings.dynamic_settings()

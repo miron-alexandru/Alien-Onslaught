@@ -71,13 +71,16 @@ class ButtonTest(unittest.TestCase):
 
         self.screen.blit.assert_called_once_with(self.button.image, self.button.rect)
 
-    @patch("src.ui.button.display_game_modes_description")
-    def test_button_show_button_info(self, mock_display_game_modes_description):
+    @patch("src.ui.button.display_description")
+    def test_button_show_button_info(self, mock_description):
         """Test the show_button_info method."""
+        self.screen.get_size.return_value = (800, 600)
+        screen_width, screen_height = self.screen.get_size()
+
         self.button.show_button_info()
 
-        mock_display_game_modes_description.assert_called_with(
-            self.screen, "Test Button"
+        mock_description.assert_called_with(
+            self.screen, "Test Button", screen_width // 2 + 74, screen_height // 2 + 180
         )
 
 

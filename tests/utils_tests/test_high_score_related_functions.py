@@ -13,7 +13,7 @@ from src.utils.game_utils import (
     load_high_scores,
     display_high_scores,
     get_player_name,
-    draw_label,
+    render_label,
     draw_buttons,
 )
 from src.utils.constants import DEFAULT_HIGH_SCORES
@@ -245,15 +245,15 @@ class HighScoreFunctionsTests(unittest.TestCase):
         for button in button_info:
             self.assertTrue(self.screen.get_rect().colliderect(button["rect"]))
 
-    def test_draw_label(self):
-        """Test the draw_label function."""
+    def test_render_label(self):
+        """Test the render_label function."""
         screen = MagicMock()
         font = pygame.font.SysFont("verdana", 19)
         text = "Test Label"
         pos = (400, 300)
         text_color = pygame.Color("white")
 
-        draw_label(screen, text, pos, font, text_color)
+        render_label(screen, text, pos, font, text_color)
 
         # Assert that screen.blit was called once
         screen.blit.assert_called_once()

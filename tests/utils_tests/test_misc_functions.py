@@ -11,7 +11,7 @@ import pygame
 from src.utils.game_utils import (
     get_colliding_sprites,
     get_boss_rush_title,
-    display_game_modes_description,
+    display_description,
     render_bullet_num,
     display_message,
     display_custom_message,
@@ -53,10 +53,12 @@ class MiscFunctionsTests(unittest.TestCase):
 
     @patch("pygame.font.SysFont")
     @patch("src.utils.game_utils.render_text")
-    def test_display_game_modes_description(self, mock_render_text, mock_sysfont):
-        """Test the display_game_modes_description function."""
+    def test_display_description(self, mock_render_text, mock_sysfont):
+        """Test the display_description function."""
         screen = MagicMock(spec=pygame.Surface)
         screen.get_size.return_value = (100, 200)
+        screen_width, screen_height = screen.get_size()
+
         description = "Game modes description"
 
         # Mock the necessary objects and functions
@@ -66,10 +68,11 @@ class MiscFunctionsTests(unittest.TestCase):
         mock_sysfont.return_value = font
         mock_render_text.return_value = (text_surfaces, text_rects)
 
-        display_game_modes_description(screen, description)
+        display_description(
+            screen, description, screen_width // 2 + 74, screen_height // 2 + 180
+        )
 
         # Assert that the necessary objects and functions were called with the correct arguments
-        screen_width, screen_height = screen.get_size()
         mock_sysfont.assert_called_once_with("verdana", 15)
         mock_render_text.assert_called_once_with(
             description,

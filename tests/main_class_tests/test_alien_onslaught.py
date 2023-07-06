@@ -56,6 +56,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.game.collision_handler = MagicMock()
         self.game.alien_bullets_manager = MagicMock()
         self.game.aliens_manager = MagicMock()
+        self.game.ship_selection = MagicMock()
 
     def tearDown(self):
         pygame.quit()
@@ -596,6 +597,9 @@ class AlienOnslaughtTestCase(unittest.TestCase):
             self.game.check_events()
 
         self.game._check_buttons.assert_called_once_with((100, 200))
+        self.game.ship_selection.handle_ship_selection.assert_called_once_with(
+            (100, 200)
+        )
 
     def test_check_events_videoresize(self):
         """Test the VIDEORESIZE event in the check_events method."""
@@ -884,24 +888,33 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.game._update_screen()
 
         self.game._draw_game_objects.assert_called_once()
-        self.game.screen_manager.display_pause.assert_not_called()
         mock_display_flip.assert_called_once()
+
+        self.game.screen_manager.display_pause.assert_not_called()
 
     @patch("pygame.display.flip")
     def test_update_screen_game_not_active(self, mock_display_flip):
-        """Test the update_screen method when not active."""
+        """Test the update_screen method when the game is not active."""
+        # Test for all ui_options
         self.game._draw_game_objects = MagicMock()
         self.game.stats.game_active = False
         self.game.ui_options.paused = False
+        self.game.ui_options.show_difficulty = True
+        self.game.ui_options.show_high_scores = True
+        self.game.ui_options.show_game_modes = True
+        self.game.ui_options.ship_selection = True
 
         self.game._update_screen()
 
         self.game.buttons_manager.draw_buttons.assert_called_once()
-        self.game.buttons_manager.draw_difficulty_buttons.assert_not_called()
-        self.game.screen_manager.display_high_scores_on_screen.assert_not_called()
-        self.game.buttons_manager.delete_scores.draw_button.assert_not_called()
-        self.game.buttons_manager.draw_game_mode_buttons.assert_not_called()
         self.game.screen_manager.draw_cursor.assert_called_once()
+        self.game.ship_selection.draw.assert_called_once()
+
+        self.game.buttons_manager.draw_difficulty_buttons.assert_called_once()
+        self.game.screen_manager.display_high_scores_on_screen.assert_called_once()
+        self.game.buttons_manager.delete_scores.draw_button.assert_called_once()
+        self.game.buttons_manager.draw_game_mode_buttons.assert_called_once()
+
         mock_display_flip.assert_called_once()
 
     @mock.patch("src.alien_onslaught.pygame.time.get_ticks")

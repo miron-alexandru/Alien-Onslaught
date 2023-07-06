@@ -31,14 +31,12 @@
 * Fire: Space
 * Laser: C
 * Launch Missiles: X
-* Change Ship: 1, 2, 3
 
 #### Player 2 (Phoenix):
 * Move: Arrow Keys
 * Fire: Enter
 * Laser: R-Shift
 * Launch Missiles: R-Ctrl
-* Change Ship: Numpad 1, 2, 3
 
 #### UI Controls:
 * Toggle Fullscreen: F
@@ -65,6 +63,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.1:
+* New feature: Now the players are able to choose their ship type. Each player has three different ship types.
 * New feature: Now a message is displayed saying what power was picked up.
 * Completed unit testing for the entire project.
 * Tests for all managers
