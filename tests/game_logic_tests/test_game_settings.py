@@ -75,8 +75,8 @@ class SettingsTestCase(unittest.TestCase):
         self.settings.slow_thunder()
         self.assertEqual(self.settings.starting_thunder_ship_speed, 2.2)
         self.assertEqual(self.settings.starting_thunder_bullet_speed, 3.2)
-        self.assertEqual(self.settings.starting_thunder_bullet_count, 7)
-        self.assertEqual(self.settings.starting_thunder_bullets_allowed, 7)
+        self.assertEqual(self.settings.starting_thunder_bullet_count, 6)
+        self.assertEqual(self.settings.starting_thunder_bullets_allowed, 6)
         self.assertEqual(self.settings.starting_thunder_hp, 5)
 
     def test_heavy_artillery_thunder(self):
