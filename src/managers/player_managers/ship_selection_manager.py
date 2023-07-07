@@ -61,7 +61,7 @@ class ShipSelection:
                 "artillery_phoenix",
                 lambda: (
                     self.settings.heavy_artillery_phoenix(),
-                    setattr(self.phoenix_ship, "starting_missiles", 4),
+                    setattr(self.phoenix_ship, "starting_missiles", 5),
                 ),
             ),
         }

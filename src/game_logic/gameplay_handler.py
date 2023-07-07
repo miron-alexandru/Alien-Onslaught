@@ -288,6 +288,12 @@ class GameplayManager:
         if all(not player.state.alive for player in [thunderbird, phoenix]):
             self.stats.game_active = False
 
+    def set_last_bullet_bullets(self):
+        """Set the number of bullets in the last bullet game mode."""
+        if self.settings.game_modes.last_bullet:
+            self.settings.thunderbird_bullet_count = 1
+            self.settings.phoenix_bullet_count = 1
+
     def check_remaining_bullets(self):
         """Update the remaining bullets to 0 if the ships
         have not hp left.

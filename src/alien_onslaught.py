@@ -442,6 +442,7 @@ class AlienOnslaught:
         self.gameplay_manager.handle_alien_creation()
         self.gameplay_manager.prepare_last_bullet_bullets()
         self.gameplay_manager.handle_boss_stats()
+        self.gameplay_manager.set_last_bullet_bullets()
 
         # Reset self.last_level_time when a new game starts.
         self.reset_timed_variables()

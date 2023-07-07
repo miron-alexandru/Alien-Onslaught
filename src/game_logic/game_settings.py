@@ -101,8 +101,8 @@ class Settings:
         """Settings for the slow Thunderbird."""
         self.starting_thunder_ship_speed = 2.2
         self.starting_thunder_bullet_speed = 3.2
-        self.starting_thunder_bullet_count = 7
-        self.starting_thunder_bullets_allowed = 7
+        self.starting_thunder_bullet_count = 6
+        self.starting_thunder_bullets_allowed = 6
         self.starting_thunder_hp = 5
 
     def heavy_artillery_thunder(self):
