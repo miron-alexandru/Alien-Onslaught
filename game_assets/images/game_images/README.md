@@ -1,6 +1,6 @@
 ## Different Game Images:
 ![Menu](/game_assets/images/game_images/menu.PNG)
-![Menu](/game_assets/images/game_images/menu2.PNG)
+![ShipSelection](/game_assets/images/game_images/ship_selection.PNG)
 ![HighScores](/game_assets/images/game_images/high_scores.PNG)
 ![Gameplay](/game_assets/images/game_images/game_modes.PNG)
 ![Gameplay](/game_assets/images/game_images/normal.PNG)

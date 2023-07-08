@@ -182,6 +182,15 @@ class SettingsTestCase(unittest.TestCase):
         self.settings.increase_speed()
         self.assertEqual(self.settings.aliens_num, 10)
 
+    def test_disable_ui_flags(self):
+        """Test the disable_ui_flags method."""
+        self.settings.disable_ui_flags()
+
+        self.assertFalse(self.settings.ui_options.show_difficulty)
+        self.assertFalse(self.settings.ui_options.show_game_modes)
+        self.assertFalse(self.settings.ui_options.show_high_scores)
+        self.assertFalse(self.settings.ui_options.ship_selection)
+
 
 if __name__ == "__main__":
     unittest.main()

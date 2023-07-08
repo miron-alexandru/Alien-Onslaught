@@ -244,6 +244,7 @@ class AlienOnslaught:
         self.ui_options.paused = False
         self.sound_manager.current_sound = None
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+        self.settings.disable_ui_flags()
         self.run_game()
 
     def _update_background(self, i):

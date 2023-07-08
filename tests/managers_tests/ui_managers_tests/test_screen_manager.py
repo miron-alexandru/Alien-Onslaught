@@ -55,7 +55,7 @@ class TestScreenManager(unittest.TestCase):
 
         # Assert the expected position updates of the buttons
         self.screen_manager.buttons.play.update_pos.assert_called_once_with(
-            self.screen.get_rect().center, y=-50
+            self.screen.get_rect().center, y=-80
         )
         self.screen_manager.buttons.select_ship.update_pos.assert_called_once_with(
             self.screen_manager.buttons.play.rect.centerx - 74,
@@ -132,7 +132,7 @@ class TestScreenManager(unittest.TestCase):
 
         # Update Menu Buttons
         self.screen_manager.buttons.single.update_pos.assert_called_once_with(
-            self.screen.get_rect().center, y=-55
+            self.screen.get_rect().center, y=-80
         )
         self.screen_manager.buttons.multi.update_pos.assert_called_once_with(
             self.screen_manager.buttons.single.rect.centerx - 100,

@@ -27,7 +27,7 @@ class Button:
 
         if center:
             self.rect.center = self.screen_rect.center
-            self.rect.y -= 50
+            self.rect.y -= 80
         else:
             self.rect.x, self.rect.y = pos
 
@@ -53,5 +53,5 @@ class Button:
             self.screen,
             self.description,
             screen_width // 2 + 74,
-            screen_height // 2 + 180,
+            screen_height // 2 + 150,
         )

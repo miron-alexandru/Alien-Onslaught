@@ -4,7 +4,7 @@ the buttons in the game.
 """
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 import pygame
 
@@ -54,158 +54,154 @@ class GameButtonsManagerTest(unittest.TestCase):
 
         self.manager._create_game_buttons()
 
-        mock_button.has_call(
-            self.manager, self.manager.button_imgs["play_button"], (0, 0), center=True
-        )
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["select_ship"],
-            (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom),
-        )
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["difficulty"],
-            (
-                self.manager.select_ship.rect.centerx - 74,
-                self.manager.select_ship.rect.bottom,
+        expected_calls = [
+            call(
+                self.manager, self.manager.button_imgs["play_button"], (0, 0), center=True
             ),
-        )
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["easy"],
-            (self.manager.difficulty.rect.right - 10, self.manager.difficulty.rect.y),
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["medium"],
-            (self.manager.easy.rect.right - 5, self.manager.easy.rect.y),
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["hard"],
-            (self.manager.medium.rect.right - 5, self.manager.medium.rect.y),
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["game_modes"],
-            (
-                self.manager.difficulty.rect.centerx - 74,
-                self.manager.difficulty.rect.bottom,
+            call(
+                self.manager,
+                self.manager.button_imgs["select_ship"],
+                (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom),
             ),
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["normal"],
-            (self.manager.game_modes.rect.right - 8, self.manager.game_modes.rect.y),
-            GAME_MODES_DESCRIPTIONS[0],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["endless"],
-            (self.manager.normal.rect.right - 5, self.manager.normal.rect.y),
-            GAME_MODES_DESCRIPTIONS[1],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["slow_burn"],
-            (self.manager.endless.rect.right - 5, self.manager.endless.rect.y),
-            GAME_MODES_DESCRIPTIONS[2],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["meteor_madness"],
-            (self.manager.normal.rect.left, self.manager.slow_burn.rect.bottom),
-            GAME_MODES_DESCRIPTIONS[3],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["boss_rush"],
-            (
-                self.manager.meteor_madness.rect.right - 5,
-                self.manager.meteor_madness.rect.y,
+            call(
+                self.manager,
+                self.manager.button_imgs["difficulty"],
+                (
+                    self.manager.select_ship.rect.centerx - 74,
+                    self.manager.select_ship.rect.bottom,
+                ),
             ),
-            GAME_MODES_DESCRIPTIONS[4],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["last_bullet"],
-            (self.manager.boss_rush.rect.right - 5, self.manager.boss_rush.rect.y),
-            GAME_MODES_DESCRIPTIONS[5],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["cosmic_conflict"],
-            (self.manager.slow_burn.rect.right - 5, self.manager.slow_burn.rect.y),
-            GAME_MODES_DESCRIPTIONS[6],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["one_life_reign"],
-            (self.manager.last_bullet.rect.right - 5, self.manager.last_bullet.rect.y),
-            GAME_MODES_DESCRIPTIONS[7],
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["high_scores"],
-            (
-                self.manager.game_modes.rect.centerx - 74,
-                self.manager.game_modes.rect.bottom,
+            call(
+                self.manager,
+                self.manager.button_imgs["easy"],
+                (self.manager.difficulty.rect.right - 10, self.manager.difficulty.rect.y),
             ),
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["delete_scores"],
-            (self.manager.high_scores.rect.left - 85, self.manager.high_scores.rect.y),
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["menu_button"],
-            (
-                self.manager.high_scores.rect.centerx - 74,
-                self.manager.high_scores.rect.bottom,
+            call(
+                self.manager,
+                self.manager.button_imgs["medium"],
+                (self.manager.easy.rect.right - 5, self.manager.easy.rect.y),
             ),
-        )
+            call(
+                self.manager,
+                self.manager.button_imgs["hard"],
+                (self.manager.medium.rect.right - 5, self.manager.medium.rect.y),
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["game_modes"],
+                (
+                    self.manager.difficulty.rect.centerx - 74,
+                    self.manager.difficulty.rect.bottom,
+                ),
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["normal"],
+                (self.manager.game_modes.rect.right - 8, self.manager.game_modes.rect.y),
+                GAME_MODES_DESCRIPTIONS[0],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["endless"],
+                (self.manager.normal.rect.right - 5, self.manager.normal.rect.y),
+                GAME_MODES_DESCRIPTIONS[1],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["slow_burn"],
+                (self.manager.endless.rect.right - 5, self.manager.endless.rect.y),
+                GAME_MODES_DESCRIPTIONS[2],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["meteor_madness"],
+                (self.manager.normal.rect.left, self.manager.slow_burn.rect.bottom),
+                GAME_MODES_DESCRIPTIONS[3],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["boss_rush"],
+                (
+                    self.manager.meteor_madness.rect.right - 5,
+                    self.manager.meteor_madness.rect.y,
+                ),
+                GAME_MODES_DESCRIPTIONS[4],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["last_bullet"],
+                (self.manager.boss_rush.rect.right - 5, self.manager.boss_rush.rect.y),
+                GAME_MODES_DESCRIPTIONS[5],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["cosmic_conflict"],
+                (self.manager.slow_burn.rect.right - 5, self.manager.slow_burn.rect.y),
+                GAME_MODES_DESCRIPTIONS[6],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["one_life_reign"],
+                (self.manager.last_bullet.rect.right - 5, self.manager.last_bullet.rect.y),
+                GAME_MODES_DESCRIPTIONS[7],
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["high_scores"],
+                (
+                    self.manager.game_modes.rect.centerx - 74,
+                    self.manager.game_modes.rect.bottom,
+                ),
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["delete_scores"],
+                (
+                    self.manager.high_scores.rect.left - 85,
+                    self.manager.high_scores.rect.y,
+                ),
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["menu_button"],
+                (
+                    self.manager.high_scores.rect.centerx - 74,
+                    self.manager.high_scores.rect.bottom,
+                ),
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["quit_button"],
+                (
+                    self.manager.menu.rect.centerx - 74,
+                    self.manager.menu.rect.bottom,
+                ),
+            ),
+        ]
 
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["quit_button"],
-            (self.manager.menu.rect.centerx - 74, self.manager.menu.rect.bottom),
-        )
-
+        self.assertEqual(mock_button.call_args_list, expected_calls)
     @patch("src.managers.ui_managers.buttons_manager.Button")
     def test__create_menu_buttons(self, mock_button):
         """Test the create_menu_buttons method."""
         self.manager._create_menu_buttons()
 
-        mock_button.has_call(
-            self.manager, self.manager.button_imgs["single_player"], (0, 0), center=True
-        )
+        expected_calls = [
+                call(
+                    self.manager, self.manager.button_imgs["single_player"], (0, 0), center=True
+                ),
+                call(
+                    self.manager,
+                    self.manager.button_imgs["multiplayer"],
+                    (self.manager.single.rect.centerx - 100, self.manager.single.rect.bottom),
+                ),
+                call(
+                    self.manager,
+                    self.manager.button_imgs["menu_quit_button"],
+                    (self.manager.multi.rect.centerx - 100, self.manager.multi.rect.bottom),
+                )
+        ]
 
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["multiplayer"],
-            (self.manager.single.rect.centerx - 100, self.manager.single.rect.bottom),
-        )
-
-        mock_button.has_call(
-            self.manager,
-            self.manager.button_imgs["menu_quit_button"],
-            (self.manager.multi.rect.centerx - 100, self.manager.multi.rect.bottom),
-        )
+        self.assertEqual(mock_button.call_args_list, expected_calls)
 
     @patch("pygame.mouse.get_pos")
     def test_display_description(self, _):

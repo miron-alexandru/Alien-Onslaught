@@ -80,7 +80,7 @@ class ButtonTest(unittest.TestCase):
         self.button.show_button_info()
 
         mock_description.assert_called_with(
-            self.screen, "Test Button", screen_width // 2 + 74, screen_height // 2 + 180
+            self.screen, "Test Button", screen_width // 2 + 74, screen_height // 2 + 150
         )
 
 

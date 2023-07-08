@@ -49,7 +49,7 @@
 
 ## Game Images:
 ![Menu](game_assets/images/game_images/menu.PNG)
-![Menu](game_assets/images/game_images/menu2.PNG)
+![ShipSelection](game_assets/images/game_images/ship_selection.PNG)
 ![Gameplay](game_assets/images/game_images/game_modes.PNG)
 ![Gameplay](game_assets/images/game_images/normal3.PNG)
 ![Gameplay](game_assets/images/game_images/normal4.PNG)
@@ -63,10 +63,12 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
+* Sound effect when changing the ship.
 * New feature: Now the players are able to choose their ship type. Each player has three different ship types.
 * Removed the ability to change the ship by pressing a button.
 * New feature: Now a message is displayed saying what power was picked up.
 * Completed unit testing for the entire project.
+
 ### Version 3.1:
 * Tests for all managers
 * New tests for alien managers and player managers.
@@ -235,7 +237,7 @@ This is a list of assets used in the project that were not created by me, along 
 
 ### Sound Effects (SFx):
 * UI Sound effects (click sound, quit sound) — by [Circlerun](https://opengameart.org/users/circlerun)
-* Explosion , Laser ready — by [Michael Kurinnoy](https://opengameart.org/content/space-battle-game-sounds-astromenace)
+* Explosion , Laser ready, Ship change — by [Michael Kurinnoy](https://opengameart.org/content/space-battle-game-sounds-astromenace)
 * Power-up, penalty, health — by [phoenix1291](https://opengameart.org/users/phoenix1291)
 * Laser sound effect — by [celestialghost8] (https://opengameart.org/users/celestialghost8)
 * Laser not ready — by [ViRiX](https://soundcloud.com/virix)

@@ -200,6 +200,13 @@ class Settings:
         ):
             self.aliens_num += 2
 
+    def disable_ui_flags(self):
+        """Set some UI flags to false."""
+        self.ui_options.show_difficulty = False
+        self.ui_options.show_high_scores = False
+        self.ui_options.show_game_modes = False
+        self.ui_options.ship_selection = False
+
 
 @dataclass
 class UIOptions:
