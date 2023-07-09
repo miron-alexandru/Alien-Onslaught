@@ -467,9 +467,7 @@ def render_label(screen, text, pos, text_font, text_color):
     screen.blit(text_surface, (text_x, text_y))
 
 
-def get_player_name(
-    screen, background_image, cursor, high_score, game_end_img=None, game_end_rect=None
-):
+def get_player_name(screen, background_image, cursor, high_score, game_end_img=None, game_end_rect=None):
     """Get the player name for the high score."""
 
     # Set up fonts and colors
@@ -484,21 +482,10 @@ def get_player_name(
 
     # Set up buttons
     button_info = [
-        {
-            "label": "Close",
-            "rect": pygame.Rect(
-                (input_box.centerx + 20, input_box.centery + 20), (65, 24)
-            ),
-        },
-        {
-            "label": "Save",
-            "rect": pygame.Rect(
-                (input_box.centerx - 75, input_box.centery + 20), (50, 24)
-            ),
-        },
+        {"label": "Close", "rect": pygame.Rect((input_box.centerx + 20, input_box.centery + 20), (65, 24))},
+        {"label": "Save", "rect": pygame.Rect((input_box.centerx - 75, input_box.centery + 20), (50, 24))}
     ]
 
-    # Loop until player name is confirmed or canceled
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -527,25 +514,14 @@ def get_player_name(
 
         # Draw the input box and player name
         pygame.draw.rect(screen, text_color, input_box, 1)
-        text_surface = font.render(player_name, True, pygame.Color(90, 90, 90))
-        screen.blit(text_surface, (input_box.x + 5, input_box.y))
+        screen.blit(font.render(player_name, True, pygame.Color(90, 90, 90)), (input_box.x + 5, input_box.y))
 
         # Draw the high score
-        high_score_text = f"High Score: {high_score}"
-        high_score_surface = text_font.render(high_score_text, True, text_color)
-        high_score_rect = high_score_surface.get_rect(
-            center=(screen.get_width() / 2, screen.get_height() / 2 - 100)
-        )
-        screen.blit(high_score_surface, high_score_rect)
+        high_score_surface = text_font.render(f"High Score: {high_score}", True, text_color)
+        screen.blit(high_score_surface, high_score_surface.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 100)))
 
         # Draw label, buttons, and cursor
-        render_label(
-            screen,
-            "High score name:",
-            (input_box.centerx - 205, input_box.centery),
-            text_font,
-            text_color,
-        )
+        render_label(screen, "High score name:", (input_box.centerx - 205, input_box.centery), text_font, text_color)
         draw_buttons(screen, button_info, font, text_color)
         cursor()
 

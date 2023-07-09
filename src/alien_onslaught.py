@@ -188,7 +188,7 @@ class AlienOnslaught:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
                     self.handle_toggle_window_mode()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if self.buttons_manager.single.rect.collidepoint(mouse_x, mouse_y):
                     self.buttons_manager.handle_single_player_button_click(
@@ -276,6 +276,7 @@ class AlienOnslaught:
                 self._check_for_pause()
             else:
                 self.screen.blit(self.bg_img, [0, 0])
+                self.game_over_manager.check_game_over()
                 self._update_screen()
             self.clock.tick(60)
 
@@ -339,7 +340,7 @@ class AlienOnslaught:
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_buttons(mouse_pos)
                 self.ship_selection.handle_ship_selection(mouse_pos)
