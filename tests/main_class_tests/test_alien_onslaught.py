@@ -244,6 +244,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         """
         mock_mousebuttondown_event_single = MagicMock()
         mock_mousebuttondown_event_single.type = pygame.MOUSEBUTTONDOWN
+        mock_mousebuttondown_event_single.button = pygame.BUTTON_LEFT
         mock_get.return_value = [mock_mousebuttondown_event_single]
 
         self.game.start_single_player_game = MagicMock()
@@ -261,6 +262,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         """
         mock_mousebuttondown_event_multi = MagicMock()
         mock_mousebuttondown_event_multi.type = pygame.MOUSEBUTTONDOWN
+        mock_mousebuttondown_event_multi.button = pygame.BUTTON_LEFT
         mock_get.return_value = [mock_mousebuttondown_event_multi]
 
         self.game.buttons_manager.single.rect.collidepoint = MagicMock(
@@ -282,6 +284,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         """
         mock_mousebuttondown_event_quit = MagicMock()
         mock_mousebuttondown_event_quit.type = pygame.MOUSEBUTTONDOWN
+        mock_mousebuttondown_event_quit.button = pygame.BUTTON_LEFT
         mock_get.return_value = [mock_mousebuttondown_event_quit]
 
         self.game.buttons_manager.single.rect.collidepoint = MagicMock(
@@ -483,7 +486,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         # Assert methods that are called or not called
         self.game.check_events.assert_called_once()
         self.game._update_screen.assert_called_once()
-        self.game.game_over_manager.check_game_over.assert_called_once()
+        self.assertEqual(self.game.game_over_manager.check_game_over.call_count, 2)
         self.game.screen_manager.update_window_mode.assert_called_once()
         self.game.screen.blit.assert_called_once_with(self.game.bg_img, [0, 0])
 
@@ -585,6 +588,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         mousebuttondown_event = pygame.event.Event(
             pygame.MOUSEBUTTONDOWN, pos=(100, 200)
         )
+        mousebuttondown_event.button = pygame.BUTTON_LEFT
 
         self.game.stats.game_active = True
         self.game._check_buttons = MagicMock()
