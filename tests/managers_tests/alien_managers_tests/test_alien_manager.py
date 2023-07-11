@@ -7,7 +7,6 @@ import unittest
 from unittest.mock import MagicMock
 
 from src.entities.aliens import Alien, BossAlien
-from src.game_logic.game_settings import Settings
 from src.managers.alien_managers.aliens_manager import AliensManager
 
 
@@ -17,28 +16,29 @@ class AliensManagerTest(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.settings = Settings()
         self.manager = AliensManager(
-            self.game, self.game.aliens, self.settings, self.game.screen
+            self.game, self.game.aliens, self.game.settings, self.game.screen
         )
 
     def test_create_fleet(self):
         """Test the creation of the fleet."""
+        self.game.settings.aliens_num = 8
         rows = 3
         self.manager.create_fleet(rows)
 
         # Assert that the correct number of aliens were created
         self.assertEqual(
-            len(self.game.aliens.add.call_args_list), rows * self.settings.aliens_num
+            len(self.game.aliens.add.call_args_list),
+            rows * self.game.settings.aliens_num,
         )
 
         # Assert that each alien's position was set correctly
         calls = self.game.aliens.add.call_args_list
         for row_number in range(rows):
-            for alien_number in range(self.settings.aliens_num):
-                alien = calls[row_number * self.settings.aliens_num + alien_number][0][
-                    0
-                ]
+            for alien_number in range(self.game.settings.aliens_num):
+                alien = calls[
+                    row_number * self.game.settings.aliens_num + alien_number
+                ][0][0]
                 expected_x = alien.rect.width + 2 * alien.rect.width * alien_number
                 expected_y = 50 - (2 * alien.rect.height * row_number)
                 self.assertEqual(alien.rect.x, expected_x)
@@ -105,7 +105,7 @@ class AliensManagerTest(unittest.TestCase):
         self.assertEqual(boss_alien.motion.direction, -1)
         self.assertEqual(boss_alien2.motion.direction, 1)
 
-        self.assertEqual(alien2.rect.y, 100 + self.settings.alien_speed)
+        self.assertEqual(alien2.rect.y, 100 + self.game.settings.alien_speed)
 
 
 if __name__ == "__main__":

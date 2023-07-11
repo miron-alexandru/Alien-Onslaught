@@ -9,7 +9,6 @@ import unittest
 import pygame
 
 from src.entities.projectiles import Bullet
-from src.game_logic.game_settings import Settings
 
 
 class TestBullet(unittest.TestCase):
@@ -18,13 +17,16 @@ class TestBullet(unittest.TestCase):
     def setUp(self):
         """Set up the necessary objects for testing."""
         self.game = MagicMock()
-        self.game.screen = MagicMock(spec=pygame.Surface)
-        self.game.settings = Settings()
+        self.game.settings.player_bullet_speed = 5
         self.ship = MagicMock()
         self.ship.rect = pygame.Rect(400, 500, 50, 50)
         self.bullet_image = pygame.Surface((10, 10))
-        self.speed = self.game.settings.alien_bullet_speed
-        self.bullet = Bullet(self.game, self.bullet_image, self.ship, self.speed)
+        self.bullet = Bullet(
+            self.game,
+            self.bullet_image,
+            self.ship,
+            self.game.settings.player_bullet_speed,
+        )
 
     def test_init(self):
         """Test the initialization of the bullet."""
@@ -41,16 +43,16 @@ class TestBullet(unittest.TestCase):
         # assert with an offset from the ship
         self.assertLessEqual(self.bullet.x_pos, self.ship.rect.x + 20)
         self.assertGreaterEqual(self.bullet.x_pos, self.ship.rect.x + 5)
-        self.assertEqual(self.bullet.speed, self.speed)
+        self.assertEqual(self.bullet.speed, self.game.settings.player_bullet_speed)
 
     def test_update_cosmic_conflict_mode(self):
         """Test the update method in cosmic conflict mode."""
         self.game.settings.game_modes.cosmic_conflict = True
         self.bullet.x_pos = self.ship.rect.x
         expected_x_pos = (
-            self.ship.rect.x + self.speed
+            self.ship.rect.x + self.game.settings.player_bullet_speed
             if self.ship == self.game.thunderbird_ship
-            else self.ship.rect.x - self.speed
+            else self.ship.rect.x - self.game.settings.player_bullet_speed
         )
 
         self.bullet.update()
@@ -60,8 +62,9 @@ class TestBullet(unittest.TestCase):
 
     def test_update_other_modes(self):
         """Test the update method in other modes."""
+        self.game.settings.game_modes.cosmic_conflict = False
         self.bullet.y_pos = self.ship.rect.y
-        expected_y_pos = self.ship.rect.y - self.speed
+        expected_y_pos = self.ship.rect.y - self.game.settings.player_bullet_speed
 
         self.bullet.update()
 

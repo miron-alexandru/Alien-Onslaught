@@ -10,7 +10,6 @@ import pygame
 
 from src.entities.alien_bullets import BossBullet
 from src.entities.aliens import BossAlien
-from src.game_logic.game_settings import Settings
 
 
 class TestBossBullet(unittest.TestCase):
@@ -20,8 +19,6 @@ class TestBossBullet(unittest.TestCase):
         self.game = MagicMock()
         self.alien = BossAlien(self.game)
         self.bullet = BossBullet(self.game, self.alien)
-        self.settings = Settings()
-        self.bullet.settings = self.settings
 
     def test_init(self):
         """Test the init method."""
@@ -73,10 +70,8 @@ class TestBossBullet(unittest.TestCase):
         self.assertEqual(self.bullet.image, self.bullet.bullet_images[expected_image])
 
     def test_update(self):
-        """Test the updating of the bullet.
-        The + 0.5 and conversion to int are there because the speed is
-        a float and sometimes it can be off by 0.5, which is okay."""
-        # Test movement in the y-axis
+        """Test the updating of the bullet."""
+        self.game.settings.alien_bullet_speed = 2
         initial_y_pos = self.bullet.y_pos
         initial_rect_y = self.bullet.rect.y
         initial_rect_x = self.bullet.rect.x
@@ -88,8 +83,7 @@ class TestBossBullet(unittest.TestCase):
             self.bullet.y_pos, initial_y_pos + self.bullet.settings.alien_bullet_speed
         )
         self.assertEqual(
-            self.bullet.rect.y,
-            initial_rect_y + self.bullet.settings.alien_bullet_speed + 0.5,
+            self.bullet.rect.y, initial_rect_y + self.bullet.settings.alien_bullet_speed
         )
         self.assertAlmostEqual(
             self.bullet.rect.x, initial_rect_x + round(self.bullet.x_vel)

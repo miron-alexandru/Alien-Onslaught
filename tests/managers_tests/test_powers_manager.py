@@ -2,6 +2,7 @@
 This module tests the PowerEffectsManager class that is used for
 creating powers in the game.
 """
+
 import time
 import unittest
 from unittest.mock import MagicMock, patch, call
@@ -9,7 +10,6 @@ from unittest.mock import MagicMock, patch, call
 import pygame
 
 from src.managers.powers_manager import PowerEffectsManager
-from src.game_logic.game_settings import Settings
 
 
 class TestPowerEffectsManager(unittest.TestCase):
@@ -18,16 +18,9 @@ class TestPowerEffectsManager(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.score_board = MagicMock()
-        self.stats = MagicMock()
-        self.sound_manager = MagicMock()
-        self.settings = Settings()
-        self.game.settings = self.settings
         self.power_effects_manager = PowerEffectsManager(
-            self.game, self.score_board, self.stats
+            self.game, self.game.score_board, self.game.stats
         )
-        self.power_effects_manager.settings = self.settings
-        self.game.sound_manager = self.sound_manager
 
     def test_init(self):
         """Test the initialization of the manager."""
@@ -68,6 +61,7 @@ class TestPowerEffectsManager(unittest.TestCase):
 
     def test_update_powers(self):
         """Test the update of the powers."""
+        self.game.settings.screen_height = 700
         power1 = MagicMock()
         power2 = MagicMock()
         power1.rect.y = 50
@@ -103,7 +97,7 @@ class TestPowerEffectsManager(unittest.TestCase):
 
         # Check if the appropriate sound effect was played
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "weapon"
+            self.game.sound_manager.game_sounds, "weapon"
         )
 
     def test_freeze_enemies(self):
@@ -123,15 +117,15 @@ class TestPowerEffectsManager(unittest.TestCase):
         """Test the health power-up."""
         player = "thunderbird"
 
-        self.stats.thunderbird_hp = 4
-        self.stats.max_hp = 5
+        self.game.stats.thunderbird_hp = 4
+        self.game.stats.max_hp = 5
 
         self.power_effects_manager.health_power_up(player)
 
-        self.assertEqual(self.stats.thunderbird_hp, 5)
+        self.assertEqual(self.game.stats.thunderbird_hp, 5)
         self.power_effects_manager.score_board.create_health.assert_called_once()
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "health"
+            self.game.sound_manager.game_sounds, "health"
         )
 
         self.power_effects_manager.score_board.create_health.reset_mock()
@@ -139,10 +133,10 @@ class TestPowerEffectsManager(unittest.TestCase):
 
         # Test if the hp remains the same when it reached the max value.
         self.power_effects_manager.health_power_up(player)
-        self.assertEqual(self.stats.thunderbird_hp, 5)
+        self.assertEqual(self.game.stats.thunderbird_hp, 5)
 
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "health"
+            self.game.sound_manager.game_sounds, "health"
         )
         self.power_effects_manager.score_board.create_health.assert_called_once()
 
@@ -165,7 +159,7 @@ class TestPowerEffectsManager(unittest.TestCase):
             mock_choice.return_value, player
         )
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "freeze"
+            self.game.sound_manager.game_sounds, "freeze"
         )
 
     @patch("src.managers.powers_manager.play_sound")
@@ -187,12 +181,13 @@ class TestPowerEffectsManager(unittest.TestCase):
             mock_choice.return_value, player
         )
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "power_up"
+            self.game.sound_manager.game_sounds, "power_up"
         )
 
     @patch("src.managers.powers_manager.play_sound")
     def test_apply_powerup_or_penalty_penalties(self, mock_play_sound):
         """Test the apply power up or penalty for the penalties."""
+        self.game.settings.game_modes.meteor_madness = False
         self.power_effects_manager.check_power = MagicMock()
         player = "thunderbird"
 
@@ -208,7 +203,7 @@ class TestPowerEffectsManager(unittest.TestCase):
             mock_choice.return_value, player
         )
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "penalty"
+            self.game.sound_manager.game_sounds, "penalty"
         )
 
     def test_check_power(self):
@@ -236,7 +231,7 @@ class TestPowerEffectsManager(unittest.TestCase):
         """Test the display_powers_effect in the Cosmic Conflict
         game mode.
         """
-        self.settings.game_modes.cosmic_conflict = True
+        self.game.settings.game_modes.cosmic_conflict = True
         mock_time.return_value = 5
 
         ship1 = MagicMock()
@@ -262,7 +257,7 @@ class TestPowerEffectsManager(unittest.TestCase):
     @patch("src.managers.powers_manager.time.time")
     def test_display_powers_effect_regular_mode(self, mock_time, mock_display_message):
         """Test the display_powers_effect in the other game modes."""
-        self.settings.game_modes.cosmic_conflict = False
+        self.game.settings.game_modes.cosmic_conflict = False
         mock_time.return_value = 5
 
         ship1 = MagicMock()
@@ -458,13 +453,13 @@ class TestPowerEffectsManager(unittest.TestCase):
     def test_bonus_points(self):
         """Test the bonus points power up."""
         player = "thunderbird"
-        self.stats.thunderbird_score = 1000
+        self.game.stats.thunderbird_score = 1000
 
         self.power_effects_manager.bonus_points(player)
 
-        self.assertEqual(self.stats.thunderbird_score, 1550)
-        self.score_board.render_scores.assert_called_once()
-        self.score_board.update_high_score.assert_called_once()
+        self.assertEqual(self.game.stats.thunderbird_score, 1550)
+        self.game.score_board.render_scores.assert_called_once()
+        self.game.score_board.update_high_score.assert_called_once()
 
     def test_change_ship_size(self):
         """Test the change ship size power up."""
@@ -484,33 +479,35 @@ class TestPowerEffectsManager(unittest.TestCase):
         player1 = "thunderbird"
         player2 = "phoenix"
 
-        initial_thunder_speed = self.settings.thunderbird_ship_speed
-        initial_phoenix_speed = self.settings.phoenix_ship_speed
+        initial_thunder_speed = self.game.settings.thunderbird_ship_speed
+        initial_phoenix_speed = self.game.settings.phoenix_ship_speed
 
         self.power_effects_manager.increase_ship_speed(player1)
         self.power_effects_manager.increase_ship_speed(player2)
 
         self.assertEqual(
-            self.settings.thunderbird_ship_speed, initial_thunder_speed + 0.3
+            self.game.settings.thunderbird_ship_speed, initial_thunder_speed + 0.3
         )
-        self.assertEqual(self.settings.phoenix_ship_speed, initial_phoenix_speed + 0.3)
+        self.assertEqual(
+            self.game.settings.phoenix_ship_speed, initial_phoenix_speed + 0.3
+        )
 
     def test_increase_bullet_speed(self):
         """Test the increase bullet speed power up."""
         player1 = "thunderbird"
         player2 = "phoenix"
 
-        initial_thunder_speed = self.settings.thunderbird_bullet_speed
-        initial_phoenix_speed = self.settings.phoenix_bullet_speed
+        initial_thunder_speed = self.game.settings.thunderbird_bullet_speed
+        initial_phoenix_speed = self.game.settings.phoenix_bullet_speed
 
         self.power_effects_manager.increase_bullet_speed(player1)
         self.power_effects_manager.increase_bullet_speed(player2)
 
         self.assertEqual(
-            self.settings.thunderbird_bullet_speed, initial_thunder_speed + 0.3
+            self.game.settings.thunderbird_bullet_speed, initial_thunder_speed + 0.3
         )
         self.assertEqual(
-            self.settings.phoenix_bullet_speed, initial_phoenix_speed + 0.3
+            self.game.settings.phoenix_bullet_speed, initial_phoenix_speed + 0.3
         )
 
     def test_invincibility(self):
@@ -530,17 +527,17 @@ class TestPowerEffectsManager(unittest.TestCase):
         player1 = "thunderbird"
         player2 = "phoenix"
 
-        initial_thunder_bullets = self.settings.thunderbird_bullets_allowed
-        initial_phoenix_bullets = self.settings.phoenix_bullets_allowed
+        initial_thunder_bullets = self.game.settings.thunderbird_bullets_allowed
+        initial_phoenix_bullets = self.game.settings.phoenix_bullets_allowed
 
         self.power_effects_manager.increase_bullets_allowed(player1)
         self.power_effects_manager.increase_bullets_allowed(player2)
 
         self.assertEqual(
-            self.settings.thunderbird_bullets_allowed, initial_thunder_bullets + 2
+            self.game.settings.thunderbird_bullets_allowed, initial_thunder_bullets + 2
         )
         self.assertEqual(
-            self.settings.phoenix_bullets_allowed, initial_phoenix_bullets + 2
+            self.game.settings.phoenix_bullets_allowed, initial_phoenix_bullets + 2
         )
 
     def test_increase_bullet_count(self):
@@ -548,17 +545,17 @@ class TestPowerEffectsManager(unittest.TestCase):
         player1 = "thunderbird"
         player2 = "phoenix"
 
-        initial_thunder_bullets = self.settings.thunderbird_bullet_count
-        initial_phoenix_bullets = self.settings.phoenix_bullet_count
+        initial_thunder_bullets = self.game.settings.thunderbird_bullet_count
+        initial_phoenix_bullets = self.game.settings.phoenix_bullet_count
 
         self.power_effects_manager.increase_bullet_count(player1)
         self.power_effects_manager.increase_bullet_count(player2)
 
         self.assertEqual(
-            self.settings.thunderbird_bullet_count, initial_thunder_bullets + 1
+            self.game.settings.thunderbird_bullet_count, initial_thunder_bullets + 1
         )
         self.assertEqual(
-            self.settings.phoenix_bullet_count, initial_phoenix_bullets + 1
+            self.game.settings.phoenix_bullet_count, initial_phoenix_bullets + 1
         )
 
     def test_increase_missiles_num(self):
@@ -573,7 +570,7 @@ class TestPowerEffectsManager(unittest.TestCase):
             self.power_effects_manager.thunderbird_ship.missiles_num,
             initial_missiles + 1,
         )
-        self.score_board.render_missiles_num.assert_called_once()
+        self.game.score_board.render_missiles_num.assert_called_once()
 
     def test_draw_ship_shield(self):
         """Test for the draw shiled power up."""
@@ -589,33 +586,35 @@ class TestPowerEffectsManager(unittest.TestCase):
 
     def test_decrease_alien_speed(self):
         """Test the decrease alien speed power up."""
+        self.game.settings.alien_speed = 3
         player = "thunderbird"
-        initial_speed = self.settings.alien_speed
+        initial_speed = self.game.settings.alien_speed
 
         self.power_effects_manager.decrease_alien_speed(player)
 
-        self.assertEqual(self.settings.alien_speed, initial_speed - 0.1)
+        self.assertEqual(self.game.settings.alien_speed, initial_speed - 0.1)
 
-        self.settings.alien_speed = 0
+        self.game.settings.alien_speed = 0
 
         self.power_effects_manager.decrease_alien_speed(player)
 
-        self.assertEqual(self.settings.alien_speed, 0)
+        self.assertEqual(self.game.settings.alien_speed, 0)
 
     def test_decrease_alien_bullet_speed(self):
         """Test the decrease alien bullet speed power up."""
+        self.game.settings.alien_bullet_speed = 5
         player = "thunderbird"
-        initial_speed = self.settings.alien_bullet_speed
+        initial_speed = self.game.settings.alien_bullet_speed
 
         self.power_effects_manager.decrease_alien_bullet_speed(player)
 
-        self.assertEqual(self.settings.alien_bullet_speed, initial_speed - 0.1)
+        self.assertEqual(self.game.settings.alien_bullet_speed, initial_speed - 0.1)
 
-        self.settings.alien_bullet_speed = 0
+        self.game.settings.alien_bullet_speed = 0
 
         self.power_effects_manager.decrease_alien_bullet_speed(player)
 
-        self.assertEqual(self.settings.alien_bullet_speed, 0)
+        self.assertEqual(self.game.settings.alien_bullet_speed, 0)
 
     def test_increase_remaining_bullets(self):
         """Test the increase remaining bullets power up."""
@@ -630,7 +629,7 @@ class TestPowerEffectsManager(unittest.TestCase):
             initial_bullets + 1,
         )
 
-        self.score_board.render_bullets_num.assert_called_once()
+        self.game.score_board.render_bullets_num.assert_called_once()
 
     def test_get_powerup_choices_normal(self):
         """Test the get power up choices method."""
@@ -643,15 +642,15 @@ class TestPowerEffectsManager(unittest.TestCase):
 
     def test_get_powerup_choices_game_modes(self):
         """Test the get powerup choices method in game modes."""
-        self.settings.game_modes.last_bullet = True
+        self.game.settings.game_modes.last_bullet = True
         choices = self.power_effects_manager.get_powerup_choices()
 
         self.assertEqual(len(choices), 12)
         self.assertIn(self.power_effects_manager.increase_bullets_remaining, choices)
         self.assertNotIn(self.power_effects_manager.increase_bullet_count, choices)
 
-        self.settings.game_modes.last_bullet = False
-        self.settings.game_modes.meteor_madness = True
+        self.game.settings.game_modes.last_bullet = False
+        self.game.settings.game_modes.meteor_madness = True
 
         choices = self.power_effects_manager.get_powerup_choices()
         self.assertEqual(len(choices), 6)
@@ -661,6 +660,10 @@ class TestPowerEffectsManager(unittest.TestCase):
 
     def test_get_penalty_choices(self):
         """Test the get penalty choices method."""
+        # Regular game
+        self.game.settings.game_modes.meteor_madness = False
+        self.game.settings.game_modes.last_bullet = False
+        self.game.settings.game_modes.cosmic_conflict = False
         choices = self.power_effects_manager.get_penalty_choices()
 
         self.assertEqual(len(choices), 7)
@@ -668,15 +671,17 @@ class TestPowerEffectsManager(unittest.TestCase):
         self.assertIn(self.power_effects_manager.reverse_keys, choices)
         self.assertIn(self.power_effects_manager.disarm_ship, choices)
 
-        self.settings.game_modes.meteor_madness = True
+        # Meteor madness
+        self.game.settings.game_modes.meteor_madness = True
         choices = self.power_effects_manager.get_penalty_choices()
         self.assertEqual(len(choices), 3)
         self.assertIn(self.power_effects_manager.reverse_keys, choices)
         self.assertIn(self.power_effects_manager.decrease_ship_speed, choices)
         self.assertIn(self.power_effects_manager.increase_asteroid_freq, choices)
 
-        self.settings.game_modes.meteor_madness = False
-        self.settings.game_modes.last_bullet = True
+        # Last bullet
+        self.game.settings.game_modes.meteor_madness = False
+        self.game.settings.game_modes.last_bullet = True
         choices = self.power_effects_manager.get_penalty_choices()
         self.assertEqual(len(choices), 5)
         self.assertNotIn(self.power_effects_manager.increase_alien_numbers, choices)

@@ -16,12 +16,8 @@ class AlienMovementTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        self.alien = MagicMock()
         self.game = MagicMock()
-        self.game.settings = MagicMock()
-
-        self.game.settings.alien_direction = 1
-        self.game.settings.alien_speed = 5
+        self.alien = MagicMock()
 
         self.alien_movement = AlienMovement(self.alien, self.game)
 
@@ -69,7 +65,9 @@ class AlienMovementTestCase(unittest.TestCase):
             "frequency": 0.003,
         }
         self.alien.rect.y = -2
+
         self.alien_movement.update_vertical_position()
+
         self.assertEqual(self.alien.rect.y, 3)
 
 

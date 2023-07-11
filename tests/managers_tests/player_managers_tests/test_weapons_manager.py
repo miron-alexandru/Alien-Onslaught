@@ -19,21 +19,17 @@ class WeaponsManagerTest(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.settings = MagicMock()
-        self.game_modes = MagicMock()
-        self.screen = MagicMock()
-        self.sound_manager = MagicMock()
         self.thunderbird_ship = MagicMock()
         self.phoenix_ship = MagicMock()
-
-        self.game.settings = self.settings
-        self.settings.game_modes = self.game_modes
-        self.game.sound_manager = self.sound_manager
 
         self.weapons_manager = WeaponsManager(self.game)
 
         self.weapons_manager.singleplayer_projectiles = [MagicMock(), MagicMock()]
-        self.weapons_manager.multiplayer_projectiles = [MagicMock()]
+        self.weapons_manager.multiplayer_projectiles = [
+            MagicMock(),
+            MagicMock(),
+            MagicMock(),
+        ]
 
     @patch("src.managers.player_managers.weapons_manager.load_single_image")
     def test_init(self, mock_load_single_image):
@@ -219,7 +215,7 @@ class WeaponsManagerTest(unittest.TestCase):
 
         bullets_mock.add.assert_not_called()
         bullet_class_mock.assert_not_called()
-        self.sound_manager.game_sounds.assert_not_called()
+        self.game.sound_manager.game_sounds.assert_not_called()
 
     @patch("src.managers.player_managers.weapons_manager.play_sound")
     def test_fire_bullet_max_bullets_reached(self, mock_play_sound):
@@ -269,7 +265,7 @@ class WeaponsManagerTest(unittest.TestCase):
         bullet_class_mock.assert_called_once_with(self.weapons_manager, ship_mock)
         bullets_mock.add.assert_called_once()
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "bullet"
+            self.game.sound_manager.game_sounds, "bullet"
         )
 
         # Case when last_bullet game mode is active.
@@ -312,7 +308,7 @@ class WeaponsManagerTest(unittest.TestCase):
         missile_class_mock.assert_called_once_with(self.weapons_manager, ship_mock)
         missiles_mock.add.assert_called_once()
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "missile_launch"
+            self.game.sound_manager.game_sounds, "missile_launch"
         )
         self.assertEqual(ship_mock.missiles_num, 1)
         self.game.score_board.render_missiles_num.assert_called_once_with(ship_mock)
@@ -326,7 +322,7 @@ class WeaponsManagerTest(unittest.TestCase):
         ship_mock = MagicMock()
         laser_class_mock = MagicMock()
         self.game.pause_time = pygame.time.get_ticks()
-        self.settings.laser_cooldown = 5
+        self.game.settings.laser_cooldown = 5
         ship_mock.last_laser_time = 0
         mock_time.return_value = 5
 
@@ -339,7 +335,7 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertFalse(ship_mock.laser_ready)
         self.assertFalse(self.weapons_manager.draw_laser_message)
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "fire_laser"
+            self.game.sound_manager.game_sounds, "fire_laser"
         )
 
         # Laser not ready, the player does not fire the laser because
@@ -350,7 +346,7 @@ class WeaponsManagerTest(unittest.TestCase):
 
         self.assertTrue(self.weapons_manager.draw_laser_message)
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "laser_not_ready"
+            self.game.sound_manager.game_sounds, "laser_not_ready"
         )
 
     @patch("src.managers.player_managers.weapons_manager.play_sound")
@@ -359,10 +355,10 @@ class WeaponsManagerTest(unittest.TestCase):
         lasers_mock = MagicMock()
         ship_mock = MagicMock()
         laser_class_mock = MagicMock()
-        self.game_modes.last_bullet = False
+        self.game.settings.game_modes.last_bullet = False
         self.weapons_manager.draw_laser_message = False
         ship_mock.aliens_killed = 5
-        self.settings.required_kill_count = 5
+        self.game.settings.required_kill_count = 5
 
         # Case when the ship fires the laser
         self.weapons_manager._normal_laser(lasers_mock, ship_mock, laser_class_mock)
@@ -373,7 +369,7 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertFalse(ship_mock.laser_ready)
         self.assertFalse(self.weapons_manager.draw_laser_message)
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "fire_laser"
+            self.game.sound_manager.game_sounds, "fire_laser"
         )
 
         # Case when ship tries to fire the laser and is not ready yet.
@@ -385,7 +381,7 @@ class WeaponsManagerTest(unittest.TestCase):
 
         self.assertTrue(self.weapons_manager.draw_laser_message)
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "laser_not_ready"
+            self.game.sound_manager.game_sounds, "laser_not_ready"
         )
 
     @patch("src.managers.player_managers.weapons_manager.play_sound")
@@ -394,14 +390,14 @@ class WeaponsManagerTest(unittest.TestCase):
         lasers_mock = MagicMock()
         ship_mock = MagicMock()
         laser_class_mock = MagicMock()
-        self.game_modes.last_bullet = True
+        self.game.settings.game_modes.last_bullet = True
         self.weapons_manager.draw_laser_message = False
 
         self.weapons_manager.fire_laser(lasers_mock, ship_mock, laser_class_mock)
 
         self.assertTrue(self.weapons_manager.draw_laser_message)
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "laser_not_ready"
+            self.game.sound_manager.game_sounds, "laser_not_ready"
         )
         lasers_mock.add.assert_not_called()
 
@@ -411,8 +407,8 @@ class WeaponsManagerTest(unittest.TestCase):
         lasers_mock = MagicMock()
         ship_mock = MagicMock()
         laser_class_mock = MagicMock()
-        self.game_modes.game_mode = ["timed_laser_mode"]
-        self.settings.timed_laser_modes = ["timed_laser_mode"]
+        self.game.settings.game_modes.game_mode = ["timed_laser_mode"]
+        self.game.settings.timed_laser_modes = ["timed_laser_mode"]
         self.weapons_manager._timed_laser = MagicMock()
         self.weapons_manager._normal_laser = MagicMock()
 
@@ -425,7 +421,7 @@ class WeaponsManagerTest(unittest.TestCase):
 
         # Fire normal laser case
         self.weapons_manager._timed_laser.reset_mock()
-        self.game_modes.game_mode = ["normal_laser_mode"]
+        self.game.settings.game_modes.game_mode = ["normal_laser_mode"]
 
         self.weapons_manager.fire_laser(lasers_mock, ship_mock, laser_class_mock)
 
@@ -440,7 +436,7 @@ class WeaponsManagerTest(unittest.TestCase):
         """Test the update of the laser status when the laser is available."""
         ship_mock = MagicMock()
         self.game.ships = [ship_mock]
-        self.settings.required_kill_count = 10
+        self.game.settings.required_kill_count = 10
         mock_time.return_value = 10
         ship_mock.aliens_killed = 10
         ship_mock.laser_ready = False
@@ -452,14 +448,14 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertTrue(ship_mock.laser_ready_msg)
         self.assertEqual(ship_mock.laser_ready_start_time, time.time())
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "laser_ready"
+            self.game.sound_manager.game_sounds, "laser_ready"
         )
 
     def test_update_normal_laser_status_laser_not_ready(self):
         """Test the update of the laser status when the laser is not ready."""
         ship_mock = MagicMock()
         self.game.ships = [ship_mock]
-        self.settings.required_kill_count = 5
+        self.game.settings.required_kill_count = 5
         ship_mock.aliens_killed = 4
         ship_mock.laser_ready = False
         ship_mock.laser_ready_msg = False
@@ -476,7 +472,7 @@ class WeaponsManagerTest(unittest.TestCase):
         """Test the update of the timed laser status when the laser is ready."""
         ship_mock = MagicMock()
         self.game.ships = [ship_mock]
-        self.settings.laser_cooldown = 5
+        self.game.settings.laser_cooldown = 5
         mock_time.return_value = 5
         ship_mock.last_laser_usage = 0
         ship_mock.laser_ready = False
@@ -486,7 +482,7 @@ class WeaponsManagerTest(unittest.TestCase):
         self.assertTrue(ship_mock.laser_ready)
         self.assertEqual(ship_mock.laser_ready_start_time, time.time())
         mock_play_sound.assert_called_once_with(
-            self.sound_manager.game_sounds, "laser_ready"
+            self.game.sound_manager.game_sounds, "laser_ready"
         )
 
     @patch("src.managers.player_managers.weapons_manager.time.time")
@@ -494,7 +490,7 @@ class WeaponsManagerTest(unittest.TestCase):
         """Test the update of the timed laser status when the laser is not ready."""
         ship_mock = MagicMock()
         self.game.ships = [ship_mock]
-        self.settings.laser_cooldown = 5
+        self.game.settings.laser_cooldown = 5
         mock_time.return_value = 5
         ship_mock.laser_ready_start_time = 2
         ship_mock.last_laser_usage = 0
@@ -508,8 +504,8 @@ class WeaponsManagerTest(unittest.TestCase):
     def test_update_laser_status(self):
         """Test the update_laser_status method."""
         # Case when the timed laser is used.
-        self.game_modes.game_mode = ["timed_laser_mode"]
-        self.settings.timed_laser_modes = ["timed_laser_mode"]
+        self.game.settings.game_modes.game_mode = ["timed_laser_mode"]
+        self.game.settings.timed_laser_modes = ["timed_laser_mode"]
 
         self.weapons_manager.update_timed_laser_status = MagicMock()
         self.weapons_manager.update_normal_laser_status = MagicMock()
@@ -520,8 +516,8 @@ class WeaponsManagerTest(unittest.TestCase):
         self.weapons_manager.update_normal_laser_status.assert_not_called()
 
         # Case when the normal laser is used.
-        self.game_modes.game_mode = ["normal"]
-        self.game_modes.last_bullet = False
+        self.game.settings.game_modes.game_mode = ["normal"]
+        self.game.settings.game_modes.last_bullet = False
 
         self.weapons_manager.update_timed_laser_status.reset_mock()
         self.weapons_manager.update_normal_laser_status.reset_mock()
@@ -543,7 +539,7 @@ class WeaponsManagerTest(unittest.TestCase):
         mock_get_ticks.return_value = 2500
         self.weapons_manager.draw_laser_message = True
         self.weapons_manager.display_time = 500
-        self.game_modes.cosmic_conflict = True
+        self.game.settings.game_modes.cosmic_conflict = True
         ship_mock.laser_ready = True
         ship_mock.laser_fired = False
 
@@ -566,8 +562,8 @@ class WeaponsManagerTest(unittest.TestCase):
         mock_get_ticks.return_value = 2500
         self.weapons_manager.draw_laser_message = True
         self.weapons_manager.display_time = 500
-        self.game_modes.cosmic_conflict = False
-        self.game_modes.last_bullet = False
+        self.game.settings.game_modes.cosmic_conflict = False
+        self.game.settings.game_modes.last_bullet = False
         ship_mock.laser_ready = False
         ship_mock.laser_fired = True
 
@@ -592,8 +588,8 @@ class WeaponsManagerTest(unittest.TestCase):
         mock_get_ticks.return_value = 2500
         self.weapons_manager.draw_laser_message = True
         self.weapons_manager.display_time = 500
-        self.game_modes.cosmic_conflict = False
-        self.game_modes.last_bullet = True
+        self.game.settings.game_modes.cosmic_conflict = False
+        self.game.settings.game_modes.last_bullet = True
         ship_mock.laser_ready = False
         ship_mock.laser_fired = True
 
@@ -618,8 +614,8 @@ class WeaponsManagerTest(unittest.TestCase):
         mock_get_ticks.return_value = 2500
         self.weapons_manager.draw_laser_message = True
         self.weapons_manager.display_time = 500
-        self.game_modes.cosmic_conflict = True
-        self.game_modes.last_bullet = False
+        self.game.settings.game_modes.cosmic_conflict = True
+        self.game.settings.game_modes.last_bullet = False
         ship_mock.laser_ready = False
         ship_mock.laser_fired = True
 

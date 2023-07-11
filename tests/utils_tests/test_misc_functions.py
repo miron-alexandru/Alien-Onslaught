@@ -26,6 +26,10 @@ from src.utils.constants import P1_CONTROLS, P2_CONTROLS, GAME_CONTROLS
 class MiscFunctionsTests(unittest.TestCase):
     """Test miscellaneous functions."""
 
+    def setUp(self):
+        """Set up test environment."""
+        self.screen = MagicMock()
+
     @patch("pygame.sprite.spritecollide")
     def test_get_colliding_sprites(self, mock_spritecollide):
         """Test the get_colliding_sprites function."""
@@ -55,9 +59,8 @@ class MiscFunctionsTests(unittest.TestCase):
     @patch("src.utils.game_utils.render_text")
     def test_display_description(self, mock_render_text, mock_sysfont):
         """Test the display_description function."""
-        screen = MagicMock(spec=pygame.Surface)
-        screen.get_size.return_value = (100, 200)
-        screen_width, screen_height = screen.get_size()
+        self.screen.get_size.return_value = (100, 200)
+        screen_width, screen_height = self.screen.get_size()
 
         description = "Game modes description"
 
@@ -69,11 +72,12 @@ class MiscFunctionsTests(unittest.TestCase):
         mock_render_text.return_value = (text_surfaces, text_rects)
 
         display_description(
-            screen, description, screen_width // 2 + 74, screen_height // 2 + 180
+            self.screen, description, screen_width // 2 + 74, screen_height // 2 + 180
         )
 
         # Assert that the necessary objects and functions were called with the correct arguments
         mock_sysfont.assert_called_once_with("verdana", 15)
+
         mock_render_text.assert_called_once_with(
             description,
             font,
@@ -81,8 +85,9 @@ class MiscFunctionsTests(unittest.TestCase):
             (screen_width // 2 + 74, screen_height // 2 + 180),
             int(screen_height * 0.03),
         )
-        for i, surface in enumerate(text_surfaces):
-            screen.blit.assert_any_call(surface, text_rects[i])
+
+        expected_calls = [call("surface1", "rect1"), call("surface2", "rect2")]
+        self.assertEqual(self.screen.blit.call_args_list, expected_calls)
 
     @patch("pygame.font.SysFont")
     def test_render_bullet_num(self, mock_sysfont):
@@ -131,10 +136,6 @@ class MiscFunctionsTests(unittest.TestCase):
 
     def test_display_message(self):
         """Test the display_message function."""
-        screen = MagicMock(spec=pygame.Surface)
-        screen.get_width.return_value = 800
-        screen.get_height.return_value = 600
-
         message = "Test Message"
         duration = 2.5
 
@@ -146,13 +147,13 @@ class MiscFunctionsTests(unittest.TestCase):
         with patch("pygame.font.SysFont", return_value=font_mock), patch(
             "pygame.display.flip"
         ), patch("pygame.time.wait") as time_wait_mock:
-            display_message(screen, message, duration)
+            display_message(self.screen, message, duration)
 
             # Assert that the necessary objects and functions were called with the correct arguments
             pygame.font.SysFont.assert_called_once_with("verdana", 14)
             render_mock.assert_called_once_with(message, True, (255, 255, 255))
 
-            rect_args, _ = screen.blit.call_args
+            rect_args, _ = self.screen.blit.call_args
             self.assertEqual(rect_args[0], render_mock.return_value)
             self.assertEqual(rect_args[1], expected_rect)
 
@@ -162,7 +163,6 @@ class MiscFunctionsTests(unittest.TestCase):
     @patch("pygame.font.SysFont")
     def test_display_custom_message(self, mock_sysfont):
         """Test the display_custom_message function."""
-        screen = MagicMock()
         message = "Laser message"
         ship = MagicMock()
 
@@ -175,7 +175,7 @@ class MiscFunctionsTests(unittest.TestCase):
         text_surface.get_rect.return_value = text_rect
 
         # Test the functionality with the cosmic=False
-        display_custom_message(screen, message, ship, cosmic=False)
+        display_custom_message(self.screen, message, ship, cosmic=False)
 
         # Assert that the necessary objects and functions were called with the correct arguments
         mock_sysfont.assert_called_once_with("verdana", 10)
@@ -184,11 +184,13 @@ class MiscFunctionsTests(unittest.TestCase):
         text_surface.get_rect.assert_called_once_with(
             top=(ship_rect.top - 5), left=(ship_rect.right)
         )
-        screen.blit.assert_called_once_with(text_surface, text_rect)
+        self.screen.blit.assert_called_once_with(text_surface, text_rect)
 
         # Test the functionality with the cosmic=True
         text_surface.reset_mock()
-        display_custom_message(screen, message, ship, cosmic=True)
+
+        display_custom_message(self.screen, message, ship, cosmic=True)
+
         text_surface.get_rect.assert_called_once_with(
             top=(ship_rect.top - 20), left=(ship_rect.left + 5)
         )

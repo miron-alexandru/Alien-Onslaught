@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from src.game_logic.game_stats import GameStats
-from src.utils.constants import STARTING_HP, MAX_HP
+from src.utils.constants import MAX_HP
 
 
 class GameStatsTestCase(unittest.TestCase):
@@ -52,8 +52,8 @@ class GameStatsTestCase(unittest.TestCase):
 
         self.assertTrue(self.phoenix_ship.state.alive)
         self.assertTrue(self.thunderbird_ship.state.alive)
-        self.assertEqual(self.stats.phoenix_hp, STARTING_HP)
-        self.assertEqual(self.stats.thunderbird_hp, STARTING_HP)
+        self.assertEqual(self.stats.phoenix_hp, 3)
+        self.assertEqual(self.stats.thunderbird_hp, 3)
         self.assertEqual(self.stats.max_hp, MAX_HP)
         self.assertEqual(
             self.stats.thunder_bullets, self.game.settings.thunderbird_bullet_count

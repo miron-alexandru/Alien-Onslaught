@@ -17,8 +17,6 @@ class ButtonTest(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.screen = MagicMock(spec=pygame.Surface)
-        self.game.screen = self.screen
         self.image_loc = "button_img_path"
         self.pos = (100, 100)
         self.description = "Test Button"
@@ -30,7 +28,7 @@ class ButtonTest(unittest.TestCase):
     def test_button_initialization(self):
         """Test class initialization."""
         self.assertEqual(self.button.screen, self.game.screen)
-        self.assertEqual(self.button.screen_rect, self.screen.get_rect())
+        self.assertEqual(self.button.screen_rect, self.game.screen.get_rect())
         self.assertFalse(self.button.visible)
         self.assertEqual(self.button.description, "Test Button")
         self.assertIsInstance(self.button.image, pygame.Surface)
@@ -69,18 +67,23 @@ class ButtonTest(unittest.TestCase):
         """Test the drawing of the button."""
         self.button.draw_button()
 
-        self.screen.blit.assert_called_once_with(self.button.image, self.button.rect)
+        self.game.screen.blit.assert_called_once_with(
+            self.button.image, self.button.rect
+        )
 
     @patch("src.ui.button.display_description")
     def test_button_show_button_info(self, mock_description):
         """Test the show_button_info method."""
-        self.screen.get_size.return_value = (800, 600)
-        screen_width, screen_height = self.screen.get_size()
+        self.game.screen.get_size.return_value = (800, 600)
+        screen_width, screen_height = self.game.screen.get_size()
 
         self.button.show_button_info()
 
         mock_description.assert_called_with(
-            self.screen, "Test Button", screen_width // 2 + 74, screen_height // 2 + 150
+            self.game.screen,
+            "Test Button",
+            screen_width // 2 + 74,
+            screen_height // 2 + 150,
         )
 
 

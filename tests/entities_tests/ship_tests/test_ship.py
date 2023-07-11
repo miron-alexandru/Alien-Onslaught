@@ -9,7 +9,6 @@ from unittest.mock import MagicMock, patch
 import pygame
 
 from src.entities.ship import Ship
-from src.game_logic.game_settings import Settings
 
 
 class ShipTestCase(unittest.TestCase):
@@ -17,11 +16,8 @@ class ShipTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up the test environment."""
-        self.screen = MagicMock()
-        self.settings = Settings()
         self.game = MagicMock()
-        self.game.settings = self.settings
-        self.game.screen = MagicMock()
+        self.game.settings.thunderbird_ship_speed = 3.5
         self.image = MagicMock()
 
         with patch("pygame.image.load", return_value=self.image):
@@ -32,14 +28,16 @@ class ShipTestCase(unittest.TestCase):
     def test_ship_initialization(self):
         """Test case for the initialization of the ship."""
         self.assertEqual(self.ship.screen, self.game.screen)
-        self.assertEqual(self.ship.settings, self.game.settings)
+        self.assertEqual(self.game.settings, self.game.settings)
         self.assertEqual(self.ship.game, self.game)
         self.assertEqual(self.ship.screen_rect, self.game.screen.get_rect())
         self.assertEqual(self.ship.image_path, "ship.png")
         self.assertEqual(self.ship.offset, 0)
         self.assertEqual(self.ship.starting_missiles, 3)
         self.assertEqual(self.ship.missiles_num, 0)
-        self.assertEqual(self.ship.aliens_killed, self.settings.required_kill_count)
+        self.assertEqual(
+            self.ship.aliens_killed, self.game.settings.required_kill_count
+        )
         self.assertEqual(self.ship.remaining_bullets, 17)
         self.assertIsNotNone(self.ship.image)
         self.assertIsNotNone(self.ship.rect)
@@ -73,7 +71,7 @@ class ShipTestCase(unittest.TestCase):
 
     def test_ship_speed_setter(self):
         """Test case for the ship speed setter."""
-        self.settings.thunderbird_ship_speed = 7
+        self.game.settings.thunderbird_ship_speed = 7
         self.assertEqual(self.ship.ship_speed, 7)
 
     @patch("src.entities.ship.Ship.reset_ship_size")
@@ -91,10 +89,10 @@ class ShipTestCase(unittest.TestCase):
 
         # Set up initial state and values
         self.ship.state.immune = True
-        self.ship.settings.immune_time = 0
+        self.game.settings.immune_time = 0
         self.ship.immune_start_time = 0
         self.ship.state.scaled = True
-        self.ship.settings.scaled_time = 0
+        self.game.settings.scaled_time = 0
         self.ship.small_ship_time = 0
         self.ship.state.exploding = True
         self.ship.state.warping = True
@@ -135,7 +133,7 @@ class ShipTestCase(unittest.TestCase):
 
         # Test case when the ship is in the immune state.
         self.ship.state.immune = True
-        self.ship.settings.immune_time = 1000
+        self.game.settings.immune_time = 1000
 
         self.ship.update_state()
 
@@ -162,11 +160,11 @@ class ShipTestCase(unittest.TestCase):
 
         self._update_position_assert_helper(103.5, 200.0)
 
-        self.settings.thunderbird_ship_speed = 1
+        self.game.settings.thunderbird_ship_speed = 1
 
         self._update_position_movement_helper(False, 200.0)
 
-        self.settings.thunderbird_ship_speed = 3
+        self.game.settings.thunderbird_ship_speed = 3
 
         self._update_position_assert_helper(102.5, 197.0)
 
@@ -177,7 +175,7 @@ class ShipTestCase(unittest.TestCase):
             "down": True,
         }
 
-        self.settings.thunderbird_ship_speed = 5
+        self.game.settings.thunderbird_ship_speed = 5
 
         self._update_position_assert_helper(102.5, 202.0)
 
@@ -267,7 +265,7 @@ class ShipTestCase(unittest.TestCase):
 
     def test_center_ship_cosmic_conflict_mode(self):
         """Test the center_ship method in cosmic conflict mode."""
-        self.ship.settings.game_modes.cosmic_conflict = True
+        self.game.settings.game_modes.cosmic_conflict = True
 
         self.ship.center_ship()
 
@@ -279,7 +277,7 @@ class ShipTestCase(unittest.TestCase):
     def test_center_ship_singleplayer_mode(self):
         """Test the center_ship method in singleplayer mode."""
         # Set up the initial state and values
-        self.ship.settings.game_modes.cosmic_conflict = False
+        self.game.settings.game_modes.cosmic_conflict = False
         self.ship.game.singleplayer = True
 
         self.ship.center_ship()
@@ -292,6 +290,7 @@ class ShipTestCase(unittest.TestCase):
     def test_center_ship_offset(self):
         """Test the center_ship method with an offset."""
         self.ship.game.singleplayer = False
+        self.game.settings.game_modes.cosmic_conflict = False
         self.ship.offset = 50
 
         self.ship.center_ship()
@@ -333,7 +332,7 @@ class ShipTestCase(unittest.TestCase):
 
     def test_update_missiles_number_one_life_reign(self):
         """Test the update_missiles_number method in one_life_reign mode."""
-        self.ship.settings.game_modes.one_life_reign = True
+        self.game.settings.game_modes.one_life_reign = True
 
         self.ship.update_missiles_number()
 
@@ -341,7 +340,8 @@ class ShipTestCase(unittest.TestCase):
 
     def test_update_missiles_number_last_bullet(self):
         """Test the update_missiles_number method in last_bullet mode."""
-        self.ship.settings.game_modes.last_bullet = True
+        self.game.settings.game_modes.one_life_reign = False
+        self.game.settings.game_modes.last_bullet = True
 
         self.ship.update_missiles_number()
 
@@ -349,6 +349,8 @@ class ShipTestCase(unittest.TestCase):
 
     def test_update_missiles_number_default(self):
         """Test the update_missiles_number method with default settings."""
+        self.game.settings.game_modes.one_life_reign = False
+        self.game.settings.game_modes.last_bullet = False
         self.ship.starting_missiles = 8
 
         self.ship.update_missiles_number()
@@ -402,7 +404,7 @@ class ShipTestCase(unittest.TestCase):
         self.assertFalse(self.ship.state.shielded)
         self.assertFalse(self.ship.state.immune)
         self.assertEqual(
-            self.ship.aliens_killed, self.ship.settings.required_kill_count
+            self.ship.aliens_killed, self.game.settings.required_kill_count
         )
         self.assertEqual(self.ship.last_laser_time, 0)
         self.assertFalse(self.ship.laser_fired)
@@ -415,7 +417,7 @@ class ShipTestCase(unittest.TestCase):
     def test_update_speed_from_settings(self):
         """Test the update_speed_from_settings method."""
         player = "thunderbird"
-        setattr(self.ship.settings, f"{player}_ship_speed", 5)
+        setattr(self.game.settings, f"{player}_ship_speed", 5)
 
         self.ship.update_speed_from_settings(player)
 

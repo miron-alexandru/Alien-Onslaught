@@ -9,7 +9,6 @@ from unittest.mock import MagicMock
 import pygame
 
 from src.entities.aliens import BossAlien
-from src.game_logic.game_settings import Settings
 
 
 class TestBossAlien(unittest.TestCase):
@@ -18,9 +17,7 @@ class TestBossAlien(unittest.TestCase):
     def setUp(self):
         """Set up the test environment."""
         self.game = MagicMock()
-        self.settings = Settings()
         self.game.screen = pygame.Surface((800, 600))
-        self.game.settings = self.settings
         self.boss_alien = BossAlien(self.game)
         self.boss_alien.destroy = MagicMock()
 
@@ -83,6 +80,8 @@ class TestBossAlien(unittest.TestCase):
         self.boss_alien.frozen_state = False
         self.boss_alien.motion.direction = 1
         self.boss_alien.x_pos = 0.0
+        self.game.settings.alien_speed = 2
+        self.game.settings.frozen_time = 30
 
         self.boss_alien.update()
 
@@ -150,6 +149,7 @@ class TestBossAlien(unittest.TestCase):
 
     def test_upgrade(self):
         """Test the upgrade method."""
+        self.game.settings.boss_hp = 50
         initial_boss_hp = self.boss_alien.settings.boss_hp
 
         self.boss_alien.upgrade()

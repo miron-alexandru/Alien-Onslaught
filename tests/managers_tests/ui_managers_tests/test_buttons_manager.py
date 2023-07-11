@@ -18,27 +18,22 @@ class GameButtonsManagerTest(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.screen = MagicMock(spec=pygame.Surface)
-        self.screen.get_rect.return_value = pygame.Rect(0, 0, 800, 600)
-        self.game.screen = self.screen
-        self.game.sound_manager = MagicMock()
-        self.ui_options = MagicMock()
-        self.gm_options = MagicMock()
+        self.game.screen = MagicMock(spec=pygame.Surface)
+        self.game.screen.get_rect.return_value = pygame.Rect(0, 0, 800, 600)
 
         self.manager = GameButtonsManager(
             self.game,
-            self.screen,
-            self.ui_options,
-            self.gm_options,
+            self.game.screen,
+            self.game.ui_options,
+            self.game.gm_options,
         )
 
     def test_init(self):
         """Test the initialization of the class."""
-        self.assertEqual(self.manager.screen, self.screen)
+        self.assertEqual(self.manager.screen, self.game.screen)
         self.assertEqual(self.manager.settings, self.game.settings)
-        self.assertEqual(self.manager.ui_options, self.ui_options)
-        self.assertEqual(self.manager.gm_options, self.gm_options)
-        self.assertEqual(self.manager.screen, self.screen)
+        self.assertEqual(self.manager.ui_options, self.game.ui_options)
+        self.assertEqual(self.manager.gm_options, self.game.gm_options)
         self.assertIsNotNone(self.manager.button_imgs)
         self.assertIsNotNone(self.manager.game_buttons)
         self.assertIsNotNone(self.manager.difficulty_buttons)
@@ -56,7 +51,10 @@ class GameButtonsManagerTest(unittest.TestCase):
 
         expected_calls = [
             call(
-                self.manager, self.manager.button_imgs["play_button"], (0, 0), center=True
+                self.manager,
+                self.manager.button_imgs["play_button"],
+                (0, 0),
+                center=True,
             ),
             call(
                 self.manager,
@@ -74,7 +72,10 @@ class GameButtonsManagerTest(unittest.TestCase):
             call(
                 self.manager,
                 self.manager.button_imgs["easy"],
-                (self.manager.difficulty.rect.right - 10, self.manager.difficulty.rect.y),
+                (
+                    self.manager.difficulty.rect.right - 10,
+                    self.manager.difficulty.rect.y,
+                ),
             ),
             call(
                 self.manager,
@@ -97,7 +98,10 @@ class GameButtonsManagerTest(unittest.TestCase):
             call(
                 self.manager,
                 self.manager.button_imgs["normal"],
-                (self.manager.game_modes.rect.right - 8, self.manager.game_modes.rect.y),
+                (
+                    self.manager.game_modes.rect.right - 8,
+                    self.manager.game_modes.rect.y,
+                ),
                 GAME_MODES_DESCRIPTIONS[0],
             ),
             call(
@@ -142,7 +146,10 @@ class GameButtonsManagerTest(unittest.TestCase):
             call(
                 self.manager,
                 self.manager.button_imgs["one_life_reign"],
-                (self.manager.last_bullet.rect.right - 5, self.manager.last_bullet.rect.y),
+                (
+                    self.manager.last_bullet.rect.right - 5,
+                    self.manager.last_bullet.rect.y,
+                ),
                 GAME_MODES_DESCRIPTIONS[7],
             ),
             call(
@@ -180,25 +187,32 @@ class GameButtonsManagerTest(unittest.TestCase):
         ]
 
         self.assertEqual(mock_button.call_args_list, expected_calls)
+
     @patch("src.managers.ui_managers.buttons_manager.Button")
     def test__create_menu_buttons(self, mock_button):
         """Test the create_menu_buttons method."""
         self.manager._create_menu_buttons()
 
         expected_calls = [
-                call(
-                    self.manager, self.manager.button_imgs["single_player"], (0, 0), center=True
+            call(
+                self.manager,
+                self.manager.button_imgs["single_player"],
+                (0, 0),
+                center=True,
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["multiplayer"],
+                (
+                    self.manager.single.rect.centerx - 100,
+                    self.manager.single.rect.bottom,
                 ),
-                call(
-                    self.manager,
-                    self.manager.button_imgs["multiplayer"],
-                    (self.manager.single.rect.centerx - 100, self.manager.single.rect.bottom),
-                ),
-                call(
-                    self.manager,
-                    self.manager.button_imgs["menu_quit_button"],
-                    (self.manager.multi.rect.centerx - 100, self.manager.multi.rect.bottom),
-                )
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["menu_quit_button"],
+                (self.manager.multi.rect.centerx - 100, self.manager.multi.rect.bottom),
+            ),
         ]
 
         self.assertEqual(mock_button.call_args_list, expected_calls)
@@ -266,7 +280,7 @@ class GameButtonsManagerTest(unittest.TestCase):
     def test_handle_buttons_visibility(self):
         """Test the handle_buttons_visibility method."""
         # Test when show_difficulty is True
-        self.ui_options.show_difficulty = True
+        self.game.ui_options.show_difficulty = True
         for button in self.manager.difficulty_buttons:
             button.visible = True
 
@@ -280,7 +294,7 @@ class GameButtonsManagerTest(unittest.TestCase):
         for button in self.manager.game_mode_buttons:
             button.visible = True
 
-        self.ui_options.show_game_modes = True
+        self.game.ui_options.show_game_modes = True
 
         self.manager.handle_buttons_visibility()
 
@@ -291,16 +305,16 @@ class GameButtonsManagerTest(unittest.TestCase):
     def test_handle_play_button(self):
         """Test the handle_play_button method."""
         reset_game_mock = MagicMock()
-        self.ui_options.show_difficulty = True
-        self.ui_options.show_high_scores = True
-        self.ui_options.show_game_modes = True
+        self.game.ui_options.show_difficulty = True
+        self.game.ui_options.show_high_scores = True
+        self.game.ui_options.show_game_modes = True
 
         self.manager.handle_play_button(reset_game_mock)
 
         reset_game_mock.assert_called_once()
-        self.assertFalse(self.ui_options.show_difficulty)
-        self.assertFalse(self.ui_options.show_high_scores)
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertFalse(self.game.ui_options.show_difficulty)
+        self.assertFalse(self.game.ui_options.show_high_scores)
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     @patch("src.managers.ui_managers.buttons_manager.pygame")
     @patch("src.managers.ui_managers.buttons_manager.sys")
@@ -319,142 +333,142 @@ class GameButtonsManagerTest(unittest.TestCase):
     def test_handle_high_scores_button(self):
         """Test the handle_high_scores_button method."""
         # Toggle show_high_scores from False to True
-        self.ui_options.show_high_scores = False
+        self.game.ui_options.show_high_scores = False
         self.manager.handle_high_scores_button()
-        self.assertTrue(self.ui_options.show_high_scores)
+        self.assertTrue(self.game.ui_options.show_high_scores)
 
         # Toggle show_high_scores from True to False
-        self.ui_options.show_high_scores = True
+        self.game.ui_options.show_high_scores = True
         self.manager.handle_high_scores_button()
-        self.assertFalse(self.ui_options.show_high_scores)
+        self.assertFalse(self.game.ui_options.show_high_scores)
 
     def test_handle_game_modes_button(self):
         """Test the handle_game_modes_button method."""
         # Toggle show_game_modes from False to True
-        self.ui_options.show_game_modes = False
+        self.game.ui_options.show_game_modes = False
         self.manager.handle_game_modes_button()
-        self.assertTrue(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.ui_options.show_game_modes)
 
         # Toggle show_game_modes from True to False
-        self.ui_options.show_game_modes = True
+        self.game.ui_options.show_game_modes = True
         self.manager.handle_game_modes_button()
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_set_game_mode_settings(self):
         """Test the set_game_mode_settings method."""
         # Set up initial state
-        self.gm_options.endless_onslaught = True
-        self.gm_options.slow_burn = True
-        self.gm_options.meteor_madness = True
+        self.game.gm_options.endless_onslaught = True
+        self.game.gm_options.slow_burn = True
+        self.game.gm_options.meteor_madness = True
 
         self.set_game_mode_settings_helper(None)
         self.set_game_mode_settings_helper("boss_rush")
-        self.assertTrue(self.gm_options.boss_rush)
+        self.assertTrue(self.game.gm_options.boss_rush)
 
         self.set_game_mode_settings_helper("one_life_reign")
-        self.assertTrue(self.gm_options.one_life_reign)
+        self.assertTrue(self.game.gm_options.one_life_reign)
 
     def set_game_mode_settings_helper(self, arg0):
         """Helper function used to test for different game moders."""
         self.manager._set_game_mode_settings(arg0)
-        self.assertFalse(self.gm_options.endless_onslaught)
-        self.assertFalse(self.gm_options.slow_burn)
-        self.assertFalse(self.gm_options.meteor_madness)
+        self.assertFalse(self.game.gm_options.endless_onslaught)
+        self.assertFalse(self.game.gm_options.slow_burn)
+        self.assertFalse(self.game.gm_options.meteor_madness)
 
     def test_handle_normal_button(self):
         """Test the handle_normal_button method."""
         # Set up initial state
-        self.gm_options.game_mode = "endless_onslaught"
-        self.ui_options.show_game_modes = True
+        self.game.gm_options.game_mode = "endless_onslaught"
+        self.game.ui_options.show_game_modes = True
 
         self.manager.handle_normal_button()
 
         # Assert updated state
-        self.assertEqual(self.gm_options.game_mode, "normal")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertEqual(self.game.gm_options.game_mode, "normal")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_endless_button(self):
         """Test the handle_endless_button method."""
         # Set up initial state
-        self.gm_options.endless_onslaught = False
-        self.gm_options.game_mode = "normal"
+        self.game.gm_options.endless_onslaught = False
+        self.game.gm_options.game_mode = "normal"
 
         self.manager.handle_endless_button()
 
         # Assert updated state
-        self.assertTrue(self.gm_options.endless_onslaught)
-        self.assertEqual(self.gm_options.game_mode, "endless_onslaught")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.gm_options.endless_onslaught)
+        self.assertEqual(self.game.gm_options.game_mode, "endless_onslaught")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_slow_burn_button(self):
         """Test the handle_slow_buton_button method."""
         # Set up initial state
-        self.gm_options.slow_burn = False
-        self.gm_options.game_mode = "normal"
+        self.game.gm_options.slow_burn = False
+        self.game.gm_options.game_mode = "normal"
 
         self.manager.handle_slow_burn_button()
 
         # Assert updated state
-        self.assertTrue(self.gm_options.slow_burn)
-        self.assertEqual(self.gm_options.game_mode, "slow_burn")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.gm_options.slow_burn)
+        self.assertEqual(self.game.gm_options.game_mode, "slow_burn")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_meteor_madness_button(self):
         """Test the handle_meteor_madness_button method."""
         # Set up initial state.
-        self.gm_options.meteor_madness = False
-        self.gm_options.game_mode = "normal"
+        self.game.gm_options.meteor_madness = False
+        self.game.gm_options.game_mode = "normal"
 
         self.manager.handle_meteor_madness_button()
 
         # Assert updated state
-        self.assertTrue(self.gm_options.meteor_madness)
-        self.assertEqual(self.gm_options.game_mode, "meteor_madness")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.gm_options.meteor_madness)
+        self.assertEqual(self.game.gm_options.game_mode, "meteor_madness")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_boss_rush_button(self):
         """Test the handle_boss_rush_button method."""
         # Set up initial state
-        self.gm_options.boss_rush = False
-        self.gm_options.game_mode = "normal"
+        self.game.gm_options.boss_rush = False
+        self.game.gm_options.game_mode = "normal"
 
         self.manager.handle_boss_rush_button()
 
         # Assert updated state
-        self.assertTrue(self.gm_options.boss_rush)
-        self.assertEqual(self.gm_options.game_mode, "boss_rush")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.gm_options.boss_rush)
+        self.assertEqual(self.game.gm_options.game_mode, "boss_rush")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_last_bullet_button(self):
         """Test the handle_last_bullet_button method."""
         # Set up initial state
-        self.gm_options.last_bullet = False
-        self.gm_options.game_mode = "normal"
+        self.game.gm_options.last_bullet = False
+        self.game.gm_options.game_mode = "normal"
 
         self.manager.handle_last_bullet_button()
 
         # Assert updated state
-        self.assertTrue(self.gm_options.last_bullet)
-        self.assertEqual(self.gm_options.game_mode, "last_bullet")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.gm_options.last_bullet)
+        self.assertEqual(self.game.gm_options.game_mode, "last_bullet")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_one_life_reign_button(self):
         """Test the handle_one_life_reigh_button method."""
         # Set up initial state
-        self.gm_options.one_life_reign = False
-        self.gm_options.game_mode = "normal"
+        self.game.gm_options.one_life_reign = False
+        self.game.gm_options.game_mode = "normal"
 
         self.manager.handle_one_life_reign_button()
 
         # Assert updated state
-        self.assertTrue(self.gm_options.one_life_reign)
-        self.assertEqual(self.gm_options.game_mode, "one_life_reign")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.gm_options.one_life_reign)
+        self.assertEqual(self.game.gm_options.game_mode, "one_life_reign")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_cosmic_conflict_button(self):
         """Test the handle_cosmic_conflict_button method in multiplayer."""
         # Set up initial state
-        self.gm_options.cosmic_conflict = False
+        self.game.gm_options.cosmic_conflict = False
         self.game.singleplayer = False
 
         # Set ship states to not alive
@@ -467,19 +481,19 @@ class GameButtonsManagerTest(unittest.TestCase):
         for ship in self.game.ships:
             self.assertTrue(ship.state.alive)
 
-        self.assertTrue(self.gm_options.cosmic_conflict)
-        self.assertEqual(self.gm_options.game_mode, "cosmic_conflict")
-        self.assertFalse(self.ui_options.show_game_modes)
+        self.assertTrue(self.game.gm_options.cosmic_conflict)
+        self.assertEqual(self.game.gm_options.game_mode, "cosmic_conflict")
+        self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_cosmic_conflict_button_single(self):
         """Test the handle_cosmic_conflict_button method in singleplayer."""
-        self.gm_options.cosmic_conflict = False
+        self.game.gm_options.cosmic_conflict = False
         self.game.singleplayer = True
         self.manager._set_game_mode_settings = MagicMock()
 
         self.manager.handle_cosmic_conflict_button()
 
-        self.assertFalse(self.gm_options.cosmic_conflict)
+        self.assertFalse(self.game.gm_options.cosmic_conflict)
         self.manager._set_game_mode_settings.assert_not_called()
 
     def test_handle_difficulty_button(self):
@@ -489,7 +503,7 @@ class GameButtonsManagerTest(unittest.TestCase):
         max_alien_speed = 10
         self.game.settings.speedup_scale = 1.0
         self.game.settings.max_alien_speed = 5
-        self.ui_options.show_difficulty = True
+        self.game.ui_options.show_difficulty = True
 
         handle_function = self.manager.handle_difficulty_button(
             speedup_scale, max_alien_speed
@@ -500,25 +514,25 @@ class GameButtonsManagerTest(unittest.TestCase):
         # Assert updated state
         self.assertEqual(self.game.settings.speedup_scale, speedup_scale)
         self.assertEqual(self.game.settings.max_alien_speed, max_alien_speed)
-        self.assertFalse(self.ui_options.show_difficulty)
+        self.assertFalse(self.game.ui_options.show_difficulty)
 
     def test_handle_difficulty_toggle(self):
         """Test the handle_difficulty_toggle method."""
         # Toggle show_difficulty from False to True
-        self.ui_options.show_difficulty = False
+        self.game.ui_options.show_difficulty = False
         self.manager.handle_difficulty_toggle()
-        self.assertTrue(self.ui_options.show_difficulty)
+        self.assertTrue(self.game.ui_options.show_difficulty)
 
         # Toggle show_difficulty from True to False
-        self.ui_options.show_difficulty = True
+        self.game.ui_options.show_difficulty = True
         self.manager.handle_difficulty_toggle()
-        self.assertFalse(self.ui_options.show_difficulty)
+        self.assertFalse(self.game.ui_options.show_difficulty)
 
     def test_handle_delete_button(self):
         """Test the handle_delete_button method."""
         # Endless Onslaught game mode
         self.game.settings.game_modes.game_mode = "endless_onslaught"
-        self.ui_options.show_high_scores = True
+        self.game.ui_options.show_high_scores = True
 
         self.manager.handle_delete_button()
 
@@ -526,7 +540,7 @@ class GameButtonsManagerTest(unittest.TestCase):
         self.game.score_board.delete_high_scores.assert_called_once_with(
             "endless_scores"
         )
-        self.assertFalse(self.ui_options.show_high_scores)
+        self.assertFalse(self.game.ui_options.show_high_scores)
 
         # Normal game mode
         self.game.score_board.delete_high_scores.reset_mock()

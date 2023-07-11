@@ -7,7 +7,6 @@ import unittest
 from unittest.mock import MagicMock, Mock
 
 from src.entities.alien_bullets import AlienBullet
-from src.game_logic.game_settings import Settings
 
 
 class TestAlienBullet(unittest.TestCase):
@@ -15,9 +14,6 @@ class TestAlienBullet(unittest.TestCase):
 
     def setUp(self):
         self.game = MagicMock()
-        self.game.screen = MagicMock()
-        self.game.settings = Settings()
-        self.game.aliens = MagicMock()
         self.game.aliens.sprites = MagicMock(return_value=[MagicMock()])
         self.alien_bullet = AlienBullet(self.game)
 
@@ -61,13 +57,14 @@ class TestAlienBullet(unittest.TestCase):
     def test_update(self):
         """Test the update of the bullet."""
         self.alien_bullet.y_pos = 50
+        self.game.settings.alien_bullet_speed = 3
         initial_y_pos = self.alien_bullet.y_pos
         expected_y_pos = initial_y_pos + self.game.settings.alien_bullet_speed
 
         self.alien_bullet.update()
 
         self.assertAlmostEqual(self.alien_bullet.y_pos, expected_y_pos)
-        self.assertEqual(self.alien_bullet.rect.y, expected_y_pos + 0.5)
+        self.assertEqual(self.alien_bullet.rect.y, expected_y_pos)
 
         self.alien_bullet.y_pos = 159
         initial_y_pos = self.alien_bullet.y_pos
@@ -76,7 +73,7 @@ class TestAlienBullet(unittest.TestCase):
         self.alien_bullet.update()
 
         self.assertAlmostEqual(self.alien_bullet.y_pos, expected_y_pos)
-        self.assertEqual(self.alien_bullet.rect.y, expected_y_pos + 0.5)
+        self.assertEqual(self.alien_bullet.rect.y, expected_y_pos)
 
     def test_draw(self):
         """Test drawing of bullet."""

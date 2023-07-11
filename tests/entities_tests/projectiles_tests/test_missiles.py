@@ -7,7 +7,6 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from src.entities.projectiles import Missile
-from src.game_logic.game_settings import Settings
 
 
 class TestMissile(unittest.TestCase):
@@ -16,13 +15,13 @@ class TestMissile(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.game.screen = MagicMock()
-        self.game.settings = Settings()
+        self.game.settings.game_modes.cosmic_conflict = False
         self.ship = MagicMock()
         self.missile = Missile(self.game, self.ship)
 
     def test_update_missile_not_destroyed(self):
         """Test the update of the missile while not destroyed."""
+        self.game.settings.missiles_speed = 4
         initial_frame_counter = self.missile.frame_counter
         initial_current_frame = self.missile.current_frame
         initial_x_pos = self.missile.x_pos
@@ -94,7 +93,6 @@ class TestMissile(unittest.TestCase):
     @patch("src.entities.projectiles.pygame.transform.rotate")
     def test_set_missile_frames_not_cosmic_conflicts(self, mock_rotate):
         """Test the setting of the frames for missiles in other game modes."""
-        self.game.settings.game_modes.cosmic_conflict = False
         initial_image = self.missile.image
 
         self.missile.set_missile_frames()

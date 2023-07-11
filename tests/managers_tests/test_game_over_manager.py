@@ -6,6 +6,8 @@ behaviors.
 import unittest
 from unittest.mock import MagicMock, patch
 
+import pygame
+
 from src.managers.game_over_manager import EndGameManager
 
 
@@ -15,7 +17,7 @@ class MockGame:
     def __init__(self):
         self.thunderbird_ship = MagicMock()
         self.phoenix_ship = MagicMock()
-        self.aliens = []
+        self.aliens = pygame.sprite.Group()
         self.ui_options = MagicMock()
         self.sound_manager = MagicMock()
         self.gameplay_manager = MagicMock()

@@ -7,7 +7,6 @@ import unittest
 from unittest.mock import MagicMock
 
 from src.entities.projectiles import Laser
-from src.game_logic.game_settings import Settings
 
 
 class TestLaser(unittest.TestCase):
@@ -16,14 +15,13 @@ class TestLaser(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.game.screen = MagicMock()
-        self.game.settings = Settings()
         self.ship = MagicMock()
         self.ship.rect.midtop = (100, 100)
+        self.game.settings.game_modes.cosmic_conflict = False
         self.laser = Laser(self.game, self.ship)
 
     def test_update_frame_counter(self):
-        """Test the update method increments the frame_counter."""
+        """Test if the update method increments the frame_counter."""
         initial_frame_counter = self.laser.frame_counter
 
         self.laser.update()
@@ -31,7 +29,7 @@ class TestLaser(unittest.TestCase):
         self.assertEqual(self.laser.frame_counter, initial_frame_counter + 1)
 
     def test_update_current_frame(self):
-        """Test the update method updates the current_frame."""
+        """Test if the update method updates the current_frame."""
         initial_current_frame = self.laser.current_frame
         self.laser.frame_counter = self.laser.frame_update_rate - 1
         expected_current_frame = (initial_current_frame + 1) % len(self.laser.frames)
@@ -61,6 +59,7 @@ class TestLaser(unittest.TestCase):
 
     def test_set_laser_frames(self):
         """Test the set_laser_frames method."""
+        self.game.settings.game_modes.cosmic_conflict = False
         initial_image = self.laser.image
 
         self.laser.set_laser_frames()

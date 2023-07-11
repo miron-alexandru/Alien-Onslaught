@@ -15,18 +15,17 @@ class TestShipsManager(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.game.stats = MagicMock()
         self.game.stats.thunderbird_hp = 3
         self.game.stats.phoenix_hp = 3
-        self.settings = MagicMock()
-        self.singleplayer = MagicMock()
-        self.ships_manager = ShipsManager(self.game, self.settings, self.singleplayer)
+        self.ships_manager = ShipsManager(
+            self.game, self.game.settings, self.game.singleplayer
+        )
 
     def test_init(self):
         """Test the initialization of the class."""
         self.assertEqual(self.ships_manager.game, self.game)
-        self.assertEqual(self.ships_manager.settings, self.settings)
-        self.assertEqual(self.ships_manager.singleplayer, self.singleplayer)
+        self.assertEqual(self.ships_manager.settings, self.game.settings)
+        self.assertEqual(self.ships_manager.singleplayer, self.game.singleplayer)
         self.assertEqual(self.ships_manager.screen, self.game.screen)
         self.assertIsNotNone(self.ships_manager.thunderbird_ship)
         self.assertIsNotNone(self.ships_manager.phoenix_ship)
@@ -74,7 +73,7 @@ class TestShipsManager(unittest.TestCase):
     @patch("src.managers.player_managers.ships_manager.play_sound")
     def test_destroy_ship_thunderbird(self, mock_play_sound):
         """Test the destroying of the Thunderbird ship."""
-        self.settings.game_modes.last_bullet = False
+        self.game.settings.game_modes.last_bullet = False
         ship_mock = MagicMock()
         self.ships_manager.thunderbird_ship = ship_mock
         self.ships_manager._update_thunderbird_stats = MagicMock()
@@ -92,7 +91,7 @@ class TestShipsManager(unittest.TestCase):
         self.game.score_board.create_health.assert_called_once()
         self.game.gameplay_manager.check_remaining_bullets.assert_not_called()
 
-        self.settings.game_modes.last_bullet = True
+        self.game.settings.game_modes.last_bullet = True
 
         self.ships_manager._destroy_ship(ship_mock)
 
@@ -101,7 +100,7 @@ class TestShipsManager(unittest.TestCase):
     @patch("src.managers.player_managers.ships_manager.play_sound")
     def test_destroy_ship_phoenix(self, mock_play_sound):
         """Test the destroying of the Phoenix ship."""
-        self.settings.game_modes.last_bullet = False
+        self.game.settings.game_modes.last_bullet = False
         ship_mock = MagicMock()
         self.ships_manager.phoenix_ship = ship_mock
         self.ships_manager._update_phoenix_stats = MagicMock()
@@ -119,7 +118,7 @@ class TestShipsManager(unittest.TestCase):
         self.game.score_board.create_health.assert_called_once()
         self.game.gameplay_manager.check_remaining_bullets.assert_not_called()
 
-        self.settings.game_modes.last_bullet = True
+        self.game.settings.game_modes.last_bullet = True
 
         self.ships_manager._destroy_ship(ship_mock)
 
@@ -127,24 +126,24 @@ class TestShipsManager(unittest.TestCase):
 
     def test_update_thunderbird_stats(self):
         """Test the update of the Thunderbird ship stats."""
-        self.settings.thunderbird_bullet_count = 4
-        self.settings.thunderbird_bullets_allowed = 6
+        self.game.settings.thunderbird_bullet_count = 4
+        self.game.settings.thunderbird_bullets_allowed = 6
         self.game.stats.thunderbird_hp = 3
         self.ships_manager._update_thunderbird_stats()
 
-        self.assertEqual(self.settings.thunderbird_bullet_count, 2)
-        self.assertEqual(self.settings.thunderbird_bullets_allowed, 5)
+        self.assertEqual(self.game.settings.thunderbird_bullet_count, 2)
+        self.assertEqual(self.game.settings.thunderbird_bullets_allowed, 5)
         self.assertEqual(self.game.stats.thunderbird_hp, 2)
 
     def test_update_phoenix_stats(self):
         """Test the update of the Phoenix ship stats."""
-        self.settings.phoenix_bullet_count = 4
-        self.settings.phoenix_bullets_allowed = 6
+        self.game.settings.phoenix_bullet_count = 4
+        self.game.settings.phoenix_bullets_allowed = 6
         self.game.stats.phoenix_hp = 3
         self.ships_manager._update_phoenix_stats()
 
-        self.assertEqual(self.settings.phoenix_bullet_count, 2)
-        self.assertEqual(self.settings.phoenix_bullets_allowed, 5)
+        self.assertEqual(self.game.settings.phoenix_bullet_count, 2)
+        self.assertEqual(self.game.settings.phoenix_bullets_allowed, 5)
         self.assertEqual(self.game.stats.phoenix_hp, 2)
 
     def test_update_ship_alive_states_thunderbird_alive(self):

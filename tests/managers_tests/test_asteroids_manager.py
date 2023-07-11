@@ -8,8 +8,6 @@ from unittest.mock import MagicMock
 
 import pygame
 
-from src.entities.asteroid import Asteroid
-from src.game_logic.game_settings import Settings
 from src.managers.asteroids_manager import AsteroidsManager
 
 
@@ -19,8 +17,6 @@ class TestAsteroidsManager(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.settings = Settings()
-        self.stats = MagicMock()
         self.game.asteroids = pygame.sprite.Group()
         self.asteroids_manager = AsteroidsManager(self.game)
 
@@ -34,7 +30,7 @@ class TestAsteroidsManager(unittest.TestCase):
 
     def test_update_asteroids(self):
         """Test the update of the asteroid."""
-        asteroid = Asteroid(self.game)
+        asteroid = MagicMock()
         asteroid.rect.y = 500
         self.game.settings.screen_height = 400
 

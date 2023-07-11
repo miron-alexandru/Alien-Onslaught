@@ -19,14 +19,14 @@ class TestGameplayManager(unittest.TestCase):
         """Set up test environment."""
         self.game = MagicMock()
         self.settings = Settings()
-        self.stats = MagicMock()
         self.thunderbird_ship = MagicMock()
         self.phoenix_ship = MagicMock()
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
-        self.game.score_board = MagicMock()
         self.game.ships = self.ships
         self.game.aliens = pygame.sprite.Group()
-        self.gameplay_handler = GameplayManager(self.game, self.settings, self.stats)
+        self.gameplay_handler = GameplayManager(
+            self.game, self.settings, self.game.stats
+        )
 
     def test_create_normal_level_bullets(self):
         """Test the creation of bullets in normal game mode."""
@@ -41,7 +41,7 @@ class TestGameplayManager(unittest.TestCase):
 
         # Boss level case
         bullets_manager.reset_mock()
-        self.stats.level = 10  # Boss level
+        self.game.stats.level = 10  # Boss level
 
         self.gameplay_handler.create_normal_level_bullets(bullets_manager)
 
@@ -142,7 +142,7 @@ class TestGameplayManager(unittest.TestCase):
 
         self.gameplay_handler.reset_game_objects.assert_called_once()
         self.settings.increase_speed.assert_called_once()
-        self.stats.increase_level.assert_called_once()
+        self.game.stats.increase_level.assert_called_once()
         self.game.score_board.prep_level.assert_called_once()
         self.gameplay_handler.handle_alien_creation.assert_called_once()
         self.game.sound_manager.prepare_level_music.assert_called_once()
@@ -217,7 +217,7 @@ class TestGameplayManager(unittest.TestCase):
     def test_handle_alien_creation_boss_level(self):
         """Test the handle alien creation for the boss levels in the other game modes."""
         self.settings.game_modes.game_mode = "Normal"
-        self.stats.level = 10
+        self.game.stats.level = 10
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -228,7 +228,7 @@ class TestGameplayManager(unittest.TestCase):
     def test_handle_alien_creation_regular_level(self):
         """Test the handle_alien_creation in the regular levels."""
         self.settings.game_modes.game_mode = "other_game_mode"
-        self.stats.level = 3
+        self.game.stats.level = 3
 
         self.gameplay_handler.handle_alien_creation()
 
@@ -239,14 +239,14 @@ class TestGameplayManager(unittest.TestCase):
 
     def test_check_for_player_revive(self):
         """Test the check_for_player revive method."""
-        self.stats.level = 21
+        self.game.stats.level = 21
         self.game.phoenix_ship.state.alive = False
         self.game.thunderbird_ship.state.alive = False
 
         self.gameplay_handler.check_for_player_revive()
 
-        self.stats.revive_phoenix.assert_called_once_with(self.game.phoenix_ship)
-        self.stats.revive_thunderbird.assert_called_once_with(
+        self.game.stats.revive_phoenix.assert_called_once_with(self.game.phoenix_ship)
+        self.game.stats.revive_thunderbird.assert_called_once_with(
             self.game.thunderbird_ship
         )
         self.game.score_board.create_health.assert_called_once()
@@ -270,7 +270,7 @@ class TestGameplayManager(unittest.TestCase):
 
     def test_update_normal_boss_info(self):
         """Test the update_normal_boss_info method."""
-        self.stats.level = 10  # Boss level
+        self.game.stats.level = 10  # Boss level
         initial_boss_hp = self.settings.boss_hp
 
         self._update_normal_boss_info_helper(0.4, initial_boss_hp, 25)
@@ -288,7 +288,7 @@ class TestGameplayManager(unittest.TestCase):
 
     def test_update_boss_rush_info(self):
         """Test the update_boss_rush_info method."""
-        self.stats.level = 5
+        self.game.stats.level = 5
         self.settings.boss_points = 0
         self.settings.boss_hp = 0
 
@@ -308,7 +308,7 @@ class TestGameplayManager(unittest.TestCase):
         """Test the create_boss_rush_bullets in the levels below 10."""
         bullets_manager = MagicMock()
 
-        self.stats.level = 5
+        self.game.stats.level = 5
 
         self.gameplay_handler._create_boss_rush_bullets(bullets_manager)
 
@@ -318,7 +318,7 @@ class TestGameplayManager(unittest.TestCase):
         """Test the create_boss_rush_bullets in the levels above 10."""
         bullets_manager = MagicMock()
 
-        self.stats.level = 12
+        self.game.stats.level = 12
 
         self.gameplay_handler._create_boss_rush_bullets(bullets_manager)
 
@@ -339,7 +339,7 @@ class TestGameplayManager(unittest.TestCase):
 
     def test_check_alien_bullets_num(self):
         """Test the check_alien_bullets_num method."""
-        self.stats.level = 3
+        self.game.stats.level = 3
         self.settings.alien_bullets_num = 5
         self._check_alien_bullets_num_helper(10)
         self._check_alien_bullets_num_helper(6)
@@ -409,7 +409,7 @@ class TestGameplayManager(unittest.TestCase):
         self.settings.asteroid_freq = 500
         self.settings.thunderbird_ship_speed = 4.0
         self.settings.phoenix_ship_speed = 4.0
-        self.stats.thunderbird_score = 1000
+        self.game.stats.thunderbird_score = 1000
 
         self.gameplay_handler._prepare_asteroids_level()
 
@@ -418,9 +418,9 @@ class TestGameplayManager(unittest.TestCase):
         self.assertEqual(self.settings.asteroid_freq, 400)
         self.assertEqual(self.settings.thunderbird_ship_speed, 3.8)
         self.assertEqual(self.settings.phoenix_ship_speed, 3.8)
-        self.assertEqual(self.stats.thunderbird_score, 3000)
+        self.assertEqual(self.game.stats.thunderbird_score, 3000)
         self.game.score_board.update_high_score.assert_called_once()
-        self.stats.increase_level.assert_called_once()
+        self.game.stats.increase_level.assert_called_once()
         self.game.score_board.prep_level.assert_called_once()
         self.game.score_board.render_high_score.assert_called_once()
 
@@ -431,7 +431,7 @@ class TestGameplayManager(unittest.TestCase):
         self.phoenix_ship.remaining_bullets = 9
         self.thunderbird_ship.state.alive = True
         self.phoenix_ship.state.alive = True
-        self.stats.game_active = True
+        self.game.stats.game_active = True
 
         self.gameplay_handler.last_bullet(
             self.thunderbird_ship, self.phoenix_ship, asteroid_handler
@@ -440,7 +440,7 @@ class TestGameplayManager(unittest.TestCase):
         asteroid_handler.assert_called_once_with(create_at_high_levels=True)
         self.assertEqual(self.thunderbird_ship.state.alive, True)
         self.assertEqual(self.phoenix_ship.state.alive, True)
-        self.assertEqual(self.stats.game_active, True)
+        self.assertEqual(self.game.stats.game_active, True)
 
     def test_last_bullet_ship_no_bullets(self):
         """Test the last_bullet method when one of the ships
@@ -450,7 +450,7 @@ class TestGameplayManager(unittest.TestCase):
         self.phoenix_ship.remaining_bullets = 9
         self.thunderbird_ship.state.alive = True
         self.phoenix_ship.state.alive = True
-        self.stats.game_active = True
+        self.game.stats.game_active = True
 
         self.game.aliens.sprites = MagicMock(spec=pygame.sprite.Group)
         self.game.aliens.sprites.return_value = [MagicMock(), MagicMock()]
@@ -472,7 +472,7 @@ class TestGameplayManager(unittest.TestCase):
         asteroid_handler.assert_called_once_with(create_at_high_levels=True)
         self.assertEqual(self.thunderbird_ship.state.alive, False)
         self.assertEqual(self.phoenix_ship.state.alive, True)
-        self.assertEqual(self.stats.game_active, True)
+        self.assertEqual(self.game.stats.game_active, True)
 
     def test_last_bullet_no_ships_alive(self):
         """Test the last_bullet method when both ships have
@@ -482,7 +482,7 @@ class TestGameplayManager(unittest.TestCase):
         self.phoenix_ship.remaining_bullets = 9
         self.thunderbird_ship.state.alive = False
         self.phoenix_ship.state.alive = False
-        self.stats.game_active = True
+        self.game.stats.game_active = True
 
         self.gameplay_handler.last_bullet(
             self.thunderbird_ship, self.phoenix_ship, asteroid_handler
@@ -491,12 +491,12 @@ class TestGameplayManager(unittest.TestCase):
         asteroid_handler.assert_called_once_with(create_at_high_levels=True)
         self.assertEqual(self.thunderbird_ship.state.alive, False)
         self.assertEqual(self.phoenix_ship.state.alive, False)
-        self.assertEqual(self.stats.game_active, False)
+        self.assertEqual(self.game.stats.game_active, False)
 
     def test_check_remaining_bullets(self):
         """Test the check_remaining_bullets method."""
-        self.stats.thunderbird_hp = -1
-        self.stats.phoenix_hp = -1
+        self.game.stats.thunderbird_hp = -1
+        self.game.stats.phoenix_hp = -1
 
         self.gameplay_handler.check_remaining_bullets()
 
@@ -583,19 +583,19 @@ class TestGameplayManager(unittest.TestCase):
     def test_set_cosmic_conflict_high_score(self):
         """Test the set_cosmic_conflict_high_score method."""
         self.game.phoenix_ship.state.alive = False
-        self.stats.thunderbird_score = 1000
+        self.game.stats.thunderbird_score = 1000
 
         self.gameplay_handler.set_cosmic_conflict_high_score()
 
-        self.assertEqual(self.stats.high_score, 1000)
+        self.assertEqual(self.game.stats.high_score, 1000)
 
         self.game.phoenix_ship.state.alive = True
         self.game.thunderbird_ship.state.alive = False
-        self.stats.phoenix_score = 2000
+        self.game.stats.phoenix_score = 2000
 
         self.gameplay_handler.set_cosmic_conflict_high_score()
 
-        self.assertEqual(self.stats.high_score, 2000)
+        self.assertEqual(self.game.stats.high_score, 2000)
 
     def test_reset_cosmic_conflict(self):
         """Test the reset_cosmic_conflict method."""

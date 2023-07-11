@@ -9,7 +9,6 @@ from unittest.mock import MagicMock
 import pygame
 
 from src.entities.player_health import Heart
-from src.game_logic.game_settings import Settings
 
 
 class TestHeart(unittest.TestCase):
@@ -17,18 +16,13 @@ class TestHeart(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        self.settings = Settings()
-        self.screen = MagicMock(spec=pygame.Surface)
-        self.screen.get_rect.return_value = pygame.Rect(0, 0, 800, 600)
         self.game = MagicMock()
-        self.game.screen = self.screen
-        self.game.settings = self.settings
         self.heart = Heart(self.game)
 
     def test_init(self):
         """Test the initialization of the Heart."""
-        self.assertEqual(self.heart.screen, self.screen)
-        self.assertEqual(self.heart.settings, self.settings)
+        self.assertEqual(self.heart.screen, self.game.screen)
+        self.assertEqual(self.heart.settings, self.game.settings)
         self.assertIsInstance(self.heart.image, pygame.Surface)
         self.assertIsInstance(self.heart.rect, pygame.Rect)
         self.assertEqual(self.heart.rect.topleft, (0, 0))
@@ -37,7 +31,7 @@ class TestHeart(unittest.TestCase):
         """Test the blitting of the Heart."""
         self.heart.blitme()
 
-        self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
+        self.game.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
     def test_blitme_screen_rect(self):
         """Test if the heart is blitted at the correct position on the screen."""
@@ -45,7 +39,7 @@ class TestHeart(unittest.TestCase):
 
         self.heart.blitme()
 
-        self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
+        self.game.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
     def test_blitme_screen_rect_updated(self):
         """Test if the heart is blitted at the correct position
@@ -56,7 +50,7 @@ class TestHeart(unittest.TestCase):
 
         self.heart.blitme()
 
-        self.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
+        self.game.screen.blit.assert_called_once_with(self.heart.image, self.heart.rect)
 
 
 if __name__ == "__main__":

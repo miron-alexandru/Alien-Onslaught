@@ -4,7 +4,7 @@ input events in the game.
 """
 
 import unittest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 import pygame
 
@@ -18,20 +18,13 @@ class TestPlayerInput(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.ui_options = MagicMock()
-        self.game.settings = MagicMock()
-        self.game.sound_manager = MagicMock()
-        self.game.stats = MagicMock()
-        self.game.singleplayer = True
-        self.game.thunderbird_ship = MagicMock()
-        self.game.phoenix_ship = MagicMock()
-        self.player_input = PlayerInput(self.game, self.ui_options)
+        self.player_input = PlayerInput(self.game, self.game.ui_options)
 
     def test_init(self):
         """Test the initialization of the class."""
         self.assertEqual(self.player_input.game, self.game)
         self.assertEqual(self.player_input.settings, self.game.settings)
-        self.assertEqual(self.player_input.ui_options, self.ui_options)
+        self.assertEqual(self.player_input.ui_options, self.game.ui_options)
         self.assertEqual(self.player_input.thunderbird, self.game.thunderbird_ship)
         self.assertEqual(self.player_input.phoenix, self.game.phoenix_ship)
 
@@ -45,7 +38,7 @@ class TestPlayerInput(unittest.TestCase):
         """Test the Q keypress event."""
         event_mock = MagicMock()
         event_mock.key = pygame.K_q
-        self.ui_options.paused = True
+        self.game.ui_options.paused = True
 
         self.player_input.check_keydown_events(
             event_mock,
@@ -66,7 +59,7 @@ class TestPlayerInput(unittest.TestCase):
     @patch("src.game_logic.input_handling.play_sound")
     def test_check_keydown_events_pause(self, mock_play_sound):
         """Test the P keypress event."""
-        self.ui_options.paused = False
+        self.game.ui_options.paused = False
         event_mock = MagicMock()
         event_mock.key = pygame.K_p
 
@@ -74,7 +67,7 @@ class TestPlayerInput(unittest.TestCase):
             event_mock, MagicMock(), MagicMock(), MagicMock(), MagicMock(), MagicMock()
         )
 
-        self.assertEqual(self.ui_options.paused, True)
+        self.assertEqual(self.game.ui_options.paused, True)
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.game_sounds, "keypress"
         )
@@ -84,7 +77,7 @@ class TestPlayerInput(unittest.TestCase):
         """Test the R keypress event."""
         event_mock = MagicMock()
         event_mock.key = pygame.K_r
-        self.ui_options.paused = True
+        self.game.ui_options.paused = True
 
         reset_game_mock = MagicMock()
 
@@ -98,7 +91,7 @@ class TestPlayerInput(unittest.TestCase):
         )
 
         reset_game_mock.assert_called_once()
-        self.assertEqual(self.ui_options.paused, False)
+        self.assertEqual(self.game.ui_options.paused, False)
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.game_sounds, "keypress"
         )
@@ -110,7 +103,7 @@ class TestPlayerInput(unittest.TestCase):
         """Test the ESC keypress event."""
         event_mock = MagicMock()
         event_mock.key = pygame.K_ESCAPE
-        self.ui_options.paused = True
+        self.game.ui_options.paused = True
 
         game_menu_mock = MagicMock()
 
@@ -131,14 +124,14 @@ class TestPlayerInput(unittest.TestCase):
         )
         self.assertEqual(self.game.sound_manager.current_sound, "menu")
         game_menu_mock.assert_called_once()
-        self.assertEqual(self.ui_options.paused, False)
+        self.assertEqual(self.game.ui_options.paused, False)
 
     @patch("src.game_logic.input_handling.play_sound")
     def test_check_keydown_events_run_menu(self, mock_play_sound):
         """Test the M keypress event."""
         event_mock = MagicMock()
         event_mock.key = pygame.K_m
-        self.ui_options.paused = True
+        self.game.ui_options.paused = True
 
         run_menu_mock = MagicMock()
 
@@ -166,7 +159,7 @@ class TestPlayerInput(unittest.TestCase):
         controls are called."""
         # Multiplayer and not paused test case
         self.game.singleplayer = False
-        self.ui_options.paused = False
+        self.game.ui_options.paused = False
 
         event_mock = MagicMock()
         fire_missile_method = MagicMock()
@@ -194,7 +187,7 @@ class TestPlayerInput(unittest.TestCase):
         # Paused test case
         self.player_input._handle_phoenix_controls.reset_mock()
         self.player_input._handle_thunderbird_controls.reset_mock()
-        self.ui_options.paused = True
+        self.game.ui_options.paused = True
 
         self.player_input.check_keydown_events(
             event_mock,
@@ -211,7 +204,7 @@ class TestPlayerInput(unittest.TestCase):
         # Singleplayer test case
         self.player_input._handle_phoenix_controls.reset_mock()
         self.player_input._handle_thunderbird_controls.reset_mock()
-        self.ui_options.paused = False
+        self.game.ui_options.paused = False
         self.game.singleplayer = True
 
         self.player_input.check_keydown_events(

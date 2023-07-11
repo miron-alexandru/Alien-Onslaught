@@ -16,9 +16,6 @@ class ShipSelectionTest(unittest.TestCase):
     def setUp(self):
         """Set up the test environment."""
         pygame.init()
-        self.screen = MagicMock()
-        self.screen.get_size.return_value = (800, 600)
-        self.settings = MagicMock()
         self.game = MagicMock()
         self.ship_images = [
             MagicMock(),
@@ -29,19 +26,18 @@ class ShipSelectionTest(unittest.TestCase):
             MagicMock(),
         ]
         self.ship_selection = ShipSelection(
-            self.game, self.screen, self.ship_images, self.settings
+            self.game, self.game.screen, self.ship_images, self.game.settings
         )
-        self.font = MagicMock()
-        self.ship_selection.font = self.font
+        self.ship_selection.font = MagicMock()
 
     def tearDown(self):
         pygame.quit()
 
     def test_init(self):
         """Test the initialization of the class."""
-        self.assertEqual(self.ship_selection.screen, self.screen)
+        self.assertEqual(self.ship_selection.screen, self.game.screen)
         self.assertEqual(self.ship_selection.game, self.game)
-        self.assertEqual(self.ship_selection.settings, self.settings)
+        self.assertEqual(self.ship_selection.settings, self.game.settings)
         self.assertEqual(self.ship_selection.ship_images, self.ship_images)
         self.assertEqual(
             self.ship_selection.thunderbird_ship, self.game.thunderbird_ship
@@ -55,8 +51,12 @@ class ShipSelectionTest(unittest.TestCase):
     def test_draw_ship_type_text(self):
         """Test the draw_ship_type_text method."""
         self.ship_selection.draw_ship_type_text(1, 25, 50)
-        self.font.render.assert_called_with("Thunderbird", True, (255, 255, 255))
-        self.screen.blit.assert_called_with(self.font.render.return_value, (50, 25))
+        self.ship_selection.font.render.assert_called_with(
+            "Thunderbird", True, (255, 255, 255)
+        )
+        self.game.screen.blit.assert_called_with(
+            self.ship_selection.font.render.return_value, (50, 25)
+        )
 
     @patch("src.managers.player_managers.ship_selection_manager.pygame.mouse.get_pos")
     @patch("src.managers.player_managers.ship_selection_manager.display_description")
@@ -87,7 +87,7 @@ class ShipSelectionTest(unittest.TestCase):
 
         self.ship_selection.handle_ship_selection(mouse_pos)
 
-        self.settings.regular_thunder_ship.assert_called()
+        self.game.settings.regular_thunder_ship.assert_called()
         mock_play_sound.assert_called_with(
             self.game.sound_manager.game_sounds, "select_ship"
         )
@@ -119,8 +119,8 @@ class ShipSelectionTest(unittest.TestCase):
             (pygame.Rect(70, 85, 15, 15), 1, 2),
         ]
         self.ship_selection.ship_selection_functions = {
-            (1, 2): ("artillery_thunder", self.settings.heavy_artillery_thunder),
-            (2, 1): ("fast_phoenix", self.settings.fast_phoenix),
+            (1, 2): ("artillery_thunder", self.game.settings.heavy_artillery_thunder),
+            (2, 1): ("fast_phoenix", self.game.settings.fast_phoenix),
         }
         self.game.singleplayer = False
         self.game.ui_options.ship_selection = True
@@ -129,8 +129,8 @@ class ShipSelectionTest(unittest.TestCase):
 
         self.ship_selection.handle_ship_selection(mouse_pos)
 
-        self.settings.fast_phoenix.assert_called_once()
-        self.settings.heavy_artillery_thunder.assert_called_once()
+        self.game.settings.fast_phoenix.assert_called_once()
+        self.game.settings.heavy_artillery_thunder.assert_called_once()
         mock_play_sound.assert_called_with(
             self.game.sound_manager.game_sounds, "select_ship"
         )

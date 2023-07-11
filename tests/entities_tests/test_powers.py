@@ -9,7 +9,6 @@ from unittest.mock import MagicMock
 import pygame
 
 from src.entities.powers import Power
-from src.game_logic.game_settings import Settings
 
 
 class TestPower(unittest.TestCase):
@@ -18,16 +17,12 @@ class TestPower(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.screen = MagicMock()
-        self.game.screen = self.screen
-        self.settings = Settings()
-        self.game.settings = self.settings
         self.power = Power(self.game)
 
     def test_init(self):
         """Test the initialization of the Power."""
-        self.assertEqual(self.power.screen, self.screen)
-        self.assertEqual(self.power.settings, self.settings)
+        self.assertEqual(self.power.screen, self.game.screen)
+        self.assertEqual(self.power.settings, self.game.settings)
         self.assertIsInstance(self.power.image, pygame.Surface)
         self.assertIsInstance(self.power.health_image, pygame.Surface)
         self.assertIsInstance(self.power.speed, float)
@@ -41,10 +36,13 @@ class TestPower(unittest.TestCase):
 
     def test_initialize_position(self):
         """Test the initialize_position method."""
+        self.game.settings.screen_width = 700
         self.power._initialize_position()
 
         self.assertTrue(
-            0 <= self.power.rect.x <= self.settings.screen_width - self.power.rect.width
+            0
+            <= self.power.rect.x
+            <= self.game.settings.screen_width - self.power.rect.width
         )
         self.assertEqual(self.power.rect.y, 0)
         self.assertEqual(self.power.y_pos, float(self.power.rect.y))
@@ -77,7 +75,7 @@ class TestPower(unittest.TestCase):
         """Test the drawing of the power."""
         self.power.draw()
 
-        self.screen.blit.assert_called_once_with(self.power.image, self.power.rect)
+        self.game.screen.blit.assert_called_once_with(self.power.image, self.power.rect)
 
 
 if __name__ == "__main__":

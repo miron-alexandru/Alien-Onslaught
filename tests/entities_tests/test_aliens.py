@@ -5,13 +5,13 @@ game.
 
 import unittest
 from unittest.mock import MagicMock, patch
+
 import time
 import random
 
 import pygame
 
 from src.entities.aliens import Alien
-from src.game_logic.game_settings import Settings
 
 
 class TestAlien(unittest.TestCase):
@@ -23,16 +23,14 @@ class TestAlien(unittest.TestCase):
         self.screen = MagicMock(spec=pygame.Surface)
         self.screen.get_rect.return_value = pygame.Rect(0, 0, 800, 600)
         self.game.screen = self.screen
-        self.settings = Settings()
-        self.game.settings = self.settings
         self.alien = Alien(self.game)
 
     def test_init(self):
         """Test the initialization of the Alien."""
         self.assertEqual(self.alien.aliens, self.game.aliens)
-        self.assertEqual(self.alien.screen, self.screen)
-        self.assertEqual(self.alien.settings, self.settings)
-        self.assertEqual(self.alien.game_modes, self.settings.game_modes)
+        self.assertEqual(self.alien.screen, self.game.screen)
+        self.assertEqual(self.alien.settings, self.game.settings)
+        self.assertEqual(self.alien.game_modes, self.game.settings.game_modes)
         self.assertEqual(self.alien.hit_count, 0)
         self.assertEqual(self.alien.last_bullet_time, 0)
         self.assertFalse(self.alien.immune_state)
@@ -90,6 +88,12 @@ class TestAlien(unittest.TestCase):
 
     def test_update(self):
         """Test the update method."""
+        self.game.settings.alien_speed = 3
+        self.game.settings.alien_direction = 1
+        self.alien.motion.direction = 1
+        self.game.settings.frozen_time = 4
+        self.game.settings.alien_immune_time = 30
+
         initial_x_pos = self.alien.x_pos
         initial_image = self.alien.image.copy()
         initial_frozen_state = self.alien.frozen_state
@@ -104,7 +108,7 @@ class TestAlien(unittest.TestCase):
             initial_x_pos
             + self.alien.settings.alien_speed * self.alien.motion.direction,
         )
-        self.assertEqual(self.alien.rect.x, round(self.alien.x_pos))
+        self.assertEqual(self.alien.rect.x, self.alien.x_pos)
 
         # Verify animation update
         self.assertNotEqual(self.alien.image, initial_image)
