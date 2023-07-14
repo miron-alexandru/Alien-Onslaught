@@ -7,8 +7,8 @@ managing bullets fired by aliens and bosses in the game.
 import random
 import pygame
 
-from src.entities.alien_bullets import AlienBullet, BossBullet
-from src.entities.aliens import BossAlien
+from src.entities.alien_entities.alien_bullets import AlienBullet, BossBullet
+from src.entities.alien_entities.aliens import BossAlien
 
 
 class AlienBulletsManager:

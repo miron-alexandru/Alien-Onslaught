@@ -1,11 +1,14 @@
 """
-This is a module that defines the PlayerInput class, which is responsible for
-handling player input events in a game.
+This module defines the PlayerInput class, which is responsible for
+handling player input events in the game.
 """
 
 import sys
 import pygame
-from src.entities.projectiles import Missile, Firebird, Thunderbolt, Laser
+
+from src.entities.projectiles.missile import Missile
+from src.entities.projectiles.laser import Laser
+from src.entities.projectiles.player_bullets import Firebird, Thunderbolt
 from src.utils.game_utils import play_sound, play_music
 
 

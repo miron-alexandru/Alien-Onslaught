@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pygame
 
-from src.entities.player_ships import Phoenix
+from src.entities.player_entities.player_ships import Phoenix
 
 
 class TestPhoenix(unittest.TestCase):

@@ -8,7 +8,7 @@ import unittest
 
 import pygame
 
-from src.entities.projectiles import Firebird
+from src.entities.projectiles.player_bullets import Firebird
 from src.managers.player_managers.weapons_manager import WeaponsManager
 
 

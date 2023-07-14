@@ -11,7 +11,7 @@ import random
 
 import pygame
 
-from src.entities.aliens import Alien
+from src.entities.alien_entities.aliens import Alien
 
 
 class TestAlien(unittest.TestCase):
@@ -152,7 +152,7 @@ class TestAlien(unittest.TestCase):
 
     def test_split_alien(self):
         """Test the split_alien method."""
-        with patch("src.entities.aliens.Alien") as mock_alien:
+        with patch("src.entities.alien_entities.aliens.Alien") as mock_alien:
             # Generate a random number of splits between 1 and 4
             actual_splits = random.randint(1, 4)
 

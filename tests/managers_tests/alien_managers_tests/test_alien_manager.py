@@ -6,7 +6,7 @@ the aliens in the game.
 import unittest
 from unittest.mock import MagicMock
 
-from src.entities.aliens import Alien, BossAlien
+from src.entities.alien_entities.aliens import Alien, BossAlien
 from src.managers.alien_managers.aliens_manager import AliensManager
 
 

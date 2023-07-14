@@ -1,5 +1,5 @@
 """
-This module tests the GameplayManager class which is used to manage the game modes
+This module tests the GameplayHandler class which is used to manage the game modes
 and gameplay behaviors in the game.
 """
 
@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pygame
 
-from src.game_logic.gameplay_handler import GameplayManager
+from src.game_logic.gameplay_handler import GameplayHandler
 from src.game_logic.game_settings import Settings
 
 
@@ -24,7 +24,7 @@ class TestGameplayManager(unittest.TestCase):
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
         self.game.ships = self.ships
         self.game.aliens = pygame.sprite.Group()
-        self.gameplay_handler = GameplayManager(
+        self.gameplay_handler = GameplayHandler(
             self.game, self.settings, self.game.stats
         )
 

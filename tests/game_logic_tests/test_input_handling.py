@@ -9,8 +9,9 @@ from unittest.mock import MagicMock, patch
 import pygame
 
 from src.game_logic.input_handling import PlayerInput
-from src.entities.projectiles import Missile, Thunderbolt, Laser
-
+from src.entities.projectiles.missile import Missile
+from src.entities.projectiles.laser import Laser
+from src.entities.projectiles.player_bullets import Thunderbolt
 
 class TestPlayerInput(unittest.TestCase):
     """Test cases for the PlayerInput class."""

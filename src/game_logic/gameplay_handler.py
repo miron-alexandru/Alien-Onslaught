@@ -1,5 +1,5 @@
 """
-'The gameplay_handler' module contains the GameplayManager class
+'The gameplay_handler' module contains the GameplayHandler class
 which manages the game modes and behavior for every game mode in the game.
 """
 
@@ -17,8 +17,8 @@ from src.utils.constants import (
 )
 
 
-class GameplayManager:
-    """The GameplayManager class manages different gameplay
+class GameplayHandler:
+    """The GameplayHandler class manages different gameplay
     behaviors in the game based on the active game modes.
     """
 

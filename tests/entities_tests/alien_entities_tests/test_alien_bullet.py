@@ -6,7 +6,7 @@ creating alien bullets in the game.
 import unittest
 from unittest.mock import MagicMock, Mock
 
-from src.entities.alien_bullets import AlienBullet
+from src.entities.alien_entities.alien_bullets import AlienBullet
 
 
 class TestAlienBullet(unittest.TestCase):

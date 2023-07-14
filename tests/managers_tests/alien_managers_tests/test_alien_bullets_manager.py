@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from src.managers.alien_managers.alien_bullets_manager import AlienBulletsManager
-from src.entities.aliens import Alien, BossAlien
+from src.entities.alien_entities.aliens import Alien, BossAlien
 
 
 class AlienBulletsManagerTestCase(unittest.TestCase):

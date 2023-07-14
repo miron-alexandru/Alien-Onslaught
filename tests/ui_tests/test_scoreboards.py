@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch, call
 import pygame
 
 from src.ui.scoreboards import ScoreBoard
-from src.entities.player_health import Heart
+from src.entities.player_entities.player_health import Heart
 
 
 class ScoreBoardTest(unittest.TestCase):

@@ -20,7 +20,7 @@ from src.game_logic.game_settings import Settings
 from src.game_logic.game_stats import GameStats
 from src.game_logic.collision_detection import CollisionManager
 from src.game_logic.input_handling import PlayerInput
-from src.game_logic.gameplay_handler import GameplayManager
+from src.game_logic.gameplay_handler import GameplayHandler
 
 from src.utils.game_utils import (
     resize_image,
@@ -164,7 +164,7 @@ class AlienOnslaught:
         self.aliens_manager = AliensManager(
             self, self.aliens, self.settings, self.screen
         )
-        self.gameplay_manager = GameplayManager(self, self.settings, self.stats)
+        self.gameplay_manager = GameplayHandler(self, self.settings, self.stats)
         self.game_over_manager = EndGameManager(
             self, self.settings, self.stats, self.screen
         )
@@ -188,10 +188,7 @@ class AlienOnslaught:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
                     self.handle_toggle_window_mode()
-            elif (
-                event.type == pygame.MOUSEBUTTONDOWN
-                and event.button == pygame.BUTTON_LEFT
-            ):
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if self.buttons_manager.single.rect.collidepoint(mouse_x, mouse_y):
                     self.buttons_manager.handle_single_player_button_click(
@@ -343,10 +340,7 @@ class AlienOnslaught:
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
-            elif (
-                event.type == pygame.MOUSEBUTTONDOWN
-                and event.button == pygame.BUTTON_LEFT
-            ):
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_buttons(mouse_pos)
                 self.ship_selection.handle_ship_selection(mouse_pos)

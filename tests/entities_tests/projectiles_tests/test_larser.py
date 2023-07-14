@@ -6,7 +6,7 @@ the laser weapon in the game.
 import unittest
 from unittest.mock import MagicMock
 
-from src.entities.projectiles import Laser
+from src.entities.projectiles.laser import Laser
 
 
 class TestLaser(unittest.TestCase):

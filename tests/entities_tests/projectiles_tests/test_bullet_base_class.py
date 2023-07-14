@@ -8,7 +8,7 @@ import unittest
 
 import pygame
 
-from src.entities.projectiles import Bullet
+from src.entities.projectiles.bullet import Bullet
 
 
 class TestBullet(unittest.TestCase):

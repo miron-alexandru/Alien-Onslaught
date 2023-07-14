@@ -6,7 +6,7 @@ player missiles in the game.
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.entities.projectiles import Missile
+from src.entities.projectiles.missile import Missile
 
 
 class TestMissile(unittest.TestCase):
@@ -76,7 +76,7 @@ class TestMissile(unittest.TestCase):
 
         self.assertTrue(self.missile.is_destroyed)
 
-    @patch("src.entities.projectiles.pygame.transform.rotate")
+    @patch("src.entities.projectiles.missile.pygame.transform.rotate")
     def test_set_missile_frames_cosmic_conflict(self, mock_rotate):
         """Test setting the frames for cosmic conflict."""
         self.game.settings.game_modes.cosmic_conflict = True
@@ -90,7 +90,7 @@ class TestMissile(unittest.TestCase):
             self.missile.frames[self.missile.current_frame], -90
         )
 
-    @patch("src.entities.projectiles.pygame.transform.rotate")
+    @patch("src.entities.projectiles.missile.pygame.transform.rotate")
     def test_set_missile_frames_not_cosmic_conflicts(self, mock_rotate):
         """Test the setting of the frames for missiles in other game modes."""
         initial_image = self.missile.image

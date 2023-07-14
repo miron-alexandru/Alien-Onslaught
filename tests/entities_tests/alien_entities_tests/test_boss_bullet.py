@@ -8,8 +8,8 @@ from unittest.mock import MagicMock
 
 import pygame
 
-from src.entities.alien_bullets import BossBullet
-from src.entities.aliens import BossAlien
+from src.entities.alien_entities.alien_bullets import BossBullet
+from src.entities.alien_entities.aliens import BossAlien
 
 
 class TestBossBullet(unittest.TestCase):

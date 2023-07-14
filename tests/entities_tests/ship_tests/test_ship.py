@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pygame
 
-from src.entities.ship import Ship
+from src.entities.player_entities.ship import Ship
 
 
 class ShipTestCase(unittest.TestCase):
@@ -74,10 +74,10 @@ class ShipTestCase(unittest.TestCase):
         self.game.settings.thunderbird_ship_speed = 7
         self.assertEqual(self.ship.ship_speed, 7)
 
-    @patch("src.entities.ship.Ship.reset_ship_size")
+    @patch("src.entities.player_entities.ship.Ship.reset_ship_size")
     @patch("pygame.time.get_ticks")
     @patch("src.animations.ship_animations.pygame.image.load")
-    @patch("src.entities.ship.time.time")
+    @patch("src.entities.player_entities.ship.time.time")
     def test_update_state(
         self, mock_time, mock_load_image, mock_get_ticks, mock_reset_ship_size
     ):

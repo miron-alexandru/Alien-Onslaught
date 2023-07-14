@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pygame
 
-from src.entities.player_ships import Thunderbird
+from src.entities.player_entities.player_ships import Thunderbird
 
 
 class TestThunderbird(unittest.TestCase):

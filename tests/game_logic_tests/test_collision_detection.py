@@ -10,8 +10,8 @@ from unittest.mock import MagicMock, patch, call
 import pygame
 
 from src.game_logic.collision_detection import CollisionManager
-from src.entities.projectiles import Missile
-from src.entities.aliens import BossAlien
+from src.entities.projectiles.missile import Missile
+from src.entities.alien_entities.aliens import BossAlien
 
 
 class TestCollisionManager(unittest.TestCase):

@@ -15,7 +15,7 @@ from src.game_logic.game_settings import Settings
 from src.game_logic.game_stats import GameStats
 from src.game_logic.collision_detection import CollisionManager
 from src.game_logic.input_handling import PlayerInput
-from src.game_logic.gameplay_handler import GameplayManager
+from src.game_logic.gameplay_handler import GameplayHandler
 
 from src.ui.scoreboards import ScoreBoard
 
@@ -30,7 +30,7 @@ from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
 
-from src.entities.player_ships import Thunderbird, Phoenix
+from src.entities.player_entities.player_ships import Thunderbird, Phoenix
 
 
 class AlienOnslaughtTestCase(unittest.TestCase):
@@ -180,7 +180,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.assertIsInstance(self.game.alien_bullets_manager, AlienBulletsManager)
         self.assertIsInstance(self.game.weapons_manager, WeaponsManager)
         self.assertIsInstance(self.game.aliens_manager, AliensManager)
-        self.assertIsInstance(self.game.gameplay_manager, GameplayManager)
+        self.assertIsInstance(self.game.gameplay_manager, GameplayHandler)
         self.assertIsInstance(self.game.game_over_manager, EndGameManager)
 
         self.assertEqual(self.game.screen_manager.singleplayer, self.game.singleplayer)

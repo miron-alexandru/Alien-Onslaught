@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 
 import pygame
 
-from src.entities.player_health import Heart
+from src.entities.player_entities.player_health import Heart
 
 
 class TestHeart(unittest.TestCase):

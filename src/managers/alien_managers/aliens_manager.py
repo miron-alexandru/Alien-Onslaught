@@ -3,7 +3,7 @@ The 'aliens_manager' module contains the AliensManager class that manages
 the creation and update of aliens and bosses in the game.
 """
 
-from src.entities.aliens import Alien, BossAlien
+from src.entities.alien_entities.aliens import Alien, BossAlien
 
 
 class AliensManager:
