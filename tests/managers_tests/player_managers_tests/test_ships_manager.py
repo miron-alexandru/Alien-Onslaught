@@ -187,6 +187,7 @@ class TestShipsManager(unittest.TestCase):
         """Test the reset ships method."""
         ship_mock = MagicMock()
         self.game.ships = [ship_mock]
+        self.game.game_loaded = False
 
         self.ships_manager.reset_ships()
 

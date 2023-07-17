@@ -41,9 +41,12 @@ class ScreenManager:
 
     def update_buttons(self):
         """Updates the position of game objects after resizing the screen."""
-        self.buttons.play.update_pos(self.screen.get_rect().center, y=-80)
-        self.buttons.select_ship.update_pos(
+        self.buttons.play.update_pos(self.screen.get_rect().center, y=-115)
+        self.buttons.load_game.update_pos(
             self.buttons.play.rect.centerx - 74, self.buttons.play.rect.bottom
+        )
+        self.buttons.select_ship.update_pos(
+            self.buttons.load_game.rect.centerx - 74, self.buttons.load_game.rect.bottom
         )
         self.buttons.difficulty.update_pos(
             self.buttons.select_ship.rect.centerx - 74,

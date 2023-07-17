@@ -9,6 +9,8 @@ Classes:
 import time
 import random
 
+import pygame
+
 from pygame.sprite import Sprite
 from src.animations.other_animations import DestroyAnim, Immune
 from src.managers.alien_managers.aliens_behaviors import AlienMovement, AlienAnimation

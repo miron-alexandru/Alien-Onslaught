@@ -58,6 +58,9 @@ class PlayerInput:
                 pygame.time.delay(300)
                 self.game.stats.game_active = False
                 run_menu()
+            case pygame.K_s if self.ui_options.paused:
+                self.game.save_load_manager.get_current_game_stats()
+                self.game.save_load_manager.save_data("save1")
 
             # If the game is not paused, check for player keypresses
             case _ if not self.ui_options.paused:

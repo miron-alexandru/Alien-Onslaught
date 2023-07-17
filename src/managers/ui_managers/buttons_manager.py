@@ -38,10 +38,15 @@ class GameButtonsManager:
     def _create_game_buttons(self):
         """Create buttons for the game menu."""
         self.play = Button(self, self.button_imgs["play_button"], (0, 0), center=True)
+        self.load_game = Button(
+            self,
+            self.button_imgs["load_game"],
+            (self.play.rect.centerx - 74, self.play.rect.bottom),
+        )
         self.select_ship = Button(
             self,
             self.button_imgs["select_ship"],
-            (self.play.rect.centerx - 74, self.play.rect.bottom),
+            (self.load_game.rect.centerx - 74, self.load_game.rect.bottom),
         )
         # Difficulty buttons
         self.difficulty = Button(
@@ -147,6 +152,7 @@ class GameButtonsManager:
             self.play,
             self.quit,
             self.menu,
+            self.load_game,
             self.select_ship,
             self.difficulty,
             self.high_scores,
@@ -167,7 +173,11 @@ class GameButtonsManager:
     def _create_menu_buttons(self):
         """Create the buttons for the main menu."""
         self.single = Button(
-            self, self.button_imgs["single_player"], (0, 0), center=True
+            self,
+            self.button_imgs["single_player"],
+            (0, 0),
+            center=False,
+            menu_button=True,
         )
         self.multi = Button(
             self,
@@ -237,6 +247,11 @@ class GameButtonsManager:
     def handle_game_modes_button(self):
         """Toggle the visibility of the game modes."""
         self.ui_options.show_game_modes = not self.ui_options.show_game_modes
+
+    def handle_load_game_button(self):
+        self.game.aliens.empty()
+        self.game.save_load_manager.load_data("save1")
+        self.game.game_loaded = True
 
     def _set_game_mode_settings(self, game_mode_setting):
         """Helper function to set the game mode settings based on the current mode."""
@@ -352,6 +367,7 @@ class GameButtonsManager:
             self.difficulty: self.handle_difficulty_toggle,
             self.delete_scores: self.handle_delete_button,
             self.select_ship: self.handle_ship_selection_button,
+            self.load_game: self.handle_load_game_button,
         }
 
     def handle_quit_event(self):

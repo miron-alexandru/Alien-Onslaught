@@ -41,6 +41,7 @@ from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
 from src.managers.player_managers.ship_selection_manager import ShipSelection
+from src.game_logic.save_load_manager import SaveLoadSystem
 
 
 class AlienOnslaught:
@@ -74,6 +75,7 @@ class AlienOnslaught:
         self.initialize_managers()
 
         self.pause_time = 0
+        self.game_loaded = False
 
         pygame.display.set_icon(self.settings.game_icon)
         pygame.display.set_caption("Alien Onslaught")
@@ -168,6 +170,7 @@ class AlienOnslaught:
         self.game_over_manager = EndGameManager(
             self, self.settings, self.stats, self.screen
         )
+        self.save_load_manager = SaveLoadSystem(self, "save", "save_data")
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -188,7 +191,10 @@ class AlienOnslaught:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
                     self.handle_toggle_window_mode()
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
+            elif (
+                event.type == pygame.MOUSEBUTTONDOWN
+                and event.button == pygame.BUTTON_LEFT
+            ):
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if self.buttons_manager.single.rect.collidepoint(mouse_x, mouse_y):
                     self.buttons_manager.handle_single_player_button_click(
@@ -340,7 +346,10 @@ class AlienOnslaught:
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
+            elif (
+                event.type == pygame.MOUSEBUTTONDOWN
+                and event.button == pygame.BUTTON_LEFT
+            ):
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_buttons(mouse_pos)
                 self.ship_selection.handle_ship_selection(mouse_pos)
@@ -368,13 +377,17 @@ class AlienOnslaught:
     def _handle_background_change(self):
         """Change the background image based on the current level."""
         bg_images = {
-            1: self.reset_bg,
-            9: self.second_bg,
-            17: self.third_bg,
-            25: self.fourth_bg,
+            range(1, 9): self.reset_bg,
+            range(9, 17): self.second_bg,
+            range(17, 26): self.third_bg,
         }
 
-        self.bg_img = bg_images.get(self.stats.level, self.bg_img)
+        for level_range, bg_image in bg_images.items():
+            if self.stats.level in level_range:
+                self.bg_img = bg_image
+                break
+        else:
+            self.bg_img = self.fourth_bg if self.stats.level > 25 else self.bg_img
 
     def _check_for_pause(self):
         """Check if the game is paused and update pause time."""
@@ -427,8 +440,10 @@ class AlienOnslaught:
 
     def _reset_game(self):
         """Start a new game."""
-        self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
-        self.settings.dynamic_settings()
+        if not self.game_loaded:
+            self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+            self.settings.dynamic_settings()
+
         self.stats.game_active = True
         self.ui_options.high_score_saved = False
         self.ui_options.game_over_sound_played = False
@@ -459,6 +474,7 @@ class AlienOnslaught:
         # Prepare sounds
         self.sound_manager.prepare_level_music()
         play_sound(self.sound_manager.game_sounds, "warp")
+        self.game_loaded = False
 
         if self.singleplayer:
             self.phoenix_ship.state.alive = False

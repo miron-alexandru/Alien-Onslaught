@@ -25,6 +25,7 @@ BUTTON_NAMES = [
     "cosmic_conflict",
     "one_life_reign",
     "select_ship",
+    "load_game",
 ]
 
 # PLAYER_CONTROLS
@@ -319,7 +320,7 @@ LEVEL_SOUNDS = {
     range(1, 8): "level/battle_one.mp3",
     range(9, 16): "level/battle_two.mp3",
     range(17, 24): "level/battle_three.mp3",
-    range(25, 27): "level/battle_four.mp3",
+    range(25, 999): "level/battle_four.mp3",
 }
 
 BOSS_RUSH_MUSIC = {

@@ -13,6 +13,7 @@ from src.entities.projectiles.missile import Missile
 from src.entities.projectiles.laser import Laser
 from src.entities.projectiles.player_bullets import Thunderbolt
 
+
 class TestPlayerInput(unittest.TestCase):
     """Test cases for the PlayerInput class."""
 

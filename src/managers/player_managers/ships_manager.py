@@ -88,8 +88,11 @@ class ShipsManager:
             ship.reset_ship_state()
             ship.center_ship()
             ship.start_warp()
-            ship.update_missiles_number()
             ship.set_cosmic_conflict_pos()
+
+            if not self.game.game_loaded:
+                ship.update_missiles_number()
+                self.game.score_board.render_missiles_num()
 
         self.game.weapons_manager.reset_weapons()
 

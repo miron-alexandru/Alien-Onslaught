@@ -43,12 +43,11 @@ class GameButtonsManagerTest(unittest.TestCase):
     def test__create_game_buttons(self, mock_button):
         """Test the create_game_buttons method."""
         # Assert that all buttons were created successfully.
-        self.assertEqual(len(self.manager.game_buttons), 7)
+        self.assertEqual(len(self.manager.game_buttons), 8)
         self.assertEqual(len(self.manager.difficulty_buttons), 3)
         self.assertEqual(len(self.manager.game_mode_buttons), 8)
 
         self.manager._create_game_buttons()
-
         expected_calls = [
             call(
                 self.manager,
@@ -58,8 +57,16 @@ class GameButtonsManagerTest(unittest.TestCase):
             ),
             call(
                 self.manager,
-                self.manager.button_imgs["select_ship"],
+                self.manager.button_imgs["load_game"],
                 (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom),
+            ),
+            call(
+                self.manager,
+                self.manager.button_imgs["select_ship"],
+                (
+                    self.manager.load_game.rect.centerx - 74,
+                    self.manager.load_game.rect.bottom,
+                ),
             ),
             call(
                 self.manager,
@@ -198,7 +205,8 @@ class GameButtonsManagerTest(unittest.TestCase):
                 self.manager,
                 self.manager.button_imgs["single_player"],
                 (0, 0),
-                center=True,
+                center=False,
+                menu_button=True,
             ),
             call(
                 self.manager,
@@ -557,7 +565,7 @@ class GameButtonsManagerTest(unittest.TestCase):
 
         # Call the method to create the dictionary
         actions_dict = self.manager.create_button_actions_dict(menu_method, reset_game)
-        self.assertEqual(len(actions_dict), 19)
+        self.assertEqual(len(actions_dict), 20)
 
         # Assert button-action mappings
         self.assertEqual(

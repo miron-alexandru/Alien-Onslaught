@@ -10,7 +10,9 @@ from src.utils.game_utils import display_description
 class Button:
     """A class that represents a button on the screen."""
 
-    def __init__(self, game, image_loc, pos, description="", center=False):
+    def __init__(
+        self, game, image_loc, pos, description="", center=False, menu_button=False
+    ):
         """Initialize button attributes."""
         self.screen = game.screen
         self.screen_rect = self.screen.get_rect()
@@ -26,6 +28,9 @@ class Button:
         self.rect.x, self.rect.y = pos
 
         if center:
+            self.rect.center = self.screen_rect.center
+            self.rect.y -= 115
+        elif menu_button:
             self.rect.center = self.screen_rect.center
             self.rect.y -= 80
         else:
@@ -53,5 +58,5 @@ class Button:
             self.screen,
             self.description,
             screen_width // 2 + 74,
-            screen_height // 2 + 150,
+            screen_height // 2 + 180,
         )
