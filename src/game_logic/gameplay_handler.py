@@ -75,8 +75,9 @@ class GameplayHandler:
         else:
             available_bullets = 50 if self.game.singleplayer else 25
 
-        for ship in self.ships:
-            ship.remaining_bullets = available_bullets
+        if not self.game.game_loaded:
+            for ship in self.ships:
+                ship.remaining_bullets = available_bullets
 
         self.score_board.render_bullets_num()
 

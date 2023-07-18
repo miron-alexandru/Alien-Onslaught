@@ -99,6 +99,7 @@ class TestGameplayManager(unittest.TestCase):
     def test_prepare_last_bullet_bullets_singleplayer(self):
         """Test the prepare_last_bullet_bullets in singleplayer."""
         self.game.singleplayer = True
+        self.game.game_loaded = False
         self.gameplay_handler.score_board.render_bullets_num = MagicMock()
 
         self.gameplay_handler.prepare_last_bullet_bullets()
@@ -111,6 +112,7 @@ class TestGameplayManager(unittest.TestCase):
     def test_prepare_last_bullet_bullets_multiplayer(self):
         """Test the prepare_last_bullet_bullets in multiplayer."""
         self.game.singleplayer = False
+        self.game.game_loaded = False
         self.gameplay_handler.score_board.render_bullets_num = MagicMock()
 
         self.gameplay_handler.prepare_last_bullet_bullets()

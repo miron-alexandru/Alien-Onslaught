@@ -205,7 +205,7 @@ class WeaponsManager:
         display a message if the laser is ready or not.
         """
         for ship in self.game.ships:
-            if ship.laser_ready:
+            if ship.laser_ready and ship.state.alive:
                 if self.game_modes.cosmic_conflict:
                     display_custom_message(self.screen, "Ready!", ship, cosmic=True)
                 else:

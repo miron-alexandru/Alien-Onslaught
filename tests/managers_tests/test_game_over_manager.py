@@ -161,7 +161,7 @@ class TestEndGameManager(unittest.TestCase):
         self.end_game_manager.set_game_end_position()
 
         self.assertEqual(self.settings.game_end_rect.centerx, 400)
-        self.assertEqual(self.settings.game_end_rect.centery, 100)
+        self.assertEqual(self.settings.game_end_rect.centery, 50)
 
 
 if __name__ == "__main__":

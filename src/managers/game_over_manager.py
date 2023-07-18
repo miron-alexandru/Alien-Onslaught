@@ -68,7 +68,7 @@ class EndGameManager:
     def set_game_end_position(self):
         """Set the location of the end game image on the screen"""
         self.settings.game_end_rect.centerx = self.settings.screen_width // 2
-        self.settings.game_end_rect.centery = self.settings.screen_height // 2 - 200
+        self.settings.game_end_rect.centery = self.settings.screen_height // 2 - 250
 
     def _display_endgame(self, image_name):
         self.stats.game_active = False
