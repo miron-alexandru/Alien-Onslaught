@@ -336,24 +336,24 @@ def display_controls(controls_surface, surface):
         P1_CONTROLS,
         font,
         color,
-        (p1_controls_img_rect.left + 25, p1_controls_img_rect.top + 20),
-        25,
+        (p1_controls_img_rect.left + 25, p1_controls_img_rect.top + 15),
+        22,
     )
 
     p2_controls_text, p2_controls_text_rects = render_text(
         P2_CONTROLS,
         font,
         color,
-        (p2_controls_img_rect.left + 25, p2_controls_img_rect.top + 20),
-        25,
+        (p2_controls_img_rect.left + 25, p2_controls_img_rect.top + 15),
+        22,
     )
 
     game_controls_text, game_controls_text_rects = render_text(
         GAME_CONTROLS,
         font,
         color,
-        (game_controls_img_rect.left + 25, game_controls_img_rect.top + 20),
-        25,
+        (game_controls_img_rect.left + 25, game_controls_img_rect.top + 15),
+        22,
     )
 
     return (

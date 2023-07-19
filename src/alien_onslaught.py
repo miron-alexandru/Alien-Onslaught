@@ -440,28 +440,31 @@ class AlienOnslaught:
 
     def _reset_game(self):
         """Start a new game."""
+        # Clear the screen of remaining entities
+        self.gameplay_manager.reset_game_objects()
+
+        # If a new game is started, not loaded
         if not self.game_loaded:
             self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
             self.settings.dynamic_settings()
+            self.gameplay_manager.handle_alien_creation()
 
         self.stats.game_active = True
         self.ui_options.high_score_saved = False
         self.ui_options.game_over_sound_played = False
 
-        # Clear the screen of remaining aliens, bullets, asteroids, and powers.
-        self.gameplay_manager.reset_game_objects()
-
         # Play the warp animation and center the ships.
         self.ships_manager.reset_ships()
         self.player_input.reset_ship_flags()
 
-        # Handle Alien Creation
-        self.gameplay_manager.handle_alien_creation()
-        self.gameplay_manager.prepare_last_bullet_bullets()
+        # Handle Aliens
         self.gameplay_manager.handle_boss_stats()
+
+        # Handle bullets
+        self.gameplay_manager.prepare_last_bullet_bullets()
         self.gameplay_manager.set_last_bullet_bullets()
 
-        # Reset self.last_level_time when a new game starts.
+        # Reset timed variables
         self.reset_timed_variables()
 
         # Prepare the scoreboard

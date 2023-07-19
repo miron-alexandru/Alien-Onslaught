@@ -325,22 +325,22 @@ class MiscFunctionsTests(unittest.TestCase):
                         P1_CONTROLS,
                         mock_sysfont.return_value,
                         "white",
-                        (result[1].left + 25, result[1].top + 20),
-                        25,
+                        (result[1].left + 25, result[1].top + 15),
+                        22,
                     ),
                     call(
                         P2_CONTROLS,
                         mock_sysfont.return_value,
                         "white",
-                        (result[3].left + 25, result[3].top + 20),
-                        25,
+                        (result[3].left + 25, result[3].top + 15),
+                        22,
                     ),
                     call(
                         GAME_CONTROLS,
                         mock_sysfont.return_value,
                         "white",
-                        (result[9].left + 25, result[9].top + 20),
-                        25,
+                        (result[9].left + 25, result[9].top + 15),
+                        22,
                     ),
                 ]
                 render_text_mock.assert_has_calls(expected_calls)

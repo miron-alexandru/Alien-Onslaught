@@ -6,7 +6,9 @@ implements the functionality of saving and loading the game.
 import pickle
 import os
 
-from src.entities.alien_entities.aliens import Alien
+import pygame
+
+from src.entities.alien_entities.aliens import Alien, BossAlien
 from src.utils.constants import DATA_KEYS, ATTRIBUTE_MAPPING
 
 
@@ -82,7 +84,10 @@ class SaveLoadSystem:
 
         sprite_data = {
             "alien_sprites": [
-                {"rect": sprite.rect, "size": sprite.image.get_size()}
+                {"rect": sprite.rect,
+                "size": sprite.image.get_size(),
+                "image": pygame.image.tostring(sprite.image, "RGBA"),
+                "type": "boss" if isinstance(sprite, BossAlien) else "alien",}
                 for sprite in alien_sprites
             ],
         }
@@ -104,17 +109,30 @@ class SaveLoadSystem:
         with open(file_path, "rb") as file:
             loaded_data = pickle.load(file)
 
+        self.load_game_data(loaded_data)
+        self.load_sprites(loaded_data)
+
+    def load_sprites(self, loaded_data):
+        """Loads and recreates the game sprites from the provided data."""
         sprite_data = loaded_data["sprite_data"]
         alien_sprites = self.game.aliens
+        alien_sprites.empty()
 
         for sprite_state in sprite_data.get("alien_sprites", []):
             rect = sprite_state["rect"]
+            image = sprite_state["image"]
+            size = sprite_state["size"]
+            sprite_type = sprite_state["type"]
 
-            sprite = Alien(self.game)
+            sprite = BossAlien(self.game) if sprite_type == "boss" else Alien(self.game)
+            sprite.size = size
             sprite.rect = rect
+            sprite.image = pygame.image.fromstring(image, size, "RGBA")
 
             alien_sprites.add(sprite)
 
+    def load_game_data(self, loaded_data):
+        """Loads the game data from a dictionary and applies it to the relevant game objects."""
         for key in DATA_KEYS:
             if key in ATTRIBUTE_MAPPING:
                 attributes = ATTRIBUTE_MAPPING[key]

@@ -52,6 +52,7 @@ GAME_CONTROLS = (
     "Toggle Fullscreen: F\n"
     "Pause: P\n"
     " - While Paused:\n"
+    " Save Game: S\n"
     " Restart: R\n"
     " Game Menu: ESC\n"
     " Main Menu: M\n"
@@ -317,16 +318,16 @@ GAME_SOUNDS = {
 }
 
 LEVEL_SOUNDS = {
-    range(1, 8): "level/battle_one.mp3",
-    range(9, 16): "level/battle_two.mp3",
-    range(17, 24): "level/battle_three.mp3",
+    range(1, 9): "level/battle_one.mp3",
+    range(9, 17): "level/battle_two.mp3",
+    range(17, 25): "level/battle_three.mp3",
     range(25, 999): "level/battle_four.mp3",
 }
 
 BOSS_RUSH_MUSIC = {
-    range(1, 5): "boss_rush/first_phase.mp3",
-    range(6, 9): "boss_rush/second_phase.mp3",
-    range(10, 16): "boss_rush/third_phase.mp3",
+    range(1, 6): "boss_rush/first_phase.mp3",
+    range(6, 10): "boss_rush/second_phase.mp3",
+    range(10, 17): "boss_rush/third_phase.mp3",
 }
 
 ENDLESS_SOUNDTRACK = {range(1, 3): "endless/endless.mp3"}

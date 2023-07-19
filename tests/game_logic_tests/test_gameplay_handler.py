@@ -255,6 +255,7 @@ class TestGameplayManager(unittest.TestCase):
 
     def test_reset_game_objects(self):
         """Test the reset_game_objects method."""
+        self.game.game_loaded = False
         self.game.aliens.empty = MagicMock()
 
         self.gameplay_handler.reset_game_objects()

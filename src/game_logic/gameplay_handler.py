@@ -148,12 +148,14 @@ class GameplayHandler:
             self.game.phoenix_bullets,
             self.game.alien_bullet,
             self.game.powers,
-            self.game.aliens,
             self.game.asteroids,
         ]
 
         for group in all_groups:
             group.empty()
+
+        if not self.game.game_loaded:
+            self.game.aliens.empty()
 
     def update_normal_boss_info(self):
         """Updates the points and hp of bosses in the normal game mode."""
