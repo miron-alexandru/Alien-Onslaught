@@ -444,10 +444,7 @@ class AlienOnslaught:
         self.gameplay_manager.reset_game_objects()
 
         # If a new game is started, not loaded
-        if not self.game_loaded:
-            self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
-            self.settings.dynamic_settings()
-            self.gameplay_manager.handle_alien_creation()
+        self.check_game_loaded()
 
         self.stats.game_active = True
         self.ui_options.high_score_saved = False
@@ -481,6 +478,17 @@ class AlienOnslaught:
 
         if self.singleplayer:
             self.phoenix_ship.state.alive = False
+
+    def check_game_loaded(self):
+        """Check the state of the game load and 
+        perform appropriate actions accordingly.
+        """
+        if self.game_loaded:
+            self.save_load_manager.check_alien_states()
+        else:
+            self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
+            self.settings.dynamic_settings()
+            self.gameplay_manager.handle_alien_creation()
 
     def reset_timed_variables(self):
         """Resets timer-related variables for managing game events."""

@@ -5,6 +5,7 @@ implements the functionality of saving and loading the game.
 
 import pickle
 import os
+import time
 
 import pygame
 
@@ -77,6 +78,16 @@ class SaveLoadSystem:
         for data_name, data_value in data_names.items():
             self.get_data(data_name, data_value)
 
+    def check_alien_states(self):
+        """Check the states of the aliens in the game and
+        perform corresponding power actions.
+        """
+        if any(sprite.frozen_state for sprite in self.game.aliens):
+            self.game.powers_manager.freeze_enemies()
+
+        if any(sprite.immune_state for sprite in self.game.aliens):
+            self.game.powers_manager.alien_upgrade()
+
     def save_data(self, name):
         """Saves the current game data to a file."""
         file_path = os.path.join(self.save_folder, f"{name}.{self.file_extension}")
@@ -87,7 +98,14 @@ class SaveLoadSystem:
                 {"rect": sprite.rect,
                 "size": sprite.image.get_size(),
                 "image": pygame.image.tostring(sprite.image, "RGBA"),
-                "type": "boss" if isinstance(sprite, BossAlien) else "alien",}
+                "is_baby": sprite.is_baby if not isinstance(sprite, BossAlien) else False, 
+                "type": "boss" if isinstance(sprite, BossAlien) else "alien",
+                "location": sprite.rect.x,
+                "hit_count": sprite.hit_count,
+                "last_bullet_time": sprite.last_bullet_time,
+                "immune_state": sprite.immune_state if isinstance(sprite, Alien) else None,
+                "frozen_state": sprite.frozen_state,
+            }
                 for sprite in alien_sprites
             ],
         }
@@ -119,17 +137,31 @@ class SaveLoadSystem:
         alien_sprites.empty()
 
         for sprite_state in sprite_data.get("alien_sprites", []):
-            rect = sprite_state["rect"]
-            image = sprite_state["image"]
             size = sprite_state["size"]
-            sprite_type = sprite_state["type"]
 
-            sprite = BossAlien(self.game) if sprite_type == "boss" else Alien(self.game)
+            sprite = self.create_alien_sprite(sprite_state["type"], sprite_state, self.game)
+
             sprite.size = size
-            sprite.rect = rect
-            sprite.image = pygame.image.fromstring(image, size, "RGBA")
+            sprite.rect = sprite_state["rect"]
+            sprite.image = pygame.image.fromstring(sprite_state["image"], size, "RGBA")
+            sprite.x_pos = sprite_state["location"]
+            sprite.frozen_state = sprite_state["frozen_state"]
+            sprite.immune_state = sprite_state["immune_state"]
+            sprite.last_bullet_time = sprite_state["last_bullet_time"]
 
             alien_sprites.add(sprite)
+
+    def create_alien_sprite(self, sprite_type, sprite_state, game):
+        """Create an alien sprite based on the given sprite type and state."""
+        if sprite_type == "boss":
+            sprite = BossAlien(game)
+        elif sprite_type == "alien" and sprite_state["is_baby"]:
+            sprite = Alien(game, baby_location=sprite_state["location"], is_baby=True)
+            sprite.animation.change_scale(0.5)
+        else:
+            sprite = Alien(game)
+
+        return sprite
 
     def load_game_data(self, loaded_data):
         """Loads the game data from a dictionary and applies it to the relevant game objects."""
