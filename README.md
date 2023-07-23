@@ -42,6 +42,7 @@
 * Toggle Fullscreen: F
 * Pause: P
 * - While Paused:
+*  Save Game: S
 *  Restart: R
 *  Return to Game Menu: ESC
 *  Return to Main Menu: M
@@ -63,6 +64,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
+* Implemented the Save/Load feature.
 * Sound effect when changing the ship.
 * New feature: Now the players are able to choose their ship type. Each player has three different ship types.
 * Removed the ability to change the ship by pressing a button.

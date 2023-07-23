@@ -35,6 +35,8 @@ class WeaponsManager:
                 "current": "firebird",
             },
         }
+        self.thunderbird_weapon = self.weapons["thunderbird"]["current"]
+
         self.singleplayer_projectiles = [
             self.game.thunderbird_bullets,
             self.game.thunderbird_missiles,
@@ -58,6 +60,8 @@ class WeaponsManager:
             else:
                 weapon["weapon"] = load_single_image(WEAPONS[weapon_name])
                 weapon["current"] = weapon_name
+
+            self.thunderbird_weapon = self.weapons["thunderbird"]["current"]
 
     def reset_weapons(self):
         """Reset the weapon to its original value for each player."""

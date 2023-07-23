@@ -85,16 +85,16 @@ class ShipsManager:
         resets the player weapon and plays the warp sound effect."""
         for ship in self.game.ships:
             ship.reset_ship_size()
-            ship.reset_ship_state()
             ship.center_ship()
             ship.start_warp()
             ship.set_cosmic_conflict_pos()
 
             if not self.game.game_loaded:
+                ship.reset_ship_state()
                 ship.update_missiles_number()
                 self.game.score_board.render_missiles_num()
 
-        self.game.weapons_manager.reset_weapons()
+                self.game.weapons_manager.reset_weapons()
 
         play_sound(self.game.sound_manager.game_sounds, "warp")
 

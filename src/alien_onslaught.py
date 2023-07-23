@@ -451,8 +451,8 @@ class AlienOnslaught:
         self.ui_options.game_over_sound_played = False
 
         # Play the warp animation and center the ships.
-        self.ships_manager.reset_ships()
         self.player_input.reset_ship_flags()
+        self.ships_manager.reset_ships()
 
         # Handle Aliens
         self.gameplay_manager.handle_boss_stats()
@@ -484,7 +484,8 @@ class AlienOnslaught:
         perform appropriate actions accordingly.
         """
         if self.game_loaded:
-            self.save_load_manager.check_alien_states()
+            self.save_load_manager.update_alien_states()
+            self.save_load_manager.update_player_ship_states()
         else:
             self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
             self.settings.dynamic_settings()
