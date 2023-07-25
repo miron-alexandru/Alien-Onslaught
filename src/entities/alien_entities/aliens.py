@@ -214,7 +214,7 @@ class BossAlien(Sprite):
     def upgrade(self):
         """Increase boss HP."""
         self.settings.boss_hp += 15
-        print('asd')
+        print("asd")
 
     def draw(self):
         """Draw the alien on screen."""

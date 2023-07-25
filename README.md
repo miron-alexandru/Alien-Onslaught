@@ -64,6 +64,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
+* Improved the Save/Load feature: Now the player weapon is also saved and then loaded.
 * Implemented the Save/Load feature.
 * Sound effect when changing the ship.
 * New feature: Now the players are able to choose their ship type. Each player has three different ship types.

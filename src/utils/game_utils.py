@@ -203,6 +203,20 @@ def play_sound(sounds_list, sound_name):
 # MISC FUNCTIONS:
 
 
+def set_attribute(obj, attribute_chain, value):
+    """Set the attribute in the nested object."""
+    for attribute in attribute_chain[:-1]:
+        if isinstance(obj, dict):
+            obj = obj[attribute]
+        else:
+            obj = getattr(obj, attribute)
+
+    if isinstance(obj, dict):
+        obj[attribute_chain[-1]] = value
+    else:
+        setattr(obj, attribute_chain[-1], value)
+
+
 def get_colliding_sprites(ship, bullets_or_missiles):
     """Returns the sprites that collide with the given ship."""
     return pygame.sprite.spritecollide(ship, bullets_or_missiles, False)

@@ -92,9 +92,9 @@ class ShipsManager:
             if not self.game.game_loaded:
                 ship.reset_ship_state()
                 ship.update_missiles_number()
-                self.game.score_board.render_missiles_num()
 
                 self.game.weapons_manager.reset_weapons()
+                self.game.score_board.render_missiles_num()
 
         play_sound(self.game.sound_manager.game_sounds, "warp")
 

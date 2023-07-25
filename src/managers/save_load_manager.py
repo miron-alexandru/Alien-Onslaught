@@ -11,6 +11,7 @@ import pygame
 
 from src.entities.alien_entities.aliens import Alien, BossAlien
 from src.utils.constants import DATA_KEYS, ATTRIBUTE_MAPPING
+from src.utils.game_utils import set_attribute
 
 
 class SaveLoadSystem:
@@ -51,6 +52,9 @@ class SaveLoadSystem:
             "thunderbird_bullet_count": settings.thunderbird_bullet_count,
             "thunderbird_remaining_bullets": thunderbird_ship.remaining_bullets,
             "thunderbird_missiles_num": thunderbird_ship.missiles_num,
+            "thunderbird_weapon_current": game.weapons_manager.weapons["thunderbird"][
+                "current"
+            ],
             "thunderbird_shielded": thunderbird_ship.state.shielded,
             "thunderbird_disarmed": thunderbird_ship.state.disarmed,
             "thunderbird_reversed": thunderbird_ship.state.reverse,
@@ -67,6 +71,9 @@ class SaveLoadSystem:
             "phoenix_bullet_count": settings.phoenix_bullet_count,
             "phoenix_remaining_bullets": phoenix_ship.remaining_bullets,
             "phoenix_missiles_num": phoenix_ship.missiles_num,
+            "phoenix_weapon_current": game.weapons_manager.weapons["phoenix"][
+                "current"
+            ],
             "phoenix_shielded": phoenix_ship.state.shielded,
             "phoenix_disarmed": phoenix_ship.state.disarmed,
             "phoenix_reversed": phoenix_ship.state.reverse,
@@ -127,6 +134,19 @@ class SaveLoadSystem:
                 self.game.powers_manager.decrease_bullet_size(ship_name)
             if ship_state.immune:
                 self.game.powers_manager.invincibility(ship_name)
+
+    def update_player_weapon(self):
+        """Updates the player's current weapon based on the loaded data."""
+        self.game.weapons_manager.set_weapon(
+            "thunderbird",
+            self.game.weapons_manager.weapons["thunderbird"]["current"],
+            loaded=True,
+        )
+        self.game.weapons_manager.set_weapon(
+            "phoenix",
+            self.game.weapons_manager.weapons["phoenix"]["current"],
+            loaded=True,
+        )
 
     def prepare_sprite_data_for_serialization(self):
         """Prepare the sprite data for serialization."""
@@ -216,10 +236,7 @@ class SaveLoadSystem:
         for key in DATA_KEYS:
             if key in ATTRIBUTE_MAPPING:
                 attributes = ATTRIBUTE_MAPPING[key]
-                obj = self.game
-                for attribute in attributes[:-1]:
-                    obj = getattr(obj, attribute)
-                setattr(obj, attributes[-1], loaded_data[key])
+                set_attribute(self.game, attributes, loaded_data[key])
             elif hasattr(self.game.stats, key) or hasattr(self.game.settings, key):
                 setattr(
                     self.game.stats

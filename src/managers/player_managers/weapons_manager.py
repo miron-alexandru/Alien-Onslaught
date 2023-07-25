@@ -35,7 +35,6 @@ class WeaponsManager:
                 "current": "firebird",
             },
         }
-        self.thunderbird_weapon = self.weapons["thunderbird"]["current"]
 
         self.singleplayer_projectiles = [
             self.game.thunderbird_bullets,
@@ -52,16 +51,18 @@ class WeaponsManager:
             self.game.phoenix_laser,
         ]
 
-    def set_weapon(self, player, weapon_name):
+    def set_weapon(self, player, weapon_name, loaded=False):
         """Change the player weapon."""
         if weapon := self.weapons.get(player):
-            if weapon_name == weapon["current"] and not self.game_modes.last_bullet:
+            if (
+                weapon_name == weapon["current"]
+                and not self.game_modes.last_bullet
+                and not loaded
+            ):
                 self.game.powers_manager.increase_bullet_count(player)
             else:
                 weapon["weapon"] = load_single_image(WEAPONS[weapon_name])
                 weapon["current"] = weapon_name
-
-            self.thunderbird_weapon = self.weapons["thunderbird"]["current"]
 
     def reset_weapons(self):
         """Reset the weapon to its original value for each player."""

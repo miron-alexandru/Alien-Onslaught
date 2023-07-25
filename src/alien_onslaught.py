@@ -41,7 +41,7 @@ from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
 from src.managers.player_managers.ship_selection_manager import ShipSelection
-from src.game_logic.save_load_manager import SaveLoadSystem
+from src.managers.save_load_manager import SaveLoadSystem
 
 
 class AlienOnslaught:
@@ -480,12 +480,13 @@ class AlienOnslaught:
             self.phoenix_ship.state.alive = False
 
     def check_game_loaded(self):
-        """Check the state of the game load and 
+        """Check the state of the game load and
         perform appropriate actions accordingly.
         """
         if self.game_loaded:
             self.save_load_manager.update_alien_states()
             self.save_load_manager.update_player_ship_states()
+            self.save_load_manager.update_player_weapon()
         else:
             self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
             self.settings.dynamic_settings()
