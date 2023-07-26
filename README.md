@@ -64,13 +64,13 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
-* Improved the Save/Load feature: Now the player weapon is also saved and then loaded.
+* The Save/Load feature has been improved to include the player's current weapon.
 * Implemented the Save/Load feature.
-* Sound effect when changing the ship.
-* New feature: Now the players are able to choose their ship type. Each player has three different ship types.
+* Sound effects have been added when changing the ship.
+* A new ship selection feature has been introduced, giving players the ability to choose from three different ship types. Each player can now select their preferred ship type before starting the game
 * Removed the ability to change the ship by pressing a button.
-* New feature: Now a message is displayed saying what power was picked up.
-* Completed unit testing for the entire project.
+* A new feature has been added to display a message whenever a player picks up a power. Now, when a power is collected during the game, a notification will appear, indicating the type of power acquired. 
+* Comprehensive unit testing has been performed for the entire project.
 
 ### Version 3.1:
 * Tests for all managers

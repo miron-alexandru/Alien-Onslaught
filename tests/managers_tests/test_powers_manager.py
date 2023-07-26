@@ -7,8 +7,6 @@ import time
 import unittest
 from unittest.mock import MagicMock, patch, call
 
-import pygame
-
 from src.managers.powers_manager import PowerEffectsManager
 
 

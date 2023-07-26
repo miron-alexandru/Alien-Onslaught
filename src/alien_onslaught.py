@@ -480,7 +480,7 @@ class AlienOnslaught:
             self.phoenix_ship.state.alive = False
 
     def check_game_loaded(self):
-        """Check the state of the game load and
+        """Check the state of the game load and 
         perform appropriate actions accordingly.
         """
         if self.game_loaded:

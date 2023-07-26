@@ -54,11 +54,7 @@ class WeaponsManager:
     def set_weapon(self, player, weapon_name, loaded=False):
         """Change the player weapon."""
         if weapon := self.weapons.get(player):
-            if (
-                weapon_name == weapon["current"]
-                and not self.game_modes.last_bullet
-                and not loaded
-            ):
+            if weapon_name == weapon["current"] and not self.game_modes.last_bullet and not loaded:
                 self.game.powers_manager.increase_bullet_count(player)
             else:
                 weapon["weapon"] = load_single_image(WEAPONS[weapon_name])

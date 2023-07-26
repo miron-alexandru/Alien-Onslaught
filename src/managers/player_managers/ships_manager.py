@@ -92,7 +92,7 @@ class ShipsManager:
             if not self.game.game_loaded:
                 ship.reset_ship_state()
                 ship.update_missiles_number()
-
+    
                 self.game.weapons_manager.reset_weapons()
                 self.game.score_board.render_missiles_num()
 

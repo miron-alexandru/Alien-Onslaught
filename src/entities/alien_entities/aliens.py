@@ -9,7 +9,6 @@ Classes:
 import time
 import random
 
-import pygame
 
 from pygame.sprite import Sprite
 from src.animations.other_animations import DestroyAnim, Immune
@@ -214,7 +213,6 @@ class BossAlien(Sprite):
     def upgrade(self):
         """Increase boss HP."""
         self.settings.boss_hp += 15
-        print("asd")
 
     def draw(self):
         """Draw the alien on screen."""
