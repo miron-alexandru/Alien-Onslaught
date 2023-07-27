@@ -156,6 +156,29 @@ class TestPlayerInput(unittest.TestCase):
                 self.game.sound_manager.game_sounds, "keypress"
             )
 
+    @patch("src.game_logic.input_handling.play_sound")
+    def test_check_keydown_events_save_data(self, mock_play_sound):
+        """Test the M keypress event."""
+        event_mock = MagicMock()
+        event_mock.key = pygame.K_s
+        self.game.ui_options.paused = True
+
+        self.player_input.check_keydown_events(
+                event_mock,
+                MagicMock(),
+                MagicMock(),
+                MagicMock(),
+                MagicMock(),
+                MagicMock(),
+            )
+        mock_play_sound.assert_called_once_with(
+                self.game.sound_manager.game_sounds, "keypress"
+            )
+
+        self.game.save_load_manager.get_current_game_stats.assert_called_once()
+        self.game.save_load_manager.save_data.assert_called_once_with("savefile")
+        self.assertFalse(self.game.ui_options.paused)
+
     def test_check_keydown_events_player_controls(self):
         """Test if the appropriate functions for the player
         controls are called."""

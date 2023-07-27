@@ -29,6 +29,7 @@ from src.managers.ui_managers.screen_manager import ScreenManager, LoadingScreen
 from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
+from src.managers.save_load_manager import SaveLoadSystem
 
 from src.entities.player_entities.player_ships import Thunderbird, Phoenix
 
@@ -38,6 +39,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
+        pygame.init()
         with patch("src.alien_onslaught.pygame.display.set_mode") as mock_display:
             mock_display.return_value = pygame.Surface((1280, 700))
             self.game = AlienOnslaught(singleplayer=False)
@@ -57,6 +59,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.game.alien_bullets_manager = MagicMock()
         self.game.aliens_manager = MagicMock()
         self.game.ship_selection = MagicMock()
+        self.game.save_load_manager = MagicMock()
 
     def tearDown(self):
         pygame.quit()
@@ -82,6 +85,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.assertEqual(game.ui_options, game.settings.ui_options)
         self.assertEqual(game.ships, [game.thunderbird_ship, game.phoenix_ship])
         self.assertEqual(game.pause_time, 0)
+        self.assertEqual(game.game_loaded, False)
         self.assertEqual(pygame.display.get_caption()[0], "Alien Onslaught")
         mock_set_icon.assert_called_once_with(game.settings.game_icon)
 
@@ -182,6 +186,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.assertIsInstance(self.game.aliens_manager, AliensManager)
         self.assertIsInstance(self.game.gameplay_manager, GameplayHandler)
         self.assertIsInstance(self.game.game_over_manager, EndGameManager)
+        self.assertIsInstance(self.game.save_load_manager, SaveLoadSystem)
 
         self.assertEqual(self.game.screen_manager.singleplayer, self.game.singleplayer)
         self.assertEqual(self.game.aliens_manager.aliens, self.game.aliens)
@@ -702,7 +707,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
 
     def test_handle_background_change_fourth_bg(self):
         """Test handling of background change for fourth_bg image."""
-        self.game.stats.level = 25
+        self.game.stats.level = 26
 
         self.game._handle_background_change()
 
@@ -792,27 +797,27 @@ class AlienOnslaughtTestCase(unittest.TestCase):
     def test_reset_game(self, mock_play_sound):
         """Test the reset_game method."""
         self.game.reset_timed_variables = MagicMock()
+        self.game.check_game_loaded = MagicMock()
         self.game.settings = MagicMock()
         self.game.singleplayer = False
+        self.game.game_loaded = False
 
         self.game._reset_game()
 
-        self.game.stats.reset_stats.assert_called_once_with(
-            self.game.phoenix_ship, self.game.thunderbird_ship
-        )
-        self.game.settings.dynamic_settings.assert_called_once()
+        self.game.gameplay_manager.reset_game_objects.assert_called_once()
+        self.game.check_game_loaded.assert_called_once()
 
         self.assertTrue(self.game.stats.game_active)
         self.assertFalse(self.game.ui_options.high_score_saved)
         self.assertFalse(self.game.ui_options.game_over_sound_played)
 
-        self.game.gameplay_manager.reset_game_objects.assert_called_once()
         self.game.ships_manager.reset_ships.assert_called_once()
         self.game.player_input.reset_ship_flags.assert_called_once()
 
-        self.game.gameplay_manager.handle_alien_creation.assert_called_once()
-        self.game.gameplay_manager.prepare_last_bullet_bullets.assert_called_once()
         self.game.gameplay_manager.handle_boss_stats.assert_called_once()
+
+        self.game.gameplay_manager.prepare_last_bullet_bullets.assert_called_once()
+        self.game.gameplay_manager.set_last_bullet_bullets.assert_called_once()
 
         self.game.reset_timed_variables.assert_called_once()
 
@@ -826,13 +831,43 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.game_sounds, "warp"
         )
-        self.assertTrue(self.game.phoenix_ship.state.alive)
+        self.assertFalse(self.game.game_loaded)
 
         self.game.singleplayer = True
 
         self.game._reset_game()
 
         self.assertFalse(self.game.phoenix_ship.state.alive)
+
+    def test_check_game_loaded(self):
+        """Test the check_game_loaded method when the game is loaded."""
+        self.game.settings = MagicMock()
+        self.game.game_loaded = True
+
+        self.game.check_game_loaded()
+
+        self.game.save_load_manager.update_alien_states.assert_called_once()
+        self.game.save_load_manager.update_player_ship_states.assert_called_once()
+        self.game.save_load_manager.update_player_weapon.assert_called_once()
+
+        self.game.stats.reset_stats.assert_not_called()
+        self.game.settings.dynamic_settings.assert_not_called()
+        self.game.gameplay_manager.handle_alien_creation.assert_not_called()
+
+    def test_check_game_loaded_not_loaded(self):
+        """Test the check_game_loaded method when the game is not loaded."""
+        self.game.settings = MagicMock()
+        self.game.game_loaded = False
+
+        self.game.check_game_loaded()
+
+        self.game.stats.reset_stats.assert_called_once()
+        self.game.settings.dynamic_settings.assert_called_once()
+        self.game.gameplay_manager.handle_alien_creation.assert_called_once()
+
+        self.game.save_load_manager.update_alien_states.assert_not_called()
+        self.game.save_load_manager.update_player_ship_states.assert_not_called()
+        self.game.save_load_manager.update_player_weapon.assert_not_called()
 
     @patch("src.alien_onslaught.pygame.time.get_ticks")
     def test_reset_timed_variables(self, mock_get_ticks):
