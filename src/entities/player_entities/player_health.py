@@ -1,6 +1,6 @@
 """
-The 'player_health' module contains the Heart class, which manages the health
-of the player(s) in the game by displaying a heart image on the screen.
+The 'player_health' module contains the Heart class, which is used
+to display a heart image on the screen that represents the player HP.
 """
 
 from pygame.sprite import Sprite

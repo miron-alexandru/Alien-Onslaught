@@ -1,5 +1,5 @@
 """
-The 'button module provides a class `Button` that creates a button in the game.
+The 'button module provides a class `Button` that creates a button instance in the game.
 """
 
 import pygame

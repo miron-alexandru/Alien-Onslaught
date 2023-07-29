@@ -1,5 +1,5 @@
 """
-This module contains the Laser class that represents the laser weapon
+The "laser" module contains the Laser class that represents the laser weapon
 in the game.
 """
 

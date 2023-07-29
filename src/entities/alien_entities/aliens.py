@@ -1,9 +1,10 @@
 """
-The 'aliens' module contains classes for creating aliens and bosses in the game.
+The 'aliens' module contains classes for creating alien and alien boss
+instances in the game.
 
 Classes:
     - 'Alien': A class that represents aliens in the game.
-    - 'BossAlien': A class that represents alien bosses in the game.
+    - 'BossAlien': A class that represents an alien boss in the game.
 """
 
 import time
@@ -11,7 +12,7 @@ import random
 
 
 from pygame.sprite import Sprite
-from src.animations.other_animations import DestroyAnim, Immune
+from src.animations.entities_animations import DestroyAnim, Immune
 from src.managers.alien_managers.aliens_behaviors import AlienMovement, AlienAnimation
 from src.utils.game_utils import load_boss_images
 

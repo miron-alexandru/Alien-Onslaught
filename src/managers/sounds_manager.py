@@ -1,4 +1,5 @@
-"""The 'sounds_manager' module contains the `SoundManager` class which manages
+"""
+The 'sounds_manager' module contains the `SoundManager` class which manages
 different sounds in the game. Additionally, it handles the loading of sound
 files for usage throughout the game.
 """

@@ -1,12 +1,12 @@
 """
-This module contains the Missile class which is used to create
+The "missile" module contains the Missile class which is used to create
 missile instances in the game.
 """
 
 import pygame
 from pygame.sprite import Sprite
 
-from src.animations.other_animations import MissileEx
+from src.animations.entities_animations import MissileEx
 from src.utils.animation_constants import missile_frames
 
 

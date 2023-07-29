@@ -1,9 +1,10 @@
 """
-The ship_selection module contains the ShipSelection that implements the
+The ship_selection module contains the ShipSelection class that implements the
 ability to change the ship in the game.
 """
 
 import pygame
+
 from src.utils.constants import THUNDER_SHIP_DESCRIPTIONS, PHOENIX_SHIP_DESCRIPTIONS
 from src.utils.game_utils import play_sound, display_description
 

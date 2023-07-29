@@ -9,7 +9,7 @@ from unittest.mock import Mock
 
 import pygame
 
-from src.animations.other_animations import MissileEx
+from src.animations.entities_animations import MissileEx
 from src.utils.animation_constants import missile_ex_frames
 
 

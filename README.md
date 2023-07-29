@@ -64,6 +64,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
+* Code refactored and documentation improved.
 * The Save/Load feature has been improved to include the player's current weapon.
 * Implemented the Save/Load feature.
 * Sound effects have been added when changing the ship.

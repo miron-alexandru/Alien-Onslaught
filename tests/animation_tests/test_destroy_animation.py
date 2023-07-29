@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 
 import pygame
 
-from src.animations.other_animations import DestroyAnim
+from src.animations.entities_animations import DestroyAnim
 from src.utils.animation_constants import destroy_frames
 
 

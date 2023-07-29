@@ -40,47 +40,44 @@ class SaveLoadSystem:
             "aliens": game.aliens,
             "level": stats.level,
             "high_score": stats.high_score,
-
             # Thunderbird Ship
             "thunder_ship_name": thunderbird_ship.ship_name,
             "thunderbird_score": stats.thunderbird_score,
             "thunderbird_aliens_killed": thunderbird_ship.aliens_killed,
             "thunderbird_hp": stats.thunderbird_hp,
-
             "thunderbird_ship_speed": settings.thunderbird_ship_speed,
             "thunderbird_bullet_speed": settings.thunderbird_bullet_speed,
             "thunderbird_bullets_allowed": settings.thunderbird_bullets_allowed,
             "thunderbird_bullet_count": settings.thunderbird_bullet_count,
             "thunderbird_remaining_bullets": thunderbird_ship.remaining_bullets,
             "thunderbird_missiles_num": thunderbird_ship.missiles_num,
-            "thunderbird_weapon_current": game.weapons_manager.weapons["thunderbird"]["current"],
-
+            "thunderbird_weapon_current": game.weapons_manager.weapons["thunderbird"][
+                "current"
+            ],
             "thunderbird_shielded": thunderbird_ship.state.shielded,
             "thunderbird_disarmed": thunderbird_ship.state.disarmed,
             "thunderbird_reversed": thunderbird_ship.state.reverse,
             "thunderbird_scaled_weapon": thunderbird_ship.state.scaled_weapon,
             "thunderbird_immune": thunderbird_ship.state.immune,
-
             # Phoenix Ship
             "phoenix_ship_name": phoenix_ship.ship_name,
             "phoenix_score": stats.phoenix_score,
             "phoenix_aliens_killed": phoenix_ship.aliens_killed,
             "phoenix_hp": stats.phoenix_hp,
-
             "phoenix_ship_speed": settings.phoenix_ship_speed,
             "phoenix_bullet_speed": settings.phoenix_bullet_speed,
             "phoenix_bullets_allowed": settings.phoenix_bullets_allowed,
             "phoenix_bullet_count": settings.phoenix_bullet_count,
             "phoenix_remaining_bullets": phoenix_ship.remaining_bullets,
             "phoenix_missiles_num": phoenix_ship.missiles_num,
-            "phoenix_weapon_current": game.weapons_manager.weapons["phoenix"]["current"],
-
+            "phoenix_weapon_current": game.weapons_manager.weapons["phoenix"][
+                "current"
+            ],
             "phoenix_shielded": phoenix_ship.state.shielded,
             "phoenix_disarmed": phoenix_ship.state.disarmed,
             "phoenix_reversed": phoenix_ship.state.reverse,
             "phoenix_scaled_weapon": phoenix_ship.state.scaled_weapon,
             "phoenix_immune": phoenix_ship.state.immune,
-
             # Game Modes
             "game_mode": game_modes.game_mode,
             "endless_onslaught": game_modes.endless_onslaught,
@@ -90,7 +87,6 @@ class SaveLoadSystem:
             "last_bullet": game_modes.last_bullet,
             "cosmic_conflict": game_modes.cosmic_conflict,
             "one_life_reign": game_modes.one_life_reign,
-
             # Game Settings
             "alien_speed": settings.alien_speed,
             "alien_bullet_speed": settings.alien_bullet_speed,
@@ -105,7 +101,6 @@ class SaveLoadSystem:
             "asteroid_speed": settings.asteroid_speed,
             "asteroid_freq": settings.asteroid_freq,
             "speedup_scale": settings.speedup_scale,
-
         }
 
         for data_name, data_value in data_names.items():
@@ -141,8 +136,16 @@ class SaveLoadSystem:
 
     def update_player_weapon(self):
         """Updates the player's current weapon based on the loaded data."""
-        self.game.weapons_manager.set_weapon("thunderbird", self.game.weapons_manager.weapons["thunderbird"]["current"], loaded=True)
-        self.game.weapons_manager.set_weapon("phoenix", self.game.weapons_manager.weapons["phoenix"]["current"], loaded=True)
+        self.game.weapons_manager.set_weapon(
+            "thunderbird",
+            self.game.weapons_manager.weapons["thunderbird"]["current"],
+            loaded=True,
+        )
+        self.game.weapons_manager.set_weapon(
+            "phoenix",
+            self.game.weapons_manager.weapons["phoenix"]["current"],
+            loaded=True,
+        )
 
     def prepare_sprite_data_for_serialization(self):
         """Prepare the sprite data for serialization."""
@@ -154,12 +157,16 @@ class SaveLoadSystem:
                     "rect": sprite.rect,
                     "size": sprite.image.get_size(),
                     "image": pygame.image.tostring(sprite.image, "RGBA"),
-                    "is_baby": sprite.is_baby if not isinstance(sprite, BossAlien) else False, 
+                    "is_baby": False
+                    if isinstance(sprite, BossAlien)
+                    else sprite.is_baby,
                     "type": "boss" if isinstance(sprite, BossAlien) else "alien",
                     "location": sprite.rect.x,
                     "hit_count": sprite.hit_count,
                     "last_bullet_time": sprite.last_bullet_time,
-                    "immune_state": sprite.immune_state if isinstance(sprite, Alien) else None,
+                    "immune_state": sprite.immune_state
+                    if isinstance(sprite, Alien)
+                    else None,
                     "frozen_state": sprite.frozen_state,
                 }
                 for sprite in alien_sprites
@@ -173,10 +180,7 @@ class SaveLoadSystem:
 
         game_data = {
             "sprite_data": sprite_data,
-            **{
-                key: self.data[key]
-                for key in DATA_KEYS
-            },
+            **{key: self.data[key] for key in DATA_KEYS},
         }
 
         with open(file_path, "wb") as file:
@@ -200,7 +204,9 @@ class SaveLoadSystem:
         for sprite_state in sprite_data.get("alien_sprites", []):
             size = sprite_state["size"]
 
-            sprite = self.create_alien_sprite(sprite_state["type"], sprite_state, self.game)
+            sprite = self.create_alien_sprite(
+                sprite_state["type"], sprite_state, self.game
+            )
 
             sprite.size = size
             sprite.rect = sprite_state["rect"]
@@ -232,8 +238,9 @@ class SaveLoadSystem:
                 set_attribute(self.game, attributes, loaded_data[key])
             elif hasattr(self.game.stats, key) or hasattr(self.game.settings, key):
                 setattr(
-                    self.game.stats if hasattr(self.game.stats, key) else self.game.settings,
+                    self.game.stats
+                    if hasattr(self.game.stats, key)
+                    else self.game.settings,
                     key,
                     loaded_data[key],
                 )
-

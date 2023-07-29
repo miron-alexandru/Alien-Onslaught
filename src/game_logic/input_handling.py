@@ -1,5 +1,5 @@
 """
-This module defines the PlayerInput class, which is responsible for
+The "input_handling" module defines the PlayerInput class, which is responsible for
 handling player input events in the game.
 """
 

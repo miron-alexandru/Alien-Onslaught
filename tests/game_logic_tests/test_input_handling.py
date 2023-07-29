@@ -164,16 +164,16 @@ class TestPlayerInput(unittest.TestCase):
         self.game.ui_options.paused = True
 
         self.player_input.check_keydown_events(
-                event_mock,
-                MagicMock(),
-                MagicMock(),
-                MagicMock(),
-                MagicMock(),
-                MagicMock(),
-            )
+            event_mock,
+            MagicMock(),
+            MagicMock(),
+            MagicMock(),
+            MagicMock(),
+            MagicMock(),
+        )
         mock_play_sound.assert_called_once_with(
-                self.game.sound_manager.game_sounds, "keypress"
-            )
+            self.game.sound_manager.game_sounds, "keypress"
+        )
 
         self.game.save_load_manager.get_current_game_stats.assert_called_once()
         self.game.save_load_manager.save_data.assert_called_once_with("savefile")

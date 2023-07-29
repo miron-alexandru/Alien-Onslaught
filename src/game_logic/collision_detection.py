@@ -1,12 +1,14 @@
 """
-The 'game_collisions' module contains the CollisionManager class
+The 'collision_detection' module contains the CollisionManager class
 that handles the collisions in the game.
 """
 
 import time
 import pygame
+
 from src.entities.projectiles.missile import Missile
 from src.entities.alien_entities.aliens import BossAlien
+
 from src.utils.constants import ALIENS_HP_MAP
 from src.utils.game_utils import play_sound, get_colliding_sprites
 

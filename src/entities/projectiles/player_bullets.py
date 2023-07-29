@@ -1,5 +1,5 @@
 """
-This module contains the Thunderbolt and Firebird classes which
+The "player_bullets" module contains the Thunderbolt and Firebird classes which
 represent the bullets for the Thunderbird and Phoenix ship respectively.
 """
 

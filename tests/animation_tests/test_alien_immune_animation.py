@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 
 import pygame
 
-from src.animations.other_animations import Immune
+from src.animations.entities_animations import Immune
 from src.utils.animation_constants import alien_immune_frames
 
 

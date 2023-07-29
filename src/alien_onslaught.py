@@ -480,7 +480,7 @@ class AlienOnslaught:
             self.phoenix_ship.state.alive = False
 
     def check_game_loaded(self):
-        """Check the state of the game load and 
+        """Check the state of the game load and
         perform appropriate actions accordingly.
         """
         if self.game_loaded:
@@ -527,25 +527,28 @@ class AlienOnslaught:
                 self.screen_manager.display_pause()
 
         else:
-            # Draw buttons and cursor if game is not active
-            self.buttons_manager.draw_buttons()
-
-            if self.ui_options.show_difficulty:
-                self.buttons_manager.draw_difficulty_buttons()
-
-            if self.ui_options.show_high_scores:
-                self.screen_manager.display_high_scores_on_screen()
-                self.buttons_manager.delete_scores.draw_button()
-
-            if self.ui_options.show_game_modes:
-                self.buttons_manager.draw_game_mode_buttons()
-
-            if self.ui_options.ship_selection:
-                self.ship_selection.draw()
-
-            self.screen_manager.draw_cursor()
+            self._update_game_screen_components()
 
         pygame.display.flip()
+
+    def _update_game_screen_components(self):
+        """Update and draw various components on the game screen."""
+        self.buttons_manager.draw_buttons()
+
+        if self.ui_options.show_difficulty:
+            self.buttons_manager.draw_difficulty_buttons()
+
+        if self.ui_options.show_high_scores:
+            self.screen_manager.display_high_scores_on_screen()
+            self.buttons_manager.delete_scores.draw_button()
+
+        if self.ui_options.show_game_modes:
+            self.buttons_manager.draw_game_mode_buttons()
+
+        if self.ui_options.ship_selection:
+            self.ship_selection.draw()
+
+        self.screen_manager.draw_cursor()
 
 
 if __name__ == "__main__":
