@@ -176,7 +176,9 @@ class TestPlayerInput(unittest.TestCase):
         )
 
         self.game.save_load_manager.get_current_game_stats.assert_called_once()
-        self.game.save_load_manager.save_data.assert_called_once_with("savefile")
+        self.game.save_load_manager.handle_save_load_menu.assert_called_once_with(
+            save=True
+        )
         self.assertFalse(self.game.ui_options.paused)
 
     def test_check_keydown_events_player_controls(self):

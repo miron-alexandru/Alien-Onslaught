@@ -362,6 +362,11 @@ class GameButtonsManagerTest(unittest.TestCase):
         self.manager.handle_game_modes_button()
         self.assertFalse(self.game.ui_options.show_game_modes)
 
+    def test_handle_load_game_button(self):
+        self.manager.handle_load_game_button()
+
+        self.game.save_load_manager.handle_save_load_menu.assert_called_once()
+
     def test_set_game_mode_settings(self):
         """Test the set_game_mode_settings method."""
         # Set up initial state

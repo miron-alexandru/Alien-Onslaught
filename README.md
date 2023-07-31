@@ -64,6 +64,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
+* Enhanced the game's Save/Load functionality to offer players the convenience of multiple save slots. When you choose to save or load the game, a user-friendly menu will now be displayed, presenting three available save slots.
 * Code refactored and documentation improved.
 * The Save/Load feature has been improved to include the player's current weapon.
 * Implemented the Save/Load feature.
@@ -240,8 +241,8 @@ This is a list of assets used in the project that were not created by me, along 
 * Victory and Menu music — by [yd](https://opengameart.org/users/yd)
 
 ### Sound Effects (SFx):
-* UI Sound effects (click sound, quit sound) — by [Circlerun](https://opengameart.org/users/circlerun)
-* Explosion , Laser ready, Ship change — by [Michael Kurinnoy](https://opengameart.org/content/space-battle-game-sounds-astromenace)
+* UI Sound effects: Click sound, Quit sound, Empty save sound, Load game sound and other — by [Circlerun](https://opengameart.org/users/circlerun)
+* Explosion , Laser ready, Ship change, — by [Michael Kurinnoy](https://opengameart.org/content/space-battle-game-sounds-astromenace)
 * Power-up, penalty, health — by [phoenix1291](https://opengameart.org/users/phoenix1291)
 * Laser sound effect — by [celestialghost8] (https://opengameart.org/users/celestialghost8)
 * Laser not ready — by [ViRiX](https://soundcloud.com/virix)

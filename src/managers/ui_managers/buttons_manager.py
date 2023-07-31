@@ -249,8 +249,7 @@ class GameButtonsManager:
         self.ui_options.show_game_modes = not self.ui_options.show_game_modes
 
     def handle_load_game_button(self):
-        self.game.save_load_manager.load_data("savefile")
-        self.game.game_loaded = True
+        self.game.save_load_manager.handle_save_load_menu()
 
     def _set_game_mode_settings(self, game_mode_setting):
         """Helper function to set the game mode settings based on the current mode."""

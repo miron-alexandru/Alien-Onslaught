@@ -315,6 +315,8 @@ GAME_SOUNDS = {
     "laser_not_ready": "gameplay/laser_not_ready.wav",
     "freeze": "gameplay/freeze.wav",
     "select_ship": "gameplay/select_ship.wav",
+    "empty_save": "gameplay/empty_save.wav",
+    "load_game": "gameplay/load_game.wav",
 }
 
 LEVEL_SOUNDS = {

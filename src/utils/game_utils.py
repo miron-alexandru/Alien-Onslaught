@@ -382,6 +382,21 @@ def display_controls(controls_surface, surface):
     )
 
 
+def render_simple_text(text, font, color, x, y):
+    """Render a simple text."""
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.center = (x, y)
+    return text_surface, text_rect
+
+def display_simple_message(screen, text, font, color, delay_time):
+    """Display a simple message on screen."""
+    message_surface, message_rect = render_simple_text(text, font, color, screen.get_width() // 2, 200)
+    screen.blit(message_surface, message_rect)
+    pygame.display.flip()
+    pygame.time.delay(delay_time)
+
+
 # HIGH SCORE RELATED FUNCTIONS:
 
 
