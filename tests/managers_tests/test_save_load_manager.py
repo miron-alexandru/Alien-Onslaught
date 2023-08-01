@@ -416,7 +416,7 @@ class TestSaveLoadSystem(unittest.TestCase):
         mock_open_func = MagicMock()
 
         with patch("builtins.open", mock_open_func):
-            self.save_load_manager.save_data("save1")
+            self.save_load_manager.save_data("save1", MagicMock())
 
         mock_open_func.assert_called_once()
         mock_join.assert_called_once_with(
