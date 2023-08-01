@@ -7,11 +7,11 @@ import pickle
 import os
 
 import pygame
+import datetime
 
 from src.entities.alien_entities.aliens import Alien, BossAlien
 from src.utils.constants import DATA_KEYS, ATTRIBUTE_MAPPING
 from src.utils.game_utils import set_attribute, display_simple_message, play_sound
-
 
 
 class SaveLoadSystem:
@@ -174,7 +174,7 @@ class SaveLoadSystem:
             ],
         }
 
-    def save_data(self, name):
+    def save_data(self, name, save_date):
         """Saves the current game data to a file."""
         file_path = os.path.join(self.save_folder, f"{name}.{self.file_extension}")
         sprite_data = self.prepare_sprite_data_for_serialization()
@@ -182,6 +182,7 @@ class SaveLoadSystem:
         game_data = {
             "sprite_data": sprite_data,
             **{key: self.data[key] for key in DATA_KEYS},
+            "save_date": save_date,
         }
 
         with open(file_path, "wb") as file:
@@ -197,7 +198,6 @@ class SaveLoadSystem:
                 self.restore_sprites_from_data(loaded_data)
         except FileNotFoundError:
             play_sound(self.game.sound_manager.game_sounds, "empty_save")
-            
 
     def restore_sprites_from_data(self, loaded_data):
         """Restores the game sprites based on the provided data."""
@@ -258,70 +258,107 @@ class SaveLoadSystem:
         """Displays the save or the load menu, allowing the user
         to select and interact with available save slots.
         """
+        # Create the save directory and get the list of save files
         self.create_save_dir()
-
-        save_files = [f for f in os.listdir(self.save_folder) if os.path.isfile(os.path.join(self.save_folder, f)) and f.endswith(self.file_extension)]
-        font = pygame.font.SysFont("verdana", 23)
+        file_list = os.listdir(self.save_folder)
+        save_files = [
+            f
+            for f in file_list
+            if os.path.isfile(os.path.join(self.save_folder, f))
+            and f.endswith(self.file_extension)
+        ]
+        font = pygame.font.SysFont("verdana", 22)
         text_color = (255, 255, 255)
         slot_selected = 0
         slot_rects = []
 
         cancel_text = font.render("Cancel", True, text_color)
-        cancel_rect = cancel_text.get_rect(center=(self.game.screen.get_width() // 2, 465))
 
         while True:
             center_x = self.game.screen.get_width() // 2
+            cancel_rect = cancel_text.get_rect(
+                center=(self.game.screen.get_width() // 2, 465)
+            )
 
+            # Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
+                elif event.type == pygame.KEYDOWN:
+                    if event.key in [pygame.K_UP, pygame.K_w]:
+                        play_sound(self.game.sound_manager.game_sounds, "keypress")
                         slot_selected = (slot_selected - 1) % 3
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key in [pygame.K_DOWN, pygame.K_s]:
+                        play_sound(self.game.sound_manager.game_sounds, "keypress")
                         slot_selected = (slot_selected + 1) % 3
                     elif event.key == pygame.K_RETURN:
-                        self._handle_save_slot_action(font, slot_selected, save, save_files)
+                        self._handle_save_slot_action(
+                            font, slot_selected, save, save_files
+                        )
                         return
                     elif event.key == pygame.K_ESCAPE:
+                        play_sound(self.game.sound_manager.game_sounds, "keypress")
                         return
 
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     for i, rect in enumerate(slot_rects):
                         if rect.collidepoint(mouse_x, mouse_y):
                             slot_selected = i
-                            self._handle_save_slot_action(font, slot_selected, save, save_files)
+                            self._handle_save_slot_action(
+                                font, slot_selected, save, save_files
+                            )
                             return
-
                     if cancel_rect.collidepoint(mouse_x, mouse_y):
+                        play_sound(self.game.sound_manager.game_sounds, "keypress")
                         return
+                elif event.type == pygame.VIDEORESIZE:
+                    self.game.screen_manager.resize_screen(event.size)
 
-
+            # Render the display
             self.game.screen.fill((0, 0, 0))
-            self._draw_save_slots(font, text_color, center_x, save_files, slot_selected, slot_rects)
-
+            self._draw_save_slots(
+                font, text_color, center_x, save_files, slot_selected, slot_rects
+            )
             self.game.screen.blit(cancel_text, cancel_rect)
-
             self.game.screen_manager.draw_cursor()
             pygame.display.flip()
 
-
-    def _draw_save_slots(self, font, text_color, center_x, save_files, slot_selected, slot_rects):
+    def _draw_save_slots(
+        self, font, text_color, center_x, save_files, slot_selected, slot_rects
+    ):
         """Display the save slots on the screen."""
         for i in range(3):
             slot_number = i + 1
             is_slot_empty = f"save{slot_number}.save" not in save_files
-            status_text = "Empty" if is_slot_empty else "Save available"
-            text = font.render(f"Slot {slot_number}: {status_text}", True, text_color)
+
+            if is_slot_empty:
+                status_text = "Empty"
+            else:
+                save_file_path = os.path.join(
+                    self.save_folder, f"save{slot_number}.save"
+                )
+                save_date = os.path.getmtime(save_file_path)
+                save_date_str = datetime.datetime.fromtimestamp(save_date).strftime(
+                    "%d %b %Y  %I:%M %p"
+                )
+                status_text = f"Saved On: {save_date_str}"
+
+            text = font.render(
+                f"Save File {slot_number}: {status_text}", True, text_color
+            )
             text_rect = text.get_rect(center=(center_x, 300 + i * 50))
             slot_rects.append(text_rect)
             self.game.screen.blit(text, text_rect)
 
-            # Draw the rectangle around the text
-            rect = pygame.Rect(text_rect.left - 10, text_rect.top - 5, text_rect.width + 20, text_rect.height + 10)
+            rect = pygame.Rect(
+                text_rect.left - 10,
+                text_rect.top - 5,
+                text_rect.width + 20,
+                text_rect.height + 10,
+            )
             if i == slot_selected:
                 pygame.draw.rect(self.game.screen, (173, 216, 230), rect, 2)
 
@@ -329,17 +366,21 @@ class SaveLoadSystem:
         """Handle the action for the selected save slot."""
         if save:
             play_sound(self.game.sound_manager.game_sounds, "click")
-            self.save_data(f"save{slot_selected + 1}")
-            display_simple_message(self.game.screen, "Game Saved!", font, "lightblue", 1000)
+            save_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.save_data(f"save{slot_selected + 1}", save_date=save_date)
+            display_simple_message(
+                self.game.screen, "Game Saved!", font, "lightblue", 1000
+            )
         elif f"save{slot_selected + 1}.save" in save_files:
+            # Load the game state when needed
             play_sound(self.game.sound_manager.game_sounds, "load_game")
             self.load_data(f"save{slot_selected + 1}")
             self.game.game_loaded = True
-            display_simple_message(self.game.screen, "Game Loaded!", font, "lightblue", 1000)
-
+            display_simple_message(
+                self.game.screen, "Game Loaded!", font, "lightblue", 1000
+            )
         else:
             play_sound(self.game.sound_manager.game_sounds, "empty_save")
-            display_simple_message(self.game.screen, "This slot is empty!", font, "red", 500)
-
-
-
+            display_simple_message(
+                self.game.screen, "Empty save slot", font, "red", 500
+            )
