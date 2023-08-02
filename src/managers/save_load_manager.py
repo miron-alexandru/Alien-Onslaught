@@ -2,16 +2,31 @@
 The save_load_manager module contains the SaveLoadSystem class that
 implements the functionality of saving and loading the game.
 """
-
+import datetime
 import pickle
 import os
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import simpledialog
 
 import pygame
-import datetime
 
 from src.entities.alien_entities.aliens import Alien, BossAlien
-from src.utils.constants import DATA_KEYS, ATTRIBUTE_MAPPING
-from src.utils.game_utils import set_attribute, display_simple_message, play_sound
+from src.utils.constants import (
+    DATA_KEYS,
+    ATTRIBUTE_MAPPING,
+    SLOT_HEIGHT,
+    TEXT_PADDING_X,
+    TEXT_PADDING_Y,
+    SELECTED_SLOT_COLOR,
+    BORDER_WIDTH,
+)
+from src.utils.game_utils import (
+    set_attribute,
+    display_simple_message,
+    play_sound,
+    create_save_dir,
+)
 
 
 class SaveLoadSystem:
@@ -22,6 +37,7 @@ class SaveLoadSystem:
         self.file_extension = file_extension
         self.save_folder = save_folder
         self.data = {}
+        create_save_dir(self.save_folder)
 
     def get_data(self, data_name, data):
         """Helper method that assigns data to the data dict."""
@@ -55,6 +71,7 @@ class SaveLoadSystem:
             "thunderbird_weapon_current": game.weapons_manager.weapons["thunderbird"][
                 "current"
             ],
+            "thunderbird_alive": thunderbird_ship.state.alive,
             "thunderbird_shielded": thunderbird_ship.state.shielded,
             "thunderbird_disarmed": thunderbird_ship.state.disarmed,
             "thunderbird_reversed": thunderbird_ship.state.reverse,
@@ -74,6 +91,7 @@ class SaveLoadSystem:
             "phoenix_weapon_current": game.weapons_manager.weapons["phoenix"][
                 "current"
             ],
+            "phoenix_alive": phoenix_ship.state.alive,
             "phoenix_shielded": phoenix_ship.state.shielded,
             "phoenix_disarmed": phoenix_ship.state.disarmed,
             "phoenix_reversed": phoenix_ship.state.reverse,
@@ -184,7 +202,6 @@ class SaveLoadSystem:
             **{key: self.data[key] for key in DATA_KEYS},
             "save_date": save_date,
         }
-
         with open(file_path, "wb") as file:
             pickle.dump(game_data, file)
 
@@ -249,35 +266,27 @@ class SaveLoadSystem:
                     loaded_data[key],
                 )
 
-    def create_save_dir(self):
-        """Create the save directory if it does not exist."""
-        if not os.path.exists(self.save_folder):
-            os.makedirs(self.save_folder)
-
     def handle_save_load_menu(self, save=False):
         """Displays the save or the load menu, allowing the user
         to select and interact with available save slots.
         """
         # Create the save directory and get the list of save files
-        self.create_save_dir()
-        file_list = os.listdir(self.save_folder)
-        save_files = [
-            f
-            for f in file_list
-            if os.path.isfile(os.path.join(self.save_folder, f))
-            and f.endswith(self.file_extension)
-        ]
+        save_files = self._get_save_files()
         font = pygame.font.SysFont("verdana", 22)
         text_color = (255, 255, 255)
         slot_selected = 0
         slot_rects = []
 
-        cancel_text = font.render("Cancel", True, text_color)
+        cancel_text = font.render("Exit", True, text_color)
+        delete_text = font.render("Clear Saves", True, text_color)
 
         while True:
             center_x = self.game.screen.get_width() // 2
             cancel_rect = cancel_text.get_rect(
-                center=(self.game.screen.get_width() // 2, 465)
+                center=(self.game.screen.get_width() // 2 + 100, 465)
+            )
+            delete_rect = delete_text.get_rect(
+                center=(self.game.screen.get_width() // 2 - 100, 465)
             )
 
             # Handle events
@@ -294,9 +303,7 @@ class SaveLoadSystem:
                         play_sound(self.game.sound_manager.game_sounds, "keypress")
                         slot_selected = (slot_selected + 1) % 3
                     elif event.key == pygame.K_RETURN:
-                        self._handle_save_slot_action(
-                            font, slot_selected, save, save_files
-                        )
+                        self._handle_save_slot_action(font, slot_selected, save)
                         return
                     elif event.key == pygame.K_ESCAPE:
                         play_sound(self.game.sound_manager.game_sounds, "keypress")
@@ -307,15 +314,20 @@ class SaveLoadSystem:
                     for i, rect in enumerate(slot_rects):
                         if rect.collidepoint(mouse_x, mouse_y):
                             slot_selected = i
-                            self._handle_save_slot_action(
-                                font, slot_selected, save, save_files
-                            )
+                            self._handle_save_slot_action(font, slot_selected, save)
                             return
+
                     if cancel_rect.collidepoint(mouse_x, mouse_y):
-                        play_sound(self.game.sound_manager.game_sounds, "keypress")
+                        play_sound(self.game.sound_manager.game_sounds, "click")
                         return
-                elif event.type == pygame.VIDEORESIZE:
-                    self.game.screen_manager.resize_screen(event.size)
+
+                    elif delete_rect.collidepoint(mouse_x, mouse_y):
+                        play_sound(self.game.sound_manager.game_sounds, "click")
+                        if confirm := self._show_confirmation_popup():
+                            play_sound(self.game.sound_manager.game_sounds, "click")
+                            self._delete_all_save_files()
+                        else:
+                            play_sound(self.game.sound_manager.game_sounds, "click")
 
             # Render the display
             self.game.screen.fill((0, 0, 0))
@@ -323,56 +335,84 @@ class SaveLoadSystem:
                 font, text_color, center_x, save_files, slot_selected, slot_rects
             )
             self.game.screen.blit(cancel_text, cancel_rect)
+            self.game.screen.blit(delete_text, delete_rect)
             self.game.screen_manager.draw_cursor()
             pygame.display.flip()
+
+    def _get_save_files(self):
+        """Get the list of save files from the specified save folder."""
+        file_list = os.listdir(self.save_folder)
+        return [
+            f
+            for f in file_list
+            if os.path.isfile(os.path.join(self.save_folder, f))
+            and f.endswith(self.file_extension)
+        ]
+
+    def _get_save_status_text(self, slot_number, save_files):
+        """Get the status text for the specified save slot number."""
+        save_file_name = f"save{slot_number}.save"
+        if save_file_name not in save_files:
+            return "Empty"
+
+        try:
+            save_file_path = os.path.join(self.save_folder, save_file_name)
+            save_date = os.path.getmtime(save_file_path)
+            save_date_str = datetime.datetime.fromtimestamp(save_date).strftime(
+                "%d %b %Y  %I:%M %p"
+            )
+            return f"Saved On: {save_date_str}"
+        except FileNotFoundError:
+            return "Empty"
 
     def _draw_save_slots(
         self, font, text_color, center_x, save_files, slot_selected, slot_rects
     ):
         """Display the save slots on the screen."""
-        for i in range(3):
-            slot_number = i + 1
-            is_slot_empty = f"save{slot_number}.save" not in save_files
-
-            if is_slot_empty:
-                status_text = "Empty"
-            else:
-                save_file_path = os.path.join(
-                    self.save_folder, f"save{slot_number}.save"
-                )
-                save_date = os.path.getmtime(save_file_path)
-                save_date_str = datetime.datetime.fromtimestamp(save_date).strftime(
-                    "%d %b %Y  %I:%M %p"
-                )
-                status_text = f"Saved On: {save_date_str}"
-
+        for i, slot_number in enumerate(range(1, 4)):
+            status_text = self._get_save_status_text(slot_number, save_files)
             text = font.render(
                 f"Save File {slot_number}: {status_text}", True, text_color
             )
-            text_rect = text.get_rect(center=(center_x, 300 + i * 50))
+            text_rect = text.get_rect(center=(center_x, 300 + i * SLOT_HEIGHT))
             slot_rects.append(text_rect)
             self.game.screen.blit(text, text_rect)
 
             rect = pygame.Rect(
-                text_rect.left - 10,
-                text_rect.top - 5,
-                text_rect.width + 20,
-                text_rect.height + 10,
+                text_rect.left - TEXT_PADDING_X,
+                text_rect.top - TEXT_PADDING_Y,
+                text_rect.width + 2 * TEXT_PADDING_X,
+                text_rect.height + 2 * TEXT_PADDING_Y,
             )
             if i == slot_selected:
-                pygame.draw.rect(self.game.screen, (173, 216, 230), rect, 2)
+                pygame.draw.rect(
+                    self.game.screen, SELECTED_SLOT_COLOR, rect, BORDER_WIDTH
+                )
 
-    def _handle_save_slot_action(self, font, slot_selected, save, save_files):
+    def _handle_save_slot_action(self, font, slot_selected, save):
         """Handle the action for the selected save slot."""
         if save:
-            play_sound(self.game.sound_manager.game_sounds, "click")
-            save_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            self.save_data(f"save{slot_selected + 1}", save_date=save_date)
-            display_simple_message(
-                self.game.screen, "Game Saved!", font, "lightblue", 1000
-            )
-        elif f"save{slot_selected + 1}.save" in save_files:
-            # Load the game state when needed
+            self._handle_save_action(font, slot_selected)
+        else:
+            self._handle_load_action(font, slot_selected)
+
+    def _handle_save_action(self, font, slot_selected):
+        """Handle the action when saving the game."""
+        save_files = self._get_save_files()
+        if f"save{slot_selected + 1}.save" in save_files:
+            if confirm_overwrite := self._show_confirmation_popup(
+                delete_save_files=False
+            ):
+                self._save_game(font, slot_selected)
+            else:
+                play_sound(self.game.sound_manager.game_sounds, "click")
+        else:
+            self._save_game(font, slot_selected)
+
+    def _handle_load_action(self, font, slot_selected):
+        """Handle the action when loading the game."""
+        save_files = self._get_save_files()
+        if f"save{slot_selected + 1}.save" in save_files:
             play_sound(self.game.sound_manager.game_sounds, "load_game")
             self.load_data(f"save{slot_selected + 1}")
             self.game.game_loaded = True
@@ -384,3 +424,35 @@ class SaveLoadSystem:
             display_simple_message(
                 self.game.screen, "Empty save slot", font, "red", 500
             )
+
+    def _save_game(self, font, slot_selected):
+        """Save the game state and display a message."""
+        play_sound(self.game.sound_manager.game_sounds, "click")
+        save_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.save_data(f"save{slot_selected + 1}", save_date=save_date)
+        display_simple_message(self.game.screen, "Game Saved!", font, "lightblue", 1000)
+
+    def _delete_all_save_files(self):
+        """Deletes all save files from the save folder."""
+        save_files = self._get_save_files()
+
+        for save_file in save_files:
+            save_file_path = os.path.join(self.save_folder, save_file)
+            os.remove(save_file_path)
+
+    def _show_confirmation_popup(self, delete_save_files=True):
+        """Display a confirmation popup."""
+        root = tk.Tk()
+        root.withdraw()
+
+        if delete_save_files:
+            user_response = messagebox.askyesno(
+                "Confirmation", "Delete all save files?"
+            )
+        else:
+            user_response = messagebox.askyesno(
+                "Confirmation", "Overwrite this save file?"
+            )
+
+        root.destroy()
+        return user_response

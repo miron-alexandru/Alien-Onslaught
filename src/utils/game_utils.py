@@ -202,6 +202,10 @@ def play_sound(sounds_list, sound_name):
 
 # MISC FUNCTIONS:
 
+def create_save_dir(save_folder):
+    """Create the save directory if it does not exist."""
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
 
 def set_attribute(obj, attribute_chain, value):
     """Set the attribute in the nested object."""

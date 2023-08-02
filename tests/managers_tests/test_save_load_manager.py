@@ -24,7 +24,8 @@ class TestSaveLoadSystem(unittest.TestCase):
         self.game.stats = GameStats(
             self.game, self.game.phoenix_ship, self.game.thunderbird_ship
         )
-        self.save_load_manager = SaveLoadSystem(self.game, "save", "save_data")
+        with patch("src.managers.save_load_manager.create_save_dir"):
+            self.save_load_manager = SaveLoadSystem(self.game, "save", "save_data")
 
     def test_init(self):
         """Test the initialization of the class."""
@@ -100,7 +101,10 @@ class TestSaveLoadSystem(unittest.TestCase):
             self.save_load_manager.data["thunderbird_weapon_current"],
             self.game.weapons_manager.weapons["thunderbird"]["current"],
         )
-
+        self.assertEqual(
+            self.save_load_manager.data["thunderbird_alive"],
+            self.game.thunderbird_ship.state.alive,
+        )
         self.assertEqual(
             self.save_load_manager.data["thunderbird_shielded"],
             self.game.thunderbird_ship.state.shielded,
@@ -167,6 +171,10 @@ class TestSaveLoadSystem(unittest.TestCase):
             self.game.weapons_manager.weapons["phoenix"]["current"],
         )
 
+        self.assertEqual(
+            self.save_load_manager.data["phoenix_alive"],
+            self.game.phoenix_ship.state.alive,
+        )
         self.assertEqual(
             self.save_load_manager.data["phoenix_shielded"],
             self.game.phoenix_ship.state.shielded,
@@ -270,7 +278,7 @@ class TestSaveLoadSystem(unittest.TestCase):
             self.game.settings.speedup_scale,
         )
 
-        self.assertEqual(len(self.save_load_manager.data), 56)
+        self.assertEqual(len(self.save_load_manager.data), 58)
 
     def test_update_alien_states(self):
         """Test the update_alien_states method."""
@@ -531,6 +539,7 @@ class TestSaveLoadSystem(unittest.TestCase):
 
         loaded_data = {
             "high_score": 1000,
+            "level": 5,
             "thunder_ship_name": "Thunderbird",
             "thunderbird_score": 5000,
             "thunderbird_aliens_killed": 50,
@@ -542,6 +551,7 @@ class TestSaveLoadSystem(unittest.TestCase):
             "thunderbird_remaining_bullets": 15,
             "thunderbird_missiles_num": 3,
             "thunderbird_weapon_current": "Laser",
+            "thunderbird_alive": False,
             "thunderbird_shielded": True,
             "thunderbird_disarmed": False,
             "thunderbird_reversed": False,
@@ -558,6 +568,7 @@ class TestSaveLoadSystem(unittest.TestCase):
             "phoenix_remaining_bullets": 22,
             "phoenix_missiles_num": 2,
             "phoenix_weapon_current": "Plasma",
+            "phoenix_alive": True,
             "phoenix_shielded": False,
             "phoenix_disarmed": True,
             "phoenix_reversed": True,

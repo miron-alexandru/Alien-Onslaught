@@ -380,9 +380,11 @@ GAME_MODE_SCORE_KEYS = {
     "normal": "high_scores",
 }
 
+# CONSTANTS FOR THE SAVE/LOAD FEATURE
 DATA_KEYS = [
     # Other Game Stats"level",
     "high_score",
+    "level",
     # Thunderbird Ship
     "thunder_ship_name",
     "thunderbird_score",
@@ -395,6 +397,7 @@ DATA_KEYS = [
     "thunderbird_remaining_bullets",
     "thunderbird_missiles_num",
     "thunderbird_weapon_current",
+    "thunderbird_alive",
     "thunderbird_shielded",
     "thunderbird_disarmed",
     "thunderbird_reversed",
@@ -412,6 +415,7 @@ DATA_KEYS = [
     "phoenix_remaining_bullets",
     "phoenix_missiles_num",
     "phoenix_weapon_current",
+    "phoenix_alive",
     "phoenix_shielded",
     "phoenix_disarmed",
     "phoenix_reversed",
@@ -457,6 +461,7 @@ ATTRIBUTE_MAPPING = {
     "last_bullet": ("settings", "game_modes", "last_bullet"),
     "cosmic_conflict": ("settings", "game_modes", "cosmic_conflict"),
     "one_life_reign": ("settings", "game_modes", "one_life_reign"),
+    "thunderbird_alive": ("thunderbird_ship", "state", "alive"),
     "thunderbird_shielded": ("thunderbird_ship", "state", "shielded"),
     "thunderbird_disarmed": ("thunderbird_ship", "state", "disarmed"),
     "thunderbird_reversed": ("thunderbird_ship", "state", "reverse"),
@@ -469,6 +474,7 @@ ATTRIBUTE_MAPPING = {
         "thunderbird",
         "current",
     ),
+    "phoenix_alive": ("phoenix_ship", "state", "alive"),
     "phoenix_shielded": ("phoenix_ship", "state", "shielded"),
     "phoenix_disarmed": ("phoenix_ship", "state", "disarmed"),
     "phoenix_reversed": ("phoenix_ship", "state", "reverse"),
@@ -478,6 +484,13 @@ ATTRIBUTE_MAPPING = {
     "phoenix_weapon_current": ("weapons_manager", "weapons", "phoenix", "current"),
 }
 
+SLOT_HEIGHT = 50
+TEXT_PADDING_X = 10
+TEXT_PADDING_Y = 5
+SELECTED_SLOT_COLOR = (173, 216, 230)
+BORDER_WIDTH = 2
+
+# HIGH SCORES related constants
 SINGLE_PLAYER_FILE = "single_high_score.json"
 MULTI_PLAYER_FILE = "high_score.json"
 DEFAULT_HIGH_SCORES = {"high_scores": [0] * 10}
