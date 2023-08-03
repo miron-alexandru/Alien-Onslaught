@@ -5,6 +5,7 @@ implements the functionality of saving and loading the game.
 import datetime
 import pickle
 import os
+
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import simpledialog
@@ -376,6 +377,7 @@ class SaveLoadSystem:
             )
             text_rect = text.get_rect(center=(center_x, 300 + i * SLOT_HEIGHT))
             slot_rects.append(text_rect)
+
             self.game.screen.blit(text, text_rect)
 
             rect = pygame.Rect(
@@ -384,6 +386,7 @@ class SaveLoadSystem:
                 text_rect.width + 2 * TEXT_PADDING_X,
                 text_rect.height + 2 * TEXT_PADDING_Y,
             )
+
             if i == slot_selected:
                 pygame.draw.rect(
                     self.game.screen, SELECTED_SLOT_COLOR, rect, BORDER_WIDTH

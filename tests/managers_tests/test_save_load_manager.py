@@ -2,9 +2,12 @@
 This module tests the SaveLoadSystem class that is used to save
 and load the game state.
 """
-
+import os
+import datetime
 import unittest
 from unittest.mock import MagicMock, patch, call
+
+import pygame
 
 from src.managers.save_load_manager import SaveLoadSystem
 from src.entities.alien_entities.aliens import Alien, BossAlien
@@ -24,8 +27,22 @@ class TestSaveLoadSystem(unittest.TestCase):
         self.game.stats = GameStats(
             self.game, self.game.phoenix_ship, self.game.thunderbird_ship
         )
+        self.game.screen = pygame.Surface((1280, 700))
+        self.font = MagicMock()
+        self.font.render.return_value = pygame.Surface((200, 50))
         with patch("src.managers.save_load_manager.create_save_dir"):
             self.save_load_manager = SaveLoadSystem(self.game, "save", "save_data")
+
+        os.makedirs(self.save_load_manager.save_folder, exist_ok=True)
+
+    def tearDown(self):
+        # Remove the temporary folder and its contents after testing
+        for root, _, files in os.walk(
+            self.save_load_manager.save_folder, topdown=False
+        ):
+            for name in files:
+                os.remove(os.path.join(root, name))
+            os.rmdir(root)
 
     def test_init(self):
         """Test the initialization of the class."""
@@ -615,6 +632,320 @@ class TestSaveLoadSystem(unittest.TestCase):
         self.assertEqual(self.game.settings.thunderbird_bullet_speed, 15)
         self.assertEqual(self.game.settings.alien_speed, 5)
         self.assertEqual(self.game.settings.alien_bullet_speed, 8)
+
+    def test_get_save_files(self):
+        """Test the get_save_files method."""
+        # Create test files with different extensions
+        test_files = [
+            "savegame1.save",
+            "savegame2.save",
+            "savegame3.save",
+            "random_file.txt",
+        ]
+        for filename in test_files:
+            open(
+                os.path.join(self.save_load_manager.save_folder, filename), "w", encoding="utf-8"
+            ).close()
+
+        result = self.save_load_manager._get_save_files()
+
+        # Define the expected result
+        expected_result = ["savegame1.save", "savegame2.save", "savegame3.save"]
+
+        # Assertion
+        self.assertListEqual(result, expected_result)
+
+    def test_get_save_status_text_no_savefiles(self):
+        """Test the get_save_status_text with no savefiles."""
+        save_files = []
+
+        # Call the method
+        result = self.save_load_manager._get_save_status_text(
+            slot_number=1, save_files=save_files
+        )
+
+        expected_result = "Empty"
+
+        # Assertion
+        self.assertEqual(result, expected_result)
+
+    def test_get_save_status_text_existing_savefile(self):
+        """Test the get_save_status_text with a savefile."""
+        # Prepare data for testing
+        test_save_file = "save1.save"
+        open(
+            os.path.join(self.save_load_manager.save_folder, test_save_file), "w", encoding="utf-8"
+        ).close()
+
+        save_files = [test_save_file]
+
+        # Call the method
+        result = self.save_load_manager._get_save_status_text(
+            slot_number=1, save_files=save_files
+        )
+
+        # Get the current date and time in the required format
+        current_time_str = datetime.datetime.now().strftime("%d %b %Y  %I:%M %p")
+
+        expected_result = f"Saved On: {current_time_str}"
+
+        # Assertion
+        self.assertEqual(result, expected_result)
+
+    @patch("src.managers.save_load_manager.pygame.draw.rect")
+    def test_draw_save_slots(self, mock_draw_rect):
+        """Test the draw_save_slots method."""
+        # Prepare data for testing
+        test_save_files = ["save1.save", "save2.save", "save3.save"]
+        for filename in test_save_files:
+            open(
+                os.path.join(self.save_load_manager.save_folder, filename), "w", encoding="utf-8"
+            ).close()
+
+        text_color = (255, 255, 255)
+        center_x = 400
+        slot_selected = 0
+        slot_rects = []
+
+        # Call the method
+        self.save_load_manager._draw_save_slots(
+            font=self.font,
+            text_color=text_color,
+            center_x=center_x,
+            save_files=test_save_files,
+            slot_selected=slot_selected,
+            slot_rects=slot_rects,
+        )
+        current_time = datetime.datetime.now().strftime("%d %b %Y  %I:%M %p")
+        expected_text_0 = f"Save File 1: Saved On: {current_time}"
+        actual_text_0 = self.font.render.call_args_list[0][0][0]
+
+        expected_text_1 = f"Save File 2: Saved On: {current_time}"
+        actual_text_1 = self.font.render.call_args_list[1][0][0]
+        # Assertions:
+        mock_draw_rect.assert_called_once()
+        self.assertEqual(actual_text_0, expected_text_0)
+        self.assertEqual(actual_text_1, expected_text_1)
+        self.assertEqual(len(slot_rects), 3)
+
+    def test_handle_save_slot_action(self):
+        """Test the handle_save_slot_action method."""
+        self.save_load_manager._handle_save_action = MagicMock()
+        self.save_load_manager._handle_load_action = MagicMock()
+        slot_selected = 1
+        # Save case
+        self.save_load_manager._handle_save_slot_action(
+            self.font, slot_selected, save=True
+        )
+
+        self.save_load_manager._handle_save_action.assert_called_once_with(
+            self.font, slot_selected
+        )
+        self.save_load_manager._handle_load_action.assert_not_called()
+
+        # Load case
+        self.save_load_manager._handle_save_action.reset_mock()
+        self.save_load_manager._handle_save_slot_action(
+            self.font, slot_selected, save=False
+        )
+
+        self.save_load_manager._handle_load_action.assert_called_once_with(
+            self.font, slot_selected
+        )
+        self.save_load_manager._handle_save_action.assert_not_called()
+
+    def test_handle_save_action_overwrite(self):
+        """Test the handle_save_action methond when overwriting a savefile."""
+        # Prepare testing data
+        slot_selected = 0
+
+        self.save_load_manager._get_save_files = MagicMock(
+            return_value=["save1.save", "save2.save"]
+        )
+        self.save_load_manager._show_confirmation_popup = MagicMock()
+        self.save_load_manager._save_game = MagicMock()
+
+        self.save_load_manager._handle_save_action(self.font, slot_selected)
+
+        # Assertions
+        self.save_load_manager._get_save_files.assert_called_once()
+        self.save_load_manager._show_confirmation_popup.assert_called_once_with(
+            delete_save_files=False
+        )
+        self.save_load_manager._save_game.assert_called_once()
+
+    @patch("src.managers.save_load_manager.play_sound")
+    def test_handle_save_action_overwrite_not_accepting(self, mock_play_sound):
+        """Test the handle_save_action methond when not confirming the
+        overwrite."""
+        # Prepare testing data
+        slot_selected = 0
+
+        self.save_load_manager._get_save_files = MagicMock(
+            return_value=["save1.save", "save2.save"]
+        )
+        self.save_load_manager._show_confirmation_popup = MagicMock(return_value=False)
+        self.save_load_manager._save_game = MagicMock()
+
+        self.save_load_manager._handle_save_action(self.font, slot_selected)
+
+        # Assertions
+        self.save_load_manager._get_save_files.assert_called_once()
+        self.save_load_manager._show_confirmation_popup.assert_called_once_with(
+            delete_save_files=False
+        )
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "click"
+        )
+
+        self.save_load_manager._save_game.assert_not_called()
+
+    def test_handle_save_action_new_save(self):
+        """Test the handle_save_action methond with a new savefile."""
+        # Prepare testing data
+        slot_selected = 2
+
+        self.save_load_manager._get_save_files = MagicMock(
+            return_value=["save1.save", "save2.save"]
+        )
+        self.save_load_manager._show_confirmation_popup = MagicMock()
+        self.save_load_manager._save_game = MagicMock()
+
+        self.save_load_manager._handle_save_action(self.font, slot_selected)
+
+        # Assertions
+        self.save_load_manager._get_save_files.assert_called_once()
+        self.save_load_manager._show_confirmation_popup.assert_not_called()
+        self.save_load_manager._save_game.assert_called_once()
+
+    @patch("src.managers.save_load_manager.play_sound")
+    @patch("src.managers.save_load_manager.display_simple_message")
+    def test_handle_load_action_existing_savefile(
+        self, mock_display_message, mock_play_sound
+    ):
+        """Test the handle_load_action with an existing savefile."""
+        # Prepare data for testing
+        slot_selected = 0
+
+        self.save_load_manager._get_save_files = MagicMock(
+            return_value=["save1.save", "save2.save"]
+        )
+        self.save_load_manager.load_data = MagicMock()
+
+        self.save_load_manager._handle_load_action(self.font, slot_selected)
+
+        self.save_load_manager._get_save_files.assert_called_once()
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "load_game"
+        )
+        self.save_load_manager.load_data.assert_called_once_with(
+            f"save{slot_selected + 1}"
+        )
+        self.assertTrue(self.game.game_loaded)
+        mock_display_message.assert_called_once_with(
+            self.game.screen, "Game Loaded!", self.font, "lightblue", 1000
+        )
+
+    @patch("src.managers.save_load_manager.play_sound")
+    @patch("src.managers.save_load_manager.display_simple_message")
+    def test_handle_load_action_non_existing_savefile(
+        self, mock_display_message, mock_play_sound
+    ):
+        """Test the handle_load_action with a non existing savefile."""
+        # Prepare data for testing
+        slot_selected = 2
+
+        self.save_load_manager._get_save_files = MagicMock(
+            return_value=["save1.save", "save2.save"]
+        )
+        self.save_load_manager.load_data = MagicMock()
+
+        self.save_load_manager._handle_load_action(self.font, slot_selected)
+
+        self.save_load_manager._get_save_files.assert_called_once()
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "empty_save"
+        )
+        mock_display_message.assert_called_once_with(
+            self.game.screen, "Empty save slot", self.font, "red", 500
+        )
+
+        self.save_load_manager.load_data.assert_not_called()
+
+    @patch("src.managers.save_load_manager.play_sound")
+    @patch("src.managers.save_load_manager.display_simple_message")
+    def test_save_game(self, mock_display_message, mock_play_sound):
+        """Test the _save_game method."""
+        slot_selected = 1
+        self.save_load_manager.save_data = MagicMock()
+        save_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        self.save_load_manager._save_game(self.font, slot_selected)
+
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "click"
+        )
+        self.save_load_manager.save_data.assert_called_once_with(
+            f"save{slot_selected + 1}", save_date=save_date
+        )
+        mock_display_message.assert_called_once_with(
+            self.game.screen, "Game Saved!", self.font, "lightblue", 1000
+        )
+
+    def test_delete_all_save_files(self):
+        """Test the delete_all_save_files method."""
+        # Set up test data
+        self.save_load_manager._get_save_files = MagicMock(
+            return_value=["save1.save", "save2.save", "save3.save"]
+        )
+
+        # Create some sample save files
+        sample_save_files = ["save1.save", "save2.save", "save3.save"]
+        for save_file in sample_save_files:
+            with open(
+                os.path.join(self.save_load_manager.save_folder, save_file), "w", encoding="utf-8"
+            ) as file:
+                file.write("Sample data")
+
+        # Call the method
+        self.save_load_manager._delete_all_save_files()
+
+        # Check if the save files have been deleted
+        self.assertFalse(os.listdir(self.save_load_manager.save_folder))
+
+    @patch("src.managers.save_load_manager.tk.Tk")
+    @patch("src.managers.save_load_manager.messagebox.askyesno")
+    def test_show_confirmation_popup_delete_save_files(self, mock_askyesno, mock_tk):
+        """Test the show_confirmation_popup with delete_save_files."""
+        mock_askyesno.return_value = True
+
+        # Call the _show_confirmation_popup method with delete_save_files=True
+        response = self.save_load_manager._show_confirmation_popup(
+            delete_save_files=True
+        )
+
+        # Assertions
+        self.assertTrue(response)
+        mock_tk.assert_called_once()
+        mock_askyesno.assert_called_once_with("Confirmation", "Delete all save files?")
+
+    @patch("src.managers.save_load_manager.tk.Tk")
+    @patch("src.managers.save_load_manager.messagebox.askyesno")
+    def test_show_confirmation_popup_overwrite_save_file(self, mock_askyesno, mock_tk):
+        """Test the show_confirmation_popup with overwrite save_file."""
+        mock_askyesno.return_value = False
+
+        # Call the _show_confirmation_popup method with delete_save_files=False
+        response = self.save_load_manager._show_confirmation_popup(
+            delete_save_files=False
+        )
+
+        # Assertions
+        self.assertFalse(response)
+        mock_tk.assert_called_once()
+        mock_askyesno.assert_called_once_with(
+            "Confirmation", "Overwrite this save file?"
+        )
 
 
 if __name__ == "__main__":
