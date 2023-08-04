@@ -5,6 +5,7 @@ implements the functionality of saving and loading the game.
 import datetime
 import pickle
 import os
+import sys
 
 import tkinter as tk
 from tkinter import messagebox
@@ -39,6 +40,7 @@ class SaveLoadSystem:
         self.save_folder = save_folder
         self.data = {}
         create_save_dir(self.save_folder)
+        self.MENU_RUNNING = False
 
     def get_data(self, data_name, data):
         """Helper method that assigns data to the data dict."""
@@ -272,6 +274,8 @@ class SaveLoadSystem:
         to select and interact with available save slots.
         """
         # Create the save directory and get the list of save files
+        self.MENU_RUNNING = True
+
         save_files = self._get_save_files()
         font = pygame.font.SysFont("verdana", 22)
         text_color = (255, 255, 255)
@@ -281,7 +285,7 @@ class SaveLoadSystem:
         cancel_text = font.render("Exit", True, text_color)
         delete_text = font.render("Clear Saves", True, text_color)
 
-        while True:
+        while self.MENU_RUNNING:
             center_x = self.game.screen.get_width() // 2
             cancel_rect = cancel_text.get_rect(
                 center=(self.game.screen.get_width() // 2 + 100, 465)
@@ -294,7 +298,7 @@ class SaveLoadSystem:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    quit()
+                    sys.exit()
 
                 elif event.type == pygame.KEYDOWN:
                     if event.key in [pygame.K_UP, pygame.K_w]:

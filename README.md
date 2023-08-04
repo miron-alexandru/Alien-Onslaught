@@ -64,6 +64,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
+* Completed testing for the save_load_manager module.
 * Save/Load functionality improved further: Added overwriting save files and deleting all save files with confirmation popup.
 * Enhanced the game's Save/Load functionality to offer players the convenience of multiple save slots. When you choose to save or load the game, a user-friendly menu will now be displayed, presenting three available save slots.
 * Code refactored and documentation improved.

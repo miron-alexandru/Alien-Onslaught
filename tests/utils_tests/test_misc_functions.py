@@ -2,6 +2,7 @@
 This module tests miscellaneous functions that are used
  throughout the other modules in the game.
  """
+import os
 
 import unittest
 from unittest.mock import patch, MagicMock, call
@@ -18,6 +19,10 @@ from src.utils.game_utils import (
     render_text,
     calculate_control_positions,
     display_controls,
+    set_attribute,
+    create_save_dir,
+    render_simple_text,
+    display_simple_message,
 )
 
 from src.utils.constants import P1_CONTROLS, P2_CONTROLS, GAME_CONTROLS
@@ -28,7 +33,57 @@ class MiscFunctionsTests(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
+        pygame.init()
         self.screen = MagicMock()
+
+    def tearDown(self):
+        pygame.quit()
+
+    def test_create_save_dir(self):
+        """Test the create_save_dir function."""
+        # Define a temporary save folder for testing
+        test_save_folder = "save_folder"
+
+        # Assert that the folder does not exist initially.
+        self.assertFalse(os.path.exists(test_save_folder))
+
+        create_save_dir(test_save_folder)
+
+        # Check if the directory was created
+        self.assertTrue(os.path.exists(test_save_folder))
+        self.assertTrue(os.path.isdir(test_save_folder))
+
+        # Clean up
+        if os.path.exists(test_save_folder):
+            os.rmdir(test_save_folder)
+
+    def test_set_nested_attribute_dict(self):
+        """Test the set_attribute function with a dict."""
+        data = {"aliens": {"BossAlien": {"health": 100}}}
+
+        attribute_chain = ["aliens", "BossAlien", "health"]
+        value = 50
+
+        set_attribute(data, attribute_chain, value)
+
+        # Assertion
+        self.assertEqual(data["aliens"]["BossAlien"]["health"], value)
+
+    def test_set_nested_attribute_object(self):
+        """Test the set_attribute function with an object."""
+
+        class MyClass:
+            def __init__(self):
+                self.object = None
+
+        obj = MyClass()
+        attribute_chain = ["thunderbird_hp"]
+        value = 5
+
+        set_attribute(obj, attribute_chain, value)
+
+        # Assertion
+        self.assertEqual(obj.thunderbird_hp, value)
 
     @patch("pygame.sprite.spritecollide")
     def test_get_colliding_sprites(self, mock_spritecollide):
@@ -344,6 +399,56 @@ class MiscFunctionsTests(unittest.TestCase):
                     ),
                 ]
                 render_text_mock.assert_has_calls(expected_calls)
+
+    def test_render_simple_text(self):
+        """Test the render_simple_text function."""
+        # Set test data
+        font = pygame.font.Font(None, 36)
+        text = "Testing text!"
+        color = (0, 0, 0)
+        x = 400
+        y = 300
+
+        text_surface, text_rect = render_simple_text(text, font, color, x, y)
+
+        expected_surface = font.render(text, True, color)
+        expected_rect = expected_surface.get_rect()
+        expected_rect.center = (x, y)
+
+        # Assertions
+        self.assertEqual(text_surface.get_size(), expected_surface.get_size())
+        self.assertEqual(text_rect, expected_rect)
+
+    @patch("src.utils.game_utils.pygame")
+    @patch("src.utils.game_utils.render_simple_text")
+    def test_display_simple_message(self, mock_simple_text, mock_pygame):
+        """Test the display_simple_message function."""
+        # Set up testing data
+        self.screen.get_width.return_value = 800
+        mock_simple_text.return_value = (200, 100)
+
+        font = pygame.font.Font(None, 36)
+        text = "Testing text!"
+        color = (0, 0, 0)
+        delay_time = 1000
+
+        # Call the function
+        display_simple_message(self.screen, text, font, color, delay_time)
+
+        # Define expected values
+        expected_x = 800 // 2
+        expected_y = 200
+
+        # Assertions
+        mock_simple_text.assert_called_once_with(
+            text, font, color, expected_x, expected_y
+        )
+        self.screen.blit.assert_called_once_with(
+            mock_simple_text.return_value[0], mock_simple_text.return_value[1]
+        )
+
+        mock_pygame.display.flip.assert_called_once()
+        mock_pygame.time.delay.assert_called_once_with(delay_time)
 
 
 if __name__ == "__main__":

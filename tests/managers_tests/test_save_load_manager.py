@@ -22,6 +22,7 @@ class TestSaveLoadSystem(unittest.TestCase):
     """Test cases for the SaveLoadSystem class."""
 
     def setUp(self):
+        # pygame.init()
         self.game = MagicMock()
         self.game.settings = Settings()
         self.game.stats = GameStats(
@@ -633,6 +634,52 @@ class TestSaveLoadSystem(unittest.TestCase):
         self.assertEqual(self.game.settings.alien_speed, 5)
         self.assertEqual(self.game.settings.alien_bullet_speed, 8)
 
+    @patch("src.managers.save_load_manager.pygame")
+    def test_handle_save_load_menu(self, mock_pygame):
+        """Test the handle_save_load_menu method."""
+        surface_mock = MagicMock()
+        surface_mock.render.return_value = pygame.Surface((200, 50))
+        self.game.screen = MagicMock()
+
+        with patch(
+            "src.managers.save_load_manager.pygame.font.SysFont",
+            return_value=surface_mock,
+        ), patch("src.managers.save_load_manager.pygame.display.flip"):
+            self.save_load_manager._get_save_files = MagicMock(
+                return_value=["save1.save", "save2.save", "save3.save"]
+            )
+            self.save_load_manager._draw_save_slots = MagicMock()
+            mock_pygame.display.flip.side_effect = lambda: setattr(
+                self.save_load_manager, "MENU_RUNNING", False
+            )
+
+            # Call the method under test
+            self.save_load_manager.handle_save_load_menu(save=True)
+
+            # Make assertions based on expected calls and interactions
+            self.save_load_manager._get_save_files.assert_called_once()
+            self.game.screen.fill.assert_called_once_with((0, 0, 0))
+            self.save_load_manager._draw_save_slots.assert_called_once()
+
+            expected_blit_calls = [
+                call(
+                    surface_mock.render.return_value,
+                    surface_mock.render.return_value.get_rect(
+                        center=(self.game.screen.get_width() // 2 + 100, 465)
+                    ),
+                ),
+                call(
+                    surface_mock.render.return_value,
+                    surface_mock.render.return_value.get_rect(
+                        center=(self.game.screen.get_width() // 2 - 100, 465)
+                    ),
+                ),
+            ]
+
+            self.assertEqual(self.game.screen.blit.call_args_list, expected_blit_calls)
+            self.game.screen_manager.draw_cursor.assert_called_once()
+            mock_pygame.display.flip.assert_called_once()
+
     def test_get_save_files(self):
         """Test the get_save_files method."""
         # Create test files with different extensions
@@ -644,7 +691,9 @@ class TestSaveLoadSystem(unittest.TestCase):
         ]
         for filename in test_files:
             open(
-                os.path.join(self.save_load_manager.save_folder, filename), "w", encoding="utf-8"
+                os.path.join(self.save_load_manager.save_folder, filename),
+                "w",
+                encoding="utf-8",
             ).close()
 
         result = self.save_load_manager._get_save_files()
@@ -674,7 +723,9 @@ class TestSaveLoadSystem(unittest.TestCase):
         # Prepare data for testing
         test_save_file = "save1.save"
         open(
-            os.path.join(self.save_load_manager.save_folder, test_save_file), "w", encoding="utf-8"
+            os.path.join(self.save_load_manager.save_folder, test_save_file),
+            "w",
+            encoding="utf-8",
         ).close()
 
         save_files = [test_save_file]
@@ -699,7 +750,9 @@ class TestSaveLoadSystem(unittest.TestCase):
         test_save_files = ["save1.save", "save2.save", "save3.save"]
         for filename in test_save_files:
             open(
-                os.path.join(self.save_load_manager.save_folder, filename), "w", encoding="utf-8"
+                os.path.join(self.save_load_manager.save_folder, filename),
+                "w",
+                encoding="utf-8",
             ).close()
 
         text_color = (255, 255, 255)
@@ -903,7 +956,9 @@ class TestSaveLoadSystem(unittest.TestCase):
         sample_save_files = ["save1.save", "save2.save", "save3.save"]
         for save_file in sample_save_files:
             with open(
-                os.path.join(self.save_load_manager.save_folder, save_file), "w", encoding="utf-8"
+                os.path.join(self.save_load_manager.save_folder, save_file),
+                "w",
+                encoding="utf-8",
             ) as file:
                 file.write("Sample data")
 
