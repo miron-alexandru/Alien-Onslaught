@@ -209,8 +209,6 @@ class ScreenManager:
         height = max(min(size[1], max_height), min_height)
         size = (width, height)
 
-        self.screen = pygame.display.set_mode(size, self.screen_flag)
-
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
 
@@ -221,6 +219,7 @@ class ScreenManager:
         self.game.reset_bg = resize_image(self.settings.bg_img)
 
         self.game.game_over_manager.set_game_end_position()
+
         for ship in self.game.ships:
             ship.screen_rect = self.screen.get_rect()
             ship.set_cosmic_conflict_pos()

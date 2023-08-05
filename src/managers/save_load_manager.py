@@ -333,9 +333,12 @@ class SaveLoadSystem:
                             self._delete_all_save_files()
                         else:
                             play_sound(self.game.sound_manager.game_sounds, "click")
+                elif event.type == pygame.VIDEORESIZE:
+                    self.game.screen_manager.resize_screen(event.size)
+                    self.game.screen_manager.update_buttons()
 
             # Render the display
-            self.game.screen.fill((0, 0, 0))
+            self.game.screen.blit(self.game.bg_img, [0, 0])
             self._draw_save_slots(
                 font, text_color, center_x, save_files, slot_selected, slot_rects
             )

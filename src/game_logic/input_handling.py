@@ -64,6 +64,8 @@ class PlayerInput:
                 self.game.save_load_manager.handle_save_load_menu(save=True)
                 self.ui_options.paused = not self.ui_options.paused
 
+            case pygame.K_4:
+                self.game.kill_aliens()
             # If the game is not paused, check for player keypresses
             case _ if not self.ui_options.paused:
                 self._handle_thunderbird_controls(

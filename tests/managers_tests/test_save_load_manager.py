@@ -658,10 +658,11 @@ class TestSaveLoadSystem(unittest.TestCase):
 
             # Make assertions based on expected calls and interactions
             self.save_load_manager._get_save_files.assert_called_once()
-            self.game.screen.fill.assert_called_once_with((0, 0, 0))
+            # self.game.screen.fill.assert_called_once_with((0, 0, 0))
             self.save_load_manager._draw_save_slots.assert_called_once()
 
             expected_blit_calls = [
+                call(self.game.bg_img, [0, 0]),
                 call(
                     surface_mock.render.return_value,
                     surface_mock.render.return_value.get_rect(

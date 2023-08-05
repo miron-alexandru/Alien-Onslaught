@@ -413,9 +413,6 @@ class TestScreenManager(unittest.TestCase):
         self.screen_manager.resize_screen(new_size)
 
         # Assertions
-        pygame.display.set_mode.assert_called_once_with(
-            new_size, self.screen_manager.screen_flag
-        )
         self.assertEqual(
             self.settings.screen_width, self.screen_manager.screen.get_rect().width
         )
