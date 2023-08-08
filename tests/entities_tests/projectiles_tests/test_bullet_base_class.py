@@ -31,8 +31,6 @@ class TestBullet(unittest.TestCase):
     def test_init(self):
         """Test the initialization of the bullet."""
         self.assertEqual(self.bullet.game, self.game)
-        self.assertEqual(self.bullet.screen, self.game.screen)
-        self.assertEqual(self.bullet.settings, self.game.settings)
         self.assertEqual(self.bullet.ship, self.ship)
         self.assertEqual(self.bullet.image, self.bullet_image)
         self.assertEqual(

@@ -36,9 +36,11 @@ from src.managers.sounds_manager import SoundManager
 from src.managers.game_over_manager import EndGameManager
 from src.managers.alien_managers.alien_bullets_manager import AlienBulletsManager
 from src.managers.alien_managers.aliens_manager import AliensManager
-from src.managers.ui_managers.screen_manager import ScreenManager, LoadingScreen
+from src.managers.ui_managers.screen_manager import ScreenManager
+from src.managers.ui_managers.loading_screen import LoadingScreen
 from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
+from src.managers.high_score_manager import HighScoreManager
 from src.managers.player_managers.ships_manager import ShipsManager
 from src.managers.player_managers.ship_selection_manager import ShipSelection
 from src.managers.save_load_manager import SaveLoadSystem
@@ -171,6 +173,7 @@ class AlienOnslaught:
             self, self.settings, self.stats, self.screen
         )
         self.save_load_manager = SaveLoadSystem(self, "save", "save_data")
+        self.high_score_manager = HighScoreManager(self)
 
     def run_menu(self):
         """Run the main menu screen"""
@@ -235,14 +238,14 @@ class AlienOnslaught:
         """Set variables for the singleplayer game mode."""
         self.thunderbird_ship.state.single_player = True
         self.ships = [self.thunderbird_ship]
-        self.score_board.update_high_score_filename()
+        self.high_score_manager.update_high_score_filename()
         self.gameplay_manager.reset_cosmic_conflict()
 
     def _set_multiplayer_variables(self):
         """Set variables for the multiplayer game mode."""
         self.thunderbird_ship.state.single_player = False
         self.ships = [self.thunderbird_ship, self.phoenix_ship]
-        self.score_board.update_high_score_filename()
+        self.high_score_manager.update_high_score_filename()
 
     def _start_game(self):
         """Initialize the game."""

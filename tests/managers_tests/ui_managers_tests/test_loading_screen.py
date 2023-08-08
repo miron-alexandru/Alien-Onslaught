@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pygame
 
-from src.managers.ui_managers.screen_manager import LoadingScreen
+from src.managers.ui_managers.loading_screen import LoadingScreen
 
 
 class LoadingScreenTest(unittest.TestCase):

@@ -89,5 +89,5 @@ class EndGameManager:
         if not self.game.ui_options.high_score_saved:
             game_mode = self.settings.game_modes.game_mode or "normal"
             high_score_key = GAME_MODE_SCORE_KEYS.get(game_mode, "high_scores")
-            self.game.score_board.save_high_score(high_score_key)
+            self.game.high_score_manager.save_high_score(high_score_key)
             self.game.ui_options.high_score_saved = True

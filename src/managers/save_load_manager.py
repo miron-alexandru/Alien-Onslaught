@@ -2,6 +2,7 @@
 The save_load_manager module contains the SaveLoadSystem class that
 implements the functionality of saving and loading the game.
 """
+
 import datetime
 import pickle
 import os
@@ -9,7 +10,6 @@ import sys
 
 import tkinter as tk
 from tkinter import messagebox
-from tkinter import simpledialog
 
 import pygame
 
@@ -40,7 +40,7 @@ class SaveLoadSystem:
         self.save_folder = save_folder
         self.data = {}
         create_save_dir(self.save_folder)
-        self.MENU_RUNNING = False
+        self.menu_running = False
 
     def get_data(self, data_name, data):
         """Helper method that assigns data to the data dict."""
@@ -274,7 +274,7 @@ class SaveLoadSystem:
         to select and interact with available save slots.
         """
         # Create the save directory and get the list of save files
-        self.MENU_RUNNING = True
+        self.menu_running = True
 
         save_files = self._get_save_files()
         font = pygame.font.SysFont("verdana", 22)
@@ -285,7 +285,7 @@ class SaveLoadSystem:
         cancel_text = font.render("Exit", True, text_color)
         delete_text = font.render("Clear Saves", True, text_color)
 
-        while self.MENU_RUNNING:
+        while self.menu_running:
             center_x = self.game.screen.get_width() // 2
             cancel_rect = cancel_text.get_rect(
                 center=(self.game.screen.get_width() // 2 + 100, 465)
@@ -326,7 +326,7 @@ class SaveLoadSystem:
                         play_sound(self.game.sound_manager.game_sounds, "click")
                         return
 
-                    elif delete_rect.collidepoint(mouse_x, mouse_y):
+                    if delete_rect.collidepoint(mouse_x, mouse_y):
                         play_sound(self.game.sound_manager.game_sounds, "click")
                         if confirm := self._show_confirmation_popup():
                             play_sound(self.game.sound_manager.game_sounds, "click")

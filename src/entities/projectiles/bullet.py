@@ -13,19 +13,18 @@ class Bullet(Sprite):
         """Create a bullet object at the ship's current position"""
         super().__init__()
         self.game = game
-        self.screen = game.screen
-        self.settings = game.settings
+        self.speed = speed
         self.ship = ship
         self.image = image_path
+
         self.rect = self.image.get_rect()
         self.rect.midtop = (ship.rect.centerx, ship.rect.top)
         self.y_pos = float(self.rect.y)
         self.x_pos = float(self.rect.x)
-        self.speed = speed
 
     def update(self):
         """Update the bullet location on screen."""
-        if self.settings.game_modes.cosmic_conflict:
+        if self.game.settings.game_modes.cosmic_conflict:
             self.x_pos += (
                 self.speed if self.ship == self.game.thunderbird_ship else -self.speed
             )
@@ -36,7 +35,7 @@ class Bullet(Sprite):
 
     def draw(self):
         """Draw the bullet to the screen."""
-        self.screen.blit(self.image, self.rect)
+        self.game.screen.blit(self.image, self.rect)
 
     def scale_bullet(self, scale):
         """Scale the bullet image and rect."""

@@ -18,8 +18,8 @@ class Power(Sprite):
 
     def __init__(self, game):
         super().__init__()
-        self.screen = game.screen
-        self.settings = game.settings
+        self.game = game
+
         self.image = load_single_image(POWERS["power"])
         self.health_image = load_single_image(POWERS["health"])
         self.speed = GAME_CONSTANTS["POWER_SPEED"]
@@ -33,7 +33,9 @@ class Power(Sprite):
     def _initialize_position(self):
         """Set the initial position of the power."""
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, self.settings.screen_width - self.rect.width)
+        self.rect.x = random.randint(
+            0, self.game.settings.screen_width - self.rect.width
+        )
         self.rect.y = 0
         self.y_pos = float(self.rect.y)
 
@@ -56,4 +58,4 @@ class Power(Sprite):
 
     def draw(self):
         """Draw the power on the screen."""
-        self.screen.blit(self.image, self.rect)
+        self.game.screen.blit(self.image, self.rect)

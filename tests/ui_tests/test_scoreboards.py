@@ -42,7 +42,6 @@ class ScoreBoardTest(unittest.TestCase):
         self.assertEqual(self.scoreboard.stats, self.game.stats)
         self.assertEqual(self.scoreboard.thunderbird_ship, self.game.thunderbird_ship)
         self.assertEqual(self.scoreboard.phoenix_ship, self.game.phoenix_ship)
-        self.assertEqual(self.scoreboard.high_scores_file, "high_score.json")
         self.assertIsInstance(self.scoreboard.missiles_icon, pygame.Surface)
         self.assertIsInstance(self.scoreboard.phoenix_missiles_icon, pygame.Surface)
         self.assertEqual(self.scoreboard.text_color, (238, 75, 43))
@@ -198,96 +197,6 @@ class ScoreBoardTest(unittest.TestCase):
                 5 + (index + 1) * (health.rect.width + 5)
             )
             self.assertEqual(health.rect.x, expected_x)
-
-    @patch("builtins.open")
-    @patch("json.load")
-    @patch("json.dump")
-    @patch("src.ui.scoreboards.get_player_name")
-    def test_save_high_score(
-        self, mock_get_player_name, mock_json_dump, mock_json_load, mock_open
-    ):
-        """Test the saving of the high score."""
-        mock_get_player_name.return_value = "Ake"
-        mock_open.return_value.__enter__.return_value = (
-            mock_open  # Mock the file object
-        )
-
-        # Set up the necessary mock objects and values
-        high_scores = {"score_key": []}
-        mock_json_load.return_value = high_scores
-
-        self.game.stats.high_score = 100
-        self.scoreboard.save_high_score("score_key")
-
-        # Verify that the file was opened and read
-        mock_open.has_any_call(self.scoreboard.high_scores_file, "r", encoding="utf-8")
-
-        # Verify that json.load was called with the opened file
-        mock_json_load.assert_called_once_with(mock_open)
-
-        # Verify that get_player_name was called
-        mock_get_player_name.assert_called_once_with(
-            self.game.screen,
-            self.game.bg_img,
-            self.game.screen_manager.draw_cursor,
-            self.game.stats.high_score,
-            self.game.settings.game_end_img,
-            self.game.settings.game_end_rect,
-        )
-
-        # Verify that the high score entry was added or updated
-        expected_entry = {"name": "Ake", "score": 100}
-        self.assertIn(expected_entry, high_scores["score_key"])
-
-        # Verify that the file was opened for writing and the data was dumped
-        mock_open.assert_called_with(
-            self.scoreboard.high_scores_file, "w", encoding="utf-8"
-        )
-        mock_json_dump.assert_called_once_with(high_scores, mock_open)
-
-    @patch("builtins.open")
-    @patch("json.load")
-    @patch("json.dump")
-    def test_delete_high_scores(self, mock_json_dump, mock_json_load, mock_open):
-        """Test the delete_high_scores method."""
-        mock_open.return_value.__enter__.return_value = (
-            mock_open  # Mock the file object
-        )
-
-        # Set up the necessary mock objects
-        high_scores = {"score_key1": [], "score_key2": []}
-        mock_json_load.return_value = high_scores
-
-        # Delete the high scores for the "score_key1"
-        self.scoreboard.delete_high_scores("score_key1")
-
-        # Verify that the file was opened and read
-        mock_open.has_any_call(self.scoreboard.high_scores_file, "r", encoding="utf-8")
-
-        # Verify that json.load was called with the opened file
-        mock_json_load.assert_called_once_with(mock_open)
-
-        # Verify that the high scores for "score_key1" were deleted
-        self.assertNotIn("score_key1", high_scores)
-
-        # Verify that the file was opened for writing and the data was dumped
-        mock_open.assert_called_with(
-            self.scoreboard.high_scores_file, "w", encoding="utf-8"
-        )
-        mock_json_dump.assert_called_once_with(high_scores, mock_open)
-
-    def test_update_high_score_filename(self):
-        """Test the update_high_score_filename method."""
-        self.update_high_score_filename_helper(False, "high_score.json")
-        self.update_high_score_filename_helper(True, "single_high_score.json")
-
-    def update_high_score_filename_helper(self, singleplayer, high_score_filename):
-        """Helper function for the test_update_high_score_filename."""
-        self.game.singleplayer = singleplayer
-
-        self.scoreboard.update_high_score_filename()
-
-        self.assertEqual(self.scoreboard.high_scores_file, high_score_filename)
 
     def test_show_score(self):
         """Test the show_score method."""

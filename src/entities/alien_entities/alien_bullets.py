@@ -8,9 +8,10 @@ Classes:
 """
 
 import random
-import pygame
 
+import pygame
 from pygame.sprite import Sprite
+
 from src.utils.constants import LEVEL_PREFIX, ALIEN_BULLETS_IMG
 from src.utils.game_utils import (
     load_alien_bullets,

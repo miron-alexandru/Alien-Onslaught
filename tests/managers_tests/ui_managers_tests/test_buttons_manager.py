@@ -363,6 +363,7 @@ class GameButtonsManagerTest(unittest.TestCase):
         self.assertFalse(self.game.ui_options.show_game_modes)
 
     def test_handle_load_game_button(self):
+        """Test the handle_load_game_button."""
         self.manager.handle_load_game_button()
 
         self.game.save_load_manager.handle_save_load_menu.assert_called_once()
@@ -550,17 +551,19 @@ class GameButtonsManagerTest(unittest.TestCase):
         self.manager.handle_delete_button()
 
         # Assert updated state
-        self.game.score_board.delete_high_scores.assert_called_once_with(
+        self.game.high_score_manager.delete_high_scores.assert_called_once_with(
             "endless_scores"
         )
         self.assertFalse(self.game.ui_options.show_high_scores)
 
         # Normal game mode
-        self.game.score_board.delete_high_scores.reset_mock()
+        self.game.high_score_manager.delete_high_scores.reset_mock()
         self.game.settings.game_modes.game_mode = "normal"
 
         self.manager.handle_delete_button()
-        self.game.score_board.delete_high_scores.assert_called_once_with("high_scores")
+        self.game.high_score_manager.delete_high_scores.assert_called_once_with(
+            "high_scores"
+        )
 
     def test_create_button_actions_dict(self):
         """Test the create_button_actions_dict method."""

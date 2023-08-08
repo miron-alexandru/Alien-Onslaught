@@ -21,8 +21,6 @@ class TestPower(unittest.TestCase):
 
     def test_init(self):
         """Test the initialization of the Power."""
-        self.assertEqual(self.power.screen, self.game.screen)
-        self.assertEqual(self.power.settings, self.game.settings)
         self.assertIsInstance(self.power.image, pygame.Surface)
         self.assertIsInstance(self.power.health_image, pygame.Surface)
         self.assertIsInstance(self.power.speed, float)

@@ -6,7 +6,6 @@ state of the ships.
 
 import os
 import time
-from dataclasses import dataclass
 
 import pygame
 from pygame.sprite import Sprite
@@ -14,6 +13,7 @@ from pygame.sprite import Sprite
 from src.animations.ship_animations import Animations
 from src.utils.game_utils import BASE_PATH
 from src.utils.constants import SHIPS, ship_image_paths
+from src.utils.game_dataclasses import ShipStates
 
 
 class Ship(Sprite):
@@ -22,10 +22,11 @@ class Ship(Sprite):
     def __init__(self, game, image_path, conflict_pos, missiles=0):
         """Initialize the ship and set its starting position."""
         super().__init__()
-        self.screen = game.screen
-        self.settings = game.settings
         self.game = game
+        self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
+        self.settings = game.settings
+
         self.image_path = image_path
         self.offset = 0
         self.starting_missiles = 3
@@ -265,21 +266,3 @@ class Ship(Sprite):
         in the settings file for the specified player.
         """
         self.ship_speed = getattr(self.settings, f"{player}_ship_speed")
-
-
-@dataclass
-class ShipStates:
-    """A dataclass to manage ship states."""
-
-    alive: bool = True
-    exploding: bool = False
-    shielded: bool = False
-    warping: bool = False
-    single_player: bool = False
-    immune: bool = False
-    empowered: bool = False
-    reverse: bool = False
-    disarmed: bool = False
-    scaled: bool = False
-    scaled_weapon: bool = False
-    firing: bool = False

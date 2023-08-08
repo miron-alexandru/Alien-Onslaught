@@ -25,7 +25,8 @@ from src.managers.sounds_manager import SoundManager
 from src.managers.game_over_manager import EndGameManager
 from src.managers.alien_managers.alien_bullets_manager import AlienBulletsManager
 from src.managers.alien_managers.aliens_manager import AliensManager
-from src.managers.ui_managers.screen_manager import ScreenManager, LoadingScreen
+from src.managers.ui_managers.screen_manager import ScreenManager
+from src.managers.ui_managers.loading_screen import LoadingScreen
 from src.managers.ui_managers.buttons_manager import GameButtonsManager
 from src.managers.player_managers.weapons_manager import WeaponsManager
 from src.managers.player_managers.ships_manager import ShipsManager
@@ -60,6 +61,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.game.aliens_manager = MagicMock()
         self.game.ship_selection = MagicMock()
         self.game.save_load_manager = MagicMock()
+        self.game.high_score_manager = MagicMock()
 
     def tearDown(self):
         pygame.quit()
@@ -365,7 +367,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
 
         self.assertTrue(self.game.thunderbird_ship.state.single_player)
         self.assertEqual(self.game.ships, [self.game.thunderbird_ship])
-        self.game.score_board.update_high_score_filename.assert_called_once()
+        self.game.high_score_manager.update_high_score_filename.assert_called_once()
         self.game.gameplay_manager.reset_cosmic_conflict.assert_called_once()
 
     def test__set_multiplayer_variables(self):
@@ -376,7 +378,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.assertEqual(
             self.game.ships, [self.game.thunderbird_ship, self.game.phoenix_ship]
         )
-        self.game.score_board.update_high_score_filename.assert_called_once()
+        self.game.high_score_manager.update_high_score_filename.assert_called_once()
 
     def test__start_game(self):
         """Test the start_game method."""

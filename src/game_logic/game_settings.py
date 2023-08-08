@@ -6,13 +6,13 @@ such as ships, aliens, bosses, and asteroids.
 It also contains the UIOptions and GameModes dataclasses.
 """
 
-from dataclasses import dataclass
 from src.utils.constants import (
     BACKGROUNDS,
     GAME_CONSTANTS,
     OTHER,
 )
 from src.utils.game_utils import load_images
+from src.utils.game_dataclasses import GameModes, UIOptions
 
 
 class Settings:
@@ -206,31 +206,3 @@ class Settings:
         self.ui_options.show_high_scores = False
         self.ui_options.show_game_modes = False
         self.ui_options.ship_selection = False
-
-
-@dataclass
-class UIOptions:
-    """Represents options for the user interface of the game."""
-
-    paused: bool = False
-    show_difficulty: bool = False
-    resizable: bool = False
-    high_score_saved: bool = False
-    show_high_scores: bool = False
-    show_game_modes: bool = False
-    game_over_sound_played: bool = False
-    ship_selection: bool = False
-
-
-@dataclass
-class GameModes:
-    """Represents the available game modes for the game"""
-
-    endless_onslaught: bool = False
-    slow_burn: bool = False
-    meteor_madness: bool = False
-    boss_rush: bool = False
-    last_bullet: bool = False
-    cosmic_conflict: bool = False
-    one_life_reign: bool = False
-    game_mode: str = "normal"

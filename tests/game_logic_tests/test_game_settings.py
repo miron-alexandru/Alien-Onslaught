@@ -6,7 +6,8 @@ settings for the game.
 import unittest
 import pygame
 
-from src.game_logic.game_settings import Settings, UIOptions, GameModes
+from src.game_logic.game_settings import Settings
+from src.utils.game_dataclasses import UIOptions, GameModes
 
 
 class SettingsTestCase(unittest.TestCase):

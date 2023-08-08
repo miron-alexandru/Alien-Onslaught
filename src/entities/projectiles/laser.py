@@ -15,11 +15,10 @@ class Laser(Sprite):
 
     def __init__(self, game, ship):
         super().__init__()
-        self.screen = game.screen
-        self.settings = game.settings
         self.game = game
         self.ship = ship
 
+        self.settings = game.settings
         self.frames = laser_frames
         self.current_frame = 0
         self.rect = self.frames[0].get_rect()
@@ -50,10 +49,6 @@ class Laser(Sprite):
         else:
             self.rect.midbottom = self.ship.rect.midtop
 
-    def draw(self):
-        """Draw laser on screen."""
-        self.screen.blit(self.image, self.rect)
-
     def set_laser_frames(self):
         """Set the image of the laser based
         on its current state and game mode.
@@ -70,3 +65,7 @@ class Laser(Sprite):
             self.rect = self.image.get_rect()
         else:
             self.image = self.frames[self.current_frame]
+
+    def draw(self):
+        """Draw laser on screen."""
+        self.game.screen.blit(self.image, self.rect)

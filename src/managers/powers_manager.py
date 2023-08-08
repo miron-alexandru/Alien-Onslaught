@@ -19,13 +19,14 @@ class PowerEffectsManager:
     def __init__(self, game, score_board, stats):
         self.game = game
         self.screen = game.screen
+        self.score_board = score_board
+        self.stats = stats
+
         self.settings = game.settings
         self.thunderbird_ship = game.thunderbird_ship
         self.phoenix_ship = game.phoenix_ship
         self.thunderbird_bullets = game.thunderbird_bullets
         self.phoenix_bullets = game.phoenix_bullets
-        self.score_board = score_board
-        self.stats = stats
 
         self.last_power_up_time = 0
         self.power_down_time = 35

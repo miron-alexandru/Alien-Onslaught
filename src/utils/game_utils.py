@@ -39,6 +39,17 @@ else:
 # IMAGE RELATED FINCTIONS
 
 
+def scale_image(image, scale_factor):
+    """Scales the given image and returns it."""
+    return pygame.transform.smoothscale(
+        image,
+        (
+            int(image.get_width() * scale_factor),
+            int(image.get_height() * scale_factor),
+        ),
+    )
+
+
 def load_single_image(relative_path):
     """Loads an image based on the BASED_PATH."""
     base_path = BASE_PATH

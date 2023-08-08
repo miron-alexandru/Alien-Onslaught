@@ -15,13 +15,11 @@ class Button:
     ):
         """Initialize button attributes."""
         self.screen = game.screen
-        self.screen_rect = self.screen.get_rect()
-        # variable used for buttons that toggle visibility
-        self.visible = False
         self.description = description
-
-        # Load button image and scale it to the desired size.
         self.image = pygame.image.load(image_loc)
+        self.screen_rect = self.screen.get_rect()
+
+        self.visible = False
 
         # Build the button's rect object and set its position.
         self.rect = self.image.get_rect()

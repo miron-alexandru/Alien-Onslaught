@@ -18,12 +18,12 @@ class Missile(Sprite):
 
     def __init__(self, game, ship):
         super().__init__()
-        self.screen = game.screen
-        self.settings = game.settings
         self.game = game
         self.ship = ship
-        self.destroy_delay = 50
+        self.settings = game.settings
+        self.screen = self.game.screen
 
+        self.destroy_delay = 50
         self.frames = missile_frames
         self.current_frame = 0
         self.set_missile_frames()
@@ -65,18 +65,6 @@ class Missile(Sprite):
                 self.y_pos -= self.settings.missiles_speed
                 self.rect.y = self.y_pos
 
-    def draw(self):
-        """Draw the missile or explosion effect,
-        depending on whether it's destroyed or not."""
-        if self.is_destroyed:
-            self.destroy_anim.draw_explosion()
-        else:
-            self.screen.blit(self.image, self.rect)
-
-    def explode(self):
-        """Trigger the explosion effect."""
-        self.is_destroyed = True
-
     def set_missile_frames(self):
         """Set the missile's image frame based
         on its current state and game mode.
@@ -92,3 +80,15 @@ class Missile(Sprite):
                 )
         else:
             self.image = self.frames[self.current_frame]
+
+    def draw(self):
+        """Draw the missile or explosion effect,
+        depending on whether it's destroyed or not."""
+        if self.is_destroyed:
+            self.destroy_anim.draw_explosion()
+        else:
+            self.screen.blit(self.image, self.rect)
+
+    def explode(self):
+        """Trigger the explosion effect."""
+        self.is_destroyed = True

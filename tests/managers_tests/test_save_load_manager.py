@@ -650,7 +650,7 @@ class TestSaveLoadSystem(unittest.TestCase):
             )
             self.save_load_manager._draw_save_slots = MagicMock()
             mock_pygame.display.flip.side_effect = lambda: setattr(
-                self.save_load_manager, "MENU_RUNNING", False
+                self.save_load_manager, "menu_running", False
             )
 
             # Call the method under test
