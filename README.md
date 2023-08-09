@@ -56,6 +56,8 @@
 ![Gameplay](game_assets/images/game_images/normal4.PNG)
 ![Gameplay](game_assets/images/game_images/cosmic_conflict.PNG)
 ![Gameplay](game_assets/images/game_images/boss_fight.PNG)
+![SaveGame](game_assets/images/game_images/save_game.PNG)
+![LoadGame](game_assets/images/game_images/load_game.PNG)
 ![HighScores](game_assets/images/game_images/high_scores.PNG)
 ![GameOver](game_assets/images/game_images/game_over.PNG)
 ### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/game_assets/images/game_images)
@@ -64,6 +66,8 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.2:
+* Code refactored inside the save_load_manager module.
+* Improved UI for the Save/Load feature.
 * Code refactored in different locations to improve maintainability.
 * Completed testing for the save_load_manager module.
 * Save/Load functionality improved further: Added overwriting save files and deleting all save files with confirmation popup.

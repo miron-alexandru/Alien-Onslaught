@@ -437,7 +437,7 @@ class MiscFunctionsTests(unittest.TestCase):
 
         # Define expected values
         expected_x = 800 // 2
-        expected_y = 200
+        expected_y = 600
 
         # Assertions
         mock_simple_text.assert_called_once_with(

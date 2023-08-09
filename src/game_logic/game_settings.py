@@ -66,6 +66,13 @@ class Settings:
         self.cursor_rect = self.cursor_img.get_rect()
         self.game_icon = self.misc_images["game_icon"]
 
+        # Load and Save game title images
+        self.load_game_img = self.misc_images["load_game"]
+        self.load_game_rect = self.load_game_img.get_rect()
+
+        self.save_game_img = self.misc_images["save_game"]
+        self.save_game_rect = self.save_game_img.get_rect()
+
     def _init_game_settings(self):
         """This method initializes the settings
         related to game modes and user interface options,

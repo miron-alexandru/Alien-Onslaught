@@ -423,6 +423,8 @@ class TestScreenManager(unittest.TestCase):
         self.assertEqual(mock_resize.call_count, 5)
 
         self.game.game_over_manager.set_game_end_position.assert_called_once()
+        self.game.save_load_manager.update_rect_positions.assert_called_once()
+        self.game.save_load_manager.set_screen_title_position.assert_called_once()
 
         mock_ship.screen_rect = self.screen.get_rect.return_value
         mock_ship.set_cosmic_conflict_pos.assert_called_once()

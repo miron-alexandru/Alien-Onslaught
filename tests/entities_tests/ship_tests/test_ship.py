@@ -77,9 +77,7 @@ class ShipTestCase(unittest.TestCase):
     @patch("src.entities.player_entities.ship.Ship.reset_ship_size")
     @patch("pygame.time.get_ticks")
     @patch("src.entities.player_entities.ship.time.time")
-    def test_update_state(
-        self, mock_time, mock_get_ticks, mock_reset_ship_size
-    ):
+    def test_update_state(self, mock_time, mock_get_ticks, mock_reset_ship_size):
         """Test case for the update_state method."""
         mock_image = MagicMock()
         mock_time.return_value = 10

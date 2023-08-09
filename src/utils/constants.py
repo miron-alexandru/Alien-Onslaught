@@ -168,6 +168,8 @@ OTHER = {
     "game_title": "other/alien_onslaught.bmp",
     "cursor": "other/cursor.bmp",
     "game_icon": "other/game_icon.png",
+    "save_game": "other/save_game_img.png",
+    "load_game": "other/load_game_img.png",
 }
 
 

@@ -28,10 +28,12 @@ class TestSaveLoadSystem(unittest.TestCase):
         self.game.stats = GameStats(
             self.game, self.game.phoenix_ship, self.game.thunderbird_ship
         )
-        self.game.screen = pygame.Surface((1280, 700))
+        self.game.screen = self.game.bg_img = pygame.Surface((1280, 700))
         self.font = MagicMock()
         self.font.render.return_value = pygame.Surface((200, 50))
-        with patch("src.managers.save_load_manager.create_save_dir"):
+        with patch("src.managers.save_load_manager.create_save_dir"), patch(
+            "src.managers.save_load_manager.pygame.font.SysFont", return_value=self.font
+        ):
             self.save_load_manager = SaveLoadSystem(self.game, "save", "save_data")
 
         os.makedirs(self.save_load_manager.save_folder, exist_ok=True)
@@ -48,9 +50,18 @@ class TestSaveLoadSystem(unittest.TestCase):
     def test_init(self):
         """Test the initialization of the class."""
         self.assertEqual(self.save_load_manager.game, self.game)
+        self.assertEqual(self.save_load_manager.screen, self.game.screen)
         self.assertEqual(self.save_load_manager.file_extension, "save")
         self.assertEqual(self.save_load_manager.save_folder, "save_data")
-        self.assertIsInstance(self.save_load_manager.data, dict)
+        self.assertFalse(self.save_load_manager.menu_running)
+
+        self.assertEqual(self.save_load_manager.font, self.font)
+        self.assertEqual(self.save_load_manager.center_x, 640)
+
+        self.assertIsInstance(self.save_load_manager.cancel_text, pygame.Surface)
+        self.assertIsInstance(self.save_load_manager.delete_text, pygame.Surface)
+        self.assertIsInstance(self.save_load_manager.cancel_rect, pygame.Rect)
+        self.assertIsInstance(self.save_load_manager.delete_rect, pygame.Rect)
 
     def test_get_data(self):
         """Test the get_data helper method."""
@@ -637,14 +648,10 @@ class TestSaveLoadSystem(unittest.TestCase):
     @patch("src.managers.save_load_manager.pygame")
     def test_handle_save_load_menu(self, mock_pygame):
         """Test the handle_save_load_menu method."""
-        surface_mock = MagicMock()
-        surface_mock.render.return_value = pygame.Surface((200, 50))
-        self.game.screen = MagicMock()
+        self.save_load_manager.display_screen_title = MagicMock()
+        self.save_load_manager.screen = MagicMock()
 
-        with patch(
-            "src.managers.save_load_manager.pygame.font.SysFont",
-            return_value=surface_mock,
-        ), patch("src.managers.save_load_manager.pygame.display.flip"):
+        with patch("src.managers.save_load_manager.pygame.display.flip"):
             self.save_load_manager._get_save_files = MagicMock(
                 return_value=["save1.save", "save2.save", "save3.save"]
             )
@@ -664,20 +671,22 @@ class TestSaveLoadSystem(unittest.TestCase):
             expected_blit_calls = [
                 call(self.game.bg_img, [0, 0]),
                 call(
-                    surface_mock.render.return_value,
-                    surface_mock.render.return_value.get_rect(
+                    self.font.render.return_value,
+                    self.font.render.return_value.get_rect(
                         center=(self.game.screen.get_width() // 2 + 100, 465)
                     ),
                 ),
                 call(
-                    surface_mock.render.return_value,
-                    surface_mock.render.return_value.get_rect(
+                    self.font.render.return_value,
+                    self.font.render.return_value.get_rect(
                         center=(self.game.screen.get_width() // 2 - 100, 465)
                     ),
                 ),
             ]
-
-            self.assertEqual(self.game.screen.blit.call_args_list, expected_blit_calls)
+            self.assertEqual(
+                self.save_load_manager.screen.blit.call_args_list, expected_blit_calls
+            )
+            self.save_load_manager.display_screen_title.assert_called_once()
             self.game.screen_manager.draw_cursor.assert_called_once()
             mock_pygame.display.flip.assert_called_once()
 
@@ -772,10 +781,10 @@ class TestSaveLoadSystem(unittest.TestCase):
         )
         current_time = datetime.datetime.now().strftime("%d %b %Y  %I:%M %p")
         expected_text_0 = f"Save File 1: Saved On: {current_time}"
-        actual_text_0 = self.font.render.call_args_list[0][0][0]
+        actual_text_0 = self.font.render.call_args_list[2][0][0]
 
         expected_text_1 = f"Save File 2: Saved On: {current_time}"
-        actual_text_1 = self.font.render.call_args_list[1][0][0]
+        actual_text_1 = self.font.render.call_args_list[3][0][0]
         # Assertions:
         mock_draw_rect.assert_called_once()
         self.assertEqual(actual_text_0, expected_text_0)
@@ -1001,6 +1010,33 @@ class TestSaveLoadSystem(unittest.TestCase):
         mock_tk.assert_called_once()
         mock_askyesno.assert_called_once_with(
             "Confirmation", "Overwrite this save file?"
+        )
+
+    def test_update_rect_positions(self):
+        """Test the update_rect_positions method."""
+        self.save_load_manager.update_rect_positions()
+
+        # Assertions
+        self.assertEqual(self.save_load_manager.center_x, 640)
+        self.assertEqual(self.save_load_manager.cancel_rect.center, (740, 465))
+        self.assertEqual(self.save_load_manager.delete_rect.center, (540, 465))
+
+    def test_set_screen_title_position(self):
+        """Test the set_screen_title_position method."""
+        self.save_load_manager.set_screen_title_position()
+
+        # Assertions
+        self.assertEqual(self.game.settings.save_game_rect.center, (640, 170))
+        self.assertEqual(self.game.settings.load_game_rect.center, (640, 170))
+
+    def test_display_screen_title(self):
+        """Test the display_screen_title method."""
+        self.save_load_manager.screen = MagicMock()
+        save = True
+        self.save_load_manager.display_screen_title(save)
+
+        self.save_load_manager.screen.blit.assert_called_once_with(
+            self.game.settings.save_game_img, self.game.settings.save_game_rect
         )
 
 

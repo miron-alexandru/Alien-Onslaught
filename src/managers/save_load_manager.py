@@ -1,6 +1,6 @@
 """
 The save_load_manager module contains the SaveLoadSystem class that
-implements the functionality of saving and loading the game.
+implements the functionality of saving and loading the game from a save file.
 """
 
 import datetime
@@ -36,11 +36,30 @@ class SaveLoadSystem:
 
     def __init__(self, game, file_extension, save_folder):
         self.game = game
+        self.screen = game.screen
         self.file_extension = file_extension
         self.save_folder = save_folder
+        self.menu_running = False
+
         self.data = {}
         create_save_dir(self.save_folder)
-        self.menu_running = False
+
+        self.font = pygame.font.SysFont("verdana", 22)
+        self.text_color = (225, 225, 225)
+
+        self.center_x = self.screen.get_width() // 2
+
+        self.cancel_text = self.font.render("Exit", True, self.text_color)
+        self.delete_text = self.font.render("Clear Saves", True, self.text_color)
+
+        self.cancel_rect = self.cancel_text.get_rect(
+            center=(self.screen.get_width() // 2 + 100, 465)
+        )
+        self.delete_rect = self.delete_text.get_rect(
+            center=(self.screen.get_width() // 2 - 100, 465)
+        )
+
+        self.set_screen_title_position()
 
     def get_data(self, data_name, data):
         """Helper method that assigns data to the data dict."""
@@ -277,23 +296,10 @@ class SaveLoadSystem:
         self.menu_running = True
 
         save_files = self._get_save_files()
-        font = pygame.font.SysFont("verdana", 22)
-        text_color = (255, 255, 255)
         slot_selected = 0
         slot_rects = []
 
-        cancel_text = font.render("Exit", True, text_color)
-        delete_text = font.render("Clear Saves", True, text_color)
-
         while self.menu_running:
-            center_x = self.game.screen.get_width() // 2
-            cancel_rect = cancel_text.get_rect(
-                center=(self.game.screen.get_width() // 2 + 100, 465)
-            )
-            delete_rect = delete_text.get_rect(
-                center=(self.game.screen.get_width() // 2 - 100, 465)
-            )
-
             # Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -308,7 +314,7 @@ class SaveLoadSystem:
                         play_sound(self.game.sound_manager.game_sounds, "keypress")
                         slot_selected = (slot_selected + 1) % 3
                     elif event.key == pygame.K_RETURN:
-                        self._handle_save_slot_action(font, slot_selected, save)
+                        self._handle_save_slot_action(self.font, slot_selected, save)
                         return
                     elif event.key == pygame.K_ESCAPE:
                         play_sound(self.game.sound_manager.game_sounds, "keypress")
@@ -319,14 +325,16 @@ class SaveLoadSystem:
                     for i, rect in enumerate(slot_rects):
                         if rect.collidepoint(mouse_x, mouse_y):
                             slot_selected = i
-                            self._handle_save_slot_action(font, slot_selected, save)
+                            self._handle_save_slot_action(
+                                self.font, slot_selected, save
+                            )
                             return
 
-                    if cancel_rect.collidepoint(mouse_x, mouse_y):
+                    if self.cancel_rect.collidepoint(mouse_x, mouse_y):
                         play_sound(self.game.sound_manager.game_sounds, "click")
                         return
 
-                    if delete_rect.collidepoint(mouse_x, mouse_y):
+                    if self.delete_rect.collidepoint(mouse_x, mouse_y):
                         play_sound(self.game.sound_manager.game_sounds, "click")
                         if confirm := self._show_confirmation_popup():
                             play_sound(self.game.sound_manager.game_sounds, "click")
@@ -338,12 +346,18 @@ class SaveLoadSystem:
                     self.game.screen_manager.update_buttons()
 
             # Render the display
-            self.game.screen.blit(self.game.bg_img, [0, 0])
+            self.screen.blit(self.game.bg_img, [0, 0])
+            self.display_screen_title(save)
             self._draw_save_slots(
-                font, text_color, center_x, save_files, slot_selected, slot_rects
+                self.font,
+                self.text_color,
+                self.center_x,
+                save_files,
+                slot_selected,
+                slot_rects,
             )
-            self.game.screen.blit(cancel_text, cancel_rect)
-            self.game.screen.blit(delete_text, delete_rect)
+            self.screen.blit(self.cancel_text, self.cancel_rect)
+            self.screen.blit(self.delete_text, self.delete_rect)
             self.game.screen_manager.draw_cursor()
             pygame.display.flip()
 
@@ -385,7 +399,7 @@ class SaveLoadSystem:
             text_rect = text.get_rect(center=(center_x, 300 + i * SLOT_HEIGHT))
             slot_rects.append(text_rect)
 
-            self.game.screen.blit(text, text_rect)
+            self.screen.blit(text, text_rect)
 
             rect = pygame.Rect(
                 text_rect.left - TEXT_PADDING_X,
@@ -395,9 +409,7 @@ class SaveLoadSystem:
             )
 
             if i == slot_selected:
-                pygame.draw.rect(
-                    self.game.screen, SELECTED_SLOT_COLOR, rect, BORDER_WIDTH
-                )
+                pygame.draw.rect(self.screen, SELECTED_SLOT_COLOR, rect, BORDER_WIDTH)
 
     def _handle_save_slot_action(self, font, slot_selected, save):
         """Handle the action for the selected save slot."""
@@ -420,27 +432,23 @@ class SaveLoadSystem:
             self._save_game(font, slot_selected)
 
     def _handle_load_action(self, font, slot_selected):
-        """Handle the action when loading the game."""
+        """Handle the action when loading the game from a save file."""
         save_files = self._get_save_files()
         if f"save{slot_selected + 1}.save" in save_files:
             play_sound(self.game.sound_manager.game_sounds, "load_game")
             self.load_data(f"save{slot_selected + 1}")
             self.game.game_loaded = True
-            display_simple_message(
-                self.game.screen, "Game Loaded!", font, "lightblue", 1000
-            )
+            display_simple_message(self.screen, "Game Loaded!", font, "lightblue", 1000)
         else:
             play_sound(self.game.sound_manager.game_sounds, "empty_save")
-            display_simple_message(
-                self.game.screen, "Empty save slot", font, "red", 500
-            )
+            display_simple_message(self.screen, "Empty save slot", font, "red", 500)
 
     def _save_game(self, font, slot_selected):
         """Save the game state and display a message."""
         play_sound(self.game.sound_manager.game_sounds, "click")
         save_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.save_data(f"save{slot_selected + 1}", save_date=save_date)
-        display_simple_message(self.game.screen, "Game Saved!", font, "lightblue", 1000)
+        display_simple_message(self.screen, "Game Saved!", font, "lightblue", 1000)
 
     def _delete_all_save_files(self):
         """Deletes all save files from the save folder."""
@@ -466,3 +474,29 @@ class SaveLoadSystem:
 
         root.destroy()
         return user_response
+
+    def update_rect_positions(self):
+        """Update the positions of UI elements based on the current screen width."""
+        self.center_x = self.screen.get_width() // 2
+
+        self.cancel_rect.center = (self.screen.get_width() // 2 + 100, 465)
+        self.delete_rect.center = (self.screen.get_width() // 2 - 100, 465)
+
+    def set_screen_title_position(self):
+        """Set the location of the screen title images on the screen."""
+        center_y = self.screen.get_height() // 2 - 180
+
+        self.game.settings.save_game_rect.center = (
+            self.game.settings.load_game_rect.center
+        ) = (self.center_x, center_y)
+
+    def display_screen_title(self, save):
+        """Display the correct screen title for the save or load screen."""
+        if save:
+            self.screen.blit(
+                self.game.settings.save_game_img, self.game.settings.save_game_rect
+            )
+        else:
+            self.screen.blit(
+                self.game.settings.load_game_img, self.game.settings.load_game_rect
+            )

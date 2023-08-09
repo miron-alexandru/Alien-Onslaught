@@ -410,7 +410,7 @@ def render_simple_text(text, font, color, x, y):
 def display_simple_message(screen, text, font, color, delay_time):
     """Display a simple message on screen."""
     message_surface, message_rect = render_simple_text(
-        text, font, color, screen.get_width() // 2, 200
+        text, font, color, screen.get_width() // 2, 600
     )
     screen.blit(message_surface, message_rect)
     pygame.display.flip()

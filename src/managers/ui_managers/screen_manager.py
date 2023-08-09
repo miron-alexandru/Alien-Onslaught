@@ -219,6 +219,8 @@ class ScreenManager:
         self.game.reset_bg = resize_image(self.settings.bg_img)
 
         self.game.game_over_manager.set_game_end_position()
+        self.game.save_load_manager.update_rect_positions()
+        self.game.save_load_manager.set_screen_title_position()
 
         for ship in self.game.ships:
             ship.screen_rect = self.screen.get_rect()

@@ -2,6 +2,8 @@
 ![Menu](/game_assets/images/game_images/menu.PNG)
 ![ShipSelection](/game_assets/images/game_images/ship_selection.PNG)
 ![HighScores](/game_assets/images/game_images/high_scores.PNG)
+![SaveGame](/game_assets/images/game_images/save_game.PNG)
+![LoadGame](/game_assets/images/game_images/load_game.PNG)
 ![Gameplay](/game_assets/images/game_images/game_modes.PNG)
 ![Gameplay](/game_assets/images/game_images/normal.PNG)
 ![Gameplay](/game_assets/images/game_images/normal3.PNG)
