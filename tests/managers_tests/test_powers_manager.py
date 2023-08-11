@@ -16,9 +16,14 @@ class TestPowerEffectsManager(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
         self.game = MagicMock()
-        self.power_effects_manager = PowerEffectsManager(
-            self.game, self.game.score_board, self.game.stats
-        )
+        with patch(
+            "src.managers.powers_manager.PowerEffectsManager.get_powerup_choices"
+        ) as mock_get_powerups, patch(
+            "src.managers.powers_manager.PowerEffectsManager.get_penalty_choices"
+        ) as mock_get_penalties:
+            self.power_effects_manager = PowerEffectsManager(
+                self.game, self.game.score_board, self.game.stats
+            )
 
     def test_init(self):
         """Test the initialization of the manager."""
@@ -138,150 +143,171 @@ class TestPowerEffectsManager(unittest.TestCase):
         )
         self.power_effects_manager.score_board.create_health.assert_called_once()
 
-    @patch("src.managers.powers_manager.play_sound")
-    def test_apply_powerup_or_penalty_freeze(self, mock_play_sound):
-        """Test the apply power up or penalty for the freeze enemies power up."""
-        self.power_effects_manager.check_power = MagicMock()
-        player = "thunderbird"
+    def test_update_power_choices(self):
+        """Test the update_power_choices method."""
+        self.power_effects_manager.get_powerup_choices = MagicMock()
+        self.power_effects_manager.get_penalty_choices = MagicMock()
 
-        mock_freeze_enemies = MagicMock(name="freeze_enemies")
-        mock_freeze_enemies.__name__ = "freeze_enemies"
-        self.power_effects_manager.freeze_enemies = mock_freeze_enemies
+        self.power_effects_manager.update_power_choices()
 
-        with patch("random.choice") as mock_choice:
-            mock_choice.return_value = self.power_effects_manager.freeze_enemies
-            self.power_effects_manager.apply_powerup_or_penalty(player)
+        self.power_effects_manager.get_powerup_choices.assert_called_once()
+        self.power_effects_manager.get_penalty_choices.assert_called_once()
 
-        mock_freeze_enemies.assert_called_once_with(player)
-        self.power_effects_manager.check_power.assert_called_once_with(
-            mock_choice.return_value, player
-        )
-        mock_play_sound.assert_called_once_with(
-            self.game.sound_manager.game_sounds, "freeze"
-        )
-
-    @patch("src.managers.powers_manager.play_sound")
-    def test_apply_powerup_or_penalty_normal(self, mock_play_sound):
+    def test_apply_powerup_or_penalty(self):
         """Test the apply power up or penalty for the other power ups."""
-        self.power_effects_manager.check_power = MagicMock()
+        self.power_effects_manager._check_power_name = MagicMock()
+        self.power_effects_manager._play_power_sound = MagicMock()
+        self.power_effects_manager.increase_ship_speed = MagicMock()
         player = "thunderbird"
-
-        mock_increase_ship_speed = MagicMock(name="increase_ship_speed")
-        mock_increase_ship_speed.__name__ = "increase_ship_speed"
-        self.power_effects_manager.increase_ship_speed = mock_increase_ship_speed
 
         with patch("random.choice") as mock_choice:
             mock_choice.return_value = self.power_effects_manager.increase_ship_speed
             self.power_effects_manager.apply_powerup_or_penalty(player)
 
-        mock_increase_ship_speed.assert_called_once_with(player)
-        self.power_effects_manager.check_power.assert_called_once_with(
+        # Assertions
+        self.power_effects_manager._check_power_name.assert_called_once_with(
             mock_choice.return_value, player
         )
-        mock_play_sound.assert_called_once_with(
-            self.game.sound_manager.game_sounds, "power_up"
+        self.power_effects_manager.increase_ship_speed.assert_called_once_with(player)
+        self.power_effects_manager._play_power_sound.assert_called_once_with(
+            mock_choice.return_value,
+            self.power_effects_manager.powerup_choices,
+            self.power_effects_manager.penalty_choices,
         )
 
     @patch("src.managers.powers_manager.play_sound")
-    def test_apply_powerup_or_penalty_penalties(self, mock_play_sound):
-        """Test the apply power up or penalty for the penalties."""
-        self.game.settings.game_modes.meteor_madness = False
-        self.power_effects_manager.check_power = MagicMock()
-        player = "thunderbird"
-
+    def test_play_power_sound_penalty(self, mock_play_sound):
+        """Test the play_power_sound method for the penalties."""
         mock_disarm_ship = MagicMock(name="disarm_ship")
         self.power_effects_manager.disarm_ship = mock_disarm_ship
+        penalty_choices = [self.power_effects_manager.disarm_ship]
+        powerup_choices = MagicMock()
 
-        with patch("random.choice") as mock_choice:
-            mock_choice.return_value = self.power_effects_manager.disarm_ship
-            self.power_effects_manager.apply_powerup_or_penalty(player)
-
-        mock_disarm_ship.assert_called_once_with(player)
-        self.power_effects_manager.check_power.assert_called_once_with(
-            mock_choice.return_value, player
+        mock_choice = mock_disarm_ship
+        self.power_effects_manager._play_power_sound(
+            mock_choice, powerup_choices, penalty_choices
         )
+
         mock_play_sound.assert_called_once_with(
             self.game.sound_manager.game_sounds, "penalty"
         )
 
-    def test_check_power(self):
-        """Test the check_power_method."""
+    @patch("src.managers.powers_manager.play_sound")
+    def test_play_power_sound_freeze(self, mock_play_sound):
+        """Test the play_power_sound method for the penalties."""
+        mock_freeze_enemies = MagicMock(name="freeze_enemies")
+        mock_freeze_enemies.__name__ = "freeze_enemies"
+        self.power_effects_manager.freeze_enemies = mock_freeze_enemies
+        penalty_choices = MagicMock()
+        powerup_choices = [self.power_effects_manager.freeze_enemies]
+
+        mock_choice = mock_freeze_enemies
+
+        self.power_effects_manager._play_power_sound(
+            mock_choice, powerup_choices, penalty_choices
+        )
+
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "freeze"
+        )
+
+    @patch("src.managers.powers_manager.play_sound")
+    def test_play_power_sound_power_up(self, mock_play_sound):
+        """Test the play_power_sound method for the power ups."""
+        mock_increase_ship_speed = MagicMock(name="increase_ship_speed")
+        mock_increase_ship_speed.__name__ = "increase_ship_speed"
+        self.power_effects_manager.increase_ship_speed = mock_increase_ship_speed
+        penalty_choices = MagicMock()
+        powerup_choices = [self.power_effects_manager.increase_ship_speed]
+
+        mock_choice = mock_increase_ship_speed
+
+        self.power_effects_manager._play_power_sound(
+            mock_choice, powerup_choices, penalty_choices
+        )
+
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "power_up"
+        )
+
+    def test__check_power_name(self):
+        """Test the _check_power_name_method."""
         player = "thunderbird"
         effect_choice = self.power_effects_manager.freeze_enemies
 
-        self.power_effects_manager.check_power(effect_choice, player)
+        self.power_effects_manager._check_power_name(effect_choice, player)
 
         self.assertEqual(self.game.thunderbird_ship.power_name, "Freeze")
         self.assertTrue(self.game.thunderbird_ship.display_power)
 
         effect_choice = MagicMock()
 
-        self.power_effects_manager.check_power(effect_choice, player)
+        self.power_effects_manager._check_power_name(effect_choice, player)
 
         self.assertEqual(self.game.thunderbird_ship.power_name, "Unknown Power!")
         self.assertTrue(self.game.thunderbird_ship.display_power)
 
-    @patch("src.managers.powers_manager.display_custom_message")
     @patch("src.managers.powers_manager.time.time")
-    def test_display_powers_effect_cosmic_conflict(
-        self, mock_time, mock_display_message
-    ):
-        """Test the display_powers_effect in the Cosmic Conflict
-        game mode.
-        """
-        self.game.settings.game_modes.cosmic_conflict = True
+    def test_display_powers_effect(self, mock_time):
+        """Test the display_powers_effect method."""
+        self.power_effects_manager.display_power_message = MagicMock()
         mock_time.return_value = 5
 
         ship1 = MagicMock()
         ship1.display_power = True
-        ship1.power_name = "Power 1"
-        ship1.power_time = 0
 
         ship2 = MagicMock()
         ship2.display_power = False
-        ship2.power_time = 0
 
         self.game.ships = [ship1, ship2]
 
         self.power_effects_manager.display_powers_effect()
 
-        mock_display_message.assert_called_once_with(
-            self.game.screen, "Power 1", ship1, cosmic=True, powers=True
+        # Assertions
+        self.power_effects_manager.display_power_message.assert_called_once_with(
+            ship1, mock_time.return_value
         )
-        self.assertFalse(ship1.display_power)
-        self.assertEqual(ship1.power_time, 0)
+        self.assertEqual(ship2.power_time, mock_time.return_value)
 
     @patch("src.managers.powers_manager.display_custom_message")
-    @patch("src.managers.powers_manager.time.time")
-    def test_display_powers_effect_regular_mode(self, mock_time, mock_display_message):
-        """Test the display_powers_effect in the other game modes."""
+    def test_display_power_message_cosmic_conflict(self, mock_display_message):
+        """Test the display_power_message method in the Cosmic Conflict
+        game mode.
+        """
+        self.game.settings.game_modes.cosmic_conflict = True
+        current_time = 5
+
+        ship = MagicMock()
+        ship.display_power = True
+        ship.power_name = "Power 1"
+        ship.power_time = 0
+
+        self.power_effects_manager.display_power_message(ship, current_time)
+
+        mock_display_message.assert_called_once_with(
+            self.game.screen, "Power 1", ship, cosmic=True, powers=True
+        )
+        self.assertFalse(ship.display_power)
+        self.assertEqual(ship.power_time, 0)
+
+    @patch("src.managers.powers_manager.display_custom_message")
+    def test_display_power_message_regular(self, mock_display_message):
+        """Test the display_power_message method in the other game modes."""
         self.game.settings.game_modes.cosmic_conflict = False
-        mock_time.return_value = 5
+        current_time = 5
 
-        ship1 = MagicMock()
-        ship1.display_power = True
-        ship1.power_name = "Power 1"
-        ship1.power_time = 0
+        ship = MagicMock()
+        ship.display_power = True
+        ship.power_name = "Power 1"
+        ship.power_time = 0
 
-        ship2 = MagicMock()
-        ship2.display_power = True
-        ship2.power_name = "Power 2"
-        ship2.power_time = 0
-        self.game.ships = [ship1, ship2]
+        self.power_effects_manager.display_power_message(ship, current_time)
 
-        self.power_effects_manager.display_powers_effect()
-
-        expected_calls = [
-            call(self.game.screen, "Power 1", ship1, powers=True),
-            call(self.game.screen, "Power 2", ship2, powers=True),
-        ]
-
-        self.assertEqual(mock_display_message.call_args_list, expected_calls)
-        self.assertFalse(ship1.display_power)
-        self.assertEqual(ship1.power_time, 0)
-
-        self.assertFalse(ship2.display_power)
-        self.assertEqual(ship2.power_time, 0)
+        mock_display_message.assert_called_once_with(
+            self.game.screen, "Power 1", ship, powers=True
+        )
+        self.assertFalse(ship.display_power)
+        self.assertEqual(ship.power_time, 0)
 
     @patch("src.managers.powers_manager.display_custom_message")
     def test_display_powers_effect_not_displayed(self, mock_display_message):

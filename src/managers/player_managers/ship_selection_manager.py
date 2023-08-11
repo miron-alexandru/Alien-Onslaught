@@ -75,10 +75,10 @@ class ShipSelection:
         self.clickable_regions = []
 
         self.draw_ships_and_text(1, 25, screen_width * 0.05)
-        
+
         if not self.game.singleplayer:
             self.draw_ships_and_text(2, 25, screen_width * 0.3)
-    
+
     def draw_ships_and_text(self, ship_type, y_offset, x_position):
         """Draw ship type text and ships for a given player."""
         self.draw_ship_type_text(ship_type, y_offset, x_position)
@@ -132,7 +132,7 @@ class ShipSelection:
             if self.is_valid_ship_selection(region, ship_type, index, mouse_pos):
                 self.select_ship(ship_type, index)
                 play_sound(self.game.sound_manager.game_sounds, "select_ship")
-        
+
         self.update_ship_selection_state()
 
     def is_valid_ship_selection(self, region, ship_type, index, mouse_pos):
@@ -153,10 +153,7 @@ class ShipSelection:
 
     def get_selected_ship(self, ship_type):
         """Returns the selected ship instance based on the ship type."""
-        ship_mapping = {
-            1: self.thunderbird_ship,
-            2: self.phoenix_ship
-        }
+        ship_mapping = {1: self.thunderbird_ship, 2: self.phoenix_ship}
         return ship_mapping.get(ship_type)
 
     def update_ship_selection_state(self):
@@ -165,4 +162,3 @@ class ShipSelection:
             self.game.ui_options.ship_selection = False
         elif self.phoenix_ship.ship_selected and self.thunderbird_ship.ship_selected:
             self.game.ui_options.ship_selection = False
-

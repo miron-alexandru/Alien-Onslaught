@@ -55,6 +55,9 @@ class PowerEffectsManager:
             self.increase_bullets_remaining: "More bullets remaining",
         }
 
+        self.powerup_choices = self.get_powerup_choices()
+        self.penalty_choices = self.get_penalty_choices()
+
     def create_powers(self):
         """Creates power-ups or penalties at random intervals and locations."""
         if self.last_power_up_time == 0:
@@ -82,16 +85,25 @@ class PowerEffectsManager:
         power.rect.y = random.randint(-100, -40)
         self.game.powers.add(power)
 
+    def update_power_choices(self):
+        """Update the power choices."""
+        self.powerup_choices = self.get_powerup_choices()
+        self.penalty_choices = self.get_penalty_choices()
+
     def apply_powerup_or_penalty(self, player):
         """Powers up or applies a penalty on the specified player"""
-        powerup_choices = self.get_powerup_choices()
-        penalty_choices = self.get_penalty_choices()
-        # randomly select one of the powers and activate it.
-        effect_choice = random.choice(powerup_choices + penalty_choices)
-        self.check_power(effect_choice, player)
+        # Randomly select one of the powers and activate it.
+        effect_choice = random.choice(self.powerup_choices + self.penalty_choices)
+        self._check_power_name(effect_choice, player)
         effect_choice(player)
+        self._play_power_sound(
+            effect_choice, self.powerup_choices, self.penalty_choices
+        )
 
-        # Play sound effect
+    def _play_power_sound(self, effect_choice, powerup_choices, penalty_choices):
+        """Play a sound effect based on the given effect choice,
+        considering available power-ups and penalties.
+        """
         if effect_choice in powerup_choices:
             if effect_choice.__name__ == self.freeze_enemies.__name__:
                 play_sound(self.game.sound_manager.game_sounds, "freeze")
@@ -107,7 +119,7 @@ class PowerEffectsManager:
             if power.rect.y > self.settings.screen_height:
                 self.game.powers.remove(power)
 
-    def check_power(self, effect_choice, player):
+    def _check_power_name(self, effect_choice, player):
         """Check what power was picked up and set the power name
         accordingly and set the display_power flag to True."""
         ship = self.thunderbird_ship if player == "thunderbird" else self.phoenix_ship
@@ -119,21 +131,22 @@ class PowerEffectsManager:
         current_time = time.time()
         for ship in self.game.ships:
             if ship.display_power:
-                if self.settings.game_modes.cosmic_conflict:
-                    display_custom_message(
-                        self.screen, ship.power_name, ship, cosmic=True, powers=True
-                    )
-                else:
-                    display_custom_message(
-                        self.screen, ship.power_name, ship, powers=True
-                    )
-
-                if current_time > ship.power_time + 2:
-                    ship.display_power = False
-                    ship.power_time = 0
-
+                self.display_power_message(ship, current_time)
             else:
                 ship.power_time = current_time
+
+    def display_power_message(self, ship, current_time):
+        """Display the name of the power that the ship picked up."""
+        if self.settings.game_modes.cosmic_conflict:
+            display_custom_message(
+                self.screen, ship.power_name, ship, cosmic=True, powers=True
+            )
+        else:
+            display_custom_message(self.screen, ship.power_name, ship, powers=True)
+
+        if current_time > ship.power_time + 2:
+            ship.display_power = False
+            ship.power_time = 0
 
     def health_power_up(self, player):
         """Increase the player's health by one."""
@@ -317,11 +330,17 @@ class PowerEffectsManager:
             self.freeze_enemies,
         ]
 
-        if self.settings.game_modes.last_bullet:
-            power_ups.append(self.increase_bullets_remaining)
-            power_ups.remove(self.increase_bullet_count)
-        elif self.settings.game_modes.meteor_madness:
-            power_ups = [
+        return self._filter_power_ups(power_ups)
+
+    def _filter_power_ups(self, power_ups):
+        game_modes = self.settings.game_modes
+        filtered_power_ups = power_ups.copy()
+
+        if game_modes.last_bullet:
+            filtered_power_ups.append(self.increase_bullets_remaining)
+            filtered_power_ups.remove(self.increase_bullet_count)
+        elif game_modes.meteor_madness:
+            filtered_power_ups = [
                 self.increase_ship_speed,
                 self.draw_ship_shield,
                 self.bonus_points,
@@ -329,15 +348,15 @@ class PowerEffectsManager:
                 self.change_ship_size,
                 self.increase_missiles_num,
             ]
-        elif self.settings.game_modes.cosmic_conflict:
-            power_ups.remove(self.decrease_alien_speed)
-            power_ups.remove(self.decrease_alien_bullet_speed)
-            power_ups.remove(self.freeze_enemies)
+        elif game_modes.cosmic_conflict:
+            filtered_power_ups.remove(self.decrease_alien_speed)
+            filtered_power_ups.remove(self.decrease_alien_bullet_speed)
+            filtered_power_ups.remove(self.freeze_enemies)
 
-        return power_ups
+        return filtered_power_ups
 
     def get_penalty_choices(self):
-        """Returns a list of penalties functions available in the game.
+        """Returns a list of penalty functions available in the game.
         Depending on the game mode, the list of penalties may differ.
         """
         penalties = [
@@ -348,18 +367,26 @@ class PowerEffectsManager:
             self.decrease_bullet_size,
         ]
 
-        if (
-            not self.settings.game_modes.last_bullet
-            and not self.settings.game_modes.cosmic_conflict
-        ):
-            penalties += [self.increase_alien_numbers, self.increase_alien_hp]
-        if self.settings.game_modes.meteor_madness:
-            penalties = [
+        return self._filter_penalties(penalties)
+
+    def _filter_penalties(self, penalties):
+        """Filter the list of penalty functions based on the current game mode settings."""
+        game_modes = self.settings.game_modes
+        filtered_penalties = penalties.copy()
+
+        if not (game_modes.last_bullet or game_modes.cosmic_conflict):
+            filtered_penalties.extend(
+                [self.increase_alien_numbers, self.increase_alien_hp]
+            )
+
+        if game_modes.meteor_madness:
+            filtered_penalties = [
                 self.reverse_keys,
                 self.decrease_ship_speed,
                 self.increase_asteroid_freq,
             ]
-        elif self.settings.game_modes.cosmic_conflict:
-            penalties.remove(self.alien_upgrade)
 
-        return penalties
+        if game_modes.cosmic_conflict:
+            filtered_penalties.remove(self.alien_upgrade)
+
+        return filtered_penalties

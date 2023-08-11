@@ -111,38 +111,28 @@ class CollisionManager:
         If a collision occurs, a random power is activated for the corresponding player
         and the power is removed.
         """
-        player_info = [
-            (
-                "thunderbird",
-                self.thunderbird_ship,
-                power_method,
-                health_power_method,
-                weapon_power_method,
-            ),
-            (
-                "phoenix",
-                self.phoenix_ship,
-                power_method,
-                health_power_method,
-                weapon_power_method,
-            ),
+        player_ships = [
+            ("thunderbird", self.thunderbird_ship),
+            ("phoenix", self.phoenix_ship),
         ]
-        # loop through each player and check for collisions
-        for player, ship, power, health_power_up, weapon in player_info:
-            active = ship.state.alive
+
+        for player, ship in player_ships:
+            if not ship.state.alive:
+                continue
+
             collision = pygame.sprite.spritecollideany(ship, self.game.powers)
-            if active and collision:
-                # play the empower effect, check the type of the power and activate the func
+            if collision:
                 if collision.health:
-                    health_power_up(player)
+                    health_power_method(player)
                     ship.power_name = "+1 HP"
                     ship.display_power = True
                 elif collision.weapon:
-                    weapon(player, collision.weapon_name)
+                    weapon_power_method(player, collision.weapon_name)
                     ship.power_name = "Weapon"
                     ship.display_power = True
                 else:
-                    power(player)
+                    power_method(player)
+
                 collision.kill()
                 ship.empower()
 

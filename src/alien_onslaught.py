@@ -474,6 +474,9 @@ class AlienOnslaught:
         self.score_board.prep_level()
         self.score_board.create_health()
 
+        # Prepare powers
+        self.powers_manager.update_power_choices()
+
         # Prepare sounds
         self.sound_manager.prepare_level_music()
         play_sound(self.sound_manager.game_sounds, "warp")
