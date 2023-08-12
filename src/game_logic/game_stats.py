@@ -1,6 +1,6 @@
 """
 The 'game_stats' module contains the GameStats class
-that manages the statistics that change during the game.
+that manages the statistics that can change during the game.
 """
 
 from src.utils.constants import MAX_HP
@@ -10,7 +10,7 @@ from src.utils.game_utils import play_sound
 class GameStats:
     """The GameStats class tracks statistics such as the current
     health of the ships, the number of bullets for each ship,
-     the scores, and the level. It also provides methods
+    the scores, and the level. It also provides methods
     for resetting the statistics and increasing the level.
     """
 

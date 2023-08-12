@@ -1,6 +1,4 @@
-"""
-The 'powers' module contains the Power class that represents a power in the game.
-"""
+"""The 'powers' module contains the Power class used to create power instances."""
 
 import random
 

@@ -1,10 +1,9 @@
 """
-The 'alien_bullets' module contains classes for creating bullets for aliens and bosses
-in the game.
+The 'alien_bullets' module contains classes for creating bullets for aliens and bosses.
 
 Classes:
-    - 'AlienBullet': A class to manage bullets fired by normal aliens in the game.
-    - 'BossBullet': A class to manage bullets fired by the boss alien in the game.
+    - 'AlienBullet': A class to manage bullets fired by normal aliens.
+    - 'BossBullet': A class to manage bullets fired by the boss aliens.
 """
 
 import random
@@ -70,7 +69,7 @@ class BossBullet(Sprite):
     bullet_images = load_boss_bullets()
 
     def __init__(self, game, alien):
-        """Initializes a new bullet for an alien."""
+        """Initialize a new bullet for an alien."""
         super().__init__()
         self.screen = game.screen
         self.settings = game.settings
@@ -81,7 +80,7 @@ class BossBullet(Sprite):
         self._update_image(game)
 
     def _init_variables(self, alien):
-        """Initializes position and speed variables."""
+        """Initialize position and speed variables."""
         self.rect.inflate_ip(-40, -40)
         self.rect.center = alien.rect.center
         self.rect.bottom = alien.rect.bottom
@@ -89,7 +88,7 @@ class BossBullet(Sprite):
         self.x_vel = random.uniform(-4, 4)
 
     def _update_image(self, game):
-        """Change the bullet image for specific boss fights."""
+        """Change the bullet image for specific bosses."""
         if self.settings.game_modes.boss_rush:
             image_name = f"boss_bullet{game.stats.level}"
         else:

@@ -16,7 +16,7 @@ from src.entities.player_entities.ship import Ship
 
 
 class Thunderbird(Ship):
-    """Class that represents the Thunderbird ship in the game."""
+    """Class that represents the Thunderbird ship."""
 
     def __init__(self, game):
         self.screen_rect = game.screen.get_rect()
@@ -30,7 +30,7 @@ class Thunderbird(Ship):
         self.offset = -300
 
     def set_cosmic_conflict_pos(self):
-        """The the ship position for the Cosmic Conflict game mode."""
+        """Set the ship position for the Cosmic Conflict game mode."""
         if self.game.settings.game_modes.cosmic_conflict:
             self.image = pygame.transform.rotate(self.image, -90)
         self.cosmic_conflict_pos = self.screen_rect.left + 10
@@ -51,7 +51,7 @@ class Phoenix(Ship):
         self.offset = 200
 
     def set_cosmic_conflict_pos(self):
-        """Set the ship position for the Cosmic Conflict game Mode"""
+        """Set the ship position for the Cosmic Conflict game mode."""
         if self.game.settings.game_modes.cosmic_conflict:
             self.image = pygame.transform.rotate(self.image, 90)
         self.cosmic_conflict_pos = self.screen_rect.right - 50

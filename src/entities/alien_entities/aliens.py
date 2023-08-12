@@ -1,10 +1,10 @@
 """
-The 'aliens' module contains classes for creating alien and alien boss
+The 'aliens' module contains classes for creating aliens and boss
 instances in the game.
 
 Classes:
-    - 'Alien': A class that represents aliens in the game.
-    - 'BossAlien': A class that represents an alien boss in the game.
+    - 'Alien': Class used to create normal aliens.
+    - 'BossAlien': Class used to create bosses.
 """
 
 import time
@@ -70,9 +70,7 @@ class Alien(Sprite):
         return self.rect.top <= screen_rect.top
 
     def update(self):
-        """Updates the position, animation, and state of the alien.
-        It also creates random movement for the alien.
-        """
+        """Updates the position, animation, and state of the alien."""
         if (
             self.frozen_state
             and time.time() - self.frozen_start_time > self.settings.frozen_time
@@ -103,7 +101,7 @@ class Alien(Sprite):
 
     def destroy_alien(self):
         """Start the alien's destruction animation and draw it on the screen,
-        and split the alien."""
+        and split the alien if necessary."""
         self.destroy.update_destroy_animation()
         self.destroy.draw_animation()
 
@@ -138,12 +136,12 @@ class Alien(Sprite):
 
 
 class BossAlien(Sprite):
-    """A class to represent alien bosses in the game."""
+    """A class that represents bosses."""
 
     boss_images = load_boss_images()
 
     def __init__(self, game):
-        """Initializes the BossAlien object, creates instances of AlienMovement
+        """Initializes the BossAlien object and creates instances of AlienMovement
         and DestroyAnim classes to manage the movement and destruction animation.
         """
         super().__init__()
@@ -170,7 +168,7 @@ class BossAlien(Sprite):
         self.destroy = DestroyAnim(self)
 
     def _update_image(self, game):
-        """Change the image for specific boss fights."""
+        """Change the image for the specific boss."""
         if self.settings.game_modes.boss_rush:
             image_name = f"boss{game.stats.level}"
         else:

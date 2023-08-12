@@ -1,9 +1,8 @@
 """
-The 'game_settings' module contains the Settings class which stores
-all settings for the Alien Onslaught game. This includes settings
+The 'game_settings' module contains the Settings class which stores 
+settings for the game. This includes settings
 related to the screen, images, game modes, speed, and various entities
 such as ships, aliens, bosses, and asteroids.
-It also contains the UIOptions and GameModes dataclasses.
 """
 
 from src.utils.constants import (
@@ -19,7 +18,6 @@ class Settings:
     """A class to store all settings for Alien Onslaught."""
 
     def __init__(self):
-        """Initialize the game's static settings."""
         self._init_screen_settings()
         self._init_images()
         self._init_game_settings()
@@ -195,12 +193,19 @@ class Settings:
         self.phoenix_bullet_count += 1
 
     def increase_speed(self):
-        """Increase speed settings and alien point values."""
+        """Increase the speed and other alien related values."""
+        self._increase_alien_speed()
+        self.alien_points = int(self.alien_points + GAME_CONSTANTS["SCORE_SCALE"])
+        self._increase_alien_count()
+
+    def _increase_alien_speed(self):
+        """Increase the speed of aliens and their bullets."""
         if self.alien_speed < self.max_alien_speed:
             self.alien_speed += self.speedup_scale
             self.alien_bullet_speed += self.speedup_scale
-        self.alien_points = int(self.alien_points + GAME_CONSTANTS["SCORE_SCALE"])
 
+    def _increase_alien_count(self):
+        """Increase the number of aliens that are appearing."""
         if (
             not self.game_modes.last_bullet
             and self.aliens_num <= GAME_CONSTANTS["MAX_ALIEN_NUM"]

@@ -8,7 +8,7 @@ from src.entities.projectiles.bullet import Bullet
 
 
 class Thunderbolt(Bullet):
-    """A class to manage bullets for Thunderbird ship."""
+    """A class to create bullets for Thunderbird ship."""
 
     def __init__(self, manager, ship, scaled=False):
         super().__init__(
@@ -24,7 +24,7 @@ class Thunderbolt(Bullet):
 
 
 class Firebird(Bullet):
-    """A class to manage bullets for Phoenix ship."""
+    """A class to create bullets for Phoenix ship."""
 
     def __init__(self, manager, ship, scaled=False):
         super().__init__(

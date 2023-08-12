@@ -255,6 +255,7 @@ class TestPowerEffectsManager(unittest.TestCase):
 
         ship1 = MagicMock()
         ship1.display_power = True
+        ship1.state.exploding = False
 
         ship2 = MagicMock()
         ship2.display_power = False

@@ -1,7 +1,6 @@
 """
-The 'ship' module contains the Ship base class that is used to create the
-player ships in the game and the ShipStates dataclass that manages the 
-state of the ships.
+The 'ship' module contains the Ship base class that is used to create
+player ships.
 """
 
 import os
@@ -86,7 +85,7 @@ class Ship(Sprite):
         self._ship_speed = value
 
     def update_state(self):
-        """Updates the ship state and position."""
+        """Updates the ship state."""
         if (
             self.state.immune
             and pygame.time.get_ticks() - self.immune_start_time
@@ -144,17 +143,14 @@ class Ship(Sprite):
         self.y_pos = max(0, min(self.y_pos, self.screen_rect.height - self.rect.height))
 
     def blitme(self):
-        """Draws the ship on the screen at its current location.
-        Depending on the current state of the ship,
-        it draws the corresponding animation.
+        """Draws the ship on the screen at its current location and,
+        depending on the current state of the ship, it draws the corresponding animation.
         """
         if self.state.warping:
-            # If the ship is warping, draw the warp animation
             self.screen.blit(self.anims.warp_frames[self.anims.warp_index], self.rect)
             return
 
         if self.state.exploding:
-            # If the ship is exploding, draw the explosion
             self.screen.blit(self.anims.explosion_image, self.anims.explosion_rect)
             return
 
@@ -162,15 +158,12 @@ class Ship(Sprite):
         self.screen.blit(self.image, self.rect)
 
         if self.state.shielded:
-            # Draw shield if shielded
             self.screen.blit(self.anims.shield_image, self.anims.shield_rect)
 
         if self.state.immune:
-            # Draw immune image if immune
             self.screen.blit(self.anims.immune_image, self.anims.immune_rect)
 
         if self.state.empowered:
-            # Draw empower image if empowered
             self.screen.blit(self.anims.empower_image, self.anims.empower_rect)
 
     def center_ship(self):

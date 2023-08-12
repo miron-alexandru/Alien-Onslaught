@@ -1,7 +1,8 @@
 """
-This module imports all other classes and modules required to run the game.
+This is the main module that imports all other classes and modules
+required to run the game.
 
-Game description:
+Short game description:
     - Alien Onslaught is an action-packed space shooter game that challenges
 your shooting skills and reflexes. You'll have to take on fleets of aliens
 to progress through increasingly challenging levels and earn a high score.
@@ -13,6 +14,7 @@ Author: [Miron Alexandru]
 Contact: quality_xqs@yahoo.com
 
 """
+
 
 import pygame
 
@@ -47,7 +49,7 @@ from src.managers.save_load_manager import SaveLoadSystem
 
 
 class AlienOnslaught:
-    """Overall class to manage game assets and behavior for the multiplayer version."""
+    """Main class responsible for managing the game."""
 
     MENU_RUNNING = True
     GAME_RUNNING = True
@@ -83,7 +85,7 @@ class AlienOnslaught:
         pygame.display.set_caption("Alien Onslaught")
 
     def _initialize_game_objects(self):
-        """Initializes all game objects required in the game."""
+        """Initializes all game objects required."""
         self.ships_manager = ShipsManager(self, self.settings, self.singleplayer)
         self.thunderbird_ship = self.ships_manager.thunderbird_ship
         self.phoenix_ship = self.ships_manager.phoenix_ship
@@ -146,7 +148,7 @@ class AlienOnslaught:
         ]
 
     def initialize_managers(self):
-        """Initialize managers/handlers for the game."""
+        """Initialize the managers and handlers required."""
         self.sound_manager = SoundManager(self)
         self.buttons_manager = GameButtonsManager(
             self, self.screen, self.ui_options, self.settings.game_modes
@@ -176,7 +178,7 @@ class AlienOnslaught:
         self.high_score_manager = HighScoreManager(self)
 
     def run_menu(self):
-        """Run the main menu screen"""
+        """Run the main menu."""
         self.sound_manager.load_sounds("menu_sounds")
         play_music(self.sound_manager.menu_music, "menu")
         while self.MENU_RUNNING:
@@ -187,13 +189,13 @@ class AlienOnslaught:
             pygame.display.flip()
 
     def handle_menu_events(self):
-        """Handles events for the menu screen"""
+        """Handles events for the main menu."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.buttons_manager.handle_quit_event()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
-                    self.handle_toggle_window_mode()
+                    self.screen_manager.toggle_window_mode()
             elif (
                 event.type == pygame.MOUSEBUTTONDOWN
                 and event.button == pygame.BUTTON_LEFT
@@ -211,10 +213,6 @@ class AlienOnslaught:
                     self.buttons_manager.handle_quit_button_click()
             elif event.type == pygame.VIDEORESIZE:
                 self.handle_menu_resize_screen_event(event.size)
-
-    def handle_toggle_window_mode(self):
-        """Handle the event to toggle the window mode."""
-        self.screen_manager.toggle_window_mode()
 
     def handle_menu_resize_screen_event(self, size):
         """Handle the event to resize the menu screen."""
@@ -269,7 +267,7 @@ class AlienOnslaught:
         return i
 
     def run_game(self):
-        """Main loop for the game."""
+        """Run the main game loop."""
         i = 0
         while self.GAME_RUNNING:
             self.check_events()
@@ -290,8 +288,8 @@ class AlienOnslaught:
             self.clock.tick(60)
 
     def _handle_game_logic(self):
-        """Handle the game logic for each game iteration."""
-        self.apply_game_behaviors()
+        """Call the functions that are handling the game logic."""
+        self.apply_game_mode_behaviors()
         self.gameplay_manager.handle_level_progression()
 
         self.powers_manager.create_powers()
@@ -325,12 +323,12 @@ class AlienOnslaught:
         self.weapons_manager.update_laser_status()
         self.weapons_manager.check_laser_availability()
 
-        self.collision_handler.shield_collisions(
+        self.collision_handler.handle_shielded_ship_collisions(
             self.ships, self.aliens, self.alien_bullet, self.asteroids
         )
 
     def check_events(self):
-        """Respond to keypresses, mouse and videoresize events."""
+        """Respond to keyboard, mouse and videoresize events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.buttons_manager.handle_quit_event()
@@ -361,7 +359,7 @@ class AlienOnslaught:
                 self.screen_manager.update_buttons()
 
     def _check_buttons(self, mouse_pos):
-        """Check for buttons being clicked and act accordingly."""
+        """Check for UI buttons being clicked and act accordingly."""
         self.buttons_manager.handle_buttons_visibility()
         button_actions = self.buttons_manager.create_button_actions_dict(
             self.run_menu, self._reset_game
@@ -378,7 +376,7 @@ class AlienOnslaught:
                 action()
 
     def _handle_background_change(self):
-        """Change the background image based on the current level."""
+        """Change the background image based on the level ranges."""
         bg_images = {
             range(1, 9): self.reset_bg,
             range(9, 17): self.second_bg,
@@ -403,7 +401,7 @@ class AlienOnslaught:
                     self.pause_time += pause_end_time - pause_start_time
                     break
 
-    def apply_game_behaviors(self):
+    def apply_game_mode_behaviors(self):
         """Applies the game behaviors for the currently selected game mode."""
         game_modes = self.settings.game_modes
         if game_modes.endless_onslaught:
@@ -446,9 +444,10 @@ class AlienOnslaught:
         # Clear the screen of remaining entities
         self.gameplay_manager.reset_game_objects()
 
-        # If a new game is started, not loaded
+        # Check if a new game is started or loaded from a savefile
         self.check_game_loaded()
 
+        # Set the appropriate flags
         self.stats.game_active = True
         self.ui_options.high_score_saved = False
         self.ui_options.game_over_sound_played = False
@@ -525,7 +524,6 @@ class AlienOnslaught:
 
     def _update_screen(self):
         """Update images on the screen"""
-        # Draw game objects if game is active
         if self.stats.game_active:
             self._draw_game_objects()
 
@@ -538,7 +536,7 @@ class AlienOnslaught:
         pygame.display.flip()
 
     def _update_game_screen_components(self):
-        """Update and draw various components on the game screen."""
+        """Update and draw various components on the screen."""
         self.buttons_manager.draw_buttons()
 
         if self.ui_options.show_difficulty:

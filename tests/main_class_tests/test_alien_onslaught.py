@@ -40,7 +40,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        pygame.init()
+        # pygame.init()
         with patch("src.alien_onslaught.pygame.display.set_mode") as mock_display:
             mock_display.return_value = pygame.Surface((1280, 700))
             self.game = AlienOnslaught(singleplayer=False)
@@ -238,11 +238,9 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         mock_keydown_event.key = pygame.K_f
         mock_get.return_value = [mock_keydown_event]
 
-        self.game.handle_toggle_window_mode = MagicMock()
-
         self.game.handle_menu_events()
 
-        self.game.handle_toggle_window_mode.assert_called_once()
+        self.game.screen_manager.toggle_window_mode.assert_called_once()
 
     @patch("src.alien_onslaught.pygame.event.get")
     def test_handle_mousebuttondown_event_single(self, mock_get):
@@ -321,11 +319,6 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.game.handle_menu_resize_screen_event.assert_called_once_with(
             mock_videoresize_event.size
         )
-
-    def test_handle_toggle_window_mode(self):
-        """Test the handle_toggle_window_mode method."""
-        self.game.handle_toggle_window_mode()
-        self.game.screen_manager.toggle_window_mode.assert_called_once()
 
     def test_handle_menu_resize_screen_event(self):
         """Test the handle_menu_resize_screen_event method."""
@@ -503,13 +496,13 @@ class AlienOnslaughtTestCase(unittest.TestCase):
 
     def test_handle_game_logic(self):
         """Test the handle_game_logic method."""
-        self.game.apply_game_behaviors = MagicMock()
+        self.game.apply_game_mode_behaviors = MagicMock()
 
         # Run the method
         self.game._handle_game_logic()
 
         # Assert that the expected methods are called with the correct arguments
-        self.game.apply_game_behaviors.assert_called_once()
+        self.game.apply_game_mode_behaviors.assert_called_once()
         self.game.gameplay_manager.handle_level_progression.assert_called_once()
         self.game.powers_manager.create_powers.assert_called_once()
         self.game.powers_manager.update_powers.assert_called_once()
@@ -543,7 +536,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         self.game.ships_manager.update_ship_state.assert_called_once()
         self.game.weapons_manager.update_laser_status.assert_called_once()
         self.game.weapons_manager.check_laser_availability.assert_called_once()
-        self.game.collision_handler.shield_collisions.assert_called_once_with(
+        self.game.collision_handler.handle_shielded_ship_collisions.assert_called_once_with(
             self.game.ships,
             self.game.aliens,
             self.game.alien_bullet,
@@ -727,13 +720,13 @@ class AlienOnslaughtTestCase(unittest.TestCase):
 
         self.assertEqual(self.game.bg_img, self.game.second_bg)
 
-    def test_apply_game_behaviors(self):
+    def test_apply_game_mode_behaviors(self):
         """Test applying game behaviors for different game modes."""
         game_modes = self.game.settings.game_modes
 
         # Set the game mode to endless_onslaught
         game_modes.endless_onslaught = True
-        self.game.apply_game_behaviors()
+        self.game.apply_game_mode_behaviors()
         self.game.gameplay_manager.endless_onslaught.assert_called_once_with(
             self.game.aliens_manager.create_fleet,
             self.game.asteroids_manager.handle_asteroids,
@@ -742,7 +735,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         # Set the game mode to slow_burn
         game_modes.endless_onslaught = False
         game_modes.slow_burn = True
-        self.game.apply_game_behaviors()
+        self.game.apply_game_mode_behaviors()
         self.game.gameplay_manager.slow_burn.assert_called_once_with(
             self.game.asteroids_manager.handle_asteroids,
         )
@@ -750,7 +743,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         # Set the game mode to boss_rush
         game_modes.slow_burn = False
         game_modes.boss_rush = True
-        self.game.apply_game_behaviors()
+        self.game.apply_game_mode_behaviors()
         self.game.gameplay_manager.boss_rush.assert_called_once_with(
             self.game.asteroids_manager.handle_asteroids,
             self.game.alien_bullets_manager.create_alien_bullets,
@@ -759,7 +752,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         # Set the game mode to meteor_madness
         game_modes.boss_rush = False
         game_modes.meteor_madness = True
-        self.game.apply_game_behaviors()
+        self.game.apply_game_mode_behaviors()
         self.game.gameplay_manager.meteor_madness.assert_called_once_with(
             self.game.asteroids_manager.create_asteroids,
             self.game.asteroids_manager.update_asteroids,
@@ -771,7 +764,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         # Set the game mode to last_bullet
         game_modes.meteor_madness = False
         game_modes.last_bullet = True
-        self.game.apply_game_behaviors()
+        self.game.apply_game_mode_behaviors()
         self.game.gameplay_manager.last_bullet.assert_called_once_with(
             self.game.thunderbird_ship,
             self.game.phoenix_ship,
@@ -781,7 +774,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
         # Set the game mode to cosmic_conflict
         game_modes.last_bullet = False
         game_modes.cosmic_conflict = True
-        self.game.apply_game_behaviors()
+        self.game.apply_game_mode_behaviors()
         self.game.gameplay_manager.cosmic_conflict.assert_called_once_with(
             self.game.collision_handler.check_cosmic_conflict_collisions,
             self.game.ships_manager.thunderbird_ship_hit,
@@ -790,7 +783,7 @@ class AlienOnslaughtTestCase(unittest.TestCase):
 
         # Set the game mode to default
         game_modes.cosmic_conflict = False
-        self.game.apply_game_behaviors()
+        self.game.apply_game_mode_behaviors()
         self.game.asteroids_manager.handle_asteroids.assert_called_once_with(
             create_at_high_levels=True,
         )

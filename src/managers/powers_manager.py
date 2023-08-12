@@ -130,7 +130,7 @@ class PowerEffectsManager:
         """Display what power was picked up by the player."""
         current_time = time.time()
         for ship in self.game.ships:
-            if ship.display_power:
+            if ship.display_power and not ship.state.exploding:
                 self.display_power_message(ship, current_time)
             else:
                 ship.power_time = current_time
@@ -352,6 +352,7 @@ class PowerEffectsManager:
             filtered_power_ups.remove(self.decrease_alien_speed)
             filtered_power_ups.remove(self.decrease_alien_bullet_speed)
             filtered_power_ups.remove(self.freeze_enemies)
+            filtered_power_ups.remove(self.draw_ship_shield)
 
         return filtered_power_ups
 

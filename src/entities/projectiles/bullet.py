@@ -1,13 +1,11 @@
-"""
-This module contains the Bullet base class which is used to create
-player bullets."""
+"""The 'bullet' module contains the Bullet base class used to create player bullets."""
 
 import pygame
 from pygame.sprite import Sprite
 
 
 class Bullet(Sprite):
-    """A base bullet class used to create bullets."""
+    """A base class used to create bullets."""
 
     def __init__(self, game, image_path, ship, speed):
         """Create a bullet object at the ship's current position"""
@@ -34,7 +32,7 @@ class Bullet(Sprite):
             self.rect.y = int(self.y_pos)
 
     def draw(self):
-        """Draw the bullet to the screen."""
+        """Draw the bullet on screen."""
         self.game.screen.blit(self.image, self.rect)
 
     def scale_bullet(self, scale):

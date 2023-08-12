@@ -3,9 +3,9 @@ The 'entities_animations' module provides classes for managing animations for
 different entities in the game.
 
 Classes:
-- DestroyAnim: Manages the animation for when an entity is destroyed.
+- DestroyAnim: Manages the animation for an entity getting destroyed.
 - MissileEx: Manages the explosion effect for missiles.
-- Immune: Manages the immune animation for aliens in the game.
+- Immune: Manages the immune animation for the aliens.
 """
 
 from src.utils.animation_constants import (
@@ -16,7 +16,7 @@ from src.utils.animation_constants import (
 
 
 class DestroyAnim:
-    """Class that manages the animation for when an entity get's destroyed."""
+    """Class that manages the animation for an entity destroyed."""
 
     def __init__(self, entity):
         self.entity = entity
@@ -29,7 +29,7 @@ class DestroyAnim:
         self.destroy_rect = self.destroy_image.get_rect()
 
     def update_destroy_animation(self):
-        """Update the animation for the destruction of an entity.
+        """Update the animation for the destruction the entity.
         Updates the current frame of the animation, centered on the position of the entity
         """
         self.current_destroy_frame = (self.current_destroy_frame + 1) % len(
@@ -73,7 +73,7 @@ class MissileEx:
 
 
 class Immune:
-    """The Immune class manages the Immune animation for aliens in the game."""
+    """The Immune class manages the Immune animation for the aliens."""
 
     def __init__(self, alien):
         self.alien = alien

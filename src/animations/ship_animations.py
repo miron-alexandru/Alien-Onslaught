@@ -53,7 +53,7 @@ class Animations:
         self.empower_rect = self.empower_image.get_rect()
 
     def change_ship_size(self, scale_factor):
-        """Change the ship size and animations based on the scale_factor."""
+        """Change the ship image and animation frames based on the scale factor."""
         self.ship.image = scale_image(self.ship.image, scale_factor)
         self.ship.rect = self.ship.image.get_rect()
 
@@ -82,7 +82,7 @@ class Animations:
         self.empower_rect = self.empower_image.get_rect()
 
     def reset_size(self):
-        """Reset all animations and ship images to their original size."""
+        """Reset all animations frames and ship images to their original size."""
         self.ship_images = ship_images
 
         self.immune_frames = immune_frames
@@ -102,9 +102,7 @@ class Animations:
         self.shield_rect = self.shield_image.get_rect()
 
     def update_warp_animation(self):
-        """Update the animation for the ship's warping state.
-        ship_img (int): The index of the ship image to display
-        when the warp effect is finished."""
+        """Update the animation for the ship's warping state."""
         self.warp_counter += 1
         if self.warp_counter >= self.warp_delay:
             self.warp_index += 1

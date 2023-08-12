@@ -41,6 +41,10 @@ class Laser(Sprite):
         if time.time() - self.start_time >= self.duration or self.ship.state.exploding:
             self.kill()
 
+        self._check_position_cosmic_conflict()
+
+    def _check_position_cosmic_conflict(self):
+        """Set the rect for the cosmic conflict game mode."""
         if self.settings.game_modes.cosmic_conflict:
             if self.ship == self.game.thunderbird_ship:
                 self.rect.midleft = self.ship.rect.midright
@@ -49,20 +53,20 @@ class Laser(Sprite):
         else:
             self.rect.midbottom = self.ship.rect.midtop
 
+    def _set_laser_frames_cosmic_conflict(self):
+        """Set the frames for the cosmic conflict game mode."""
+        if self.ship == self.game.thunderbird_ship:
+            self.image = pygame.transform.rotate(self.frames[self.current_frame], -90)
+        else:
+            self.image = pygame.transform.rotate(self.frames[self.current_frame], 90)
+        self.rect = self.image.get_rect()
+
     def set_laser_frames(self):
         """Set the image of the laser based
         on its current state and game mode.
         """
         if self.settings.game_modes.cosmic_conflict:
-            if self.ship == self.game.thunderbird_ship:
-                self.image = pygame.transform.rotate(
-                    self.frames[self.current_frame], -90
-                )
-            else:
-                self.image = pygame.transform.rotate(
-                    self.frames[self.current_frame], 90
-                )
-            self.rect = self.image.get_rect()
+            self._set_laser_frames_cosmic_conflict()
         else:
             self.image = self.frames[self.current_frame]
 

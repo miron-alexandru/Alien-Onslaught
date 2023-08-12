@@ -1,6 +1,4 @@
-"""
-The 'asteroid' module contains the Asteroid class that represents the asteroids in the game.
-"""
+"""The 'asteroid' module contains the Asteroid class used to create asteroid instances."""
 
 import random
 

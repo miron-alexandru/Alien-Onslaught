@@ -40,62 +40,102 @@ class TestCollisionManager(unittest.TestCase):
         self.assertEqual(self.collision_manager.handled_collisions, {})
 
     @patch("src.game_logic.collision_detection.play_sound")
-    def test_shield_collisions_with_aliens(self, mock_play_sound):
+    def test_handle_shielded_ship_collisions(self, mock_play_sound):
         """Test the shield collisions with aliens."""
-        ship = MagicMock()
-        alien = MagicMock()
-        bullet = MagicMock()
-        asteroid = MagicMock()
+        ships = MagicMock()
+        aliens = MagicMock()
+        bullets = MagicMock()
+        asteroids = MagicMock()
 
-        self.collision_manager.shield_collisions([ship], [alien], [bullet], [asteroid])
-
-        mock_play_sound.assert_called_once_with(
-            self.game.sound_manager.game_sounds, "alien_exploding"
+        self.collision_manager._handle_alien_collisions_with_shielded_ship = MagicMock()
+        self.collision_manager._handle_bullet_collisions_with_shielded_ship = (
+            MagicMock()
         )
-        self.assertTrue(alien.kill.called)
-        self.assertFalse(ship.state.shielded)
+        self.collision_manager._handle_asteroid_collisions_with_shielded_ship = (
+            MagicMock()
+        )
 
-    def test_shield_collisions_with_bullets(self):
+        self.collision_manager.handle_shielded_ship_collisions(
+            [ships], [aliens], [bullets], [asteroids]
+        )
+
+        self.collision_manager._handle_alien_collisions_with_shielded_ship.assert_called_once_with(
+            ships, [aliens]
+        )
+        self.collision_manager._handle_bullet_collisions_with_shielded_ship.assert_called_once_with(
+            ships, [bullets]
+        )
+        self.collision_manager._handle_asteroid_collisions_with_shielded_ship.assert_called_once_with(
+            ships, [asteroids]
+        )
+
+    def test_handle_alien_collisions_with_shielded_ship(self):
+        """Test the shield collisions with aliens."""
+        self.collision_manager._destroy_alien_and_play_sound = MagicMock()
+        ship = MagicMock()
+        aliens = MagicMock()
+
+        self.collision_manager._handle_alien_collisions_with_shielded_ship(
+            ship, [aliens]
+        )
+
+        self.collision_manager._destroy_alien_and_play_sound.assert_called_once_with(
+            aliens
+        )
+
+    def test_handle_bullet_collisions_with_shielded_ship(self):
         """Test the shield collisions with bullets."""
+        self.collision_manager._resolve_shield_collision = MagicMock()
         ship = MagicMock()
-        bullet = MagicMock()
+        bullets = MagicMock()
 
-        self.collision_manager._handle_collision_with_shielded_ship = MagicMock()
-
-        self.collision_manager.shield_collisions([ship], [], [bullet], [])
-
-        self.collision_manager._handle_collision_with_shielded_ship.assert_called_once_with(
-            bullet, "alien_exploding", ship
+        self.collision_manager._handle_bullet_collisions_with_shielded_ship(
+            ship, [bullets]
         )
 
-    def test_shield_collisions_with_asteroids(self):
+        self.collision_manager._resolve_shield_collision.assert_called_once_with(
+            bullets, "alien_exploding", ship
+        )
+
+    def test_handle_asteroids_collisions_with_shielded_ship(self):
         """Test the shield collisions with asteroids."""
+        self.collision_manager._resolve_shield_collision = MagicMock()
         ship = MagicMock()
-        asteroid = MagicMock()
+        asteroids = MagicMock()
 
-        self.collision_manager._handle_collision_with_shielded_ship = MagicMock()
+        self.collision_manager._handle_asteroid_collisions_with_shielded_ship(
+            ship, [asteroids]
+        )
 
-        self.collision_manager.shield_collisions([ship], [], [], [asteroid])
-
-        self.collision_manager._handle_collision_with_shielded_ship.assert_called_once_with(
-            asteroid, "asteroid_exploding", ship
+        self.collision_manager._resolve_shield_collision.assert_called_once_with(
+            asteroids, "asteroid_exploding", ship
         )
 
     @patch("src.game_logic.collision_detection.play_sound")
-    def test_handle_collision_with_shielded_ship(self, mock_play_sound):
-        """Test the handle_collision_with_shielded_ship method."""
-        sprite = MagicMock()
-        sound_name = "collision_sound"
+    def test_destroy_alien_play_sound(self, mock_play_sound):
+        """Test the destroy_alien_play_sound_method."""
+        alien = MagicMock()
+
+        self.collision_manager._destroy_alien_and_play_sound(alien)
+
+        alien.kill.assert_called_once()
+        mock_play_sound.assert_called_once_with(
+            self.game.sound_manager.game_sounds, "alien_exploding"
+        )
+
+    @patch("src.game_logic.collision_detection.play_sound")
+    def test_resolve_shield_collision(self, mock_play_sound):
+        """Test the resolve_shield_collision method."""
+        entity = MagicMock()
+        sound_key = "collision_sound"
         ship = MagicMock()
         ship.state.shielded = True
 
-        self.collision_manager._handle_collision_with_shielded_ship(
-            sprite, sound_name, ship
-        )
+        self.collision_manager._resolve_shield_collision(entity, sound_key, ship)
 
-        sprite.kill.assert_called_once()
+        entity.kill.assert_called_once()
         mock_play_sound.assert_called_once_with(
-            self.game.sound_manager.game_sounds, sound_name
+            self.game.sound_manager.game_sounds, sound_key
         )
         self.assertFalse(ship.state.shielded)
 
@@ -337,7 +377,7 @@ class TestCollisionManager(unittest.TestCase):
 
     @patch("src.game_logic.collision_detection.play_sound")
     @patch("src.game_logic.collision_detection.get_colliding_sprites")
-    def test_handle_collision(self, mock_get_sprite, mock_play_sound):
+    def test_resolve_collision_cosmic_conflict(self, mock_get_sprite, mock_play_sound):
         """Test the handle_collision method."""
         mock_get_sprite.return_value = [MagicMock(spec=Missile)]
         missile = mock_get_sprite.return_value[0]
@@ -351,7 +391,7 @@ class TestCollisionManager(unittest.TestCase):
         hit_function = MagicMock()
         self.collision_manager._update_cosmic_conflict_scores = MagicMock()
 
-        self.collision_manager.handle_collision(
+        self.collision_manager._resolve_collision_cosmic_conflict(
             ship, hit_function, sprite_group, score_increment
         )
 
@@ -366,7 +406,7 @@ class TestCollisionManager(unittest.TestCase):
 
     def test_check_cosmic_conflict_collisions(self):
         """Test the check_cosmic_conflict collisions method."""
-        self.collision_manager.handle_collision = MagicMock()
+        self.collision_manager._resolve_collision_cosmic_conflict = MagicMock()
         thunderbird_hit = MagicMock()
         phoenix_hit = MagicMock()
 
@@ -388,7 +428,8 @@ class TestCollisionManager(unittest.TestCase):
         ]
 
         self.assertEqual(
-            self.collision_manager.handle_collision.call_args_list, expected_calls
+            self.collision_manager._resolve_collision_cosmic_conflict.call_args_list,
+            expected_calls,
         )
 
     def test_check_alien_ship_collisions(self):

@@ -9,7 +9,7 @@ from src.utils.game_utils import load_single_image
 
 
 class Heart(Sprite):
-    """Draws a heart image on the screen to represent player health."""
+    """Draws a heart image on the screen that represents the player health."""
 
     def __init__(self, game):
         super().__init__()
