@@ -1,6 +1,6 @@
 """
 The 'loading_screen' module contains the LoadingScreen class
-that manages the loading screen for the game.
+that manages the loading screen.
 """
 
 import pygame

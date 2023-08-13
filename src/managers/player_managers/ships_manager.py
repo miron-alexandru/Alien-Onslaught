@@ -81,22 +81,31 @@ class ShipsManager:
             self.phoenix_ship.state.alive = False
 
     def reset_ships(self):
-        """Resets ships to their initial state, updates missiles number,
-        resets the player weapon and plays the warp sound effect."""
+        """Reset ships to their initial state, update missiles numbers, reset player weapons, and play warp sound effect."""
         for ship in self.game.ships:
-            ship.reset_ship_size()
-            ship.center_ship()
-            ship.start_warp()
-            ship.set_cosmic_conflict_pos()
-
+            self._reset_ship_properties(ship)
             if not self.game.game_loaded:
-                ship.reset_ship_state()
-                ship.update_missiles_number()
-
-                self.game.weapons_manager.reset_weapons()
-                self.game.score_board.render_missiles_num()
+                self._reset_ship_state_and_missiles(ship)
+                self._reset_weapons_and_render_missiles(ship)
 
         play_sound(self.game.sound_manager.game_sounds, "warp")
+
+    def _reset_ship_properties(self, ship):
+        """Reset ship properties such as size, position, and cosmic conflict position."""
+        ship.reset_ship_size()
+        ship.center_ship()
+        ship.start_warp()
+        ship.set_cosmic_conflict_pos()
+
+    def _reset_ship_state_and_missiles(self, ship):
+        """Reset ship state and update missile numbers."""
+        ship.reset_ship_state()
+        ship.update_missiles_number()
+
+    def _reset_weapons_and_render_missiles(self, ship):
+        """Reset player weapons and render missile numbers."""
+        self.game.weapons_manager.reset_weapons()
+        self.game.score_board.render_missiles_num()
 
     def update_ship_state(self):
         """Update the state for the ships."""

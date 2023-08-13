@@ -65,7 +65,8 @@
 <details>
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
-### Version 3.2:
+### Version 3.3:
+* Overall codebase improvements.
 * Code refactored inside the save_load_manager module.
 * Improved UI for the Save/Load feature.
 * Code refactored in different locations to improve maintainability.
@@ -75,6 +76,8 @@
 * Code refactored and documentation improved.
 * The Save/Load feature has been improved to include the player's current weapon.
 * Implemented the Save/Load feature.
+
+### Version 3.2:
 * Sound effects have been added when changing the ship.
 * A new ship selection feature has been introduced, giving players the ability to choose from three different ship types. Each player can now select their preferred ship type before starting the game
 * Removed the ability to change the ship by pressing a button.

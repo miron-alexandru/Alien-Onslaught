@@ -30,14 +30,12 @@ class AlienBulletsManager:
         self.last_alien_bullet_time = 0
 
     def _create_alien_bullet(self, alien):
-        """Create an alien bullet at the specified alien rect.
-        If the given alien is a BossAlien, a BossBullet will be created,
-        otherwise an AlienBullet will be created.
-        """
+        """Create an alien bullet at the specified alien rect."""
         if isinstance(alien, BossAlien):
             bullet = BossBullet(self, alien)
         else:
             bullet = AlienBullet(self)
+
         bullet.rect.centerx = alien.rect.centerx
         bullet.rect.bottom = alien.rect.bottom
         self.alien_bullet.add(bullet)

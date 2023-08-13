@@ -23,17 +23,13 @@ class AliensManager:
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
 
-        # Calculate the starting y-coordinate for the first row of aliens
-        start_y = 50
-
         # Create the full fleet of aliens.
         for row_number in range(rows):
             for alien_number in range(self.settings.aliens_num):
-                # Create the alien and set its starting position above the top of the screen
                 alien = Alien(self)
                 alien.rect.x = alien_width + 2 * alien_width * alien_number
-                alien.rect.y = start_y - (2 * alien_height * row_number)
-                # Add the alien to the group of aliens
+                alien.rect.y = 50 - (2 * alien_height * row_number)
+
                 self.aliens.add(alien)
 
     def create_boss_alien(self):
@@ -47,15 +43,25 @@ class AliensManager:
         self.aliens.update()
 
     def _check_fleet_edges(self):
-        """Check if any aliens have reached an edge and respond
-        appropriately by changing the direction and moving them down if needed.
-        Boss aliens do not move down.
-        """
+        """Check if any aliens have reached an edge and respond appropriately."""
         for alien in self.aliens.sprites():
-            if isinstance(alien, BossAlien):
-                if alien.check_edges():
-                    alien.motion.direction *= -1
-            elif alien.check_edges():
-                alien.motion.direction *= -1
-            elif alien.check_top_edges():
-                alien.rect.y += self.settings.alien_speed
+            self._handle_alien_edge(alien)
+
+    def _handle_alien_edge(self, alien):
+        """Handle the edge behavior of a single alien."""
+        if isinstance(alien, BossAlien):
+            self._handle_boss_alien_edge(alien)
+        else:
+            self._handle_regular_alien_edge(alien)
+
+    def _handle_boss_alien_edge(self, boss_alien):
+        """Handle edge behavior for a boss alien."""
+        if boss_alien.check_edges():
+            boss_alien.motion.direction *= -1
+
+    def _handle_regular_alien_edge(self, regular_alien):
+        """Handle edge behavior for a regular alien."""
+        if regular_alien.check_edges():
+            regular_alien.motion.direction *= -1
+        elif regular_alien.check_top_edges():
+            regular_alien.rect.y += self.settings.alien_speed

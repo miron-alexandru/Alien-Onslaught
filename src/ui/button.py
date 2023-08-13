@@ -1,5 +1,5 @@
 """
-The 'button module provides a class `Button` that creates a button instance in the game.
+The 'button' module provides the Button class used to create UI buttons.
 """
 
 import pygame
@@ -43,7 +43,7 @@ class Button:
         self.rect.move_ip(x, y)
 
     def draw_button(self):
-        """Draws the button if it's visible."""
+        """Draws the button."""
         self.screen.blit(self.image, self.rect)
 
     def show_button_info(self):

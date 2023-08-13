@@ -1,7 +1,6 @@
 """
 The 'scoreboards' module contains the ScoreBoard class for
-managing the score and the HUD of the game, and also manages
-the saving and deleting of the high scores.
+managing the score and the HUD of the game.
 """
 
 import pygame.font
@@ -47,44 +46,61 @@ class ScoreBoard:
 
     def render_scores(self):
         """Render the scores for the ships and display them on the screen."""
-        ship_scores = [
-            ("Thunderbird", self.stats.thunderbird_score),
-            ("Phoenix", self.stats.phoenix_score),
-        ]
-        for i, (ship_name, score) in enumerate(ship_scores):
-            # Calculate the rounded score and convert it into a string with proper formatting.
-            rounded_score = round(score)
-            score_str = f"{ship_name}: {rounded_score:,}"
-            score_img = self.font.render(score_str, True, self.text_color, None)
-            score_rect = score_img.get_rect()
+        self._render_ship_scores("Thunderbird", self.stats.thunderbird_score, -200)
+        self._render_ship_scores("Phoenix", self.stats.phoenix_score, 300)
 
-            # Set the position of the score image.
-            if i == 0:
-                score_rect.right = self.level_rect.centerx - 200
-            else:
-                score_rect.right = self.level_rect.centerx + 300
-            score_rect.top = 20
+    def _render_ship_scores(self, ship_name, score, offset_x):
+        """Render the score for a ship and update the corresponding attributes."""
+        rounded_score = round(score)
+        score_str = f"{ship_name}: {rounded_score:,}"
+        score_img = self.font.render(score_str, True, self.text_color, None)
+        score_rect = score_img.get_rect()
 
-            if ship_name == "Thunderbird":
-                self.thunderbird_score_image = score_img
-                self.thunderbird_score_rect = score_rect
-            else:
-                self.phoenix_score_image = score_img
-                self.phoenix_score_rect = score_rect
+        score_rect.right = self.level_rect.centerx + offset_x
+        score_rect.top = 20
+
+        if ship_name == "Thunderbird":
+            self.thunderbird_score_image = score_img
+            self.thunderbird_score_rect = score_rect
+        else:
+            self.phoenix_score_image = score_img
+            self.phoenix_score_rect = score_rect
+
+    def _get_missiles_to_render(self, ship):
+        """Get a list of ship(s) for which to render the missile count."""
+        missiles_to_render = []
+
+        if ship is None:
+            missiles_to_render.extend(self.game.ships)
+        elif ship is self.thunderbird_ship or ship is self.phoenix_ship:
+            missiles_to_render.append(ship)
+
+        return missiles_to_render
+
+    def update_missiles_attributes(
+        self, ship, rend_missiles_num, missiles_rect, missiles_img_rect, screen_rect
+    ):
+        """Update the attributes related to the display of missiles for a ship."""
+        if ship is self.thunderbird_ship:
+            self.thunderbird_rend_missiles_num = rend_missiles_num
+            self.thunderbird_missiles_rect = missiles_rect
+            self.thunderbird_missiles_img_rect = missiles_img_rect
+            self.thunderbird_missiles_img_rect.left = screen_rect.left
+        else:
+            self.phoenix_rend_missiles_num = rend_missiles_num
+            self.phoenix_missiles_rect = missiles_rect
+            self.phoenix_missiles_rect.right = screen_rect.right - 28
+            self.phoenix_missiles_img_rect = missiles_img_rect
+            self.phoenix_missiles_img_rect.right = screen_rect.right
 
     def render_missiles_num(self, ship=None):
         """Render the missiles number for the specified ship or all ships."""
         screen_rect = self.screen.get_rect()
 
-        ships_to_render = []
+        ship_missiles = self._get_missiles_to_render(ship)
 
-        if ship is None:
-            ships_to_render.extend(self.game.ships)
-        elif ship is self.thunderbird_ship or ship is self.phoenix_ship:
-            ships_to_render.append(ship)
-
-        for ship in ships_to_render:
-            missiles_str = str(ship.missiles_num)
+        for missile in ship_missiles:
+            missiles_str = str(missile.missiles_num)
             rend_missiles_num = self.font.render(
                 missiles_str, True, (71, 71, 71, 255), None
             )
@@ -95,29 +111,20 @@ class ScoreBoard:
             missiles_rect.left = screen_rect.left + 28
             missiles_rect.bottom = screen_rect.bottom - 10
 
-            if ship is self.thunderbird_ship:
-                self.thunderbird_rend_missiles_num = rend_missiles_num
-                self.thunderbird_missiles_rect = missiles_rect
-                self.thunderbird_missiles_img_rect = missiles_img_rect
-                self.thunderbird_missiles_img_rect.left = screen_rect.left
-            else:
-                self.phoenix_rend_missiles_num = rend_missiles_num
-                self.phoenix_missiles_rect = missiles_rect
-                self.phoenix_missiles_rect.right = screen_rect.right - 28
-                self.phoenix_missiles_img_rect = missiles_img_rect
-                self.phoenix_missiles_img_rect.right = screen_rect.right
+            self.update_missiles_attributes(
+                missile,
+                rend_missiles_num,
+                missiles_rect,
+                missiles_img_rect,
+                screen_rect,
+            )
 
     def render_high_score(self):
         """Render the high score and display it at
         the center of the top of the screen.
         """
-        # Calculate the rounded high score.
         high_score = round(self.stats.high_score)
-
-        # Convert the high score into a string
         high_score_str = f"High Score: {high_score:,}"
-
-        # Render the high score image.
         self.high_score_image = self.font.render(
             high_score_str, True, self.text_color, None
         )
@@ -152,8 +159,10 @@ class ScoreBoard:
             self.settings.game_modes.game_mode, f"Level {str(self.stats.level)}"
         )
         self.level_image = self.font.render(level_str, True, self.level_color, None)
+        self._position_level_image(self.level_image)
 
-        # Position the level image in the center of the screen.
+    def _position_level_image(self, level_image):
+        """Position the level image in the center of the screen."""
         screen_width, _ = self.screen.get_size()
         _, level_height = self.level_image.get_size()
         self.level_rect = self.level_image.get_rect()

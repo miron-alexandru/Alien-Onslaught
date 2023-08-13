@@ -1,10 +1,7 @@
 """
-The 'screen_manager' module provides classes for managing the game screen.
-
-Classes:
-    - 'ScreenManager': Manages the screen, the game controls, the custom cursor and
-    other screen related events.
-    - 'LoadingScreen': Manages the loading screen for the game.
+The 'screen_manager' module provides the ScreenManager class used to manage
+the screen, the game controls displayed, the custom cursor and
+other screen related events.
 """
 
 import pygame
@@ -208,6 +205,8 @@ class ScreenManager:
         width = max(min(size[0], max_width), min_width)
         height = max(min(size[1], max_height), min_height)
         size = (width, height)
+
+        self.screen = pygame.display.set_mode(size, self.screen_flag)
 
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
