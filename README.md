@@ -19,7 +19,7 @@
 * git clone https://github.com/KhadaAke/Alien-Onslaught.git
 * cd Alien-Onslaught
 * python -m venv env
-* source env/Scripts/activate
+* source env/Scripts/activate (env\Scripts\activate for Windows)
 * pip install . (including the dot)
 * cd src
 * python alien_onslaught.py
