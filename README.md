@@ -9,8 +9,8 @@
 
 ### Game Launch:
 #### Option one:
-pip install alien-onslaught
-python -m src.alien_onslaught
+- pip install alien-onslaught
+- python -m src.alien_onslaught
 
 #### Option two:
 * git clone https://github.com/KhadaAke/Alien-Onslaught.git
