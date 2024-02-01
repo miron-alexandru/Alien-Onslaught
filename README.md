@@ -9,11 +9,8 @@
 
 ### Game Launch:
 #### Option one:
-* Open a command prompt or terminal
-* Navigate to the game project's root directory (containing setup.py)
-* Install the game package with pip install . (including the dot)
-* After installation, go to the src directory (use cd src)
-* Run the game by executing python alien_onslaught.py
+pip install alien-onslaught
+python -m src.alien_onslaught
 
 #### Option two:
 * git clone https://github.com/KhadaAke/Alien-Onslaught.git
@@ -23,6 +20,13 @@
 * pip install . (including the dot)
 * cd src
 * python alien_onslaught.py
+
+#### Option three:
+* Open a command prompt or terminal
+* Navigate to the game project's root directory (containing setup.py)
+* Install the game package with pip install . (including the dot)
+* After installation, go to the src directory (use cd src)
+* Run the game by executing python alien_onslaught.py
 
 ## Controls:
 #### Gameplay:
