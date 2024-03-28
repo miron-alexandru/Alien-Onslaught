@@ -127,3 +127,21 @@ class SoundManager:
         for music_dict in music_dicts.values():
             for _ in music_dict.values():
                 pygame.mixer.music.set_volume(volume)
+
+    def check_music_volume(self):
+        """Check if the music should be muted or not."""
+        if self.game.music_muted:
+            pygame.mixer.music.set_volume(0)
+
+    def toggle_mute_music(self, scope):
+        """Toggle the music mute state."""
+        self.game.music_muted = not self.game.music_muted
+
+        if self.game.music_muted:
+            volume = 0
+        elif scope == 'game':
+            volume = 0.3
+        elif scope == 'menu':
+            volume = 0.8
+
+        pygame.mixer.music.set_volume(volume)

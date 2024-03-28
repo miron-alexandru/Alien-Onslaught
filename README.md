@@ -45,6 +45,7 @@
 #### UI Controls:
 * Toggle Fullscreen: F
 * Pause: P
+* Mute/Unmute Music: F1
 * - While Paused:
 *  Save Game: S
 *  Restart: R
@@ -70,6 +71,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.3:
+* Users are able to mute/unmute the music in the game using the F1 key.
 * Overall codebase improvements.
 * Code refactored inside the save_load_manager module.
 * Improved UI for the Save/Load feature.

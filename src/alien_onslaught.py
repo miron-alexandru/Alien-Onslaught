@@ -74,6 +74,7 @@ class AlienOnslaught:
 
         self.ui_options = self.settings.ui_options
         self.ships = []
+        self.music_muted = False
         self._initialize_game_objects()
         self._initialize_sprite_groups()
         self.initialize_managers()
@@ -181,6 +182,7 @@ class AlienOnslaught:
         """Run the main menu."""
         self.sound_manager.load_sounds("menu_sounds")
         play_music(self.sound_manager.menu_music, "menu")
+        self.sound_manager.check_music_volume()
         while self.MENU_RUNNING:
             self.handle_menu_events()
             self.screen_manager.update_window_mode()
@@ -196,6 +198,8 @@ class AlienOnslaught:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
                     self.screen_manager.toggle_window_mode()
+                elif event.key == pygame.K_F1:
+                    self.sound_manager.toggle_mute_music('menu')
             elif (
                 event.type == pygame.MOUSEBUTTONDOWN
                 and event.button == pygame.BUTTON_LEFT
@@ -252,6 +256,7 @@ class AlienOnslaught:
         self.sound_manager.current_sound = None
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
         self.settings.disable_ui_flags()
+        self.sound_manager.check_music_volume()
         self.run_game()
 
     def _update_background(self, i):
@@ -269,6 +274,7 @@ class AlienOnslaught:
     def run_game(self):
         """Run the main game loop."""
         i = 0
+        self.sound_manager.check_music_volume()
         while self.GAME_RUNNING:
             self.check_events()
             self.game_over_manager.check_game_over()
@@ -285,6 +291,7 @@ class AlienOnslaught:
                 self.screen.blit(self.bg_img, [0, 0])
                 self.game_over_manager.check_game_over()
                 self._update_screen()
+
             self.clock.tick(60)
 
     def _handle_game_logic(self):
@@ -344,6 +351,8 @@ class AlienOnslaught:
                     )
                 if event.key == pygame.K_f:
                     self.screen_manager.toggle_window_mode()
+                elif event.key == pygame.K_F1:
+                    self.sound_manager.toggle_mute_music('game')
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)

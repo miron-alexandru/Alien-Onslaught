@@ -148,7 +148,9 @@ def load_sound_files(sounds_dict):
     """A function that loads multiple sounds from a dict of the form:
     key: sound name:
     value: path to sound location."""
-    pygame.mixer.init()
+    if not pygame.mixer.get_init():
+        pygame.mixer.init()
+
     return {
         key: pygame.mixer.Sound(os.path.join(SOUND_PATH, value))
         for key, value in sounds_dict.items()
@@ -159,7 +161,9 @@ def load_music_files(music_dict):
     """A function that loads multiple music files from a dict of the form:
     key: music name:
     value: path to music file."""
-    pygame.mixer.init()
+    if not pygame.mixer.get_init():
+        pygame.mixer.init()
+
     return {
         key: value if value is None else os.path.join(SOUND_PATH, value)
         for key, value in music_dict.items()
