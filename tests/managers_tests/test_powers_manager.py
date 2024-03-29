@@ -452,8 +452,7 @@ class TestPowerEffectsManager(unittest.TestCase):
     def test_increase_alien_numbers(self):
         """Test the increase alien numbers penalty."""
         self.power_effects_manager.increase_alien_numbers()
-
-        self.assertTrue(self.game.aliens_manager.create_fleet.called_with(1))
+        self.game.aliens_manager.create_fleet.assert_called_with(1)
 
     def test_increase_alien_hp(self):
         """Test the increase alien hp penalty."""

@@ -3,7 +3,6 @@ The 'alien_bullets_manager' module contains the AlienBulletsManager class used f
 managing bullets fired by aliens and bosses in the game.
 """
 
-
 import random
 import pygame
 

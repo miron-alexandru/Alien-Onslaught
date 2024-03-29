@@ -15,7 +15,6 @@ Contact: quality_xqs@yahoo.com
 
 """
 
-
 import pygame
 
 from src.game_logic.game_settings import Settings
@@ -201,7 +200,7 @@ class AlienOnslaught:
                 if event.key == pygame.K_f:
                     self.screen_manager.toggle_window_mode()
                 elif event.key == pygame.K_F1:
-                    self.sound_manager.toggle_mute_music('menu')
+                    self.sound_manager.toggle_mute_music("menu")
                 elif event.key == pygame.K_F2:
                     self.sound_manager.toggle_mute_sfx()
             elif (
@@ -358,7 +357,7 @@ class AlienOnslaught:
                 if event.key == pygame.K_f:
                     self.screen_manager.toggle_window_mode()
                 elif event.key == pygame.K_F1:
-                    self.sound_manager.toggle_mute_music('game')
+                    self.sound_manager.toggle_mute_music("game")
                 elif event.key == pygame.K_F2:
                     self.sound_manager.toggle_mute_sfx()
             elif event.type == pygame.KEYUP:

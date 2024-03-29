@@ -7,7 +7,6 @@ Classes:
     - 'AlienAnimation': This class manages the animation for normal aliens.
 """
 
-
 import math
 import random
 import pygame

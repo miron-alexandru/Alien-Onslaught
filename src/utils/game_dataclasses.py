@@ -2,7 +2,6 @@
 The 'game_dataclasses' module contains the UIOptions, GameModes and
 ShipStates data classes taht are used in different parts of the game."""
 
-
 from dataclasses import dataclass
 
 

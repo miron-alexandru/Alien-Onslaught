@@ -198,16 +198,16 @@ class SaveLoadSystem:
                     "rect": sprite.rect,
                     "size": sprite.image.get_size(),
                     "image": pygame.image.tostring(sprite.image, "RGBA"),
-                    "is_baby": False
-                    if isinstance(sprite, BossAlien)
-                    else sprite.is_baby,
+                    "is_baby": (
+                        False if isinstance(sprite, BossAlien) else sprite.is_baby
+                    ),
                     "type": "boss" if isinstance(sprite, BossAlien) else "alien",
                     "location": sprite.rect.x,
                     "hit_count": sprite.hit_count,
                     "last_bullet_time": sprite.last_bullet_time,
-                    "immune_state": sprite.immune_state
-                    if isinstance(sprite, Alien)
-                    else None,
+                    "immune_state": (
+                        sprite.immune_state if isinstance(sprite, Alien) else None
+                    ),
                     "frozen_state": sprite.frozen_state,
                 }
                 for sprite in alien_sprites
@@ -281,9 +281,11 @@ class SaveLoadSystem:
                 set_attribute(self.game, attributes, loaded_data[key])
             elif hasattr(self.game.stats, key) or hasattr(self.game.settings, key):
                 setattr(
-                    self.game.stats
-                    if hasattr(self.game.stats, key)
-                    else self.game.settings,
+                    (
+                        self.game.stats
+                        if hasattr(self.game.stats, key)
+                        else self.game.settings
+                    ),
                     key,
                     loaded_data[key],
                 )

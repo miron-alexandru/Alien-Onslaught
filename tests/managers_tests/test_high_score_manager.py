@@ -3,7 +3,6 @@ This module tests the HighScoreManager class that is used to manage the saving a
 deletion of the high scores in the game.
 """
 
-
 import unittest
 from unittest.mock import MagicMock, patch
 

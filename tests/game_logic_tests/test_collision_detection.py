@@ -3,7 +3,6 @@ This module tests the CollisionManager class which manages the
 collisions in the game.
 """
 
-
 import unittest
 from unittest.mock import MagicMock, patch, call
 

@@ -2,6 +2,7 @@
 This module tests the SaveLoadSystem class that is used to save
 and load the game state.
 """
+
 import os
 import datetime
 import unittest

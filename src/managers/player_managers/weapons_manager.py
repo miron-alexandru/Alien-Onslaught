@@ -94,9 +94,11 @@ class WeaponsManager:
         bullet_fired = False
         if len(bullets) < bullets_allowed:
             new_bullets = [
-                bullet_class(self, ship, scaled=True)
-                if ship.state.scaled_weapon
-                else bullet_class(self, ship)
+                (
+                    bullet_class(self, ship, scaled=True)
+                    if ship.state.scaled_weapon
+                    else bullet_class(self, ship)
+                )
                 for _ in range(num_bullets)
             ]
             bullets.add(new_bullets)

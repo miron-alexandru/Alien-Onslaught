@@ -5,7 +5,7 @@ player weapons in the game.
 
 import time
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
 import pygame
 
@@ -134,8 +134,10 @@ class WeaponsManagerTest(unittest.TestCase):
         )
         self.assertEqual(self.weapons_manager.weapons["phoenix"]["current"], "firebird")
 
-        mock_load_image.called_once_with(WEAPONS["thunderbolt"])
-        mock_load_image.called_once_with(WEAPONS["firebird"])
+        assert mock_load_image.call_count == 2
+        mock_load_image.assert_has_calls(
+            [call(WEAPONS["thunderbolt"]), call(WEAPONS["firebird"])]
+        )
 
     def test_update_projectiles_singleplayer(self):
         """Test the update of the projectiles in singleplayer."""
@@ -172,11 +174,6 @@ class WeaponsManagerTest(unittest.TestCase):
         self.weapons_manager.singleplayer_projectiles[0].update.assert_called()
 
         self.assertTrue(self.weapons_manager.singleplayer_projectiles[0].copy.called)
-        self.assertTrue(
-            self.weapons_manager.singleplayer_projectiles[0].remove.called_with(
-                projectile_mock1
-            )
-        )
 
         self.assertFalse(self.weapons_manager.multiplayer_projectiles[0].copy.called)
         self.assertFalse(self.weapons_manager.multiplayer_projectiles[0].remove.called)
@@ -192,9 +189,6 @@ class WeaponsManagerTest(unittest.TestCase):
         self.weapons_manager.multiplayer_projectiles[0].update.assert_called()
 
         self.assertTrue(self.weapons_manager.multiplayer_projectiles[0].copy.called)
-        self.assertTrue(
-            self.weapons_manager.multiplayer_projectiles[0].remove.called_once()
-        )
 
         self.assertFalse(self.weapons_manager.singleplayer_projectiles[0].copy.called)
         self.assertFalse(self.weapons_manager.singleplayer_projectiles[0].remove.called)

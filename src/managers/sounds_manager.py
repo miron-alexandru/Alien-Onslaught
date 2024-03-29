@@ -137,10 +137,7 @@ class SoundManager:
         """Toggle the music mute state."""
         self.game.music_muted = not self.game.music_muted
 
-        volume_mapping = {
-            'game': 0.3,
-            'menu': 0.8
-        }
+        volume_mapping = {"game": 0.3, "menu": 0.8}
 
         volume = 0 if self.game.music_muted else volume_mapping.get(scope, 1)
 
@@ -157,7 +154,7 @@ class SoundManager:
     def toggle_mute_sfx(self):
         """Toggle the sfx mute state."""
         self.game.sfx_muted = not self.game.sfx_muted
-        
+
         volume = 0 if self.game.sfx_muted else 1
         menu_sounds_volume = 0 if self.game.sfx_muted else 0.7
         alien_ex_volume = 0.5 if not self.game.sfx_muted else 0
@@ -173,4 +170,3 @@ class SoundManager:
 
         for sound in self.menu_sounds.values():
             sound.set_volume(menu_sounds_volume)
-
