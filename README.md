@@ -71,6 +71,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.3:
+* Users are able to mute/unmute sound effects in the game using the F2 key.
 * Updated & Improved UI / Controls on main menu.
 * Users are able to mute/unmute the music in the game using the F1 key.
 * Overall codebase improvements.

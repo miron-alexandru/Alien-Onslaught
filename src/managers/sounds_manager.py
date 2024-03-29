@@ -137,11 +137,40 @@ class SoundManager:
         """Toggle the music mute state."""
         self.game.music_muted = not self.game.music_muted
 
-        if self.game.music_muted:
-            volume = 0
-        elif scope == 'game':
-            volume = 0.3
-        elif scope == 'menu':
-            volume = 0.8
+        volume_mapping = {
+            'game': 0.3,
+            'menu': 0.8
+        }
+
+        volume = 0 if self.game.music_muted else volume_mapping.get(scope, 1)
 
         pygame.mixer.music.set_volume(volume)
+
+    def check_sfx_volume(self):
+        """Check if sfx should be muted or not."""
+        if self.game.sfx_muted:
+            all_sfx = {**self.game_sounds, **self.menu_sounds}
+
+            for sound in all_sfx.values():
+                sound.set_volume(0.0)
+
+    def toggle_mute_sfx(self):
+        """Toggle the sfx mute state."""
+        self.game.sfx_muted = not self.game.sfx_muted
+        
+        volume = 0 if self.game.sfx_muted else 1
+        menu_sounds_volume = 0 if self.game.sfx_muted else 0.7
+        alien_ex_volume = 0.5 if not self.game.sfx_muted else 0
+        bullet_volume = 0.1 if not self.game.sfx_muted else 0
+
+        for name, sound in self.game_sounds.items():
+            if name == "bullet":
+                sound.set_volume(bullet_volume)
+            elif name == "alien_exploding":
+                sound.set_volume(alien_ex_volume)
+            else:
+                sound.set_volume(volume)
+
+        for sound in self.menu_sounds.values():
+            sound.set_volume(menu_sounds_volume)
+

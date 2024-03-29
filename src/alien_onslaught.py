@@ -75,6 +75,7 @@ class AlienOnslaught:
         self.ui_options = self.settings.ui_options
         self.ships = []
         self.music_muted = False
+        self.sfx_muted = False
         self._initialize_game_objects()
         self._initialize_sprite_groups()
         self.initialize_managers()
@@ -183,6 +184,7 @@ class AlienOnslaught:
         self.sound_manager.load_sounds("menu_sounds")
         play_music(self.sound_manager.menu_music, "menu")
         self.sound_manager.check_music_volume()
+        self.sound_manager.check_sfx_volume()
         while self.MENU_RUNNING:
             self.handle_menu_events()
             self.screen_manager.update_window_mode()
@@ -200,6 +202,8 @@ class AlienOnslaught:
                     self.screen_manager.toggle_window_mode()
                 elif event.key == pygame.K_F1:
                     self.sound_manager.toggle_mute_music('menu')
+                elif event.key == pygame.K_F2:
+                    self.sound_manager.toggle_mute_sfx()
             elif (
                 event.type == pygame.MOUSEBUTTONDOWN
                 and event.button == pygame.BUTTON_LEFT
@@ -257,6 +261,7 @@ class AlienOnslaught:
         self.stats.reset_stats(self.phoenix_ship, self.thunderbird_ship)
         self.settings.disable_ui_flags()
         self.sound_manager.check_music_volume()
+        self.sound_manager.check_sfx_volume()
         self.run_game()
 
     def _update_background(self, i):
@@ -275,6 +280,7 @@ class AlienOnslaught:
         """Run the main game loop."""
         i = 0
         self.sound_manager.check_music_volume()
+        self.sound_manager.check_sfx_volume()
         while self.GAME_RUNNING:
             self.check_events()
             self.game_over_manager.check_game_over()
@@ -353,6 +359,8 @@ class AlienOnslaught:
                     self.screen_manager.toggle_window_mode()
                 elif event.key == pygame.K_F1:
                     self.sound_manager.toggle_mute_music('game')
+                elif event.key == pygame.K_F2:
+                    self.sound_manager.toggle_mute_sfx()
             elif event.type == pygame.KEYUP:
                 if self.stats.game_active:
                     self.player_input.check_keyup_events(event)
