@@ -308,7 +308,7 @@ def render_text(text, font, color, start_pos, line_spacing, second_color=None):
     text_surfaces = []
     text_rects = []
 
-    tab_width = 10  # Number of spaces per tab
+    tab_width = 5  # Number of spaces per tab
 
     for i, line in enumerate(lines):
         # Replace tabs with spaces
@@ -332,14 +332,14 @@ def calculate_control_positions(center, x_offset):
     """Calculate the positions of player 1 and player 2 controls."""
     p1_controls_x = center[0] - x_offset
     p2_controls_x = center[0] + x_offset
-    y_pos = 260
+    y_pos = 180
     return (p1_controls_x, y_pos), (p2_controls_x, y_pos)
 
 
 def display_controls(controls_surface, surface):
     """Display controls on screen."""
     center = surface.get_rect().center
-    font = pygame.font.SysFont("verdana", 20)
+    font = pygame.font.SysFont("verdana", 16, bold=True)
     color = "white"
 
     p1_controls_img, p1_controls_img_rect = load_controls_image(
@@ -349,7 +349,7 @@ def display_controls(controls_surface, surface):
         controls_surface, {"topright": (0, 0)}
     )
 
-    p1_pos, p2_pos = calculate_control_positions(center, 600)
+    p1_pos, p2_pos = calculate_control_positions(center, 625)
     p1_controls_img_rect.topleft = p1_pos
     p2_controls_img_rect.topright = p2_pos
 
@@ -358,7 +358,7 @@ def display_controls(controls_surface, surface):
         {
             "midbottom": (
                 p1_controls_img_rect.centerx,
-                p1_controls_img_rect.bottom + 225,
+                p1_controls_img_rect.bottom + 245,
             )
         },
     )
@@ -367,24 +367,24 @@ def display_controls(controls_surface, surface):
         P1_CONTROLS,
         font,
         color,
-        (p1_controls_img_rect.left + 25, p1_controls_img_rect.top + 15),
-        22,
+        (p1_controls_img_rect.left + 45, p1_controls_img_rect.top + 25),
+        23,
     )
 
     p2_controls_text, p2_controls_text_rects = render_text(
         P2_CONTROLS,
         font,
         color,
-        (p2_controls_img_rect.left + 25, p2_controls_img_rect.top + 15),
-        22,
+        (p2_controls_img_rect.left + 45, p2_controls_img_rect.top + 25),
+        23,
     )
 
     game_controls_text, game_controls_text_rects = render_text(
         GAME_CONTROLS,
         font,
         color,
-        (game_controls_img_rect.left + 25, game_controls_img_rect.top + 15),
-        22,
+        (game_controls_img_rect.left + 45, game_controls_img_rect.top + 25),
+        23,
     )
 
     return (

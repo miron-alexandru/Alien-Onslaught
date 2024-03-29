@@ -71,6 +71,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.3:
+* Updated & Improved UI / Controls on main menu.
 * Users are able to mute/unmute the music in the game using the F1 key.
 * Overall codebase improvements.
 * Code refactored inside the save_load_manager module.

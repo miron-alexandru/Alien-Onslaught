@@ -32,31 +32,34 @@ BUTTON_NAMES = [
 
 # Player2 controls
 P2_CONTROLS = (
-    "Phoenix Controls:\n"
-    "Move: Arrow Keys\n"
-    "Fire: Enter\n"
-    "Laser: R-Shift\n"
-    "Launch Missiles: R-Ctrl\n"
+    "\t\t\t\t\tPhoenix Controls\n"
+    "\n"
+    "Movement — Arrow Keys\n"
+    "Fire — Enter\n"
+    "Laser — R-Shift\n"
+    "Launch Missiles — R-Ctrl\n"
 )
 
 # Player1 controls
 P1_CONTROLS = (
-    "Thunderbird Controls:\n"
-    "Move: W, A, S, D\n"
-    "Fire: Space\n"
-    "Laser: C\n"
-    "Launch Missiles: X\n"
+    "\t\t\t\tThunderbird Controls\n"
+    "\n"
+    "Movement — W, A, S, D\n"
+    "Fire — Space\n"
+    "Laser — C\n"
+    "Launch Missiles — X\n"
 )
 
 GAME_CONTROLS = (
-    "Toggle Fullscreen: F\n"
-    "Pause: P\n"
-    " - While Paused:\n"
-    " Save Game: S\n"
-    " Restart: R\n"
-    " Game Menu: ESC\n"
-    " Main Menu: M\n"
-    " Quit: Q"
+    "Toggle Fullscreen — F\n"
+    "Mute Music & Mute SFX — F1 & F2\n"
+    "Pause — P\n"
+    " - While Paused: \n"
+    " Save Game — S\n"
+    " Restart — R\n"
+    " Game Menu — ESC\n"
+    " Main Menu — M\n"
+    " Quit — Q"
 )
 
 GAME_MODES_DESCRIPTIONS = (
