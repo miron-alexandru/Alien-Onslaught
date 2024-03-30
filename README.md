@@ -45,7 +45,7 @@
 #### UI Controls:
 * Toggle Fullscreen: F
 * Pause: P
-* Mute/Unmute Music: F1
+* Toggle Mute Music & SFX: F1 & F2
 * - While Paused:
 *  Save Game: S
 *  Restart: R
