@@ -188,6 +188,7 @@ class AlienOnslaught:
             self.handle_menu_events()
             self.screen_manager.update_window_mode()
             self.screen_manager.draw_menu_objects(self.bg_img, self.bg_img_rect)
+            self.sound_manager.check_muted_state()
             self.screen_manager.draw_cursor()
             pygame.display.flip()
 
@@ -290,11 +291,13 @@ class AlienOnslaught:
                     i = self._update_background(i)
                     self._handle_game_logic()
 
+                self.sound_manager.check_muted_state()
                 self._update_screen()
                 self._check_for_pause()
             else:
                 self.screen.blit(self.bg_img, [0, 0])
                 self.game_over_manager.check_game_over()
+                self.sound_manager.check_muted_state()
                 self._update_screen()
 
             self.clock.tick(60)

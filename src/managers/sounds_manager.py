@@ -21,6 +21,7 @@ from src.utils.game_utils import (
     set_music_volume,
     load_music_files,
     play_music,
+    display_muted_state_message,
 )
 
 
@@ -46,6 +47,8 @@ class SoundManager:
         ) = ({}, {}, {}, {}, {}, {}, {})
 
         self.current_sound = None
+        self.draw_muted_message = False
+        self.display_muted_time = 0
 
     def load_sounds(self, sounds_to_load):
         """Load necessary sound files."""
@@ -133,16 +136,6 @@ class SoundManager:
         if self.game.music_muted:
             pygame.mixer.music.set_volume(0)
 
-    def toggle_mute_music(self, scope):
-        """Toggle the music mute state."""
-        self.game.music_muted = not self.game.music_muted
-
-        volume_mapping = {"game": 0.3, "menu": 0.8}
-
-        volume = 0 if self.game.music_muted else volume_mapping.get(scope, 1)
-
-        pygame.mixer.music.set_volume(volume)
-
     def check_sfx_volume(self):
         """Check if sfx should be muted or not."""
         if self.game.sfx_muted:
@@ -151,9 +144,21 @@ class SoundManager:
             for sound in all_sfx.values():
                 sound.set_volume(0.0)
 
+    def toggle_mute_music(self, scope):
+        """Toggle the music mute state."""
+        self.game.music_muted = not self.game.music_muted
+        self.draw_muted_message = True
+
+        volume_mapping = {"game": 0.3, "menu": 0.8}
+
+        volume = 0 if self.game.music_muted else volume_mapping.get(scope, 1)
+
+        pygame.mixer.music.set_volume(volume)
+
     def toggle_mute_sfx(self):
         """Toggle the sfx mute state."""
         self.game.sfx_muted = not self.game.sfx_muted
+        self.draw_muted_message = True
 
         volume = 0 if self.game.sfx_muted else 1
         menu_sounds_volume = 0 if self.game.sfx_muted else 0.7
@@ -170,3 +175,29 @@ class SoundManager:
 
         for sound in self.menu_sounds.values():
             sound.set_volume(menu_sounds_volume)
+
+    def check_muted_state(self):
+        """Check the muted state of music and sound effects and display a message if needed."""
+        current_time = pygame.time.get_ticks()
+
+        if self.draw_muted_message:
+            if current_time - self.display_muted_time <= 1500:
+                music_message = ""
+                sfx_message = ""
+                if self.game.music_muted:
+                    music_message = "Music Muted"
+                elif not self.game.music_muted:
+                    music_message = "Music Unmuted"
+                
+                if self.game.sfx_muted:
+                    sfx_message = "SFX Muted"
+                elif not self.game.sfx_muted:
+                    sfx_message = "SFX Unmuted"
+
+                message = music_message + " | " + sfx_message
+                display_muted_state_message(self.game.screen, message)
+            else:
+                self.draw_muted_message = False
+
+        if not self.draw_muted_message:
+            self.display_muted_time = current_time
