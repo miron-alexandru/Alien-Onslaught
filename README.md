@@ -31,27 +31,27 @@
 ## Controls:
 #### Gameplay:
 #### Player 1 (Thunderbird):
-* Move: W, A, S, D
-* Fire: Space
-* Laser: C
-* Launch Missiles: X
+* Move — W, A, S, D
+* Fire — Space
+* Laser — C
+* Launch Missiles — X
 
 #### Player 2 (Phoenix):
-* Move: Arrow Keys
-* Fire: Enter
-* Laser: R-Shift
-* Launch Missiles: R-Ctrl
+* Move — Arrow Keys
+* Fire — Enter
+* Laser — R-Shift
+* Launch Missiles — R-Ctrl
 
 #### UI Controls:
-* Toggle Fullscreen: F
-* Pause: P
-* Toggle Mute Music & SFX: F1 & F2
+* Toggle Fullscreen — F
+* Pause — P
+* Toggle Mute Music & SFX — F1 & F2
 * - While Paused:
-*  Save Game: S
-*  Restart: R
-*  Return to Game Menu: ESC
-*  Return to Main Menu: M
-*  Quit: Q
+*  Save Game — S
+*  Restart — R
+*  Return to Game Menu — ESC
+*  Return to Main Menu — M
+*  Quit — Q
 
 ## Game Images:
 ![Menu](game_assets/images/game_images/menu.PNG)
@@ -71,6 +71,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.3:
+* Added sound effects for Mute & Unmute.
 * Users are able to mute/unmute sound effects in the game using the F2 key.
 * Updated & Improved UI / Controls on main menu.
 * Users are able to mute/unmute the music in the game using the F1 key.
@@ -259,6 +260,8 @@ This is a list of assets used in the project that were not created by me, along 
 * Victory and Menu music — by [yd](https://opengameart.org/users/yd)
 
 ### Sound Effects (SFx):
+* Mute — by [LokiF](https://opengameart.org/users/lokif)
+* Unmute — by [OpenGameArt.Org](https://opengameart.org/)
 * UI Sound effects: Click sound, Quit sound, Empty save sound, Load game sound and other — by [Circlerun](https://opengameart.org/users/circlerun)
 * Explosion , Laser ready, Ship change, — by [Michael Kurinnoy](https://opengameart.org/content/space-battle-game-sounds-astromenace)
 * Power-up, penalty, health — by [phoenix1291](https://opengameart.org/users/phoenix1291)

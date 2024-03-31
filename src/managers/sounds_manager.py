@@ -22,6 +22,7 @@ from src.utils.game_utils import (
     load_music_files,
     play_music,
     display_muted_state_message,
+    play_sound,
 )
 
 
@@ -149,6 +150,11 @@ class SoundManager:
         self.game.music_muted = not self.game.music_muted
         self.draw_muted_message = True
 
+        if self.game.music_muted:
+            play_sound(self.menu_sounds, "is_muted")
+        elif not self.game.music_muted:
+            play_sound(self.menu_sounds, "is_unmuted")
+
         volume_mapping = {"game": 0.3, "menu": 0.8}
 
         volume = 0 if self.game.music_muted else volume_mapping.get(scope, 1)
@@ -159,6 +165,11 @@ class SoundManager:
         """Toggle the sfx mute state."""
         self.game.sfx_muted = not self.game.sfx_muted
         self.draw_muted_message = True
+
+        if self.game.sfx_muted:
+            play_sound(self.menu_sounds, "is_muted")
+        elif not self.game.sfx_muted:
+            play_sound(self.menu_sounds, "is_unmuted")
 
         volume = 0 if self.game.sfx_muted else 1
         menu_sounds_volume = 0 if self.game.sfx_muted else 0.7
@@ -173,8 +184,11 @@ class SoundManager:
             else:
                 sound.set_volume(volume)
 
-        for sound in self.menu_sounds.values():
-            sound.set_volume(menu_sounds_volume)
+        for name, sound in self.menu_sounds.items():
+            if name == "is_muted" or name == "is_unmuted":
+                sound.set_volume(0.8)
+            else:
+                sound.set_volume(menu_sounds_volume)
 
     def check_muted_state(self):
         """Check the muted state of music and sound effects and display a message if needed."""

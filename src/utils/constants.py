@@ -297,6 +297,8 @@ MENU_MUSIC = {
 MENU_SOUNDS = {
     "click_menu": "ui/click_menu.wav",
     "quit_effect": "ui/quit_effect.wav",
+    "is_muted": "ui/is_muted.wav",
+    "is_unmuted": "ui/is_unmuted.wav",
 }
 
 GAME_SOUNDS = {
@@ -311,6 +313,8 @@ GAME_SOUNDS = {
     "click": "ui/click_button.wav",
     "quit_effect": "ui/quit_effect.wav",
     "keypress": "ui/keypress.wav",
+    "is_muted": "ui/is_muted.wav",
+    "is_unmuted": "ui/is_unmuted.wav",
     "warp": "gameplay/warp_sound.wav",
     "alien_exploding": "gameplay/alien_exploding.wav",
     "asteroid_exploding": "gameplay/asteroid_exploding.wav",
