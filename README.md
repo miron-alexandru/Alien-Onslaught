@@ -71,6 +71,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.3:
+* Updated images for Save Game and Paused.
 * Added sound effects for Mute & Unmute.
 * Users are able to mute/unmute sound effects in the game using the F2 key.
 * Updated & Improved UI / Controls on main menu.
