@@ -303,6 +303,7 @@ class SaveLoadSystem:
 
         while self.menu_running:
             # Handle events
+            self.game.screen_manager.update_window_mode()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -321,6 +322,12 @@ class SaveLoadSystem:
                     elif event.key == pygame.K_ESCAPE:
                         play_sound(self.game.sound_manager.game_sounds, "keypress")
                         return
+                    elif event.key == pygame.K_f:
+                        self.game.screen_manager.toggle_window_mode()
+                    elif event.key == pygame.K_F1:
+                        self.game.sound_manager.toggle_mute_music("menu")
+                    elif event.key == pygame.K_F2:
+                        self.game.sound_manager.toggle_mute_sfx()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse_x, mouse_y = pygame.mouse.get_pos()

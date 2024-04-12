@@ -420,6 +420,7 @@ def display_simple_message(screen, text, font, color, delay_time):
     pygame.display.flip()
     pygame.time.delay(delay_time)
 
+
 def display_muted_state_message(screen, text):
     """Display a simple message on screen for the muted state of the game."""
     font = pygame.font.SysFont("arial", 15)

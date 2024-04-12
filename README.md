@@ -71,6 +71,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.3:
+* Mute/Unmute & Fullscreen Toggle functionality added on Save / Load screen.
 * Updated images for buttons: Difficulty.
 * Updated images for buttons: Victory.
 * Updated images for buttons: Save Game, Paused.

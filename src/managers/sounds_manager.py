@@ -202,7 +202,7 @@ class SoundManager:
                     music_message = "Music Muted"
                 elif not self.game.music_muted:
                     music_message = "Music Unmuted"
-                
+
                 if self.game.sfx_muted:
                     sfx_message = "SFX Muted"
                 elif not self.game.sfx_muted:
