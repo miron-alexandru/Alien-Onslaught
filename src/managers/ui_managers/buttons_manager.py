@@ -41,18 +41,18 @@ class GameButtonsManager:
         self.load_game = Button(
             self,
             self.button_imgs["load_game"],
-            (self.play.rect.centerx - 74, self.play.rect.bottom),
+            (self.play.rect.centerx - 74, self.play.rect.bottom - 4),
         )
         self.select_ship = Button(
             self,
             self.button_imgs["select_ship"],
-            (self.load_game.rect.centerx - 74, self.load_game.rect.bottom),
+            (self.load_game.rect.centerx - 74, self.load_game.rect.bottom - 4),
         )
         # Difficulty buttons
         self.difficulty = Button(
             self,
             self.button_imgs["difficulty"],
-            (self.select_ship.rect.centerx - 74, self.select_ship.rect.bottom),
+            (self.select_ship.rect.centerx - 74, self.select_ship.rect.bottom - 4),
         )
         self.easy = Button(
             self,
@@ -74,7 +74,7 @@ class GameButtonsManager:
         self.game_modes = Button(
             self,
             self.button_imgs["game_modes"],
-            (self.difficulty.rect.centerx - 74, self.difficulty.rect.bottom),
+            (self.difficulty.rect.centerx - 74, self.difficulty.rect.bottom - 4),
         )
         self.normal = Button(
             self,
@@ -129,7 +129,7 @@ class GameButtonsManager:
         self.high_scores = Button(
             self,
             self.button_imgs["high_scores"],
-            (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom),
+            (self.game_modes.rect.centerx - 74, self.game_modes.rect.bottom - 4),
         )
         self.delete_scores = Button(
             self,
@@ -139,12 +139,12 @@ class GameButtonsManager:
         self.menu = Button(
             self,
             self.button_imgs["menu_button"],
-            (self.high_scores.rect.centerx - 74, self.high_scores.rect.bottom),
+            (self.high_scores.rect.centerx - 74, self.high_scores.rect.bottom - 4),
         )
         self.quit = Button(
             self,
             self.button_imgs["quit_button"],
-            (self.menu.rect.centerx - 74, self.menu.rect.bottom),
+            (self.menu.rect.centerx - 74, self.menu.rect.bottom - 4),
         )
 
         # Lists containing the game buttons, difficulty buttons and game mode buttons
@@ -182,12 +182,12 @@ class GameButtonsManager:
         self.multi = Button(
             self,
             self.button_imgs["multiplayer"],
-            (self.single.rect.centerx - 100, self.single.rect.bottom),
+            (self.single.rect.centerx - 100, self.single.rect.bottom - 4),
         )
         self.menu_quit = Button(
             self,
             self.button_imgs["menu_quit_button"],
-            (self.multi.rect.centerx - 100, self.multi.rect.bottom),
+            (self.multi.rect.centerx - 100, self.multi.rect.bottom - 4),
         )
 
     def display_description(self):

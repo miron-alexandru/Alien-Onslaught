@@ -38,34 +38,34 @@ class ScreenManager:
 
     def update_buttons(self):
         """Updates the position of game objects after resizing the screen."""
-        self.buttons.play.update_pos(self.screen.get_rect().center, y=-115)
+        self.buttons.play.update_pos(self.screen.get_rect().center, y=-150)
         self.buttons.load_game.update_pos(
-            self.buttons.play.rect.centerx - 74, self.buttons.play.rect.bottom
+            self.buttons.play.rect.centerx - 74, self.buttons.play.rect.bottom - 4
         )
         self.buttons.select_ship.update_pos(
-            self.buttons.load_game.rect.centerx - 74, self.buttons.load_game.rect.bottom
+            self.buttons.load_game.rect.centerx - 74, self.buttons.load_game.rect.bottom - 4
         )
         self.buttons.difficulty.update_pos(
             self.buttons.select_ship.rect.centerx - 74,
-            self.buttons.select_ship.rect.bottom,
+            self.buttons.select_ship.rect.bottom - 4,
         )
         self.buttons.game_modes.update_pos(
             self.buttons.difficulty.rect.centerx - 74,
-            self.buttons.difficulty.rect.bottom,
+            self.buttons.difficulty.rect.bottom - 4,
         )
         self.buttons.high_scores.update_pos(
             self.buttons.game_modes.rect.centerx - 74,
-            self.buttons.game_modes.rect.bottom,
+            self.buttons.game_modes.rect.bottom - 4,
         )
         self.buttons.delete_scores.update_pos(
             self.buttons.high_scores.rect.left - 85, self.buttons.high_scores.rect.y
         )
         self.buttons.menu.update_pos(
             self.buttons.high_scores.rect.centerx - 74,
-            self.buttons.high_scores.rect.bottom,
+            self.buttons.high_scores.rect.bottom - 4,
         )
         self.buttons.quit.update_pos(
-            self.buttons.menu.rect.centerx - 74, self.buttons.menu.rect.bottom
+            self.buttons.menu.rect.centerx - 74, self.buttons.menu.rect.bottom - 4
         )
         self.buttons.easy.update_pos(
             self.buttons.difficulty.rect.right - 10, self.buttons.difficulty.rect.y
@@ -104,10 +104,10 @@ class ScreenManager:
         # Update Menu Buttons
         self.buttons.single.update_pos(self.screen.get_rect().center, y=-80)
         self.buttons.multi.update_pos(
-            self.buttons.single.rect.centerx - 100, self.buttons.single.rect.bottom
+            self.buttons.single.rect.centerx - 100, self.buttons.single.rect.bottom - 4
         )
         self.buttons.menu_quit.update_pos(
-            self.buttons.multi.rect.centerx - 100, self.buttons.multi.rect.bottom
+            self.buttons.multi.rect.centerx - 100, self.buttons.multi.rect.bottom - 4
         )
         self.settings.game_title_rect.centerx = self.screen.get_rect().centerx
         # Update scoreboard

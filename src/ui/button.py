@@ -27,7 +27,7 @@ class Button:
 
         if center:
             self.rect.center = self.screen_rect.center
-            self.rect.y -= 115
+            self.rect.y -= 150
         elif menu_button:
             self.rect.center = self.screen_rect.center
             self.rect.y -= 80
@@ -56,5 +56,5 @@ class Button:
             self.screen,
             self.description,
             screen_width // 2 + 74,
-            screen_height // 2 + 180,
+            screen_height // 2 + 133,
         )
