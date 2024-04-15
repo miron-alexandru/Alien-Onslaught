@@ -326,7 +326,7 @@ class TestScreenManager(unittest.TestCase):
             self.screen_manager.display_high_scores_on_screen()
 
             mock_display_high_scores.assert_called_once_with(
-                self.screen_manager, self.screen, "high_scores"
+                self.screen_manager, self.screen, "high_scores", "NORMAL"
             )
 
             mock_display_high_scores.reset_mock()
@@ -335,7 +335,7 @@ class TestScreenManager(unittest.TestCase):
             self.screen_manager.display_high_scores_on_screen()
 
             mock_display_high_scores.assert_called_once_with(
-                self.screen_manager, self.screen, "endless_scores"
+                self.screen_manager, self.screen, "endless_scores", "ENDLESS ONSLAUGHT"
             )
 
     def test_display_pause(self):

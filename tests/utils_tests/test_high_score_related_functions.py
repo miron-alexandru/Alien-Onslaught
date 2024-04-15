@@ -77,6 +77,7 @@ class HighScoreFunctionsTests(unittest.TestCase):
         screen = MagicMock()
         screen.get_size.return_value = (800, 600)
         score_key = "score_key"
+        game_mode_name = "NORMAL"
         scores = [{"name": "Player1", "score": 10}, {"name": "Player2", "score": 20}]
         mock_load_high_scores.return_value = {score_key: scores}
 
@@ -93,13 +94,13 @@ class HighScoreFunctionsTests(unittest.TestCase):
             (score_text_surfaces, score_text_rects),
         ]
 
-        display_high_scores(self.game, screen, score_key)
+        display_high_scores(self.game, screen, score_key, game_mode_name)
 
         # Assertions
         self.assertEqual(mock_sysfont.call_count, 2)
 
         mock_render_text.assert_any_call(
-            "HIGH SCORES",
+            f"{game_mode_name } HIGH SCORES",
             mock_sysfont.return_value,
             (255, 215, 0),
             (screen.get_size()[0] // 2 - 520, screen.get_size()[1] // 2 - 150),

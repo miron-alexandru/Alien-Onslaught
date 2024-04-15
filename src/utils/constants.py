@@ -389,6 +389,16 @@ GAME_MODE_SCORE_KEYS = {
     "normal": "high_scores",
 }
 
+GAME_MODE_DISPLAY_NAMES = {
+    "endless_onslaught": "ENDLESS ONSLAUGHT",
+    "slow_burn": "SLOW BURN",
+    "meteor_madness": "METEOR MADNESS",
+    "boss_rush": "BOSS RUSH",
+    "last_bullet": "LAST BULLET",
+    "cosmic_conflict": "COSMIC CONFLICT",
+    "one_life_reign": "ONE LIFE REIGN"
+}
+
 # CONSTANTS FOR THE SAVE/LOAD FEATURE
 DATA_KEYS = [
     # Other Game Stats"level",

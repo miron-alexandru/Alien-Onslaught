@@ -71,6 +71,7 @@
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
 ### Version 3.3:
+* Game mode name is now displayed in the title when displaying high scores.
 * Updated tests for the new changes.
 * Updated immune frames for the Cosmic Conflict game mode.
 * Updated buttons positioning for better visual appearance.

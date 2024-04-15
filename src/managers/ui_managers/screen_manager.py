@@ -12,7 +12,7 @@ from src.utils.game_utils import (
     display_high_scores,
     resize_image,
 )
-from src.utils.constants import GAME_MODE_SCORE_KEYS
+from src.utils.constants import GAME_MODE_SCORE_KEYS, GAME_MODE_DISPLAY_NAMES
 
 
 class ScreenManager:
@@ -175,7 +175,8 @@ class ScreenManager:
         """Display the high scores for the current game mode active"""
         game_mode = self.settings.game_modes.game_mode or "normal"
         high_score_key = GAME_MODE_SCORE_KEYS[game_mode]
-        display_high_scores(self, self.screen, high_score_key)
+        game_mode_name = GAME_MODE_DISPLAY_NAMES.get(game_mode, game_mode.replace("_", " ").upper())
+        display_high_scores(self, self.screen, high_score_key, game_mode_name)
 
     def display_pause(self):
         """Display the pause screen."""

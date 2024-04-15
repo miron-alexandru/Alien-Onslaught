@@ -449,7 +449,7 @@ def load_high_scores(game):
     return high_scores
 
 
-def display_high_scores(game, screen, score_key):
+def display_high_scores(game, screen, score_key, game_mode_name):
     """Display the high scores on the screen."""
     high_scores = load_high_scores(game)
 
@@ -484,11 +484,11 @@ def display_high_scores(game, screen, score_key):
     score_x = int(center_x - 270)
     score_y = rank_y
 
-    title_font = pygame.font.SysFont("impact", int(screen_height * 0.07))
-    scores_font = pygame.font.SysFont("impact", int(screen_height * 0.05))
+    title_font = pygame.font.SysFont("impact", int(screen_height * 0.045))
+    scores_font = pygame.font.SysFont("impact", int(screen_height * 0.035))
 
     text_surfaces, text_rects = render_text(
-        "HIGH SCORES",
+        f"{game_mode_name} HIGH SCORES",
         title_font,
         (255, 215, 0),
         (title_x, title_y),
