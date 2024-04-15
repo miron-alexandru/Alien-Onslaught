@@ -25,6 +25,8 @@ shield_frames = load_frames("shield/shield-0{}.png", 11)
 
 immune_frames = load_frames("immune/immune-0{}.png", 11, start=1)
 
+immune_frames_cosmic = load_frames("immune/immune-0{}.png", 11, start=1, rotate=90)
+
 explosion_frames = load_frames("explosion/explosion1_{:04d}.png", 89, start=2)
 
 asteroid_frames = load_frames("asteroid/Asteroid-A-09-{:03d}.png", 120)

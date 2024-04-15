@@ -24,8 +24,10 @@ class TestAnimations(unittest.TestCase):
 
     def setUp(self):
         self.ship = MagicMock()
+        self.settings = MagicMock()
+        self.settings.game_modes.cosmic_conflict = False
         self.ship.rect = pygame.Rect(0, 0, 100, 100)
-        self.animations = Animations(self.ship)
+        self.animations = Animations(self.ship, self.settings)
 
     def test_init(self):
         """Test for the init method."""

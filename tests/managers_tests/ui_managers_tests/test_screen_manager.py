@@ -55,27 +55,27 @@ class TestScreenManager(unittest.TestCase):
 
         # Assert the expected position updates of the buttons
         self.screen_manager.buttons.play.update_pos.assert_called_once_with(
-            self.screen.get_rect().center, y=-115
+            self.screen.get_rect().center, y=-150
         )
         self.screen_manager.buttons.load_game.update_pos.assert_called_once_with(
             self.screen_manager.buttons.play.rect.centerx - 74,
-            self.screen_manager.buttons.play.rect.bottom,
+            self.screen_manager.buttons.play.rect.bottom - 4,
         )
         self.screen_manager.buttons.select_ship.update_pos.assert_called_once_with(
             self.screen_manager.buttons.load_game.rect.centerx - 74,
-            self.screen_manager.buttons.load_game.rect.bottom,
+            self.screen_manager.buttons.load_game.rect.bottom - 4,
         )
         self.screen_manager.buttons.difficulty.update_pos.assert_called_once_with(
             self.screen_manager.buttons.select_ship.rect.centerx - 74,
-            self.screen_manager.buttons.select_ship.rect.bottom,
+            self.screen_manager.buttons.select_ship.rect.bottom - 4,
         )
         self.screen_manager.buttons.game_modes.update_pos.assert_called_once_with(
             self.screen_manager.buttons.difficulty.rect.centerx - 74,
-            self.screen_manager.buttons.difficulty.rect.bottom,
+            self.screen_manager.buttons.difficulty.rect.bottom - 4,
         )
         self.screen_manager.buttons.high_scores.update_pos.assert_called_once_with(
             self.screen_manager.buttons.game_modes.rect.centerx - 74,
-            self.screen_manager.buttons.game_modes.rect.bottom,
+            self.screen_manager.buttons.game_modes.rect.bottom - 4,
         )
         self.screen_manager.buttons.delete_scores.update_pos.assert_called_once_with(
             self.screen_manager.buttons.high_scores.rect.left - 85,
@@ -83,11 +83,11 @@ class TestScreenManager(unittest.TestCase):
         )
         self.screen_manager.buttons.menu.update_pos.assert_called_once_with(
             self.screen_manager.buttons.high_scores.rect.centerx - 74,
-            self.screen_manager.buttons.high_scores.rect.bottom,
+            self.screen_manager.buttons.high_scores.rect.bottom - 4,
         )
         self.screen_manager.buttons.quit.update_pos.assert_called_once_with(
             self.screen_manager.buttons.menu.rect.centerx - 74,
-            self.screen_manager.buttons.menu.rect.bottom,
+            self.screen_manager.buttons.menu.rect.bottom - 4,
         )
         self.screen_manager.buttons.easy.update_pos.assert_called_once_with(
             self.screen_manager.buttons.difficulty.rect.right - 10,
@@ -140,11 +140,11 @@ class TestScreenManager(unittest.TestCase):
         )
         self.screen_manager.buttons.multi.update_pos.assert_called_once_with(
             self.screen_manager.buttons.single.rect.centerx - 100,
-            self.screen_manager.buttons.single.rect.bottom,
+            self.screen_manager.buttons.single.rect.bottom - 4,
         )
         self.screen_manager.buttons.menu_quit.update_pos.assert_called_once_with(
             self.screen_manager.buttons.multi.rect.centerx - 100,
-            self.screen_manager.buttons.multi.rect.bottom,
+            self.screen_manager.buttons.multi.rect.bottom - 4,
         )
         self.screen_manager.settings.game_title_rect.centerx = (
             self.screen.get_rect().centerx

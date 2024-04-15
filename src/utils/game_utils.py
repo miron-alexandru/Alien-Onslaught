@@ -67,13 +67,15 @@ def load_images(image_dict):
     }
 
 
-def load_frames(filename_pattern, num_frames, start=0):
+def load_frames(filename_pattern, num_frames, start=0, rotate=None):
     """Loads a sequence of image frames into a list"""
     frame_list = []
     for i in range(start, start + num_frames):
         filename = filename_pattern.format(i)
         path = os.path.join(BASE_PATH, filename)
         image = pygame.image.load(path)
+        if rotate is not None:
+            image = pygame.transform.rotate(image, rotate)
         frame_list.append(image)
     return frame_list
 

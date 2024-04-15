@@ -11,6 +11,7 @@ from src.utils.animation_constants import (
     warp_frames,
     shield_frames,
     immune_frames,
+    immune_frames_cosmic,
     explosion_frames,
     empower_frames,
 )
@@ -19,8 +20,9 @@ from src.utils.animation_constants import (
 class Animations:
     """A class to manage all of the animations for the ships."""
 
-    def __init__(self, ship):
+    def __init__(self, ship, settings):
         self.ship = ship
+        self.settings = settings
         self.image = None
 
         self.ship_images = ship_images
@@ -35,7 +37,7 @@ class Animations:
         self.shield_image = self.shield_frames[self.current_shield_frame]
         self.shield_rect = self.shield_image.get_rect()
 
-        self.immune_frames = immune_frames
+        self.immune_frames = immune_frames_cosmic if self.settings.game_modes.cosmic_conflict else immune_frames
         self.current_immune_frame = 0
         self.immune_image = self.immune_frames[self.current_immune_frame]
         self.immune_rect = self.immune_image.get_rect()
@@ -54,27 +56,32 @@ class Animations:
 
     def change_ship_size(self, scale_factor):
         """Change the ship image and animation frames based on the scale factor."""
+        # Ship images.
         self.ship.image = scale_image(self.ship.image, scale_factor)
         self.ship.rect = self.ship.image.get_rect()
 
         self.ship_images = [
             scale_image(ship, scale_factor) for ship in self.ship_images
         ]
+        # Immune frames.
         self.immune_frames = [
             scale_image(frame, scale_factor) for frame in self.immune_frames
         ]
         self.immune_image = self.immune_frames[self.current_immune_frame]
         self.immune_rect = self.immune_image.get_rect()
+        # Shield frames.
         self.shield_frames = [
             scale_image(frame, scale_factor) for frame in self.shield_frames
         ]
         self.shield_image = self.shield_frames[self.current_immune_frame]
         self.shield_rect = self.shield_image.get_rect()
+        # Explosion frames.
         self.explosion_frames = [
             scale_image(exp, scale_factor) for exp in self.explosion_frames
         ]
         self.explosion_image = self.explosion_frames[self.current_explosion_frame]
         self.explosion_rect = self.explosion_image.get_rect()
+        # Empower frames.
         self.empower_frames = [
             scale_image(frame, scale_factor) for frame in self.empower_frames
         ]
@@ -85,7 +92,7 @@ class Animations:
         """Reset all animations frames and ship images to their original size."""
         self.ship_images = ship_images
 
-        self.immune_frames = immune_frames
+        self.immune_frames = immune_frames_cosmic if self.settings.game_modes.cosmic_conflict else immune_frames
         self.immune_image = self.immune_frames[self.current_immune_frame]
         self.immune_rect = self.immune_image.get_rect()
 

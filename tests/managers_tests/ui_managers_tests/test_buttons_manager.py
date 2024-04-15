@@ -58,14 +58,14 @@ class GameButtonsManagerTest(unittest.TestCase):
             call(
                 self.manager,
                 self.manager.button_imgs["load_game"],
-                (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom),
+                (self.manager.play.rect.centerx - 74, self.manager.play.rect.bottom - 4),
             ),
             call(
                 self.manager,
                 self.manager.button_imgs["select_ship"],
                 (
                     self.manager.load_game.rect.centerx - 74,
-                    self.manager.load_game.rect.bottom,
+                    self.manager.load_game.rect.bottom - 4,
                 ),
             ),
             call(
@@ -73,7 +73,7 @@ class GameButtonsManagerTest(unittest.TestCase):
                 self.manager.button_imgs["difficulty"],
                 (
                     self.manager.select_ship.rect.centerx - 74,
-                    self.manager.select_ship.rect.bottom,
+                    self.manager.select_ship.rect.bottom - 4,
                 ),
             ),
             call(
@@ -99,7 +99,7 @@ class GameButtonsManagerTest(unittest.TestCase):
                 self.manager.button_imgs["game_modes"],
                 (
                     self.manager.difficulty.rect.centerx - 74,
-                    self.manager.difficulty.rect.bottom,
+                    self.manager.difficulty.rect.bottom - 4,
                 ),
             ),
             call(
@@ -164,7 +164,7 @@ class GameButtonsManagerTest(unittest.TestCase):
                 self.manager.button_imgs["high_scores"],
                 (
                     self.manager.game_modes.rect.centerx - 74,
-                    self.manager.game_modes.rect.bottom,
+                    self.manager.game_modes.rect.bottom - 4,
                 ),
             ),
             call(
@@ -180,7 +180,7 @@ class GameButtonsManagerTest(unittest.TestCase):
                 self.manager.button_imgs["menu_button"],
                 (
                     self.manager.high_scores.rect.centerx - 74,
-                    self.manager.high_scores.rect.bottom,
+                    self.manager.high_scores.rect.bottom - 4,
                 ),
             ),
             call(
@@ -188,7 +188,7 @@ class GameButtonsManagerTest(unittest.TestCase):
                 self.manager.button_imgs["quit_button"],
                 (
                     self.manager.menu.rect.centerx - 74,
-                    self.manager.menu.rect.bottom,
+                    self.manager.menu.rect.bottom - 4,
                 ),
             ),
         ]
@@ -213,13 +213,13 @@ class GameButtonsManagerTest(unittest.TestCase):
                 self.manager.button_imgs["multiplayer"],
                 (
                     self.manager.single.rect.centerx - 100,
-                    self.manager.single.rect.bottom,
+                    self.manager.single.rect.bottom - 4,
                 ),
             ),
             call(
                 self.manager,
                 self.manager.button_imgs["menu_quit_button"],
-                (self.manager.multi.rect.centerx - 100, self.manager.multi.rect.bottom),
+                (self.manager.multi.rect.centerx - 100, self.manager.multi.rect.bottom - 4),
             ),
         ]
 

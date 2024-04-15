@@ -83,7 +83,7 @@ class ButtonTest(unittest.TestCase):
             self.game.screen,
             "Test Button",
             screen_width // 2 + 74,
-            screen_height // 2 + 180,
+            screen_height // 2 + 133,
         )
 
 

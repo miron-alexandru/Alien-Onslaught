@@ -37,7 +37,7 @@ class Ship(Sprite):
         self.rect = self.image.get_rect()
         self.cosmic_conflict_pos = conflict_pos
 
-        self.anims = Animations(self)
+        self.anims = Animations(self, self.settings)
         self.state = ShipStates()
 
         self.immune_start_time = 0
