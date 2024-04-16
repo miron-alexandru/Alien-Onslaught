@@ -18,33 +18,34 @@ long_description = """
 ## Controls:
 #### Gameplay:
 #### Player 1 (Thunderbird):
-* Move: W, A, S, D
-* Fire: Space
-* Laser: C
-* Launch Missiles: X
+* Move — W, A, S, D
+* Fire — Space
+* Laser — C
+* Launch Missiles — X
 
 #### Player 2 (Phoenix):
-* Move: Arrow Keys
-* Fire: Enter
-* Laser: R-Shift
-* Launch Missiles: R-Ctrl
+* Move — Arrow Keys
+* Fire — Enter
+* Laser — R-Shift
+* Launch Missiles — R-Ctrl
 
 #### UI Controls:
-* Toggle Fullscreen: F
-* Pause: P
+* Toggle Fullscreen — F
+* Pause — P
+* Toggle Mute Music & SFX — F1 & F2
 * - While Paused:
-*  Save Game: S
-*  Restart: R
-*  Return to Game Menu: ESC
-*  Return to Main Menu: M
-*  Quit: Q
+*  Save Game — S
+*  Restart — R
+*  Return to Game Menu — ESC
+*  Return to Main Menu — M
+*  Quit — Q
 
 ### Game images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/game_assets/images/game_images)
 """
 
 setup(
     name="alien-onslaught",
-    version="3.3.2",
+    version="3.4",
     author="Miron Alexandru",
     author_email="khadaake@gmail.com",
     description="Alien Onslaught: An action-packed arcade space shooter game.",
