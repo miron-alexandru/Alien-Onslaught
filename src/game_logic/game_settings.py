@@ -59,7 +59,8 @@ class Settings:
         # Game title and cursor images
         self.game_title = self.misc_images["game_title"]
         self.game_title_rect = self.game_title.get_rect()
-        self.game_title_rect.y = -270
+        self.game_title_rect.y = 20
+        self.game_title_rect.x = 100
         self.cursor_img = self.misc_images["cursor"]
         self.cursor_rect = self.cursor_img.get_rect()
         self.game_icon = self.misc_images["game_icon"]

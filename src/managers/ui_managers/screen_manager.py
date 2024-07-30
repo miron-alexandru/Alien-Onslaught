@@ -121,16 +121,16 @@ class ScreenManager:
     def _initialize_cursor(self):
         """Set the normal cursor invisible and initialize the custom cursor."""
         pygame.mouse.set_visible(False)
-        cursor_width, cursor_height = self.screen.get_size()
+        cursor_width, cursor_height = self.settings.cursor_img.get_size()
         self.cursor_surface = pygame.Surface(
             (cursor_width, cursor_height), pygame.SRCALPHA
         )
+        self.cursor_surface.blit(self.settings.cursor_img, (0, 0))
 
     def draw_cursor(self):
-        """Draw the custom in the location of the normal cursor."""
-        self.settings.cursor_rect.center = pygame.mouse.get_pos()
-        self.cursor_surface.blit(self.settings.cursor_img, (5, 10))
-        self.screen.blit(self.cursor_surface, self.settings.cursor_rect)
+        """Draw the custom cursor at the location of the normal cursor."""
+        cursor_x, cursor_y = pygame.mouse.get_pos()
+        self.screen.blit(self.cursor_surface, (cursor_x, cursor_y))
 
     def create_controls(self):
         """This method creates the images and positions
