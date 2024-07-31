@@ -26,8 +26,11 @@ class TestScreenManager(unittest.TestCase):
             self.score_board = MagicMock()
             self.buttons_manager = MagicMock()
             self.screen = MagicMock()
-            self.screen.get_size.return_value = (800, 600)
             self.singleplayer = MagicMock()
+            
+            self.settings.cursor_img = pygame.Surface((50, 100))
+            
+            # Initialize screen manager
             self.screen_manager = ScreenManager(
                 self.game,
                 self.settings,
@@ -159,36 +162,34 @@ class TestScreenManager(unittest.TestCase):
         self.screen_manager.score_board.render_bullets_num.assert_called_once()
 
     @patch("pygame.mouse")
-    @patch("pygame.Surface", return_value=MagicMock())
+    @patch("pygame.Surface")
     def test__initialize_cursor(self, mock_surface, mock_mouse):
         """Test the initialize_cursor method."""
-        self.screen.get_size.return_value = (100, 100)
+        mock_surface.return_value.get_size.return_value = (50, 100)
+        mock_surface.return_value.blit = MagicMock()
 
         self.screen_manager._initialize_cursor()
 
         mock_mouse.set_visible.assert_called_once_with(False)
-        mock_surface.assert_called_once_with((100, 100), pygame.SRCALPHA)
+        mock_surface.assert_called_once_with((50, 100), pygame.SRCALPHA)
+
+        self.screen_manager.cursor_surface.blit.assert_called_once_with(self.settings.cursor_img, (0, 0))
 
     @patch("pygame.mouse")
-    @patch("pygame.Surface", return_value=pygame.Surface((50, 100)))
+    @patch("pygame.Surface")
     def test_draw_cursor(self, mock_surface, mock_mouse):
         """Test the draw_cursor method."""
+        mock_surface.return_value = pygame.Surface((50, 100))
         mock_cursor_rect = MagicMock()
         self.screen_manager.cursor_surface = MagicMock()
         self.settings.cursor_img = mock_surface.return_value
-        self.settings.cursor_rect = mock_cursor_rect
+
+        mock_mouse.get_pos.return_value = (5, 10)
 
         self.screen_manager.draw_cursor()
 
-        self.assertTrue(self.screen.blit.called)
         mock_mouse.get_pos.assert_called_once()
-        self.screen_manager.cursor_surface.blit.assert_called_once_with(
-            self.settings.cursor_img, (5, 10)
-        )
-        self.assertEqual(
-            self.screen.blit.call_args[0],
-            (self.screen_manager.cursor_surface, mock_cursor_rect),
-        )
+        self.screen.blit.assert_called_once_with(self.screen_manager.cursor_surface, (5, 10))
 
     def test_create_controls(self):
         """Test the create_controls method."""

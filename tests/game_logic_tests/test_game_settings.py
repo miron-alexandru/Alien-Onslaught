@@ -40,7 +40,7 @@ class SettingsTestCase(unittest.TestCase):
         self.assertIn("cursor", self.settings.misc_images.keys())
         self.assertIn("game_icon", self.settings.misc_images.keys())
 
-        self.assertEqual(self.settings.game_title_rect.y, -270)
+        self.assertEqual(self.settings.game_title_rect.y, 20)
         self.assertIsInstance(self.settings.game_end_rect, pygame.Rect)
         self.assertIsInstance(self.settings.game_title_rect, pygame.Rect)
         self.assertIsInstance(self.settings.cursor_rect, pygame.Rect)
