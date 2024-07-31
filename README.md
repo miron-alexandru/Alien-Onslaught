@@ -70,6 +70,10 @@
 <details>
 <summary><h2>Alien-Onslaught Changelog</h2></summary>
 
+### Version 3.5:
+* New cursor image.
+* New game title image on main menu.
+
 ### Version 3.4:
 * Game mode name is now displayed in the title when displaying high scores.
 * Updated tests for the new changes.
