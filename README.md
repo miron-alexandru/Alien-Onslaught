@@ -53,18 +53,8 @@
 *  Return to Main Menu — M
 *  Quit — Q
 
-## Game Images:
-![Menu](game_assets/images/game_images/menu.PNG)
-![ShipSelection](game_assets/images/game_images/ship_selection.PNG)
-![Gameplay](game_assets/images/game_images/game_modes.PNG)
-![Gameplay](game_assets/images/game_images/normal3.PNG)
-![Gameplay](game_assets/images/game_images/normal4.PNG)
-![Gameplay](game_assets/images/game_images/cosmic_conflict.PNG)
-![Gameplay](game_assets/images/game_images/boss_fight.PNG)
-![SaveGame](game_assets/images/game_images/save_game.PNG)
-![LoadGame](game_assets/images/game_images/load_game.PNG)
-![HighScores](game_assets/images/game_images/high_scores.PNG)
-![GameOver](game_assets/images/game_images/game_over.PNG)
+## Game Preview:
+<video src="https://github.com/miron-alexandru/Alien-Onslaught/blob/main/game_assets/images/game_images/Video.mp4?raw=true" autoplay loop muted playsinline width="960"></video>
 ### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/game_assets/images/game_images)
 
 <details>
