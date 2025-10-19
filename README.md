@@ -54,7 +54,15 @@
 *  Quit — Q
 
 ## Game Preview:
-<video src="https://github.com/miron-alexandru/Alien-Onslaught/blob/main/game_assets/images/game_images/Video.mp4?raw=true" autoplay loop muted playsinline width="960"></video>
+![Menu](/game_assets/images/game_images/menu.PNG)
+![ShipSelection](/game_assets/images/game_images/ship_selection.PNG)
+![HighScores](/game_assets/images/game_images/high_scores.PNG)
+![SaveGame](/game_assets/images/game_images/save_game.PNG)
+![Gameplay](/game_assets/images/game_images/game_modes.PNG)
+![Gameplay](/game_assets/images/game_images/normal3.PNG)
+![Gameplay](/game_assets/images/game_images/cosmic_conflict.PNG)
+[Watch Demo](https://miron-alexandru.github.io/Alien-Onslaught/Video.mp4)
+
 ### More images can be found [here](https://github.com/KhadaAke/Alien-Onslaught/tree/main/game_assets/images/game_images)
 
 <details>
