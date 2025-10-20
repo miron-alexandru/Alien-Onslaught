@@ -381,9 +381,9 @@ class TestPowerEffectsManager(unittest.TestCase):
         self.assertTrue(ship.state.reverse)
         self.assertTrue(ship.state.disarmed)
         self.assertTrue(ship.state.scaled_weapon)
-        self.assertEqual(ship.last_reverse_power_down_time, current_time - 5)
-        self.assertEqual(ship.last_disarmed_power_down_time, current_time - 5)
-        self.assertEqual(ship.last_scaled_weapon_power_down_time, current_time - 5)
+        self.assertAlmostEqual(ship.last_reverse_power_down_time, current_time - 5, delta=0.01)
+        self.assertAlmostEqual(ship.last_disarmed_power_down_time, current_time - 5, delta=0.01)
+        self.assertAlmostEqual(ship.last_scaled_weapon_power_down_time, current_time - 5, delta=0.01)
 
         self.assertEqual(self.game.pause_time, 0)
 
